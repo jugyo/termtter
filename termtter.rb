@@ -3,7 +3,7 @@
 # Your account information
 user_name = ""
 password = ""
-# timeline update interval
+# Timeline update interval
 update_interval = 60
 
 require 'rubygems'
@@ -13,14 +13,14 @@ require 'cgi'
 require 'readline'
 
 class TwitterClient
-  
+
   @since_id = nil
 
   def initialize(user_name, password)
     @user_name = user_name
     @password = password
   end
-  
+
   def update_status(status)
     req = Net::HTTP::Post.new('/statuses/update.xml')
     req.basic_auth(@user_name, @password)
@@ -28,18 +28,17 @@ class TwitterClient
       http.request(req, "status=#{CGI.escape(status)}")
     end
   end
-  
+
   def fetch_timeline
     uri = 'http://twitter.com/statuses/friends_timeline.xml'
     if @since_id && !@since_id.empty?
       uri += "?since_id=#{@since_id}"
     end
-    
+
     begin
       statuses = []
       doc = Nokogiri::XML(open(uri, :http_basic_authentication => [@user_name, @password]))
-      #doc = Nokogiri::XML(open("test.xml"))
-      
+
       new_since_id = doc.xpath('//status[1]/id').text
       @since_id = new_since_id if new_since_id && !new_since_id.empty?
 
