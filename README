@@ -1,0 +1,12 @@
+= Termtter
+
+* http://github.com/jugyo/termtter
+
+== DESCRIPTION:
+
+Termtter is a terminal based Twitter client
+
+== REQUIREMENTS:
+
+* nokogiri
+
