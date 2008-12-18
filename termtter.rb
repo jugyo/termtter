@@ -1,11 +1,14 @@
 #!/usr/bin/env ruby
 
+$KCODE = 'u'
+
 require 'rubygems'
 require 'nokogiri'
 require 'open-uri'
 require 'cgi'
 require 'readline'
 require 'optparse'
+require 'enumerator'
 
 class TwitterClient
 
@@ -68,9 +71,9 @@ class TwitterClient
     
     puts color(Time.now.strftime('%X'), 100)
     statuses.reverse.each do |s|
-      text = s['text'].gsub("\n", '')
+      text = s['text'].gsub("\n", '').split(//u).enum_for(:each_slice, 32).map{|i|i.join}.join("\n" + " " * 16)
       user_color = user_color(s['user/screen_name'])
-      status = "#{s['user/screen_name'].rjust(16)} #{text}"
+      status = "#{s['user/screen_name'].rjust(15)} #{text}"
       puts color(status, user_color)
     end
   end
