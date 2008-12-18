@@ -1,16 +1,11 @@
 #!/usr/bin/env ruby
 
-# Your account information
-user_name = ""
-password = ""
-# Timeline update interval
-update_interval = 60
-
 require 'rubygems'
 require 'nokogiri'
 require 'open-uri'
 require 'cgi'
 require 'readline'
+require 'optparse'
 
 class TwitterClient
 
@@ -65,8 +60,7 @@ class TwitterClient
 
   def user_color(user_name)
     colors = %w(0 31 32 33 34 35 36 91 92 93 94 95 96)
-    salt = 'hogehoge'
-    colors[(user_name + salt).hash % colors.size]
+    colors[user_name.hash % colors.size]
   end
 
   def output(statuses)
@@ -76,12 +70,27 @@ class TwitterClient
     statuses.reverse.each do |s|
       text = s['text'].gsub("\n", '')
       user_color = user_color(s['user/screen_name'])
-      status = "#{s['user/screen_name'].rjust(12)} #{text}"
+      status = "#{s['user/screen_name'].rjust(16)} #{text}"
       puts color(status, user_color)
     end
   end
 
 end
+
+user_name = nil
+password = nil
+update_interval = 60
+
+ARGV.options {|o|
+  o.on('-u user_name') {|v| user_name = v }
+  o.on('-p password') {|v| password = v }
+  o.parse!
+  
+  unless user_name && password
+    puts o.help
+    exit 1
+  end
+}
 
 client = TwitterClient.new(user_name, password)
 
