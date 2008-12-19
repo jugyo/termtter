@@ -22,10 +22,6 @@ class TwitterClient
   def update_status(status)
     req = Net::HTTP::Post.new('/statuses/update.xml')
     req.basic_auth(@user_name, @password)
-    req.add_field("User-Agent", "Termtter http://github.com/jugyo/termtter")
-    req.add_field("X-Twitter-Client", "Termtter")
-    req.add_field("X-Twitter-Client-URL", "http://github.com/jugyo/termtter")
-    req.add_field("X-Twitter-Client-Version", "0.1")
     Net::HTTP.start("twitter.com", 80) do |http|
       http.request(req, "status=#{CGI.escape(status)}")
     end
