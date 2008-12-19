@@ -2,7 +2,6 @@
 
 $KCODE = 'u'
 
-require 'optparse'
 require 'termtter/termtter'
 
 # Hooks
