@@ -9,7 +9,7 @@ Termtter.add_hook do |statuses|
     
     text += "\n<a href=\"http://twitter.com/\">more…</a>" if statuses.size > max
     
-    system 'notify-send', 'Termtter', text, '-t', '30000'
+    system 'notify-send', 'Termtter', text, '-t', '60000'
   end
 end
 
