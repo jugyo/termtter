@@ -50,7 +50,7 @@ class Termtter
       statuses = get_timeline(uri)
       call_handlers(statuses)
     end
-  rescue
+  rescue => e
     puts "Error: #{e}. request uri => #{uri}"
   end
 
