@@ -96,19 +96,24 @@ class Termtter
       case buf
       when ''
         # do nothing
-      when /^@([^\s]+)$/
-        fetch_friends_timeline(:user_id => $1)
+      when /^post\s+(.+)/
+        update_status($1)
+        puts "post> #{$1}"
       when 'list'
         fetch_friends_timeline(:all => true)
+      when /^list\s+([^\s]+)/
+        fetch_friends_timeline(:user_id => $1)
       when 'help'
         puts <<-EOS
-text          Post a new message
-list          List recent posts
-@screen_name  List the posts in the the given user's Timeline
+post [text]         Post a new message
+list                List the posts in your friends timeline
+list [screen_name]  List the posts in the the given user's timeline
         EOS
       else
-        update_status(buf)
-        puts "post> #{buf}"
+        puts <<-EOS
+Unknown command "#{buf}"
+Enter "help" for instructions
+        EOS
       end
     end
   end
