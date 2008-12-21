@@ -31,18 +31,25 @@ class Termtter
     end
   end
 
-  def fetch_friends_timeline(id = nil)
-    if id
-      uri = "http://twitter.com/statuses/user_timeline/#{id}.xml"
-    else
+  # user_timeline と friends_timeline でメソッド分けたほうがいいかも
+  def fetch_friends_timeline(options)
+    if options[:user_id]
+      uri = "http://twitter.com/statuses/user_timeline/#{options[:user_id]}.xml"
+    elsif options[:all]
       uri = "http://twitter.com/statuses/friends_timeline.xml"
-      if @since_id && !@since_id.empty?
-        uri += "?since_id=#{@since_id}"
+      if options[:updated]
+        if @since_id && !@since_id.empty?
+          uri += "?since_id=#{@since_id}"
+        end
+      else
+        @since_id = nil
       end
     end
 
-    statuses = get_timeline(uri)
-    call_handlers(statuses)
+    if uri
+      statuses = get_timeline(uri)
+      call_handlers(statuses)
+    end
   end
 
   def call_handlers(statuses)
@@ -76,7 +83,7 @@ class Termtter
     Thread.new do
       while true
         begin
-          fetch_friends_timeline
+          fetch_friends_timeline(:all => true, :updated => true)
         rescue => e
           puts "Error: #{e}. request uri => #{uri}"
         end
@@ -92,10 +99,9 @@ class Termtter
       when ''
         # do nothing
       when /^@([^\s]+)$/
-        fetch_friends_timeline($1)
+        fetch_friends_timeline(:user_id => $1)
       when 'list'
-        @since_id = nil
-        fetch_friends_timeline
+        fetch_friends_timeline(:all => true)
       else
         update_status(buf)
         puts "post> #{buf}"
