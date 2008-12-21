@@ -36,43 +36,54 @@ class Termtter
     if @since_id && !@since_id.empty?
       uri += "?since_id=#{@since_id}"
     end
+    statuses = get_timeline(uri)
+    call_handlers(statuses)
+  end
 
-    begin
-      statuses = []
-      xml = get_timeline_xml(uri)
-      doc = Nokogiri::XML(xml)
-
-      new_since_id = doc.xpath('//status[1]/id').text
-      @since_id = new_since_id if new_since_id && !new_since_id.empty?
-
-      doc.xpath('//status').each do |s|
-        status = {}
-        %w(
-          id text created_at truncated in_reply_to_status_id in_reply_to_user_id 
-          user/id user/name user/screen_name
-        ).each do |key|
-          status[key] = CGI.unescapeHTML(s.xpath(key).text)
-        end
-        statuses << status
-      end
-      
-      
-      @@handlers.each do |h|
-        h.call(statuses)
-      end
-    rescue => e
-      puts "Error: #{e}. request uri => #{uri}"
+  def call_handlers(statuses)
+    @@handlers.each do |h|
+      h.call(statuses)
     end
   end
 
+  def get_timeline(uri)
+    xml = get_timeline_xml(uri)
+    return parse_timeline_xml(xml)
+  end
+  
   def get_timeline_xml(uri)
     open(uri, :http_basic_authentication => [@user_name, @password]).read
+  end
+
+  def parse_timeline_xml(xml)
+    statuses = []
+    doc = Nokogiri::XML(xml)
+
+    new_since_id = doc.xpath('//status[1]/id').text
+    @since_id = new_since_id if new_since_id && !new_since_id.empty?
+
+    doc.xpath('//status').each do |s|
+      status = {}
+      %w(
+        id text created_at truncated in_reply_to_status_id in_reply_to_user_id 
+        user/id user/name user/screen_name
+      ).each do |key|
+        status[key] = CGI.unescapeHTML(s.xpath(key).text)
+      end
+      statuses << status
+    end
+    
+    return statuses
   end
 
   def run
     Thread.new do
       while true
-        fetch_timeline
+        begin
+          fetch_timeline
+        rescue => e
+          puts "Error: #{e}. request uri => #{uri}"
+        end
         sleep @update_interval
       end
     end
