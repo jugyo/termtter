@@ -31,11 +31,16 @@ class Termtter
     end
   end
 
-  def fetch_timeline
-    uri = 'http://twitter.com/statuses/friends_timeline.xml'
-    if @since_id && !@since_id.empty?
-      uri += "?since_id=#{@since_id}"
+  def fetch_friends_timeline(id = nil)
+    if id
+      uri = "http://twitter.com/statuses/user_timeline/#{id}.xml"
+    else
+      uri = "http://twitter.com/statuses/friends_timeline.xml"
+      if @since_id && !@since_id.empty?
+        uri += "?since_id=#{@since_id}"
+      end
     end
+
     statuses = get_timeline(uri)
     call_handlers(statuses)
   end
@@ -47,17 +52,8 @@ class Termtter
   end
 
   def get_timeline(uri)
-    xml = get_timeline_xml(uri)
-    return parse_timeline_xml(xml)
-  end
-  
-  def get_timeline_xml(uri)
-    open(uri, :http_basic_authentication => [@user_name, @password]).read
-  end
-
-  def parse_timeline_xml(xml)
     statuses = []
-    doc = Nokogiri::XML(xml)
+    doc = Nokogiri::XML(open(uri, :http_basic_authentication => [@user_name, @password]))
 
     new_since_id = doc.xpath('//status[1]/id').text
     @since_id = new_since_id if new_since_id && !new_since_id.empty?
@@ -80,7 +76,7 @@ class Termtter
     Thread.new do
       while true
         begin
-          fetch_timeline
+          fetch_friends_timeline
         rescue => e
           puts "Error: #{e}. request uri => #{uri}"
         end
@@ -92,7 +88,15 @@ class Termtter
     trap("INT") { system "stty", stty_save; exit }
 
     while buf = Readline.readline("", true)
-      unless buf.empty?
+      case buf
+      when ''
+        # do nothing
+      when /^@([^\s]+)$/
+        fetch_friends_timeline($1)
+      when 'list'
+        @since_id = nil
+        fetch_friends_timeline
+      else
         update_status(buf)
         puts "post> #{buf}"
       end
@@ -100,3 +104,4 @@ class Termtter
   end
 
 end
+
