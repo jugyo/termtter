@@ -31,7 +31,7 @@ class Termtter
     end
   end
 
-  # user_timeline と friends_timeline でメソッド分けたほうがいいかも
+  # user_timeline と friends_timeline でメソッド分けたほうがいいかも  
   def fetch_friends_timeline(options)
     if options[:user_id]
       uri = "http://twitter.com/statuses/user_timeline/#{options[:user_id]}.xml"
@@ -50,6 +50,8 @@ class Termtter
       statuses = get_timeline(uri)
       call_handlers(statuses)
     end
+  rescue
+    puts "Error: #{e}. request uri => #{uri}"
   end
 
   def call_handlers(statuses)
@@ -82,11 +84,7 @@ class Termtter
   def run
     Thread.new do
       while true
-        begin
-          fetch_friends_timeline(:all => true, :updated => true)
-        rescue => e
-          puts "Error: #{e}. request uri => #{uri}"
-        end
+        fetch_friends_timeline(:all => true, :updated => true)
         sleep @update_interval
       end
     end
