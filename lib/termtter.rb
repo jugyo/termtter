@@ -100,6 +100,12 @@ class Termtter
         fetch_friends_timeline(:user_id => $1)
       when 'list'
         fetch_friends_timeline(:all => true)
+      when 'help'
+        puts <<-EOS
+text          Post a new message
+list          List recent posts
+@screen_name  List the posts in the the given user's Timeline
+        EOS
       else
         update_status(buf)
         puts "post> #{buf}"

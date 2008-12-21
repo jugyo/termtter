@@ -3,11 +3,11 @@
 $KCODE = 'u'
 
 require 'yaml'
-require 'termtter/termtter'
+require 'lib/termtter'
 
 # Hooks
-require 'termtter/stdout'
-#require 'termtter/notify-send'
+require 'lib/stdout'
+#require 'lib/notify-send'
 
 Termtter.new(YAML.load(open('config.yml'))).run
 
