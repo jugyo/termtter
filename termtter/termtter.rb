@@ -13,12 +13,10 @@ class Termtter
     @@handlers << handler
   end
 
-  def initialize(user_name, password, update_interval = 300)
-    if user_name.nil? || user_name.empty? then raise ArgumentError, "user_name is not set." end
-    if password.nil? || password.empty? then raise ArgumentError, "password is not set." end
-    @user_name = user_name
-    @password = password
-    @update_interval = update_interval
+  def initialize(conf)
+    @user_name = conf[:user_name]
+    @password = conf[:password]
+    @update_interval = conf[:update_interval] || 300
   end
 
   def update_status(status)
