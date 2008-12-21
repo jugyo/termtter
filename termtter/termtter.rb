@@ -39,7 +39,8 @@ class Termtter
 
     begin
       statuses = []
-      doc = Nokogiri::XML(open(uri, :http_basic_authentication => [@user_name, @password]))
+      xml = get_timeline_xml(uri)
+      doc = Nokogiri::XML(xml)
 
       new_since_id = doc.xpath('//status[1]/id').text
       @since_id = new_since_id if new_since_id && !new_since_id.empty?
@@ -62,6 +63,10 @@ class Termtter
     rescue => e
       puts "Error: #{e}. request uri => #{uri}"
     end
+  end
+
+  def get_timeline_xml(uri)
+    open(uri, :http_basic_authentication => [@user_name, @password]).read
   end
 
   def run
