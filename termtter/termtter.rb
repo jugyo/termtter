@@ -13,11 +13,12 @@ class Termtter
     @@handlers << handler
   end
 
-  def initialize(user_name, password)
+  def initialize(user_name, password, update_interval = 300)
     if user_name.nil? || user_name.empty? then raise ArgumentError, "user_name is not set." end
     if password.nil? || password.empty? then raise ArgumentError, "password is not set." end
     @user_name = user_name
     @password = password
+    @update_interval = update_interval
   end
 
   def update_status(status)
@@ -62,6 +63,25 @@ class Termtter
       end
     rescue => e
       puts "Error: #{e}. request uri => #{uri}"
+    end
+  end
+
+  def run
+    Thread.new do
+      while true
+        fetch_timeline
+        sleep @update_interval
+      end
+    end
+
+    stty_save = `stty -g`.chomp
+    trap("INT") { system "stty", stty_save; exit }
+
+    while buf = Readline.readline("", true)
+      unless buf.empty?
+        update_status(buf)
+        puts "post> #{buf}"
+      end
     end
   end
 

@@ -1,6 +1,6 @@
 Termtter.add_hook do |statuses|
   unless statuses.empty?
-    puts "\e[#{100}m#{Time.now.strftime('%X')}\e[0m"
+    puts "\e[#{100}m(#{Time.now.strftime('%X')})\e[0m"
     
     colors = %w(0 31 32 33 34 35 36 
                 91 92 93 94 95 96)
