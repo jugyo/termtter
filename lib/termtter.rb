@@ -110,7 +110,7 @@ class Termtter
         puts <<-EOS
 help                print this help message
 list                List the posts in your friends timeline
-list [screen_name]  List the posts in the the given user's timeline
+list [user_name]    List the posts in the the given user's timeline
 post [text]         Post a new message
         EOS
       else
