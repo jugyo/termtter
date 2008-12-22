@@ -36,12 +36,15 @@ class Termtter
     uri = "http://twitter.com/statuses/friends_timeline.xml"
 
     if type == :update_friends_timeline
+      update_since_id = true
       if @since_id && !@since_id.empty?
         uri += "?since_id=#{@since_id}"
       end
+    else
+      update_since_id = false
     end
 
-    statuses = get_timeline(uri)
+    statuses = get_timeline(uri, update_since_id)
     call_hooks(statuses, type)
   rescue => e
     puts "Error: #{e}. request uri => #{uri}\n#{e.backtrace.join("\n")}"
@@ -82,12 +85,14 @@ class Termtter
     end
   end
 
-  def get_timeline(uri)
+  def get_timeline(uri, update_since_id = false)
     statuses = []
     doc = Nokogiri::XML(open(uri, :http_basic_authentication => [@user_name, @password]))
 
-    new_since_id = doc.xpath('//status[1]/id').text
-    @since_id = new_since_id if new_since_id && !new_since_id.empty?
+    if update_since_id
+      new_since_id = doc.xpath('//status[1]/id').text
+      @since_id = new_since_id if new_since_id && !new_since_id.empty?
+    end
 
     doc.xpath('//status').each do |s|
       status = {}
@@ -137,24 +142,27 @@ class Termtter
           unless $1.empty?
             search($1)
           end
-        when 'exit'
-          update.kill
-          input.kill
+        when 'update'
+          get_friends_timeline(:update_friends_timeline)
         when 'pause'
           pause = true
         when 'resume'
           pause = false
           update.run
+        when 'exit'
+          update.kill
+          input.kill
         when 'help'
           puts <<-EOS
+exit                Exit
 help                Print this help message
 list                List the posts in your friends timeline
 list [user_name]    List the posts in the the given user's timeline
-post [text]         Post a new message
-search [text]       Search for Twitter
 pause               Pause updating
+post [text]         Post a new message
 resume              Resume updating
-exit                Exit
+search [text]       Search for Twitter
+update              Update friends timeline
           EOS
         else
           puts <<-EOS
