@@ -55,6 +55,27 @@ class Termtter
     puts "Error: #{e}. request uri => #{uri}\n#{e.backtrace.join("\n")}"
   end
 
+  def search(query)
+    uri = 'http://search.twitter.com/search.atom?q=' + CGI.escape(query)
+    doc = Nokogiri::XML(open(uri))
+
+    statuses = []
+    ns = {'atom' => 'http://www.w3.org/2005/Atom'}
+    doc.xpath('//atom:entry', ns).each do |node|
+      status = {}
+      status['created_at'] = node.xpath('atom:published', ns).text
+      status['text'] = node.xpath('atom:content', ns).text.gsub(/<\/?[^>]*>/, '')
+      name = node.xpath('atom:author/atom:name', ns).text
+      status['user/screen_name'] = name.scan(/^(.*) \(/).flatten[0]
+      status['user/name'] = name.scan(/\(.*\)/).flatten[0]
+      statuses << status
+    end
+
+    call_handlers(statuses, :search)
+  rescue => e
+    puts "Error: #{e}. request uri => #{uri}\n#{e.backtrace.join("\n")}"
+  end
+
   def call_handlers(statuses, event)
     @@handlers.each do |h|
       h.call(statuses, event)
@@ -106,6 +127,10 @@ class Termtter
         get_friends_timeline(:list_friends_timeline)
       when /^list\s+([^\s]+)/
         get_user_timeline($1)
+      when /^search\s*(.*)/
+        unless $1.empty?
+          search($1)
+        end
       when 'help'
         puts <<-EOS
 help                print this help message
