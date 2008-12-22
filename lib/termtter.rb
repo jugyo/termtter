@@ -7,10 +7,10 @@ require 'enumerator'
 
 class Termtter
   
-  @@handlers = []
+  @@hooks = []
 
-  def self.add_hook(&handler)
-    @@handlers << handler
+  def self.add_hook(&hook)
+    @@hooks << hook
   end
 
   def initialize(conf)
@@ -42,7 +42,7 @@ class Termtter
     end
 
     statuses = get_timeline(uri)
-    call_handlers(statuses, type)
+    call_hooks(statuses, type)
   rescue => e
     puts "Error: #{e}. request uri => #{uri}\n#{e.backtrace.join("\n")}"
   end
@@ -50,7 +50,7 @@ class Termtter
   def get_user_timeline(screen_name)
     uri = "http://twitter.com/statuses/user_timeline/#{screen_name}.xml"
     statuses = get_timeline(uri)
-    call_handlers(statuses, :list_user_timeline)
+    call_hooks(statuses, :list_user_timeline)
   rescue => e
     puts "Error: #{e}. request uri => #{uri}\n#{e.backtrace.join("\n")}"
   end
@@ -71,13 +71,13 @@ class Termtter
       statuses << status
     end
 
-    call_handlers(statuses, :search)
+    call_hooks(statuses, :search)
   rescue => e
     puts "Error: #{e}. request uri => #{uri}\n#{e.backtrace.join("\n")}"
   end
 
-  def call_handlers(statuses, event)
-    @@handlers.each do |h|
+  def call_hooks(statuses, event)
+    @@hooks.each do |h|
       h.call(statuses, event)
     end
   end
