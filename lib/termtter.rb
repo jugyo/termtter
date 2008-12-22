@@ -133,10 +133,11 @@ class Termtter
         end
       when 'help'
         puts <<-EOS
-help                print this help message
+help                Print this help message
 list                List the posts in your friends timeline
 list [user_name]    List the posts in the the given user's timeline
 post [text]         Post a new message
+search [text]       Search for Twitter
         EOS
       else
         puts <<-EOS
