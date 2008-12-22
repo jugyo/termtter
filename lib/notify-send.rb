@@ -1,5 +1,5 @@
-Termtter.add_hook do |statuses|
-  unless statuses.empty?
+Termtter.add_hook do |statuses, event|
+  if !statuses.empty? && event == :update_friends_timeline
     max = 10
     
     text = statuses[0..(max - 1)].map{|s|
