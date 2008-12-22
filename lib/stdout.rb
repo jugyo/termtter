@@ -11,16 +11,15 @@ Termtter.add_hook do |statuses, event|
   case event
   when :update_friends_timeline, :list_friends_timeline, :list_user_timeline
     unless statuses.empty?
-      if event == :update_friends_timeline then statuses.reverse! end
-
       max_screen_name_length = statuses.map{|s|s['user/screen_name'].size}.max
 
+      if event == :update_friends_timeline then statuses.reverse! end
       statuses.each do |s|
         text = s['text'].gsub("\n", '')
         color_num = colors[s['user/screen_name'].hash % colors.size]
         status = "#{s['user/screen_name'].rjust(max_screen_name_length)} #{text}"
 
-        time = Time.local(*ParseDate::parsedate(s['created_at']))
+        time = Time.utc(*ParseDate::parsedate(s['created_at'])).localtime
         if event == :list_user_timeline then time_format = '%m-%d %X' else time_format = '%X' end
         time_str = time.strftime(time_format)
 
