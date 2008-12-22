@@ -11,9 +11,11 @@ Termtter.add_hook do |statuses, event|
   case event
   when :update_friends_timeline, :list_friends_timeline, :list_user_timeline
     unless statuses.empty?
+      if event == :update_friends_timeline then statuses.reverse! end
+
       max_screen_name_length = statuses.map{|s|s['user/screen_name'].size}.max
-      
-      statuses.reverse.each do |s|
+
+      statuses.each do |s|
         text = s['text'].gsub("\n", '')
         color_num = colors[s['user/screen_name'].hash % colors.size]
         status = "#{s['user/screen_name'].rjust(max_screen_name_length)} #{text}"
@@ -28,7 +30,7 @@ Termtter.add_hook do |statuses, event|
   when :search
     max_screen_name_length = statuses.map{|s|s['user/screen_name'].size}.max
 
-    statuses.reverse.each do |s|
+    statuses.each do |s|
       text = s['text'].gsub("\n", '')
       color_num = colors[s['user/screen_name'].hash % colors.size]
       status = "#{s['user/screen_name'].rjust(max_screen_name_length)} #{text}"
