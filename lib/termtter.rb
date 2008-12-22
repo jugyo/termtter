@@ -51,7 +51,7 @@ class Termtter
       call_handlers(statuses)
     end
   rescue => e
-    puts "Error: #{e}. request uri => #{uri}"
+    puts "Error: #{e}. request uri => #{uri}\n#{e.backtrace.join("\n")}"
   end
 
   def call_handlers(statuses)
