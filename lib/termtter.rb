@@ -32,31 +32,32 @@ class Termtter
   end
 
   # user_timeline と friends_timeline でメソッド分けたほうがいいかも  
-  def fetch_friends_timeline(options)
-    if options[:user_id]
-      uri = "http://twitter.com/statuses/user_timeline/#{options[:user_id]}.xml"
-    elsif options[:all]
-      uri = "http://twitter.com/statuses/friends_timeline.xml"
-      if options[:updated]
-        if @since_id && !@since_id.empty?
-          uri += "?since_id=#{@since_id}"
-        end
-      else
-        @since_id = nil
+  def get_friends_timeline(type)
+    uri = "http://twitter.com/statuses/friends_timeline.xml"
+
+    if type == :update_friends_timeline
+      if @since_id && !@since_id.empty?
+        uri += "?since_id=#{@since_id}"
       end
     end
 
-    if uri
-      statuses = get_timeline(uri)
-      call_handlers(statuses)
-    end
+    statuses = get_timeline(uri)
+    call_handlers(statuses, type)
   rescue => e
     puts "Error: #{e}. request uri => #{uri}\n#{e.backtrace.join("\n")}"
   end
 
-  def call_handlers(statuses)
+  def get_user_timeline(screen_name)
+    uri = "http://twitter.com/statuses/user_timeline/#{screen_name}.xml"
+    statuses = get_timeline(uri)
+    call_handlers(statuses, :list_user_timeline)
+  rescue => e
+    puts "Error: #{e}. request uri => #{uri}\n#{e.backtrace.join("\n")}"
+  end
+
+  def call_handlers(statuses, event)
     @@handlers.each do |h|
-      h.call(statuses)
+      h.call(statuses, event)
     end
   end
 
@@ -84,7 +85,7 @@ class Termtter
   def run
     Thread.new do
       while true
-        fetch_friends_timeline(:all => true, :updated => true)
+        get_friends_timeline(:update_friends_timeline)
         sleep @update_interval
       end
     end
@@ -96,18 +97,21 @@ class Termtter
       case buf
       when ''
         # do nothing
-      when /^post\s+(.+)/
-        update_status($1)
-        puts "post> #{$1}"
+      when /^post\s*(.*)/
+        unless $1.empty?
+          update_status($1)
+          puts "=> #{$1}"
+        end
       when 'list'
-        fetch_friends_timeline(:all => true)
+        get_friends_timeline(:list_friends_timeline)
       when /^list\s+([^\s]+)/
-        fetch_friends_timeline(:user_id => $1)
+        get_user_timeline($1)
       when 'help'
         puts <<-EOS
-post [text]         Post a new message
+help                print this help message
 list                List the posts in your friends timeline
 list [screen_name]  List the posts in the the given user's timeline
+post [text]         Post a new message
         EOS
       else
         puts <<-EOS
