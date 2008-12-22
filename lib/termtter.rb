@@ -104,48 +104,68 @@ class Termtter
   end
 
   def run
-    Thread.new do
+    pause = false
+
+    update = Thread.new do
       while true
+        if pause
+          Thread.stop
+        end
         get_friends_timeline(:update_friends_timeline)
         sleep @update_interval
       end
     end
 
-    stty_save = `stty -g`.chomp
-    trap("INT") { system "stty", stty_save; exit }
+    input = Thread.new do
+      stty_save = `stty -g`.chomp
+      trap("INT") { system "stty", stty_save; exit }
 
-    while buf = Readline.readline("", true)
-      case buf
-      when ''
-        # do nothing
-      when /^post\s*(.*)/
-        unless $1.empty?
-          update_status($1)
-          puts "=> #{$1}"
-        end
-      when 'list'
-        get_friends_timeline(:list_friends_timeline)
-      when /^list\s+([^\s]+)/
-        get_user_timeline($1)
-      when /^search\s*(.*)/
-        unless $1.empty?
-          search($1)
-        end
-      when 'help'
-        puts <<-EOS
+      while buf = Readline.readline("", true)
+        case buf
+        when ''
+          # do nothing
+        when /^post\s*(.*)/
+          unless $1.empty?
+            update_status($1)
+            puts "=> #{$1}"
+          end
+        when 'list'
+          get_friends_timeline(:list_friends_timeline)
+        when /^list\s+([^\s]+)/
+          get_user_timeline($1)
+        when /^search\s*(.*)/
+          unless $1.empty?
+            search($1)
+          end
+        when 'exit'
+          update.kill
+          input.kill
+        when 'pause'
+          pause = true
+        when 'resume'
+          pause = false
+          update.run
+        when 'help'
+          puts <<-EOS
 help                Print this help message
 list                List the posts in your friends timeline
 list [user_name]    List the posts in the the given user's timeline
 post [text]         Post a new message
 search [text]       Search for Twitter
-        EOS
-      else
-        puts <<-EOS
+pause               Pause updating
+resume              Resume updating
+exit                Exit
+          EOS
+        else
+          puts <<-EOS
 Unknown command "#{buf}"
 Enter "help" for instructions
-        EOS
+          EOS
+        end
       end
     end
+
+    input.join
   end
 
 end
