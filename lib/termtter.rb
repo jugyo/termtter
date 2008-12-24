@@ -84,16 +84,12 @@ class Termtter
   end
   
   def show(id)
-    uri = "http://twitter.com/statuses/show/#{id}.xml"
-    doc = Nokogiri::XML(open(uri, :http_basic_authentication => [@user_name, @password]))
-    statuses = parse_timeline_xml(doc)
+    statuses = get_timeline("http://twitter.com/statuses/show/#{id}.xml")
     call_hooks(statuses, :show)
   end
 
   def replies
-    uri = "http://twitter.com/statuses/replies.xml"
-    doc = Nokogiri::XML(open(uri, :http_basic_authentication => [@user_name, @password]))
-    statuses = parse_timeline_xml(doc)
+    statuses = get_timeline("http://twitter.com/statuses/replies.xml")
     call_hooks(statuses, :show)
   end
 
