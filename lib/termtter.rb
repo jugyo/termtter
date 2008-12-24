@@ -82,6 +82,13 @@ class Termtter
     puts "Error: #{e}. URI = #{uri}"
     puts e.backtrace.join("\n") if @debug
   end
+  
+  def show(id)
+    uri = "http://twitter.com/statuses/show/#{id}.xml"
+    doc = Nokogiri::XML(open(uri, :http_basic_authentication => [@user_name, @password]))
+    statuses = parse_timeline_xml(doc)
+    call_hooks(statuses, :show)
+  end
 
   def call_hooks(statuses, event)
     @@hooks.each do |h|
@@ -90,7 +97,6 @@ class Termtter
   end
 
   def get_timeline(uri, update_since_id = false)
-    statuses = []
     doc = Nokogiri::XML(open(uri, :http_basic_authentication => [@user_name, @password]))
 
     if update_since_id
@@ -98,6 +104,11 @@ class Termtter
       @since_id = new_since_id if new_since_id && !new_since_id.empty?
     end
 
+    return parse_timeline_xml(doc)
+  end
+  
+  def parse_timeline_xml(doc)
+    statuses = []
     doc.xpath('//status').each do |s|
       status = {}
       %w(
@@ -108,7 +119,6 @@ class Termtter
       end
       statuses << status
     end
-    
     return statuses
   end
 
@@ -148,6 +158,8 @@ class Termtter
           end
         when 'update'
           get_friends_timeline(:update_friends_timeline)
+        when /^show\s+([^\s]+)/
+          show($1)
         when 'pause'
           pause = true
         when 'resume'

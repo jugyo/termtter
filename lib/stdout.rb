@@ -9,7 +9,7 @@ Termtter.add_hook do |statuses, event|
               91 92 93 94 95 96)
 
   case event
-  when :update_friends_timeline, :list_friends_timeline, :list_user_timeline
+  when :update_friends_timeline, :list_friends_timeline, :list_user_timeline, :show
     unless statuses.empty?
       if event == :update_friends_timeline then statuses.reverse! end
       statuses.each do |s|
