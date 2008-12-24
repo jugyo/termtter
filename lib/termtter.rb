@@ -17,6 +17,7 @@ class Termtter
     @user_name = conf[:user_name]
     @password = conf[:password]
     @update_interval = conf[:update_interval] || 300
+    @debug = conf[:debug] || false
   end
 
   def update_status(status)
@@ -47,7 +48,8 @@ class Termtter
     statuses = get_timeline(uri, update_since_id)
     call_hooks(statuses, type)
   rescue => e
-    puts "Error: #{e}. request uri => #{uri}\n#{e.backtrace.join("\n")}"
+    puts "Error: #{e}. URI = #{uri}"
+    puts e.backtrace.join("\n") if @debug
   end
 
   def get_user_timeline(screen_name)
@@ -55,7 +57,8 @@ class Termtter
     statuses = get_timeline(uri)
     call_hooks(statuses, :list_user_timeline)
   rescue => e
-    puts "Error: #{e}. request uri => #{uri}\n#{e.backtrace.join("\n")}"
+    puts "Error: #{e}. URI = #{uri}"
+    puts e.backtrace.join("\n") if @debug
   end
 
   def search(query)
@@ -76,7 +79,8 @@ class Termtter
 
     call_hooks(statuses, :search)
   rescue => e
-    puts "Error: #{e}. request uri => #{uri}\n#{e.backtrace.join("\n")}"
+    puts "Error: #{e}. URI = #{uri}"
+    puts e.backtrace.join("\n") if @debug
   end
 
   def call_hooks(statuses, event)
@@ -177,4 +181,3 @@ Enter "help" for instructions
   end
 
 end
-
