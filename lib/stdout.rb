@@ -5,8 +5,7 @@ def color(str, num)
 end
 
 Termtter.add_hook do |statuses, event|
-  colors = %w(0 31 32 33 34 35 36 
-              91 92 93 94 95 96)
+  colors = %w(0 31 32 33 34 35 36 91 92 93 94 95 96)
 
   case event
   when :update_friends_timeline, :list_friends_timeline, :list_user_timeline, :show
@@ -21,10 +20,11 @@ Termtter.add_hook do |statuses, event|
         end
 
         time = Time.utc(*ParseDate::parsedate(s['created_at'])).localtime
-        if event == :list_user_timeline
-          time_format = '%m-%d %H:%d'
-        else
+        case event
+        when :update_friends_timeline, :list_friends_timeline
           time_format = '%H:%d:%S'
+        else
+          time_format = '%m-%d %H:%d'
         end
         time_str = "(#{time.strftime(time_format)})"
 
