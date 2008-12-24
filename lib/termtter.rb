@@ -146,7 +146,7 @@ class Termtter
         case buf
         when ''
           # do nothing
-        when /^post\s*(.*)/
+        when /^post\s*(.*)/, /^update\s*(.*)/
           unless $1.empty?
             update_status($1)
             puts "=> #{$1}"
@@ -159,8 +159,6 @@ class Termtter
           unless $1.empty?
             search($1)
           end
-        when 'update'
-          get_friends_timeline(:update_friends_timeline)
         when /^replies\s*$/
           replies()
         when /^show\s+([^\s]+)/
@@ -185,7 +183,7 @@ resume            Resume updating
 replies           List the most recent @replies for the authenticating user
 search TEXT       Search for Twitter
 show ID           Show a single status
-update            Update friends timeline
+update TEXT       Update friends timeline
           EOS
         else
           puts <<-EOS
