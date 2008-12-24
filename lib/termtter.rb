@@ -60,7 +60,7 @@ class Termtter
     doc.xpath('//atom:entry', ns).each do |node|
       status = {}
       status['created_at'] = node.xpath('atom:published', ns).text
-      status['text'] = node.xpath('atom:content', ns).text.gsub(/<\/?[^>]*>/, '')
+      status['text'] = CGI.unescapeHTML(node.xpath('atom:content', ns).text.gsub(/<\/?[^>]*>/, ''))
       name = node.xpath('atom:author/atom:name', ns).text
       status['user/screen_name'] = name.scan(/^([^\s]+) /).flatten[0]
       status['user/name'] = name.scan(/\(.*\)/).flatten[0]
