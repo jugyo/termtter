@@ -11,30 +11,31 @@ Termtter.add_hook do |statuses, event|
   case event
   when :update_friends_timeline, :list_friends_timeline, :list_user_timeline
     unless statuses.empty?
-      max_screen_name_length = statuses.map{|s|s['user/screen_name'].size}.max
-
       if event == :update_friends_timeline then statuses.reverse! end
       statuses.each do |s|
         text = s['text'].gsub("\n", '')
         color_num = colors[s['user/screen_name'].hash % colors.size]
-        status = "#{s['user/screen_name'].rjust(max_screen_name_length)} #{text}"
+        status = "#{s['user/screen_name']}: #{text}"
 
         time = Time.utc(*ParseDate::parsedate(s['created_at'])).localtime
-        if event == :list_user_timeline then time_format = '%m-%d %X' else time_format = '%X' end
-        time_str = time.strftime(time_format)
+        if event == :list_user_timeline
+          time_format = '%m-%d %H:%d'
+        else
+          time_format = '%H:%d:%S'
+        end
+        time_str = "(#{time.strftime(time_format)})"
 
         puts "#{color(time_str, 90)} #{color(status, color_num)}"
       end
     end
   when :search
-    max_screen_name_length = statuses.map{|s|s['user/screen_name'].size}.max
-
     statuses.each do |s|
       text = s['text'].gsub("\n", '')
       color_num = colors[s['user/screen_name'].hash % colors.size]
-      status = "#{s['user/screen_name'].rjust(max_screen_name_length)} #{text}"
+      status = "#{s['user/screen_name']}: #{text}"
+      
       time = Time.utc(*ParseDate::parsedate(s['created_at'])).localtime
-      time_str = time.strftime('%m-%d %X')
+      time_str = "(#{time.strftime('%m-%d %H:%d')})"
 
       puts "#{color(time_str, 90)} #{color(status, color_num)}"
     end
