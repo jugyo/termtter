@@ -32,38 +32,28 @@ class Termtter
     end
   end
 
-  # user_timeline と friends_timeline でメソッド分けたほうがいいかも  
-  def get_friends_timeline(type)
+  def list_friends_timeline
+    statuses = get_timeline("http://twitter.com/statuses/friends_timeline.xml")
+    call_hooks(statuses, :list_friends_timeline)
+  end
+  
+  def update_friends_timeline
     uri = "http://twitter.com/statuses/friends_timeline.xml"
-
-    if type == :update_friends_timeline
-      update_since_id = true
-      if @since_id && !@since_id.empty?
-        uri += "?since_id=#{@since_id}"
-      end
-    else
-      update_since_id = false
+    if @since_id && !@since_id.empty?
+      uri += "?since_id=#{@since_id}"
     end
 
-    statuses = get_timeline(uri, update_since_id)
-    call_hooks(statuses, type)
-  rescue => e
-    puts "Error: #{e}. URI = #{uri}"
-    puts e.backtrace.join("\n") if @debug
+    statuses = get_timeline(uri, true)
+    call_hooks(statuses, :update_friends_timeline)
   end
 
   def get_user_timeline(screen_name)
-    uri = "http://twitter.com/statuses/user_timeline/#{screen_name}.xml"
-    statuses = get_timeline(uri)
+    statuses = get_timeline("http://twitter.com/statuses/user_timeline/#{screen_name}.xml")
     call_hooks(statuses, :list_user_timeline)
-  rescue => e
-    puts "Error: #{e}. URI = #{uri}"
-    puts e.backtrace.join("\n") if @debug
   end
 
   def search(query)
-    uri = 'http://search.twitter.com/search.atom?q=' + CGI.escape(query)
-    doc = Nokogiri::XML(open(uri))
+    doc = Nokogiri::XML(open('http://search.twitter.com/search.atom?q=' + CGI.escape(query)))
 
     statuses = []
     ns = {'atom' => 'http://www.w3.org/2005/Atom'}
@@ -78,9 +68,6 @@ class Termtter
     end
 
     call_hooks(statuses, :search)
-  rescue => e
-    puts "Error: #{e}. URI = #{uri}"
-    puts e.backtrace.join("\n") if @debug
   end
   
   def show(id)
@@ -133,7 +120,7 @@ class Termtter
         if pause
           Thread.stop
         end
-        get_friends_timeline(:update_friends_timeline)
+        update_friends_timeline()
         sleep @update_interval
       end
     end
@@ -143,36 +130,37 @@ class Termtter
       trap("INT") { system "stty", stty_save; exit }
 
       while buf = Readline.readline("", true)
-        case buf
-        when ''
-          # do nothing
-        when /^post\s*(.*)/, /^update\s*(.*)/
-          unless $1.empty?
-            update_status($1)
-            puts "=> #{$1}"
-          end
-        when 'list'
-          get_friends_timeline(:list_friends_timeline)
-        when /^list\s+([^\s]+)/
-          get_user_timeline($1)
-        when /^search\s*(.*)/
-          unless $1.empty?
-            search($1)
-          end
-        when /^replies\s*$/
-          replies()
-        when /^show\s+([^\s]+)/
-          show($1)
-        when 'pause'
-          pause = true
-        when 'resume'
-          pause = false
-          update.run
-        when 'exit'
-          update.kill
-          input.kill
-        when 'help'
-          puts <<-EOS
+        begin
+          case buf
+          when ''
+            # do nothing
+          when /^post\s*(.*)/, /^update\s*(.*)/
+            unless $1.empty?
+              update_status($1)
+              puts "=> #{$1}"
+            end
+          when 'list'
+            list_friends_timeline()
+          when /^list\s+([^\s]+)/
+            get_user_timeline($1)
+          when /^search\s*(.*)/
+            unless $1.empty?
+              search($1)
+            end
+          when /^replies\s*$/
+            replies()
+          when /^show\s+([^\s]+)/
+            show($1)
+          when 'pause'
+            pause = true
+          when 'resume'
+            pause = false
+            update.run
+          when 'exit'
+            update.kill
+            input.kill
+          when 'help'
+            puts <<-EOS
 exit              Exit
 help              Print this help message
 list              List the posts in your friends timeline
@@ -185,11 +173,15 @@ search TEXT       Search for Twitter
 show ID           Show a single status
 update TEXT       Update friends timeline
           EOS
-        else
-          puts <<-EOS
+          else
+            puts <<-EOS
 Unknown command "#{buf}"
 Enter "help" for instructions
           EOS
+          end
+        rescue => e
+          puts "Error: #{e}"
+          puts e.backtrace.join("\n") if @debug
         end
       end
     end
