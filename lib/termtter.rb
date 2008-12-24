@@ -90,6 +90,13 @@ class Termtter
     call_hooks(statuses, :show)
   end
 
+  def replies
+    uri = "http://twitter.com/statuses/replies.xml"
+    doc = Nokogiri::XML(open(uri, :http_basic_authentication => [@user_name, @password]))
+    statuses = parse_timeline_xml(doc)
+    call_hooks(statuses, :show)
+  end
+
   def call_hooks(statuses, event)
     @@hooks.each do |h|
       h.call(statuses, event)
@@ -158,6 +165,8 @@ class Termtter
           end
         when 'update'
           get_friends_timeline(:update_friends_timeline)
+        when /^replies\s*$/
+          replies()
         when /^show\s+([^\s]+)/
           show($1)
         when 'pause'
