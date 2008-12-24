@@ -179,15 +179,17 @@ class Termtter
           input.kill
         when 'help'
           puts <<-EOS
-exit                Exit
-help                Print this help message
-list                List the posts in your friends timeline
-list [user_name]    List the posts in the the given user's timeline
-pause               Pause updating
-post [text]         Post a new message
-resume              Resume updating
-search [text]       Search for Twitter
-update              Update friends timeline
+exit              Exit
+help              Print this help message
+list              List the posts in your friends timeline
+list USERNAME     List the posts in the the given user's timeline
+pause             Pause updating
+post TEXT         Post a new message
+resume            Resume updating
+replies           List the most recent @replies for the authenticating user
+search TEXT       Search for Twitter
+show ID           Show a single status
+update            Update friends timeline
           EOS
         else
           puts <<-EOS
