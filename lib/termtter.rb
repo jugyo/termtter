@@ -4,6 +4,7 @@ require 'open-uri'
 require 'cgi'
 require 'readline'
 require 'enumerator'
+require 'parsedate'
 
 class Termtter
   
@@ -61,7 +62,8 @@ class Termtter
     ns = {'atom' => 'http://www.w3.org/2005/Atom'}
     doc.xpath('//atom:entry', ns).each do |node|
       status = {}
-      status['created_at'] = node.xpath('atom:published', ns).text
+      published = node.xpath('atom:published', ns).text
+      status['created_at'] = Time.utc(*ParseDate::parsedate(published)).localtime
       status['text'] = CGI.unescapeHTML(node.xpath('atom:content', ns).text.gsub(/<\/?[^>]*>/, ''))
       name = node.xpath('atom:author/atom:name', ns).text
       status['user/screen_name'] = name.scan(/^([^\s]+) /).flatten[0]
@@ -101,6 +103,7 @@ class Termtter
       ).each do |key|
         status[key] = CGI.unescapeHTML(s.xpath(key).text)
       end
+      status['created_at'] = Time.utc(*ParseDate::parsedate(status['created_at'])).localtime
       statuses << status
     end
 

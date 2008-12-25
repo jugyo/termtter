@@ -1,5 +1,3 @@
-require 'parsedate'
-
 def color(str, num)
   "\e[#{num}m#{str}\e[0m"
 end
@@ -19,14 +17,13 @@ Termtter.add_hook do |statuses, event|
           status += " (reply to #{s['in_reply_to_status_id']})"
         end
 
-        time = Time.utc(*ParseDate::parsedate(s['created_at'])).localtime
         case event
         when :update_friends_timeline, :list_friends_timeline
           time_format = '%H:%d:%S'
         else
           time_format = '%m-%d %H:%d'
         end
-        time_str = "(#{time.strftime(time_format)})"
+        time_str = "(#{s['created_at'].strftime(time_format)})"
 
         puts "#{color(time_str, 90)} #{color(status, color_num)}"
       end
@@ -36,9 +33,7 @@ Termtter.add_hook do |statuses, event|
       text = s['text'].gsub("\n", '')
       color_num = colors[s['user/screen_name'].hash % colors.size]
       status = "#{s['user/screen_name']}: #{text}"
-      
-      time = Time.utc(*ParseDate::parsedate(s['created_at'])).localtime
-      time_str = "(#{time.strftime('%m-%d %H:%d')})"
+      time_str = "(#{s['created_at'].strftime('%m-%d %H:%d')})"
 
       puts "#{color(time_str, 90)} #{color(status, color_num)}"
     end

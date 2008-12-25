@@ -22,12 +22,12 @@ class TestTermtter < Test::Unit::TestCase
     assert_equal 'test2', statuses[0]['user/screen_name']
     assert_equal 'Test User 2', statuses[0]['user/name']
     assert_equal 'texttext 2', statuses[0]['text']
-    assert_equal 'Thu Dec 25 13:19:57 +0000 2008', statuses[0]['created_at']
+    assert_equal 'Thu Dec 25 22:19:57 +0900 2008', statuses[0]['created_at'].to_s
     assert_equal '100', statuses[2]['user/id']
     assert_equal 'test0', statuses[2]['user/screen_name']
     assert_equal 'Test User 0', statuses[2]['user/name']
     assert_equal 'texttext 0', statuses[2]['text']
-    assert_equal 'Thu Dec 25 13:10:57 +0000 2008', statuses[2]['created_at']
+    assert_equal 'Thu Dec 25 22:10:57 +0900 2008', statuses[2]['created_at'].to_s
   end
   
   def test_get_timeline_with_update_since_id
@@ -49,10 +49,10 @@ class TestTermtter < Test::Unit::TestCase
     assert_equal 'test2', statuses[0]['user/screen_name']
     assert_equal 'Test User 2', statuses[0]['user/name']
     assert_equal 'texttext 2', statuses[0]['text']
-    assert_equal '2008-12-25T13:52:36Z', statuses[0]['created_at']
+    assert_equal 'Thu Dec 25 22:52:36 +0900 2008', statuses[0]['created_at'].to_s
     assert_equal 'test0', statuses[2]['user/screen_name']
     assert_equal 'Test User 0', statuses[2]['user/name']
     assert_equal 'texttext 0', statuses[2]['text']
-    assert_equal '2008-12-25T13:42:36Z', statuses[2]['created_at']
+    assert_equal 'Thu Dec 25 22:42:36 +0900 2008', statuses[2]['created_at'].to_s
   end
 end
