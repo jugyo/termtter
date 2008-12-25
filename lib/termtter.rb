@@ -136,29 +136,29 @@ class Termtter
           case buf
           when ''
             # do nothing
-          when /^post\s*(.*)/, /^update\s*(.*)/
-            unless $1.empty?
-              update_status($1)
-              puts "=> #{$1}"
+          when /^(post|p)\s+(.*)/, /^(update|u)\s+(.*)/
+            unless $2.empty?
+              update_status($2)
+              puts "=> #{$2}"
             end
-          when 'list'
+          when /^(list|l)\s*/
             list_friends_timeline()
-          when /^list\s+([^\s]+)/
-            get_user_timeline($1)
-          when /^search\s*(.*)/
-            unless $1.empty?
-              search($1)
+          when /^(list|l)\s+([^\s]+)/
+            get_user_timeline($2)
+          when /^(search|s)\s+(.*)/
+            unless $2.empty?
+              search($2)
             end
-          when /^replies\s*$/
+          when /^(replies|r)\s*$/
             replies()
           when /^show\s+([^\s]+)/
             show($1)
-          when 'pause'
+          when /^pause\s*/
             pause = true
-          when 'resume'
+          when /^resume\s*/
             pause = false
             update.run
-          when 'exit'
+          when /^exit\s*/
             update.kill
             input.kill
           when 'help'
