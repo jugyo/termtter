@@ -12,6 +12,8 @@ class Termtter
   def self.add_hook(&hook)
     @@hooks << hook
   end
+  
+  attr_reader :since_id
 
   def initialize(conf)
     @user_name = conf[:user_name]
@@ -63,11 +65,12 @@ class Termtter
       status['text'] = CGI.unescapeHTML(node.xpath('atom:content', ns).text.gsub(/<\/?[^>]*>/, ''))
       name = node.xpath('atom:author/atom:name', ns).text
       status['user/screen_name'] = name.scan(/^([^\s]+) /).flatten[0]
-      status['user/name'] = name.scan(/\(.*\)/).flatten[0]
+      status['user/name'] = name.scan(/\((.*)\)/).flatten[0]
       statuses << status
     end
 
     call_hooks(statuses, :search)
+    return statuses
   end
   
   def show(id)
@@ -89,15 +92,6 @@ class Termtter
   def get_timeline(uri, update_since_id = false)
     doc = Nokogiri::XML(open(uri, :http_basic_authentication => [@user_name, @password]))
 
-    if update_since_id
-      new_since_id = doc.xpath('//status[1]/id').text
-      @since_id = new_since_id if new_since_id && !new_since_id.empty?
-    end
-
-    return parse_timeline_xml(doc)
-  end
-  
-  def parse_timeline_xml(doc)
     statuses = []
     doc.xpath('//status').each do |s|
       status = {}
@@ -109,6 +103,11 @@ class Termtter
       end
       statuses << status
     end
+
+    if update_since_id
+      @since_id = statuses[0]['id']
+    end
+
     return statuses
   end
 
