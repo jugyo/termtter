@@ -25,8 +25,8 @@ module Termtter
     def initialize(conf)
       @user_name = conf[:user_name]
       @password = conf[:password]
-      @update_interval = conf[:update_interval] || 300
-      @debug = conf[:debug] || false
+      @update_interval = conf[:update_interval]
+      @debug = conf[:debug]
     end
 
     def update_status(status)
