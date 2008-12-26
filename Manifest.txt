@@ -1,0 +1,11 @@
+History.txt
+Manifest.txt
+PostInstall.txt
+README.rdoc
+Rakefile
+bin/termtter
+lib/termtter.rb
+lib/termtter/stdout.rb
+lib/termtter/notify-send.rb
+test/test_termtter.rb
+
