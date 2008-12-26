@@ -3,8 +3,8 @@ require File.dirname(__FILE__) + '/../lib/termtter'
 
 class TestTermtter < Test::Unit::TestCase
   def setup
-    @termtter = Termtter.new(:user_name => 'test', :password => 'test', :debug => true)
-    Termtter.add_hook do |statuses, event|
+    @termtter = Termtter::Client.new(:user_name => 'test', :password => 'test', :debug => true)
+    Termtter::Client.add_hook do |statuses, event|
       @statuses = statuses
       @event = event
     end
