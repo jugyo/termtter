@@ -21,6 +21,8 @@ Run:
 
 == INSTALL:
 
+  sudo gem install jugyo-termtter
+
 == LICENSE:
 
 (The MIT License)
