@@ -1,9 +1,14 @@
+require 'rubygems'
+require 'configatron'
 require 'test/unit'
 require File.dirname(__FILE__) + '/../lib/termtter'
 
 class TestTermtter < Test::Unit::TestCase
   def setup
-    @termtter = Termtter::Client.new(:user_name => 'test', :password => 'test', :debug => true)
+    configatron.user_name = 'test'
+    configatron.password = 'test'
+    @termtter = Termtter::Client.new
+    
     Termtter::Client.add_hook do |statuses, event|
       @statuses = statuses
       @event = event

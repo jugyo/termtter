@@ -26,11 +26,13 @@ module Termtter
     
     attr_reader :since_id
 
-    def initialize(conf)
-      @user_name = conf[:user_name]
-      @password = conf[:password]
-      @update_interval = conf[:update_interval]
-      @debug = conf[:debug]
+    def initialize
+      configatron.set_default(:update_interval, 300)
+      configatron.set_default(:debug, false)
+      @user_name = configatron.user_name
+      @password = configatron.password
+      @update_interval = configatron.update_interval
+      @debug = configatron.debug
     end
 
     def update_status(status)
