@@ -6,8 +6,8 @@ require 'yaml'
 require 'lib/termtter'
 
 # Hooks
-require 'lib/stdout'
-#require 'lib/notify-send'
+require 'termtter/stdout'
+#require 'termtter/notify-send'
 
-Termtter.new(YAML.load(open('config.yml'))).run
+Termtter::Client.new(YAML.load(open('config.yml'))).run
 

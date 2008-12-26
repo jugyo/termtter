@@ -6,164 +6,170 @@ require 'readline'
 require 'enumerator'
 require 'parsedate'
 
-class Termtter
+$:.unshift(File.dirname(__FILE__)) unless
+  $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
+
+module Termtter
+  VERSION = '0.0.1'
   
-  @@hooks = []
+  class Client
+    
+    @@hooks = []
 
-  def self.add_hook(&hook)
-    @@hooks << hook
-  end
-  
-  attr_reader :since_id
-
-  def initialize(conf)
-    @user_name = conf[:user_name]
-    @password = conf[:password]
-    @update_interval = conf[:update_interval] || 300
-    @debug = conf[:debug] || false
-  end
-
-  def update_status(status)
-    req = Net::HTTP::Post.new('/statuses/update.xml')
-    req.basic_auth(@user_name, @password)
-    req.add_field("User-Agent", "Termtter http://github.com/jugyo/termtter")
-    req.add_field("X-Twitter-Client", "Termtter")
-    req.add_field("X-Twitter-Client-URL", "http://github.com/jugyo/termtter")
-    req.add_field("X-Twitter-Client-Version", "0.1")
-    Net::HTTP.start("twitter.com", 80) do |http|
-      http.request(req, "status=#{CGI.escape(status)}")
+    def self.add_hook(&hook)
+      @@hooks << hook
     end
-  end
+    
+    attr_reader :since_id
 
-  def list_friends_timeline
-    statuses = get_timeline("http://twitter.com/statuses/friends_timeline.xml")
-    call_hooks(statuses, :list_friends_timeline)
-  end
-  
-  def update_friends_timeline
-    uri = "http://twitter.com/statuses/friends_timeline.xml"
-    if @since_id && !@since_id.empty?
-      uri += "?since_id=#{@since_id}"
+    def initialize(conf)
+      @user_name = conf[:user_name]
+      @password = conf[:password]
+      @update_interval = conf[:update_interval] || 300
+      @debug = conf[:debug] || false
     end
 
-    statuses = get_timeline(uri, true)
-    call_hooks(statuses, :update_friends_timeline)
-  end
-
-  def get_user_timeline(screen_name)
-    statuses = get_timeline("http://twitter.com/statuses/user_timeline/#{screen_name}.xml")
-    call_hooks(statuses, :list_user_timeline)
-  end
-
-  def search(query)
-    doc = Nokogiri::XML(open('http://search.twitter.com/search.atom?q=' + CGI.escape(query)))
-
-    statuses = []
-    ns = {'atom' => 'http://www.w3.org/2005/Atom'}
-    doc.xpath('//atom:entry', ns).each do |node|
-      status = {}
-      published = node.xpath('atom:published', ns).text
-      status['created_at'] = Time.utc(*ParseDate::parsedate(published)).localtime
-      status['text'] = CGI.unescapeHTML(node.xpath('atom:content', ns).text.gsub(/<\/?[^>]*>/, ''))
-      name = node.xpath('atom:author/atom:name', ns).text
-      status['user/screen_name'] = name.scan(/^([^\s]+) /).flatten[0]
-      status['user/name'] = name.scan(/\((.*)\)/).flatten[0]
-      statuses << status
-    end
-
-    call_hooks(statuses, :search)
-    return statuses
-  end
-  
-  def show(id)
-    statuses = get_timeline("http://twitter.com/statuses/show/#{id}.xml")
-    call_hooks(statuses, :show)
-  end
-
-  def replies
-    statuses = get_timeline("http://twitter.com/statuses/replies.xml")
-    call_hooks(statuses, :show)
-  end
-
-  def call_hooks(statuses, event)
-    @@hooks.each do |h|
-      h.call(statuses, event)
-    end
-  end
-
-  def get_timeline(uri, update_since_id = false)
-    doc = Nokogiri::XML(open(uri, :http_basic_authentication => [@user_name, @password]))
-
-    statuses = []
-    doc.xpath('//status').each do |s|
-      status = {}
-      %w(
-        id text created_at truncated in_reply_to_status_id in_reply_to_user_id 
-        user/id user/name user/screen_name
-      ).each do |key|
-        status[key] = CGI.unescapeHTML(s.xpath(key).text)
+    def update_status(status)
+      req = Net::HTTP::Post.new('/statuses/update.xml')
+      req.basic_auth(@user_name, @password)
+      req.add_field("User-Agent", "Termtter http://github.com/jugyo/termtter")
+      req.add_field("X-Twitter-Client", "Termtter")
+      req.add_field("X-Twitter-Client-URL", "http://github.com/jugyo/termtter")
+      req.add_field("X-Twitter-Client-Version", "0.1")
+      Net::HTTP.start("twitter.com", 80) do |http|
+        http.request(req, "status=#{CGI.escape(status)}")
       end
-      status['created_at'] = Time.utc(*ParseDate::parsedate(status['created_at'])).localtime
-      statuses << status
     end
 
-    if update_since_id && !statuses.empty?
-      @since_id = statuses[0]['id']
+    def list_friends_timeline
+      statuses = get_timeline("http://twitter.com/statuses/friends_timeline.xml")
+      call_hooks(statuses, :list_friends_timeline)
+    end
+    
+    def update_friends_timeline
+      uri = "http://twitter.com/statuses/friends_timeline.xml"
+      if @since_id && !@since_id.empty?
+        uri += "?since_id=#{@since_id}"
+      end
+
+      statuses = get_timeline(uri, true)
+      call_hooks(statuses, :update_friends_timeline)
     end
 
-    return statuses
-  end
+    def get_user_timeline(screen_name)
+      statuses = get_timeline("http://twitter.com/statuses/user_timeline/#{screen_name}.xml")
+      call_hooks(statuses, :list_user_timeline)
+    end
 
-  def run
-    pause = false
+    def search(query)
+      doc = Nokogiri::XML(open('http://search.twitter.com/search.atom?q=' + CGI.escape(query)))
 
-    update = Thread.new do
-      while true
-        if pause
-          Thread.stop
+      statuses = []
+      ns = {'atom' => 'http://www.w3.org/2005/Atom'}
+      doc.xpath('//atom:entry', ns).each do |node|
+        status = {}
+        published = node.xpath('atom:published', ns).text
+        status['created_at'] = Time.utc(*ParseDate::parsedate(published)).localtime
+        status['text'] = CGI.unescapeHTML(node.xpath('atom:content', ns).text.gsub(/<\/?[^>]*>/, ''))
+        name = node.xpath('atom:author/atom:name', ns).text
+        status['user/screen_name'] = name.scan(/^([^\s]+) /).flatten[0]
+        status['user/name'] = name.scan(/\((.*)\)/).flatten[0]
+        statuses << status
+      end
+
+      call_hooks(statuses, :search)
+      return statuses
+    end
+    
+    def show(id)
+      statuses = get_timeline("http://twitter.com/statuses/show/#{id}.xml")
+      call_hooks(statuses, :show)
+    end
+
+    def replies
+      statuses = get_timeline("http://twitter.com/statuses/replies.xml")
+      call_hooks(statuses, :show)
+    end
+
+    def call_hooks(statuses, event)
+      @@hooks.each do |h|
+        h.call(statuses, event)
+      end
+    end
+
+    def get_timeline(uri, update_since_id = false)
+      doc = Nokogiri::XML(open(uri, :http_basic_authentication => [@user_name, @password]))
+
+      statuses = []
+      doc.xpath('//status').each do |s|
+        status = {}
+        %w(
+          id text created_at truncated in_reply_to_status_id in_reply_to_user_id 
+          user/id user/name user/screen_name
+        ).each do |key|
+          status[key] = CGI.unescapeHTML(s.xpath(key).text)
         end
-        update_friends_timeline()
-        sleep @update_interval
+        status['created_at'] = Time.utc(*ParseDate::parsedate(status['created_at'])).localtime
+        statuses << status
       end
+
+      if update_since_id && !statuses.empty?
+        @since_id = statuses[0]['id']
+      end
+
+      return statuses
     end
 
-    input = Thread.new do
-      while buf = Readline.readline("", true)
-        begin
-          case buf
-          when ''
-            # do nothing
-          when 'debug'
-            if @debug
-              update_friends_timeline()
-            end
-          when /^(post|p)\s+(.*)/, /^(update|u)\s+(.*)/
-            unless $2.empty?
-              update_status($2)
-              puts "=> #{$2}"
-            end
-          when /^(list|l)\s*$/
-            list_friends_timeline()
-          when /^(list|l)\s+([^\s]+)/
-            get_user_timeline($2)
-          when /^(search|s)\s+(.*)/
-            unless $2.empty?
-              search($2)
-            end
-          when /^(replies|r)\s*$/
-            replies()
-          when /^show\s+([^\s]+)/
-            show($1)
-          when /^pause\s*$/
-            pause = true
-          when /^resume\s*$/
-            pause = false
-            update.run
-          when /^exit\s*$/
-            update.kill
-            input.kill
-          when /^help\s*$/
-            puts <<-EOS
+    def run
+      pause = false
+
+      update = Thread.new do
+        while true
+          if pause
+            Thread.stop
+          end
+          update_friends_timeline()
+          sleep @update_interval
+        end
+      end
+
+      input = Thread.new do
+        while buf = Readline.readline("", true)
+          begin
+            case buf
+            when ''
+              # do nothing
+            when 'debug'
+              if @debug
+                update_friends_timeline()
+              end
+            when /^(post|p)\s+(.*)/, /^(update|u)\s+(.*)/
+              unless $2.empty?
+                update_status($2)
+                puts "=> #{$2}"
+              end
+            when /^(list|l)\s*$/
+              list_friends_timeline()
+            when /^(list|l)\s+([^\s]+)/
+              get_user_timeline($2)
+            when /^(search|s)\s+(.*)/
+              unless $2.empty?
+                search($2)
+              end
+            when /^(replies|r)\s*$/
+              replies()
+            when /^show\s+([^\s]+)/
+              show($1)
+            when /^pause\s*$/
+              pause = true
+            when /^resume\s*$/
+              pause = false
+              update.run
+            when /^exit\s*$/
+              update.kill
+              input.kill
+            when /^help\s*$/
+              puts <<-EOS
 exit              Exit
 help              Print this help message
 list              List the posts in your friends timeline
@@ -175,24 +181,26 @@ replies           List the most recent @replies for the authenticating user
 search TEXT       Search for Twitter
 show ID           Show a single status
 update TEXT       Update friends timeline
-          EOS
-          else
-            puts <<-EOS
+            EOS
+            else
+              puts <<-EOS
 Unknown command "#{buf}"
 Enter "help" for instructions
-          EOS
+            EOS
+            end
+          rescue => e
+            puts "Error: #{e}"
+            puts e.backtrace.join("\n") if @debug
           end
-        rescue => e
-          puts "Error: #{e}"
-          puts e.backtrace.join("\n") if @debug
         end
       end
+
+      stty_save = `stty -g`.chomp
+      trap("INT") { system "stty", stty_save; exit }
+
+      input.join
     end
 
-    stty_save = `stty -g`.chomp
-    trap("INT") { system "stty", stty_save; exit }
-
-    input.join
   end
-
 end
+

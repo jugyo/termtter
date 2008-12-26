@@ -2,7 +2,7 @@ def color(str, num)
   "\e[#{num}m#{str}\e[0m"
 end
 
-Termtter.add_hook do |statuses, event|
+Termtter::Client.add_hook do |statuses, event|
   colors = %w(0 31 32 33 34 35 36 91 92 93 94 95 96)
 
   case event

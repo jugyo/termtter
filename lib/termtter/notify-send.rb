@@ -1,4 +1,4 @@
-Termtter.add_hook do |statuses, event|
+Termtter::Client.add_hook do |statuses, event|
   if !statuses.empty? && event == :update_friends_timeline
     max = 10
     
