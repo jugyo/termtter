@@ -107,7 +107,7 @@ class Termtter
       statuses << status
     end
 
-    if update_since_id
+    if update_since_id && !statuses.empty?
       @since_id = statuses[0]['id']
     end
 
@@ -128,20 +128,21 @@ class Termtter
     end
 
     input = Thread.new do
-      stty_save = `stty -g`.chomp
-      trap("INT") { system "stty", stty_save; exit }
-
       while buf = Readline.readline("", true)
         begin
           case buf
           when ''
             # do nothing
+          when 'debug'
+            if @debug
+              update_friends_timeline()
+            end
           when /^(post|p)\s+(.*)/, /^(update|u)\s+(.*)/
             unless $2.empty?
               update_status($2)
               puts "=> #{$2}"
             end
-          when /^(list|l)\s*/
+          when /^(list|l)\s*$/
             list_friends_timeline()
           when /^(list|l)\s+([^\s]+)/
             get_user_timeline($2)
@@ -153,15 +154,15 @@ class Termtter
             replies()
           when /^show\s+([^\s]+)/
             show($1)
-          when /^pause\s*/
+          when /^pause\s*$/
             pause = true
-          when /^resume\s*/
+          when /^resume\s*$/
             pause = false
             update.run
-          when /^exit\s*/
+          when /^exit\s*$/
             update.kill
             input.kill
-          when 'help'
+          when /^help\s*$/
             puts <<-EOS
 exit              Exit
 help              Print this help message
@@ -187,6 +188,9 @@ Enter "help" for instructions
         end
       end
     end
+
+    stty_save = `stty -g`.chomp
+    trap("INT") { system "stty", stty_save; exit }
 
     input.join
   end
