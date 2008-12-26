@@ -99,7 +99,7 @@ module Termtter
 
     def call_hooks(statuses, event)
       @@hooks.each do |h|
-        h.call(statuses, event)
+        h.call(statuses.dup, event)
       end
     end
 
