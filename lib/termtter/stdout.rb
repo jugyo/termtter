@@ -8,7 +8,7 @@ Termtter::Client.add_hook do |statuses, event|
   case event
   when :update_friends_timeline, :list_friends_timeline, :list_user_timeline, :show
     unless statuses.empty?
-      if event == :update_friends_timeline then statuses.reverse! end
+      if event == :update_friends_timeline then statuses = statuses.reverse end
       statuses.each do |s|
         text = s['text'].gsub("\n", '')
         color_num = colors[s['user/screen_name'].hash % colors.size]
