@@ -10,7 +10,7 @@ $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 module Termtter
-  VERSION = '0.1.1'
+  VERSION = '0.1.2'
   
   class Client
     
