@@ -55,4 +55,24 @@ class TestTermtter < Test::Unit::TestCase
     assert_equal 'texttext 0', statuses[2]['text']
     assert_equal 'Thu Dec 25 22:42:36 +0900 2008', statuses[2]['created_at'].to_s
   end
+  
+  def test_add_hook
+    def @termtter.open(*arg)
+      return File.open(File.dirname(__FILE__) + '/../test/search.atom')
+    end
+    call_hook = false
+    Termtter::Client.add_hook do |statuses, event|
+      call_hook = true
+    end
+    @termtter.search('')
+    
+    assert_equal true, call_hook
+    
+    Termtter::Client.clear_hook()
+    call_hook = false
+    @termtter.search('')
+    
+    assert_equal false, call_hook
+  end
 end
+

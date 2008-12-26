@@ -19,6 +19,10 @@ module Termtter
     def self.add_hook(&hook)
       @@hooks << hook
     end
+
+    def self.clear_hook
+      @@hooks.clear
+    end
     
     attr_reader :since_id
 
