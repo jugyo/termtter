@@ -19,7 +19,7 @@ Termtter::Client.add_hook do |statuses, event|
 
         case event
         when :update_friends_timeline, :list_friends_timeline
-          time_format = '%H:%d:%S'
+          time_format = '%H:%M:%S'
         else
           time_format = '%m-%d %H:%d'
         end
