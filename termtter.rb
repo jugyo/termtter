@@ -11,12 +11,12 @@ require 'configatron'
 configatron.set_default(:update_interval, 300)
 configatron.set_default(:debug, false)
 
-conf_file = File.expand_path('~/.termtte')
+conf_file = File.expand_path('~/.termtter')
 if File.exist? conf_file
   load conf_file
 else
-  puts "The configuration file does not exist."
   puts <<EOS
+The configuration file does not exist.
 Example: 
 # ~/.termtter
 configatron.user_name = USERNAME
@@ -26,10 +26,10 @@ EOS
 end
 
 client = Termtter::Client.new(
-  :user_name => configatron.user_name,
-  :password => configatron.password,
-  :update_interval => configatron.update_interval,
-  :debug => configatron.debug
+  :user_name        => configatron.user_name,
+  :password         => configatron.password,
+  :update_interval  => configatron.update_interval,
+  :debug            => configatron.debug
 )
 client.run
 
