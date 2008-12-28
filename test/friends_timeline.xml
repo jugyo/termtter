@@ -14,7 +14,7 @@
     <id>102</id>
     <name>Test User 2</name>
     <screen_name>test2</screen_name>
-    <location><location/>
+    <location></location>
     <description>Test Test 2</description>
     <profile_image_url></profile_image_url>
     <url></url>
@@ -36,7 +36,7 @@
     <id>101</id>
     <name>Test User 1</name>
     <screen_name>test1</screen_name>
-    <location><location/>
+    <location></location>
     <description>Test Test 1</description>
     <profile_image_url></profile_image_url>
     <url></url>
@@ -58,7 +58,7 @@
     <id>100</id>
     <name>Test User 0</name>
     <screen_name>test0</screen_name>
-    <location><location/>
+    <location></location>
     <description>Test Test 0</description>
     <profile_image_url></profile_image_url>
     <url></url>
