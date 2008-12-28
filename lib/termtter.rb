@@ -183,13 +183,13 @@ module Termtter
               puts <<-EOS
 exit              Exit
 help              Print this help message
-list              List the posts in your friends timeline
+list,l            List the posts in your friends timeline
 list USERNAME     List the posts in the the given user's timeline
 pause             Pause updating
-post TEXT         Post a new message
+update,u TEXT     Post a new message
 resume            Resume updating
-replies           List the most recent @replies for the authenticating user
-search TEXT       Search for Twitter
+replies,r         List the most recent @replies for the authenticating user
+search,s TEXT     Search for Twitter
 show ID           Show a single status
 update TEXT       Update friends timeline
             EOS
