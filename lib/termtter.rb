@@ -73,13 +73,13 @@ module Termtter
       statuses = []
       ns = {'atom' => 'http://www.w3.org/2005/Atom'}
       doc.xpath('//atom:entry', ns).each do |node|
-        status = {}
+        status = Status.new
         published = node.xpath('atom:published', ns).text
-        status['created_at'] = Time.utc(*ParseDate::parsedate(published)).localtime
-        status['text'] = CGI.unescapeHTML(node.xpath('atom:content', ns).text.gsub(/<\/?[^>]*>/, ''))
+        status.created_at = Time.utc(*ParseDate::parsedate(published)).localtime
+        status.text = CGI.unescapeHTML(node.xpath('atom:content', ns).text.gsub(/<\/?[^>]*>/, ''))
         name = node.xpath('atom:author/atom:name', ns).text
-        status['user/screen_name'] = name.scan(/^([^\s]+) /).flatten[0]
-        status['user/name'] = name.scan(/\((.*)\)/).flatten[0]
+        status.user_screen_name = name.scan(/^([^\s]+) /).flatten[0]
+        status.user_name = name.scan(/\((.*)\)/).flatten[0]
         statuses << status
       end
 
@@ -112,20 +112,21 @@ module Termtter
       doc = Nokogiri::XML(open(uri, :http_basic_authentication => [@user_name, @password]))
 
       statuses = []
-      doc.xpath('//status').each do |s|
-        status = {}
+      doc.xpath('//status').each do |node|
+        status = Status.new
         %w(
           id text created_at truncated in_reply_to_status_id in_reply_to_user_id 
           user/id user/name user/screen_name
         ).each do |key|
-          status[key] = CGI.unescapeHTML(s.xpath(key).text)
+          method = "#{key.gsub('/', '_')}=".to_sym
+          status.send(method, node.xpath(key).text)
         end
-        status['created_at'] = Time.utc(*ParseDate::parsedate(status['created_at'])).localtime
+        status.created_at = Time.utc(*ParseDate::parsedate(status.created_at)).localtime
         statuses << status
       end
 
       if update_since_id && !statuses.empty?
-        @since_id = statuses[0]['id']
+        @since_id = statuses[0].id
       end
 
       return statuses
@@ -213,5 +214,14 @@ Enter "help" for instructions
     end
 
   end
-end
+  
+  class Status
+    %w(
+      id text created_at truncated in_reply_to_status_id in_reply_to_user_id 
+      user_id user_name user_screen_name
+    ).each do |attr|
+      attr_accessor attr.to_sym
+    end
+  end
 
+end

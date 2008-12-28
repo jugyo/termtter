@@ -23,16 +23,16 @@ class TestTermtter < Test::Unit::TestCase
     statuses = @termtter.get_timeline('')
 
     assert_equal 3, statuses.size
-    assert_equal '102', statuses[0]['user/id']
-    assert_equal 'test2', statuses[0]['user/screen_name']
-    assert_equal 'Test User 2', statuses[0]['user/name']
-    assert_equal 'texttext 2', statuses[0]['text']
-    assert_equal 'Thu Dec 25 22:19:57 +0900 2008', statuses[0]['created_at'].to_s
-    assert_equal '100', statuses[2]['user/id']
-    assert_equal 'test0', statuses[2]['user/screen_name']
-    assert_equal 'Test User 0', statuses[2]['user/name']
-    assert_equal 'texttext 0', statuses[2]['text']
-    assert_equal 'Thu Dec 25 22:10:57 +0900 2008', statuses[2]['created_at'].to_s
+    assert_equal '102', statuses[0].user_id
+    assert_equal 'test2', statuses[0].user_screen_name
+    assert_equal 'Test User 2', statuses[0].user_name
+    assert_equal 'texttext 2', statuses[0].text
+    assert_equal 'Thu Dec 25 22:19:57 +0900 2008', statuses[0].created_at.to_s
+    assert_equal '100', statuses[2].user_id
+    assert_equal 'test0', statuses[2].user_screen_name
+    assert_equal 'Test User 0', statuses[2].user_name
+    assert_equal 'texttext 0', statuses[2].text
+    assert_equal 'Thu Dec 25 22:10:57 +0900 2008', statuses[2].created_at.to_s
   end
   
   def test_get_timeline_with_update_since_id
@@ -51,14 +51,14 @@ class TestTermtter < Test::Unit::TestCase
 
     statuses = @termtter.search('')
     assert_equal 3, statuses.size
-    assert_equal 'test2', statuses[0]['user/screen_name']
-    assert_equal 'Test User 2', statuses[0]['user/name']
-    assert_equal 'texttext 2', statuses[0]['text']
-    assert_equal 'Thu Dec 25 22:52:36 +0900 2008', statuses[0]['created_at'].to_s
-    assert_equal 'test0', statuses[2]['user/screen_name']
-    assert_equal 'Test User 0', statuses[2]['user/name']
-    assert_equal 'texttext 0', statuses[2]['text']
-    assert_equal 'Thu Dec 25 22:42:36 +0900 2008', statuses[2]['created_at'].to_s
+    assert_equal 'test2', statuses[0].user_screen_name
+    assert_equal 'Test User 2', statuses[0].user_name
+    assert_equal 'texttext 2', statuses[0].text
+    assert_equal 'Thu Dec 25 22:52:36 +0900 2008', statuses[0].created_at.to_s
+    assert_equal 'test0', statuses[2].user_screen_name
+    assert_equal 'Test User 0', statuses[2].user_name
+    assert_equal 'texttext 0', statuses[2].text
+    assert_equal 'Thu Dec 25 22:42:36 +0900 2008', statuses[2].created_at.to_s
   end
   
   def test_add_hook
@@ -80,4 +80,3 @@ class TestTermtter < Test::Unit::TestCase
     assert_equal false, call_hook
   end
 end
-
