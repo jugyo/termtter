@@ -99,7 +99,12 @@ module Termtter
 
     def call_hooks(statuses, event)
       @@hooks.each do |h|
-        h.call(statuses.dup, event)
+        begin
+          h.call(statuses.dup, event)
+        rescue => e
+          puts "Error: #{e}"
+          puts e.backtrace.join("\n")
+        end
       end
     end
 
@@ -196,7 +201,7 @@ Enter "help" for instructions
             end
           rescue => e
             puts "Error: #{e}"
-            puts e.backtrace.join("\n") if @debug
+            puts e.backtrace.join("\n")
           end
         end
       end
