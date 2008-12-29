@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'configatron'
 require 'test/unit'
+require 'kagemusha'
 require File.dirname(__FILE__) + '/../lib/termtter'
 
 class TestTermtter < Test::Unit::TestCase
@@ -16,11 +17,7 @@ class TestTermtter < Test::Unit::TestCase
   end
 
   def test_get_timeline
-    def @termtter.open(*arg)
-      return File.open(File.dirname(__FILE__) + '/../test/friends_timeline.xml')
-    end
-
-    statuses = @termtter.get_timeline('')
+    statuses = swap_open('friends_timeline.xml') { @termtter.get_timeline('') }
 
     assert_equal 3, statuses.size
     assert_equal '102', statuses[0].user_id
@@ -36,20 +33,12 @@ class TestTermtter < Test::Unit::TestCase
   end
   
   def test_get_timeline_with_update_since_id
-    def @termtter.open(*arg)
-      return File.open(File.dirname(__FILE__) + '/../test/friends_timeline.xml')
-    end
-
-    statuses = @termtter.get_timeline('', true)
+    statuses = swap_open('friends_timeline.xml') { @termtter.get_timeline('', true) }
     assert_equal '10002', @termtter.since_id
   end
   
   def test_search
-    def @termtter.open(*arg)
-      return File.open(File.dirname(__FILE__) + '/../test/search.atom')
-    end
-
-    statuses = @termtter.search('')
+    statuses = swap_open('search.atom') { @termtter.search('') }
     assert_equal 3, statuses.size
     assert_equal 'test2', statuses[0].user_screen_name
     assert_equal 'Test User 2', statuses[0].user_name
@@ -62,14 +51,11 @@ class TestTermtter < Test::Unit::TestCase
   end
   
   def test_add_hook
-    def @termtter.open(*arg)
-      return File.open(File.dirname(__FILE__) + '/../test/search.atom')
-    end
     call_hook = false
     Termtter::Client.add_hook do |statuses, event|
       call_hook = true
     end
-    @termtter.search('')
+    swap_open('search.atom'){ @termtter.search('') }
     
     assert_equal true, call_hook
     
@@ -79,4 +65,13 @@ class TestTermtter < Test::Unit::TestCase
     
     assert_equal false, call_hook
   end
+
+  def swap_open(name)
+    Kagemusha.new(Termtter::Client).def(:open) {
+      File.open(File.dirname(__FILE__) + "/../test/#{name}")
+    }.swap do
+      yield
+    end
+  end
+  private :swap_open
 end
