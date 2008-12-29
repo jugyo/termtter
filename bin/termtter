@@ -2,7 +2,13 @@
 
 $KCODE = 'u'
 
-$:.unshift(File.dirname(__FILE__) + "/../lib")
+self_file =
+  if File.ftype(__FILE__) == 'link'
+    File.readlink(__FILE__)
+  else
+    __FILE__
+  end
+$:.unshift(File.dirname(self_file) + "/../lib")
 
 require 'termtter'
 require 'termtter/stdout'
