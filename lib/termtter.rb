@@ -136,7 +136,7 @@ module Termtter
       pause = false
 
       update = Thread.new do
-        while true
+        loop do
           if pause
             Thread.stop
           end
@@ -192,7 +192,6 @@ resume            Resume updating
 replies,r         List the most recent @replies for the authenticating user
 search,s TEXT     Search for Twitter
 show ID           Show a single status
-update TEXT       Update friends timeline
             EOS
             else
               puts <<-EOS
