@@ -11,9 +11,9 @@ $:.unshift(File.dirname(__FILE__)) unless
 
 module Termtter
   VERSION = '0.2.3'
-  
+
   class Client
-    
+
     @@hooks = []
 
     def self.add_hook(&hook)
@@ -23,7 +23,7 @@ module Termtter
     def self.clear_hook
       @@hooks.clear
     end
-    
+
     attr_reader :since_id
 
     def initialize
@@ -51,7 +51,7 @@ module Termtter
       statuses = get_timeline("http://twitter.com/statuses/friends_timeline.xml")
       call_hooks(statuses, :list_friends_timeline)
     end
-    
+
     def update_friends_timeline
       uri = "http://twitter.com/statuses/friends_timeline.xml"
       if @since_id && !@since_id.empty?
@@ -86,7 +86,7 @@ module Termtter
       call_hooks(statuses, :search)
       return statuses
     end
-    
+
     def show(id)
       statuses = get_timeline("http://twitter.com/statuses/show/#{id}.xml")
       call_hooks(statuses, :show)
@@ -213,7 +213,7 @@ Enter "help" for instructions
     end
 
   end
-  
+
   class Status
     %w(
       id text created_at truncated in_reply_to_status_id in_reply_to_user_id 

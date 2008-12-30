@@ -9,7 +9,7 @@ class TestTermtter < Test::Unit::TestCase
     configatron.user_name = 'test'
     configatron.password = 'test'
     @termtter = Termtter::Client.new
-    
+
     Termtter::Client.add_hook do |statuses, event|
       @statuses = statuses
       @event = event
@@ -31,12 +31,12 @@ class TestTermtter < Test::Unit::TestCase
     assert_equal 'texttext 0', statuses[2].text
     assert_equal 'Thu Dec 25 22:10:57 +0900 2008', statuses[2].created_at.to_s
   end
-  
+
   def test_get_timeline_with_update_since_id
     statuses = swap_open('friends_timeline.xml') { @termtter.get_timeline('', true) }
     assert_equal '10002', @termtter.since_id
   end
-  
+
   def test_search
     statuses = swap_open('search.atom') { @termtter.search('') }
     assert_equal 3, statuses.size
@@ -49,20 +49,20 @@ class TestTermtter < Test::Unit::TestCase
     assert_equal 'texttext 0', statuses[2].text
     assert_equal 'Thu Dec 25 22:42:36 +0900 2008', statuses[2].created_at.to_s
   end
-  
+
   def test_add_hook
     call_hook = false
     Termtter::Client.add_hook do |statuses, event|
       call_hook = true
     end
     swap_open('search.atom'){ @termtter.search('') }
-    
+
     assert_equal true, call_hook
-    
+
     Termtter::Client.clear_hook()
     call_hook = false
     @termtter.search('')
-    
+
     assert_equal false, call_hook
   end
 
