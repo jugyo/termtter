@@ -21,7 +21,7 @@ Run:
 
 == INSTALL:
 
-  sudo gem install jugyo-termtter
+  sudo gem install jugyo-termtter -s http://gems.github.com
 
 == LICENSE:
 
