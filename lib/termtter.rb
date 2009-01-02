@@ -177,6 +177,12 @@ module Termtter
             when /^resume\s*$/
               pause = false
               update.run
+            when /^uri-open\s*$/
+              $uris.each do |uri|
+                # FIXME: works only in OSX
+                system 'open', uri
+              end
+              $uris.clear
             when /^exit\s*$/
               update.kill
               input.kill
