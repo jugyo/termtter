@@ -182,7 +182,7 @@ module Termtter
               if @debug
                 update_friends_timeline()
               end
-            when /^(post|p)\s+(.*)/, /^(update|u)\s+(.*)/
+            when /^(update|u)\s+(.*)/
               unless $2.empty?
                 update_status($2)
                 puts "=> #{$2}"
