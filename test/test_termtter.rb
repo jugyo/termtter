@@ -20,15 +20,21 @@ class TestTermtter < Test::Unit::TestCase
     statuses = swap_open('friends_timeline.xml') { @termtter.get_timeline('') }
 
     assert_equal 3, statuses.size
+
     assert_equal '102', statuses[0].user_id
     assert_equal 'test2', statuses[0].user_screen_name
     assert_equal 'Test User 2', statuses[0].user_name
     assert_equal 'texttext 2', statuses[0].text
+    assert_equal 'http://twitter.com/test2', statuses[0].user_url
+    assert_equal 'http://xxx2', statuses[0].user_profile_image_url
     assert_equal 'Thu Dec 25 22:19:57 +0900 2008', statuses[0].created_at.to_s
+
     assert_equal '100', statuses[2].user_id
     assert_equal 'test0', statuses[2].user_screen_name
     assert_equal 'Test User 0', statuses[2].user_name
     assert_equal 'texttext 0', statuses[2].text
+    assert_equal 'http://twitter.com/test0', statuses[2].user_url
+    assert_equal 'http://xxx0', statuses[2].user_profile_image_url
     assert_equal 'Thu Dec 25 22:10:57 +0900 2008', statuses[2].created_at.to_s
   end
 

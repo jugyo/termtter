@@ -16,8 +16,8 @@
     <screen_name>test2</screen_name>
     <location></location>
     <description>Test Test 2</description>
-    <profile_image_url></profile_image_url>
-    <url></url>
+    <profile_image_url>http://xxx2</profile_image_url>
+    <url>http://twitter.com/test2</url>
     <protected>false</protected>
     <followers_count>200</followers_count>
   </user>
@@ -38,8 +38,8 @@
     <screen_name>test1</screen_name>
     <location></location>
     <description>Test Test 1</description>
-    <profile_image_url></profile_image_url>
-    <url></url>
+    <profile_image_url>http://xxx1</profile_image_url>
+    <url>http://twitter.com/test1</url>
     <protected>false</protected>
     <followers_count>200</followers_count>
   </user>
@@ -60,8 +60,8 @@
     <screen_name>test0</screen_name>
     <location></location>
     <description>Test Test 0</description>
-    <profile_image_url></profile_image_url>
-    <url></url>
+    <profile_image_url>http://xxx0</profile_image_url>
+    <url>http://twitter.com/test0</url>
     <protected>false</protected>
     <followers_count>200</followers_count>
   </user>
