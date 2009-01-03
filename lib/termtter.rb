@@ -10,7 +10,7 @@ $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 module Termtter
-  VERSION = '0.3.3'
+  VERSION = '0.3.4'
 
   class CommandNotFound < StandardError; end
 
