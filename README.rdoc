@@ -16,7 +16,7 @@ Run:
 
 == REQUIREMENTS:
 
-* nokogiri
+* json
 * configatron
 
 == INSTALL:
