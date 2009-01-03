@@ -2,17 +2,17 @@
 
 Gem::Specification.new do |s|
   s.name = %q{termtter}
-  s.version = "0.3.7"
+  s.version = "0.3.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jugyo"]
-  s.date = %q{2009-01-03}
+  s.date = %q{2009-01-04}
   s.default_executable = %q{termtter}
   s.description = %q{Termtter is a terminal based Twitter client}
   s.email = ["jugyo.org@gmail.com"]
   s.executables = ["termtter"]
   s.extra_rdoc_files = ["History.txt", "Manifest.txt", "PostInstall.txt", "README.rdoc"]
-  s.files = ["History.txt", "Manifest.txt", "PostInstall.txt", "README.rdoc", "Rakefile", "bin/termtter", "lib/termtter.rb", "lib/termtter/stdout.rb", "lib/termtter/notify-send.rb", "lib/termtter/standard_commands.rb", "lib/termtter/uri-open.rb", "test/test_termtter.rb"]
+  s.files = ["History.txt", "Manifest.txt", "PostInstall.txt", "README.rdoc", "Rakefile", "bin/termtter", "lib/termtter.rb", "lib/termtter/stdout.rb", "lib/termtter/notify-send.rb", "lib/termtter/standard_commands.rb", "lib/termtter/uri-open.rb", "test/test_termtter.rb", "test/friends_timeline.json", "test/search.json"]
   s.has_rdoc = true
   s.homepage = %q{http://github.com/jugyo/termtter}
   s.post_install_message = %q{PostInstall.txt}
