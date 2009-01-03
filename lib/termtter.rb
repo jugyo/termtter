@@ -119,7 +119,10 @@ module Termtter
     def get_timeline(uri, update_since_id = false)
       statuses = []
 
-      JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password]).read).each do |s|
+      data = JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password]).read)
+      data =  if data.instance_of? Array then data else [data] end
+
+      data.each do |s|
         u = s["user"]
         status = Status.new
         status.created_at = Time.utc(*ParseDate::parsedate(s["created_at"])).localtime

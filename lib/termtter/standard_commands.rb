@@ -27,7 +27,7 @@ class Termtter::Client
   end
 
   add_command /^show\s+([^\s]+)/ do |m, t|
-    t.show($1)
+    t.show(m[1])
   end
 
   add_command /^pause\s*$/ do |m, t|
