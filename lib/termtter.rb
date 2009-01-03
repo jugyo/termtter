@@ -66,7 +66,7 @@ module Termtter
 
     def update_friends_timeline
       uri = "http://twitter.com/statuses/friends_timeline.json"
-      if @since_id && !@since_id.empty?
+      if @since_id
         uri += "?since_id=#{@since_id}"
       end
 
