@@ -10,18 +10,29 @@ $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 module Termtter
-  VERSION = '0.2.3'
+  VERSION = '0.3.0'
+
+  class CommandNotFound < StandardError; end
 
   class Client
 
     @@hooks = []
+    @@commands = {}
 
     def self.add_hook(&hook)
       @@hooks << hook
     end
 
-    def self.clear_hook
+    def self.clear_hooks
       @@hooks.clear
+    end
+
+    def self.add_command(regex, &block)
+      @@commands[regex] = block
+    end
+
+    def self.clear_commands
+      @@commands.clear
     end
 
     attr_reader :since_id
@@ -132,12 +143,45 @@ module Termtter
       return statuses
     end
 
-    def run
-      pause = false
+    def call_commands(text)
+      return if text.empty?
+      
+      command_found = false
+      @@commands.each do |key, command|
+        if key =~ text
+          command_found = true
+          begin
+            command.call(self, $~)
+          rescue => e
+            puts "Error: #{e}"
+            puts e.backtrace.join("\n")
+          end
+        end
+      end
 
-      update = Thread.new do
+      raise CommandNotFound unless command_found
+    end
+
+    def pause
+      @pause = true
+    end
+
+    def resume
+      @pause = false
+      @update.run
+    end
+
+    def exit
+      @update.kill
+      @input.kill
+    end
+
+    def run
+      @pause = false
+
+      @update = Thread.new do
         loop do
-          if pause
+          if @pause
             Thread.stop
           end
           update_friends_timeline()
@@ -145,60 +189,13 @@ module Termtter
         end
       end
 
-      input = Thread.new do
+      @input = Thread.new do
         while buf = Readline.readline("", true)
           begin
-            case buf
-            when ''
-              # do nothing
-            when 'debug'
-              if @debug
-                update_friends_timeline()
-              end
-            when /^(post|p)\s+(.*)/, /^(update|u)\s+(.*)/
-              unless $2.empty?
-                update_status($2)
-                puts "=> #{$2}"
-              end
-            when /^(list|l)\s*$/
-              list_friends_timeline()
-            when /^(list|l)\s+([^\s]+)/
-              get_user_timeline($2)
-            when /^(search|s)\s+(.*)/
-              unless $2.empty?
-                search($2)
-              end
-            when /^(replies|r)\s*$/
-              replies()
-            when /^show\s+([^\s]+)/
-              show($1)
-            when /^pause\s*$/
-              pause = true
-            when /^resume\s*$/
-              pause = false
-              update.run
-            when /^exit\s*$/
-              update.kill
-              input.kill
-            when /^help\s*$/
-              puts <<-EOS
-exit              Exit
-help              Print this help message
-list,l            List the posts in your friends timeline
-list USERNAME     List the posts in the the given user's timeline
-pause             Pause updating
-update,u TEXT     Post a new message
-resume            Resume updating
-replies,r         List the most recent @replies for the authenticating user
-search,s TEXT     Search for Twitter
-show ID           Show a single status
-            EOS
-            else
-              puts <<-EOS
-Unknown command "#{buf}"
-Enter "help" for instructions
-            EOS
-            end
+            call_commands(buf)
+          rescue CommandNotFound => e
+            puts "Unknown command \"#{buf}\""
+            puts 'Enter "help" for instructions'
           rescue => e
             puts "Error: #{e}"
             puts e.backtrace.join("\n")
@@ -207,9 +204,9 @@ Enter "help" for instructions
       end
 
       stty_save = `stty -g`.chomp
-      trap("INT") { system "stty", stty_save; exit }
+      trap("INT") { system "stty", stty_save; self.exit }
 
-      input.join
+      @input.join
     end
 
   end
