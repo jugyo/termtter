@@ -1,9 +1,24 @@
-$uris = []
-Termtter::Client.add_hook do |statuses, event|
+Termtter::Client.add_hook do |statuses, event, t|
+  t.public_storage[:uris] ||= []
   if !statuses.empty? && event == :update_friends_timeline
     statuses.each do |s|
-      $uris += s.text.scan(%r|https?://[^\s]+|)
+      t.public_storage[:uris] += s.text.scan(%r|https?://[^\s]+|)
     end
+  end
+end
+
+class Termtter::Client
+  add_command /^uri-open\s*$/ do |t, m|
+    t.public_storage[:uris] ||= [] # It's not DRY
+    t.public_storage[:uris].each do |uri|
+      # FIXME: works only in OSX and other *NIXs
+      if /linux/ =~ RUBY_PLATFORM
+        system 'firefox', uri
+      else
+        system 'open', uri
+      end
+    end
+    t.public_storage[:uris].clear
   end
 end
 # ~/.termtter
