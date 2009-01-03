@@ -59,11 +59,29 @@ class TestTermtter < Test::Unit::TestCase
 
     assert_equal true, call_hook
 
-    Termtter::Client.clear_hook()
+    Termtter::Client.clear_hooks()
     call_hook = false
     @termtter.search('')
 
     assert_equal false, call_hook
+  end
+  
+  def test_add_command
+    call_command = false
+    command_text = nil
+    Termtter::Client.add_command /foo/ do |text|
+      call_command = true
+      command_text = text
+    end
+    
+    @termtter.call_commands('foo xxxxxxxxxxxxxx')
+    assert_equal true, call_command
+    assert_equal 'foo xxxxxxxxxxxxxx', command_text
+    
+    Termtter::Client.clear_commands()
+    assert_raise Termtter::CommandNotFound do
+      @termtter.call_commands('foo xxxxxxxxxxxxxx')
+    end
   end
 
   def swap_open(name)

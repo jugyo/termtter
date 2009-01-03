@@ -12,16 +12,27 @@ $:.unshift(File.dirname(__FILE__)) unless
 module Termtter
   VERSION = '0.2.3'
 
+  class CommandNotFound < StandardError; end
+
   class Client
 
     @@hooks = []
+    @@commands = {}
 
     def self.add_hook(&hook)
       @@hooks << hook
     end
 
-    def self.clear_hook
+    def self.clear_hooks
       @@hooks.clear
+    end
+
+    def self.add_command(regex, &block)
+      @@commands[regex] = block
+    end
+
+    def self.clear_commands
+      @@commands.clear
     end
 
     attr_reader :since_id
@@ -132,6 +143,22 @@ module Termtter
       return statuses
     end
 
+    def call_commands(text)
+      command_found = false
+      @@commands.each do |key, command|
+        if key =~ text
+          command_found = true
+          begin
+            command.call(text)
+          rescue => e
+            puts "Error: #{e}"
+            puts e.backtrace.join("\n")
+          end
+        end
+      end
+      raise CommandNotFound unless command_found
+    end
+
     def run
       pause = false
 
@@ -194,10 +221,14 @@ search,s TEXT     Search for Twitter
 show ID           Show a single status
             EOS
             else
-              puts <<-EOS
+              begin
+                call_commands(buf)
+              rescue CommandNotFound => e
+                puts <<-EOS
 Unknown command "#{buf}"
 Enter "help" for instructions
-            EOS
+                EOS
+              end
             end
           rescue => e
             puts "Error: #{e}"
