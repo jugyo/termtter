@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{termtter}
-  s.version = "0.3.5"
+  s.version = "0.3.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jugyo"]
@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.email = ["jugyo.org@gmail.com"]
   s.executables = ["termtter"]
   s.extra_rdoc_files = ["History.txt", "Manifest.txt", "PostInstall.txt", "README.rdoc"]
-  s.files = ["History.txt", "Manifest.txt", "PostInstall.txt", "README.rdoc", "Rakefile", "bin/termtter", "lib/termtter.rb", "lib/termtter/stdout.rb", "lib/termtter/notify-send.rb", "lib/termtter/standard_commands.rb", "test/test_termtter.rb"]
+  s.files = ["History.txt", "Manifest.txt", "PostInstall.txt", "README.rdoc", "Rakefile", "bin/termtter", "lib/termtter.rb", "lib/termtter/stdout.rb", "lib/termtter/notify-send.rb", "lib/termtter/standard_commands.rb", "lib/termtter/uri-open.rb", "test/test_termtter.rb"]
   s.has_rdoc = true
   s.homepage = %q{http://github.com/jugyo/termtter}
   s.post_install_message = %q{PostInstall.txt}
