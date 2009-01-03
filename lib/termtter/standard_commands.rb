@@ -56,4 +56,10 @@ search,s TEXT   Search for Twitter
 show ID         Show a single status
 EOS
   end
+
+  add_command /^eval\s+(.*)$/ do |t, m|
+    result = t.instance_eval m[1] unless m[1].empty?
+    puts "=> #{result.inspect}"
+  end
+
 end
