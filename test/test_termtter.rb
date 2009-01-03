@@ -44,16 +44,14 @@ class TestTermtter < Test::Unit::TestCase
   end
 
   def test_search
-    statuses = swap_open('search.atom') { @termtter.search('') }
+    statuses = swap_open('search.json') { @termtter.search('') }
     assert_equal 3, statuses.size
     assert_equal 'test2', statuses[0].user_screen_name
-    assert_equal 'Test User 2', statuses[0].user_name
     assert_equal 'texttext 2', statuses[0].text
-    assert_equal 'Thu Dec 25 22:52:36 +0900 2008', statuses[0].created_at.to_s
+    assert_equal 'Sat Jan 03 21:49:09 +0900 2009', statuses[0].created_at.to_s
     assert_equal 'test0', statuses[2].user_screen_name
-    assert_equal 'Test User 0', statuses[2].user_name
     assert_equal 'texttext 0', statuses[2].text
-    assert_equal 'Thu Dec 25 22:42:36 +0900 2008', statuses[2].created_at.to_s
+    assert_equal 'Sat Jan 03 21:49:09 +0900 2009', statuses[2].created_at.to_s
   end
 
   def test_add_hook
@@ -61,7 +59,7 @@ class TestTermtter < Test::Unit::TestCase
     Termtter::Client.add_hook do |statuses, event|
       call_hook = true
     end
-    swap_open('search.atom'){ @termtter.search('') }
+    swap_open('search.json'){ @termtter.search('') }
 
     assert_equal true, call_hook
 
@@ -71,7 +69,7 @@ class TestTermtter < Test::Unit::TestCase
 
     assert_equal false, call_hook
   end
-  
+
   def test_add_command
     command_text = nil
     matche_text = nil

@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'json'
-require 'nokogiri'
 require 'open-uri'
 require 'cgi'
 require 'readline'
@@ -80,18 +79,14 @@ module Termtter
     end
 
     def search(query)
-      doc = Nokogiri::XML(open('http://search.twitter.com/search.atom?q=' + CGI.escape(query)))
-
       statuses = []
-      ns = {'atom' => 'http://www.w3.org/2005/Atom'}
-      doc.xpath('//atom:entry', ns).each do |node|
+
+      results = JSON.parse(open('http://search.twitter.com/search.json?q=' + CGI.escape(query)).read)['results']
+      results.each do |s|
         status = Status.new
-        published = node.xpath('atom:published', ns).text
-        status.created_at = Time.utc(*ParseDate::parsedate(published)).localtime
-        status.text = CGI.unescapeHTML(node.xpath('atom:content', ns).text.gsub(/<\/?[^>]*>/, ''))
-        name = node.xpath('atom:author/atom:name', ns).text
-        status.user_screen_name = name.scan(/^([^\s]+) /).flatten[0]
-        status.user_name = name.scan(/\((.*)\)/).flatten[0]
+        status.text = s['text']
+        status.created_at = Time.utc(*ParseDate::parsedate(s["created_at"])).localtime
+        status.user_screen_name = s['from_user']
         statuses << status
       end
 
@@ -145,7 +140,7 @@ module Termtter
 
     def call_commands(text)
       return if text.empty?
-      
+
       command_found = false
       @@commands.each do |key, command|
         if key =~ text
