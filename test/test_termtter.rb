@@ -67,16 +67,16 @@ class TestTermtter < Test::Unit::TestCase
   end
   
   def test_add_command
-    call_command = false
     command_text = nil
-    Termtter::Client.add_command /foo/ do |text|
-      call_command = true
-      command_text = text
+    matche_text = nil
+    Termtter::Client.add_command /foo\s+(.*)/ do |matche|
+      command_text = matche[0]
+      matche_text = matche[1]
     end
     
     @termtter.call_commands('foo xxxxxxxxxxxxxx')
-    assert_equal true, call_command
     assert_equal 'foo xxxxxxxxxxxxxx', command_text
+    assert_equal 'xxxxxxxxxxxxxx', matche_text
     
     Termtter::Client.clear_commands()
     assert_raise Termtter::CommandNotFound do
