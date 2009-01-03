@@ -25,3 +25,6 @@ end
 # require 'termtter/uri-open'
 #
 # see also: http://ujihisa.nowa.jp/entry/c3dd00c4e0
+#
+# KNOWN BUG
+# * In Debian, exit or C-c in the termtter kills your firefox.
