@@ -13,7 +13,7 @@ Termtter::Client.add_hook do |statuses, event|
         text = s.text.gsub("\n", '')
         color_num = colors[s.user_screen_name.hash % colors.size]
         status = "#{s.user_screen_name}: #{text}"
-        unless s.in_reply_to_status_id && s.in_reply_to_status_id.nil?
+        unless s.in_reply_to_status_id.nil?
           status += " (reply to #{s.in_reply_to_status_id})"
         end
 
