@@ -35,7 +35,7 @@ module Termtter
       @@commands.clear
     end
 
-    attr_reader :since_id
+    attr_reader :since_id, :public_storage
 
     def initialize
       configatron.set_default(:update_interval, 300)
@@ -44,6 +44,7 @@ module Termtter
       @password = configatron.password
       @update_interval = configatron.update_interval
       @debug = configatron.debug
+      @public_storage = {}
     end
 
     def update_status(status)
@@ -111,7 +112,7 @@ module Termtter
     def call_hooks(statuses, event)
       @@hooks.each do |h|
         begin
-          h.call(statuses.dup, event)
+          h.call(statuses.dup, event, self)
         rescue => e
           puts "Error: #{e}"
           puts e.backtrace.join("\n")
