@@ -8,7 +8,7 @@ Termtter::Client.add_hook do |statuses, event, t|
 end
 
 class Termtter::Client
-  add_command /^uri-open\s*$/ do |t, m|
+  add_command /^uri-open\s*$/ do |m, t|
     t.public_storage[:uris] ||= [] # It's not DRY
     t.public_storage[:uris].each do |uri|
       # FIXME: works only in OSX and other *NIXs

@@ -147,7 +147,7 @@ module Termtter
         if key =~ text
           command_found = true
           begin
-            command.call(self, $~)
+            command.call($~, self)
           rescue => e
             puts "Error: #{e}"
             puts e.backtrace.join("\n")

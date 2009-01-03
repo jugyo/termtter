@@ -73,7 +73,7 @@ class TestTermtter < Test::Unit::TestCase
   def test_add_command
     command_text = nil
     matche_text = nil
-    Termtter::Client.add_command /foo\s+(.*)/ do |termtter, matche|
+    Termtter::Client.add_command /foo\s+(.*)/ do |matche, termtter|
       command_text = matche[0]
       matche_text = matche[1]
     end
