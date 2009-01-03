@@ -7,5 +7,6 @@ bin/termtter
 lib/termtter.rb
 lib/termtter/stdout.rb
 lib/termtter/notify-send.rb
+lib/termtter/standard_commands.rb
 test/test_termtter.rb
 
