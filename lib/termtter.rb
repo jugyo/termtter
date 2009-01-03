@@ -179,8 +179,12 @@ module Termtter
               update.run
             when /^uri-open\s*$/
               $uris.each do |uri|
-                # FIXME: works only in OSX
-                system 'open', uri
+                # FIXME: works only in OSX and other *NIXs
+                if /linux/ =~ RUBY_PLATFORM
+                  system 'firefox', uri
+                else
+                  system 'open', uri
+                end
               end
               $uris.clear
             when /^exit\s*$/
