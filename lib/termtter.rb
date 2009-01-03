@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'json'
 require 'nokogiri'
 require 'open-uri'
 require 'cgi'
@@ -59,12 +60,12 @@ module Termtter
     end
 
     def list_friends_timeline
-      statuses = get_timeline("http://twitter.com/statuses/friends_timeline.xml")
+      statuses = get_timeline("http://twitter.com/statuses/friends_timeline.json")
       call_hooks(statuses, :list_friends_timeline)
     end
 
     def update_friends_timeline
-      uri = "http://twitter.com/statuses/friends_timeline.xml"
+      uri = "http://twitter.com/statuses/friends_timeline.json"
       if @since_id && !@since_id.empty?
         uri += "?since_id=#{@since_id}"
       end
@@ -74,7 +75,7 @@ module Termtter
     end
 
     def get_user_timeline(screen_name)
-      statuses = get_timeline("http://twitter.com/statuses/user_timeline/#{screen_name}.xml")
+      statuses = get_timeline("http://twitter.com/statuses/user_timeline/#{screen_name}.json")
       call_hooks(statuses, :list_user_timeline)
     end
 
@@ -99,12 +100,12 @@ module Termtter
     end
 
     def show(id)
-      statuses = get_timeline("http://twitter.com/statuses/show/#{id}.xml")
+      statuses = get_timeline("http://twitter.com/statuses/show/#{id}.json")
       call_hooks(statuses, :show)
     end
 
     def replies
-      statuses = get_timeline("http://twitter.com/statuses/replies.xml")
+      statuses = get_timeline("http://twitter.com/statuses/replies.json")
       call_hooks(statuses, :show)
     end
 
@@ -120,19 +121,18 @@ module Termtter
     end
 
     def get_timeline(uri, update_since_id = false)
-      doc = Nokogiri::XML(open(uri, :http_basic_authentication => [@user_name, @password]))
-
       statuses = []
-      doc.xpath('//status').each do |node|
+
+      JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password]).read).each do |s|
+        u = s["user"]
         status = Status.new
-        %w(
-          id text created_at truncated in_reply_to_status_id in_reply_to_user_id 
-          user/id user/name user/screen_name user/url user/profile_image_url
-        ).each do |key|
-          method = "#{key.gsub('/', '_')}=".to_sym
-          status.send(method, node.xpath(key).text)
+        status.created_at = Time.utc(*ParseDate::parsedate(s["created_at"])).localtime
+        %w(id text truncated in_reply_to_status_id in_reply_to_user_id).each do |key|
+          status.send("#{key}=".to_sym, s[key])
         end
-        status.created_at = Time.utc(*ParseDate::parsedate(status.created_at)).localtime
+        %w(id name screen_name url profile_image_url).each do |key|
+          status.send("user_#{key}=".to_sym, u[key])
+        end
         statuses << status
       end
 

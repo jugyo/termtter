@@ -17,30 +17,30 @@ class TestTermtter < Test::Unit::TestCase
   end
 
   def test_get_timeline
-    statuses = swap_open('friends_timeline.xml') { @termtter.get_timeline('') }
+    statuses = swap_open('friends_timeline.json') { @termtter.get_timeline('') }
 
     assert_equal 3, statuses.size
 
-    assert_equal '102', statuses[0].user_id
+    assert_equal 102, statuses[0].user_id
     assert_equal 'test2', statuses[0].user_screen_name
     assert_equal 'Test User 2', statuses[0].user_name
     assert_equal 'texttext 2', statuses[0].text
     assert_equal 'http://twitter.com/test2', statuses[0].user_url
-    assert_equal 'http://xxx2', statuses[0].user_profile_image_url
-    assert_equal 'Thu Dec 25 22:19:57 +0900 2008', statuses[0].created_at.to_s
+    assert_equal 'http://s3.amazonaws.com/twitter_production/profile_images/000/102.png', statuses[0].user_profile_image_url
+    assert_equal 'Sat Jan 03 21:13:45 +0900 2009', statuses[0].created_at.to_s
 
-    assert_equal '100', statuses[2].user_id
+    assert_equal 100, statuses[2].user_id
     assert_equal 'test0', statuses[2].user_screen_name
     assert_equal 'Test User 0', statuses[2].user_name
     assert_equal 'texttext 0', statuses[2].text
     assert_equal 'http://twitter.com/test0', statuses[2].user_url
-    assert_equal 'http://xxx0', statuses[2].user_profile_image_url
-    assert_equal 'Thu Dec 25 22:10:57 +0900 2008', statuses[2].created_at.to_s
+    assert_equal 'http://s3.amazonaws.com/twitter_production/profile_images/000/100.png', statuses[2].user_profile_image_url
+    assert_equal 'Sat Jan 03 21:13:45 +0900 2009', statuses[2].created_at.to_s
   end
 
   def test_get_timeline_with_update_since_id
-    statuses = swap_open('friends_timeline.xml') { @termtter.get_timeline('', true) }
-    assert_equal '10002', @termtter.since_id
+    statuses = swap_open('friends_timeline.json') { @termtter.get_timeline('', true) }
+    assert_equal 10002, @termtter.since_id
   end
 
   def test_search
