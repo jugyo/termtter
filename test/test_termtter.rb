@@ -4,6 +4,8 @@ require 'test/unit'
 require 'kagemusha'
 require File.dirname(__FILE__) + '/../lib/termtter'
 
+# TODO: もっとテスト書く！
+
 class TestTermtter < Test::Unit::TestCase
   def setup
     @twitter = Termtter::Twitter.new('test', 'test')
