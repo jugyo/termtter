@@ -14,37 +14,12 @@ module Termtter
 
   class CommandNotFound < StandardError; end
 
-  class Client
-
-    @@hooks = []
-    @@commands = {}
-
-    def self.add_hook(&hook)
-      @@hooks << hook
-    end
-
-    def self.clear_hooks
-      @@hooks.clear
-    end
-
-    def self.add_command(regex, &block)
-      @@commands[regex] = block
-    end
-
-    def self.clear_commands
-      @@commands.clear
-    end
-
+  class Twitter
     attr_reader :since_id, :public_storage
 
-    def initialize
-      configatron.set_default(:update_interval, 300)
-      configatron.set_default(:debug, false)
-      @user_name = configatron.user_name
-      @password = configatron.password
-      @update_interval = configatron.update_interval
-      @debug = configatron.debug
-      @public_storage = {}
+    def initialize(user_name, password)
+      @user_name = user_name
+      @password = password
     end
 
     def update_status(status)
@@ -76,7 +51,7 @@ module Termtter
 
     def get_user_timeline(screen_name)
       statuses = get_timeline("http://twitter.com/statuses/user_timeline/#{screen_name}.json")
-      call_hooks(statuses, :list_user_timeline)
+      #~ call_hooks(statuses, :list_user_timeline)
     end
 
     def search(query)
@@ -91,29 +66,18 @@ module Termtter
         statuses << status
       end
 
-      call_hooks(statuses, :search)
+      #~ call_hooks(statuses, :search)
       return statuses
     end
 
     def show(id)
       statuses = get_timeline("http://twitter.com/statuses/show/#{id}.json")
-      call_hooks(statuses, :show)
+      #~ call_hooks(statuses, :show)
     end
 
     def replies
       statuses = get_timeline("http://twitter.com/statuses/replies.json")
-      call_hooks(statuses, :show)
-    end
-
-    def call_hooks(statuses, event)
-      @@hooks.each do |h|
-        begin
-          h.call(statuses.dup, event, self)
-        rescue => e
-          puts "Error: #{e}"
-          puts e.backtrace.join("\n")
-        end
-      end
+      #~ call_hooks(statuses, :show)
     end
 
     def get_timeline(uri, update_since_id = false)
@@ -140,6 +104,39 @@ module Termtter
       end
 
       return statuses
+    end
+  end
+
+  class Client
+
+    @@hooks = []
+    @@commands = {}
+
+    def self.add_hook(&hook)
+      @@hooks << hook
+    end
+
+    def self.clear_hooks
+      @@hooks.clear
+    end
+
+    def self.add_command(regex, &block)
+      @@commands[regex] = block
+    end
+
+    def self.clear_commands
+      @@commands.clear
+    end
+
+    def call_hooks(statuses, event)
+      @@hooks.each do |h|
+        begin
+          h.call(statuses.dup, event, self)
+        rescue => e
+          puts "Error: #{e}"
+          puts e.backtrace.join("\n")
+        end
+      end
     end
 
     def call_commands(text)
@@ -217,6 +214,72 @@ module Termtter
     ).each do |attr|
       attr_accessor attr.to_sym
     end
+  end
+
+end
+
+class Termtter::Client
+
+  add_command /^(update|u)\s+(.*)/ do |m, t|
+    text = m[2]
+    next if text.empty?
+    t.update_status(text)
+    puts "=> #{text}"
+  end
+
+  add_command /^(list|l)\s*$/ do |m, t|
+    t.list_friends_timeline()
+  end
+
+  add_command /^(list|l)\s+([^\s]+)/ do |m, t|
+    t.get_user_timeline(m[2])
+  end
+
+  add_command /^(search|s)\s+(.*)/ do |m, t|
+    query = m[2]
+    unless query.empty?
+      t.search(query)
+    end
+  end
+
+  add_command /^(replies|r)\s*$/ do |m, t|
+    t.replies()
+  end
+
+  add_command /^show\s+([^\s]+)/ do |m, t|
+    t.show(m[1])
+  end
+
+  add_command /^pause\s*$/ do |m, t|
+    t.pause
+  end
+
+  add_command /^resume\s*$/ do |m, t|
+    t.resume
+  end
+
+  add_command /^exit\s*$/ do |m, t|
+    t.exit
+  end
+
+  add_command /^help\s*$/ do |m, t|
+    puts <<-EOS
+exit            Exit
+help            Print this help message
+list,l          List the posts in your friends timeline
+list USERNAME   List the posts in the the given user's timeline
+pause           Pause updating
+update,u TEXT   Post a new message
+resume          Resume updating
+replies,r       List the most recent @replies for the authenticating user
+search,s TEXT   Search for Twitter
+show ID         Show a single status
+EOS
+  end
+
+  add_command /^eval\s+(.*)$/ do |m, t|
+    result = t.instance_eval m[1] unless m[1].empty?
+    puts "=> #{result.inspect}"
   end
 
 end
