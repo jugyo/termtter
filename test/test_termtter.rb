@@ -7,7 +7,6 @@ require File.dirname(__FILE__) + '/../lib/termtter'
 class TestTermtter < Test::Unit::TestCase
   def setup
     @twitter = Termtter::Twitter.new('test', 'test')
-    @termtter = Termtter::Client.new
 
     Termtter::Client.add_hook do |statuses, event|
       @statuses = statuses
@@ -53,23 +52,29 @@ class TestTermtter < Test::Unit::TestCase
     assert_equal 'Sat Jan 03 21:49:09 +0900 2009', statuses[2].created_at.to_s
   end
 
-  def _test_add_hook
-    call_hook = false
-    Termtter::Client.add_hook do |statuses, event|
-      call_hook = true
+  def test_add_hook
+    statuses = nil
+    event = nil
+    Termtter::Client.add_hook do |s, e|
+      statuses = s
+      event = e
     end
-    swap_open('search.json'){ @twitter.search('') }
 
-    assert_equal true, call_hook
+    Termtter::Client.call_hooks([], :foo)
+
+    assert_equal [], statuses
+    assert_equal :foo, event
 
     Termtter::Client.clear_hooks()
-    call_hook = false
-    @termtter.search('')
+    statuses = nil
+    event = nil
+    Termtter::Client.call_hooks([], :foo)
 
-    assert_equal false, call_hook
+    assert_equal nil, statuses
+    assert_equal nil, event
   end
 
-  def _test_add_command
+  def test_add_command
     command_text = nil
     matche_text = nil
     Termtter::Client.add_command /foo\s+(.*)/ do |matche, termtter|
@@ -77,13 +82,13 @@ class TestTermtter < Test::Unit::TestCase
       matche_text = matche[1]
     end
     
-    @termtter.call_commands('foo xxxxxxxxxxxxxx')
+    Termtter::Client.call_commands('foo xxxxxxxxxxxxxx')
     assert_equal 'foo xxxxxxxxxxxxxx', command_text
     assert_equal 'xxxxxxxxxxxxxx', matche_text
     
     Termtter::Client.clear_commands()
     assert_raise Termtter::CommandNotFound do
-      @termtter.call_commands('foo xxxxxxxxxxxxxx')
+      Termtter::Client.call_commands('foo xxxxxxxxxxxxxx')
     end
   end
 

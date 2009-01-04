@@ -128,7 +128,7 @@ module Termtter
       @@commands.clear
     end
 
-    def call_hooks(statuses, event)
+    def self.call_hooks(statuses, event)
       @@hooks.each do |h|
         begin
           h.call(statuses.dup, event, self)
@@ -139,7 +139,7 @@ module Termtter
       end
     end
 
-    def call_commands(text)
+    def self.call_commands(text)
       return if text.empty?
 
       command_found = false
@@ -158,34 +158,34 @@ module Termtter
       raise CommandNotFound unless command_found
     end
 
-    def pause
-      @pause = true
+    def self.pause
+      @@pause = true
     end
 
-    def resume
-      @pause = false
-      @update.run
+    def self.resume
+      @@pause = false
+      @@update.run
     end
 
     def exit
-      @update.kill
-      @input.kill
+      @@update.kill
+      @@input.kill
     end
 
     def run
-      @pause = false
+      @@pause = false
 
-      @update = Thread.new do
+      @@update = Thread.new do
         loop do
-          if @pause
+          if @@pause
             Thread.stop
           end
           update_friends_timeline()
-          sleep @update_interval
+          sleep configatron.update_interval
         end
       end
 
-      @input = Thread.new do
+      @@input = Thread.new do
         while buf = Readline.readline("", true)
           begin
             call_commands(buf)
@@ -202,7 +202,7 @@ module Termtter
       stty_save = `stty -g`.chomp
       trap("INT") { system "stty", stty_save; self.exit }
 
-      @input.join
+      @@input.join
     end
 
   end
