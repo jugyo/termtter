@@ -13,7 +13,6 @@ module Termtter
   VERSION = '0.4.0'
 
   class Twitter
-    attr_reader :since_id, :public_storage
 
     def initialize(user_name, password)
       @user_name = user_name
@@ -35,7 +34,7 @@ module Termtter
     def get_friends_timeline(since_id = nil)
       uri = "http://twitter.com/statuses/friends_timeline.json"
       uri += "?since_id=#{since_id}" if since_id
-      return get_timeline(uri, true)
+      return get_timeline(uri)
     end
 
     def get_user_timeline(screen_name)
@@ -61,13 +60,14 @@ module Termtter
       return get_timeline("http://twitter.com/statuses/replies.json")
     end
 
-    def get_timeline(uri, update_since_id = false)
-      statuses = []
-
+    def get_timeline(uri)
       data = JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password]).read)
-      data =  if data.instance_of? Array then data else [data] end
-
-      data.each do |s|
+      data =  if data.instance_of? Array
+                data
+              else
+                [data]
+              end
+      return data.inject([]) do |statuses, s|
         u = s["user"]
         status = Status.new
         status.created_at = Time.utc(*ParseDate::parsedate(s["created_at"])).localtime
@@ -79,12 +79,6 @@ module Termtter
         end
         statuses << status
       end
-
-      if update_since_id && !statuses.empty?
-        @since_id = statuses[0].id
-      end
-
-      return statuses
     end
   end
 
@@ -198,7 +192,7 @@ module Termtter
       end
 
       stty_save = `stty -g`.chomp
-      trap("INT") { system "stty", stty_save; self.exit }
+      trap("INT") { system "stty", stty_save; exit }
 
       @@input.join
     end
@@ -213,76 +207,6 @@ module Termtter
       user_id user_name user_screen_name user_url user_profile_image_url
     ).each do |attr|
       attr_accessor attr.to_sym
-    end
-  end
-
-end
-
-class Termtter::Client
-
-  add_command /^(update|u)\s+(.*)/ do |m, t|
-    text = m[2]
-    unless text.empty?
-      t.update_status(text)
-      puts "=> #{text}"
-    end
-  end
-
-  add_command /^(list|l)\s*$/ do |m, t|
-    statuses = t.get_friends_timeline()
-    call_hooks(statuses, :list_friends_timeline, t)
-  end
-
-  add_command /^(list|l)\s+([^\s]+)/ do |m, t|
-    statuses = t.get_user_timeline(m[2])
-    call_hooks(statuses, :list_user_timeline, t)
-  end
-
-  add_command /^(search|s)\s+(.+)/ do |m, t|
-    call_hooks(t.search(m[2]), :search, t)
-  end
-
-  add_command /^(replies|r)\s*$/ do |m, t|
-    call_hooks(t.replies(), :replies, t)
-  end
-
-  add_command /^show\s+([^\s]+)/ do |m, t|
-    call_hooks(t.show(m[1]), :show, t)
-  end
-
-  add_command /^pause\s*$/ do |m, t|
-    pause
-  end
-
-  add_command /^resume\s*$/ do |m, t|
-    resume
-  end
-
-  add_command /^exit\s*$/ do |m, t|
-    exit
-  end
-
-  add_command /^help\s*$/ do |m, t|
-    puts <<-EOS
-exit            Exit
-help            Print this help message
-list,l          List the posts in your friends timeline
-list USERNAME   List the posts in the the given user's timeline
-pause           Pause updating
-update,u TEXT   Post a new message
-resume          Resume updating
-replies,r       List the most recent @replies for the authenticating user
-search,s TEXT   Search for Twitter
-show ID         Show a single status
-EOS
-  end
-
-  add_command /^eval\s+(.*)$/ do |m, t|
-    begin
-      result = eval(m[1]) unless m[1].empty?
-      puts "=> #{result.inspect}"
-    rescue SyntaxError => e
-      puts e
     end
   end
 

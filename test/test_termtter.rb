@@ -38,11 +38,6 @@ class TestTermtter < Test::Unit::TestCase
     assert_equal 'Sat Jan 03 21:13:45 +0900 2009', statuses[2].created_at.to_s
   end
 
-  def test_get_timeline_with_update_since_id
-    statuses = swap_open('friends_timeline.json') { @twitter.get_timeline('', true) }
-    assert_equal 10002, @twitter.since_id
-  end
-
   def test_search
     statuses = swap_open('search.json') { @twitter.search('') }
     assert_equal 3, statuses.size
