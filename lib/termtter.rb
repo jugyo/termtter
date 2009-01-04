@@ -33,7 +33,7 @@ module Termtter
 
     def get_friends_timeline(since_id = nil)
       uri = "http://twitter.com/statuses/friends_timeline.json"
-      uri += "?since_id=#{since_id}" if since_id
+      uri << "?since_id=#{since_id}" if since_id
       return get_timeline(uri)
     end
 
@@ -43,12 +43,12 @@ module Termtter
 
     def search(query)
       results = JSON.parse(open('http://search.twitter.com/search.json?q=' + CGI.escape(query)).read)['results']
-      return results.inject([]) do |statuses, s|
+      return results.map do |s|
         status = Status.new
         status.text = s['text']
         status.created_at = Time.utc(*ParseDate::parsedate(s["created_at"])).localtime
         status.user_screen_name = s['from_user']
-        statuses << status
+        status
       end
     end
 
@@ -67,17 +67,17 @@ module Termtter
               else
                 [data]
               end
-      return data.inject([]) do |statuses, s|
+      return data.map do |s|
         u = s["user"]
         status = Status.new
         status.created_at = Time.utc(*ParseDate::parsedate(s["created_at"])).localtime
         %w(id text truncated in_reply_to_status_id in_reply_to_user_id).each do |key|
-          status.send("#{key}=".to_sym, s[key])
+          status.__send__("#{key}=".to_sym, s[key])
         end
         %w(id name screen_name url profile_image_url).each do |key|
-          status.send("user_#{key}=".to_sym, u[key])
+          status.__send__("user_#{key}=".to_sym, u[key])
         end
-        statuses << status
+        status
       end
     end
   end
