@@ -6,7 +6,7 @@ Termtter::Client.add_hook do |statuses, event|
   colors = %w(0 31 32 33 34 35 36 91 92 93 94 95 96)
 
   case event
-  when :update_friends_timeline, :list_friends_timeline, :list_user_timeline, :show
+  when :update_friends_timeline, :list_friends_timeline, :list_user_timeline, :show, :replies
     unless statuses.empty?
       if event == :update_friends_timeline then statuses = statuses.reverse end
       statuses.each do |s|
