@@ -1,5 +1,10 @@
 Termtter::Client.clear_hooks # FIXME: not to clear all but to clear just stdout.rb
 
+# english? :: String -> Boolean
+def english?(message)
+  /[一-龠]+|[ぁ-ん]+|[ァ-ヴー]+|[ａ-ｚＡ-Ｚ０-９]+/ !~ message
+end
+
 # FIXME: The code below is a copy from stdout.rb so it's not DRY. DRY it.
 Termtter::Client.add_hook do |statuses, event|
   colors = %w(0 31 32 33 34 35 36 91 92 93 94 95 96)
