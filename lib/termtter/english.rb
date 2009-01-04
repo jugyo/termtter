@@ -15,6 +15,7 @@ Termtter::Client.add_hook do |statuses, event|
       if event == :update_friends_timeline then statuses = statuses.reverse end
       statuses.each do |s|
         text = s.text.gsub("\n", '')
+        next unless english?(text) # if you substitute "if" for "unless", this script will be "japanese.rb"
         color_num = colors[s.user_screen_name.hash % colors.size]
         status = "#{s.user_screen_name}: #{text}"
         if s.in_reply_to_status_id
@@ -43,3 +44,8 @@ Termtter::Client.add_hook do |statuses, event|
     end
   end
 end
+
+# USAGE:
+#   Write the line on the *first line* of your ~/.termtter
+#     require 'termtter/english'
+#   (english.rb will destroy plugins which were required before)
