@@ -109,6 +109,11 @@ module Termtter
       @@commands.clear
     end
 
+    def self.public_storage
+      @@public_storage ||= {}
+      return @@public_storage
+    end
+
     def self.call_hooks(statuses, event, tw)
       @@hooks.each do |h|
         begin
@@ -273,8 +278,12 @@ EOS
   end
 
   add_command /^eval\s+(.*)$/ do |m, t|
-    result = eval(m[1]) unless m[1].empty?
-    puts "=> #{result.inspect}"
+    begin
+      result = eval(m[1]) unless m[1].empty?
+      puts "=> #{result.inspect}"
+    rescue SyntaxError => e
+      puts e
+    end
   end
 
 end
