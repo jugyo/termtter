@@ -12,8 +12,6 @@ $:.unshift(File.dirname(__FILE__)) unless
 module Termtter
   VERSION = '0.4.0'
 
-  class CommandNotFound < StandardError; end
-
   class Twitter
     attr_reader :since_id, :public_storage
 
@@ -34,50 +32,33 @@ module Termtter
       end
     end
 
-    def list_friends_timeline
-      statuses = get_timeline("http://twitter.com/statuses/friends_timeline.json")
-      call_hooks(statuses, :list_friends_timeline)
-    end
-
-    def update_friends_timeline
+    def get_friends_timeline(since_id = nil)
       uri = "http://twitter.com/statuses/friends_timeline.json"
-      if @since_id
-        uri += "?since_id=#{@since_id}"
-      end
-
-      statuses = get_timeline(uri, true)
-      call_hooks(statuses, :update_friends_timeline)
+      uri += "?since_id=#{since_id}" if since_id
+      return get_timeline(uri, true)
     end
 
     def get_user_timeline(screen_name)
-      statuses = get_timeline("http://twitter.com/statuses/user_timeline/#{screen_name}.json")
-      #~ call_hooks(statuses, :list_user_timeline)
+      return get_timeline("http://twitter.com/statuses/user_timeline/#{screen_name}.json")
     end
 
     def search(query)
-      statuses = []
-
       results = JSON.parse(open('http://search.twitter.com/search.json?q=' + CGI.escape(query)).read)['results']
-      results.each do |s|
+      return results.inject([]) do |statuses, s|
         status = Status.new
         status.text = s['text']
         status.created_at = Time.utc(*ParseDate::parsedate(s["created_at"])).localtime
         status.user_screen_name = s['from_user']
         statuses << status
       end
-
-      #~ call_hooks(statuses, :search)
-      return statuses
     end
 
     def show(id)
-      statuses = get_timeline("http://twitter.com/statuses/show/#{id}.json")
-      #~ call_hooks(statuses, :show)
+      return get_timeline("http://twitter.com/statuses/show/#{id}.json")
     end
 
     def replies
-      statuses = get_timeline("http://twitter.com/statuses/replies.json")
-      #~ call_hooks(statuses, :show)
+      return get_timeline("http://twitter.com/statuses/replies.json")
     end
 
     def get_timeline(uri, update_since_id = false)
@@ -174,23 +155,33 @@ module Termtter
 
     def self.run
       @@pause = false
-
-      @@tw = Termtter::Twitter.new(configatron.user_name, configatron.password)
+      tw = Termtter::Twitter.new(configatron.user_name, configatron.password)
 
       @@update = Thread.new do
+        since_id = nil
         loop do
-          if @@pause
-            Thread.stop
+          begin
+            Thread.stop if @@pause
+
+            statuses = tw.get_friends_timeline(since_id)
+            unless statuses.empty?
+              since_id = statuses[0].id
+            end
+            call_hooks(statuses, :update_friends_timeline, tw)
+
+          rescue => e
+            puts "Error: #{e}"
+            puts e.backtrace.join("\n")
+          ensure
+            sleep configatron.update_interval
           end
-          @@tw.update_friends_timeline()
-          sleep configatron.update_interval
         end
       end
 
       @@input = Thread.new do
         while buf = Readline.readline("", true)
           begin
-            call_commands(buf)
+            call_commands(buf, tw)
           rescue CommandNotFound => e
             puts "Unknown command \"#{buf}\""
             puts 'Enter "help" for instructions'
@@ -209,6 +200,8 @@ module Termtter
 
   end
 
+  class CommandNotFound < StandardError; end
+
   class Status
     %w(
       id text created_at truncated in_reply_to_status_id in_reply_to_user_id 
@@ -224,44 +217,44 @@ class Termtter::Client
 
   add_command /^(update|u)\s+(.*)/ do |m, t|
     text = m[2]
-    next if text.empty?
-    t.update_status(text)
-    puts "=> #{text}"
-  end
-
-  add_command /^(list|l)\s*$/ do |m, t|
-    t.list_friends_timeline()
-  end
-
-  add_command /^(list|l)\s+([^\s]+)/ do |m, t|
-    t.get_user_timeline(m[2])
-  end
-
-  add_command /^(search|s)\s+(.*)/ do |m, t|
-    query = m[2]
-    unless query.empty?
-      t.search(query)
+    unless text.empty?
+      t.update_status(text)
+      puts "=> #{text}"
     end
   end
 
+  add_command /^(list|l)\s*$/ do |m, t|
+    statuses = t.get_friends_timeline()
+    call_hooks(statuses, :list_friends_timeline, t)
+  end
+
+  add_command /^(list|l)\s+([^\s]+)/ do |m, t|
+    statuses = t.get_user_timeline(m[2])
+    call_hooks(statuses, :list_user_timeline, t)
+  end
+
+  add_command /^(search|s)\s+(.+)/ do |m, t|
+    call_hooks(t.search(m[2]), :search, t)
+  end
+
   add_command /^(replies|r)\s*$/ do |m, t|
-    t.replies()
+    call_hooks(t.replies(), :replies, t)
   end
 
   add_command /^show\s+([^\s]+)/ do |m, t|
-    t.show(m[1])
+    call_hooks(t.show(m[1]), :show, t)
   end
 
   add_command /^pause\s*$/ do |m, t|
-    t.pause
+    pause
   end
 
   add_command /^resume\s*$/ do |m, t|
-    t.resume
+    resume
   end
 
   add_command /^exit\s*$/ do |m, t|
-    t.exit
+    exit
   end
 
   add_command /^help\s*$/ do |m, t|
@@ -280,7 +273,7 @@ EOS
   end
 
   add_command /^eval\s+(.*)$/ do |m, t|
-    result = t.instance_eval m[1] unless m[1].empty?
+    result = eval(m[1]) unless m[1].empty?
     puts "=> #{result.inspect}"
   end
 

@@ -22,11 +22,11 @@ else
 The configuration file does not exist.
 Example: 
 # ~/.termtter
-configatron.user_name = USERNAME
-configatron.password = PASSWORD
+configatron.user_name = 'USERNAME'
+configatron.password = 'PASSWORD'
 EOS
   exit 1
 end
 
-Termtter::Client.new.run
+Termtter::Client.run
 
