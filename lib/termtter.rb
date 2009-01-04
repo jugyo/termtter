@@ -128,10 +128,10 @@ module Termtter
       @@commands.clear
     end
 
-    def self.call_hooks(statuses, event)
+    def self.call_hooks(statuses, event, tw)
       @@hooks.each do |h|
         begin
-          h.call(statuses.dup, event, self)
+          h.call(statuses.dup, event, tw)
         rescue => e
           puts "Error: #{e}"
           puts e.backtrace.join("\n")
@@ -139,7 +139,7 @@ module Termtter
       end
     end
 
-    def self.call_commands(text)
+    def self.call_commands(text, tw)
       return if text.empty?
 
       command_found = false
@@ -147,7 +147,7 @@ module Termtter
         if key =~ text
           command_found = true
           begin
-            command.call($~, self)
+            command.call($~, tw)
           rescue => e
             puts "Error: #{e}"
             puts e.backtrace.join("\n")
@@ -167,20 +167,22 @@ module Termtter
       @@update.run
     end
 
-    def exit
+    def self.exit
       @@update.kill
       @@input.kill
     end
 
-    def run
+    def self.run
       @@pause = false
+
+      @@tw = Termtter::Twitter.new(configatron.user_name, configatron.password)
 
       @@update = Thread.new do
         loop do
           if @@pause
             Thread.stop
           end
-          update_friends_timeline()
+          @@tw.update_friends_timeline()
           sleep configatron.update_interval
         end
       end

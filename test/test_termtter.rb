@@ -55,20 +55,23 @@ class TestTermtter < Test::Unit::TestCase
   def test_add_hook
     statuses = nil
     event = nil
-    Termtter::Client.add_hook do |s, e|
+    twitter = nil
+    Termtter::Client.add_hook do |s, e, t|
       statuses = s
       event = e
+      twitter = t
     end
 
-    Termtter::Client.call_hooks([], :foo)
+    Termtter::Client.call_hooks([], :foo, @twitter)
 
     assert_equal [], statuses
     assert_equal :foo, event
+    assert_equal @twitter, twitter
 
     Termtter::Client.clear_hooks()
     statuses = nil
     event = nil
-    Termtter::Client.call_hooks([], :foo)
+    Termtter::Client.call_hooks([], :foo, @twitter)
 
     assert_equal nil, statuses
     assert_equal nil, event
@@ -77,18 +80,21 @@ class TestTermtter < Test::Unit::TestCase
   def test_add_command
     command_text = nil
     matche_text = nil
-    Termtter::Client.add_command /foo\s+(.*)/ do |matche, termtter|
-      command_text = matche[0]
-      matche_text = matche[1]
+    twitter = nil
+    Termtter::Client.add_command /foo\s+(.*)/ do |m, t|
+      command_text = m[0]
+      matche_text = m[1]
+      twitter = t
     end
     
-    Termtter::Client.call_commands('foo xxxxxxxxxxxxxx')
+    Termtter::Client.call_commands('foo xxxxxxxxxxxxxx', @twitter)
     assert_equal 'foo xxxxxxxxxxxxxx', command_text
     assert_equal 'xxxxxxxxxxxxxx', matche_text
+    assert_equal @twitter, twitter
     
     Termtter::Client.clear_commands()
     assert_raise Termtter::CommandNotFound do
-      Termtter::Client.call_commands('foo xxxxxxxxxxxxxx')
+      Termtter::Client.call_commands('foo xxxxxxxxxxxxxx', @twitter)
     end
   end
 
