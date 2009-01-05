@@ -7,7 +7,7 @@ def say(who, what)
   system 'say', '-v', voice, what
 end
 
-class Termtter::Client
+module Termtter::Client
   add_hook do |statuses, event, t|
     if !statuses.empty? && event == :update_friends_timeline
       statuses.reverse.each do |s|

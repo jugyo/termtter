@@ -1,4 +1,4 @@
-class Termtter::Client
+module Termtter::Client
 
   add_command /^(update|u)\s+(.*)/ do |m, t|
     text = m[2]

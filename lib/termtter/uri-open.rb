@@ -1,4 +1,4 @@
-class Termtter::Client
+module Termtter::Client
   public_storage[:uris] = []
 
   add_hook do |statuses, event, t|

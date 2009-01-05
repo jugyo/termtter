@@ -85,7 +85,7 @@ module Termtter
     end
   end
 
-  class Client
+  module Client
 
     @@hooks = []
     @@commands = {}

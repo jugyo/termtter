@@ -1,6 +1,6 @@
 require 'set'
 
-class Termtter::Client
+module Termtter::Client
 
   public_storage[:users] ||= Set.new
 
