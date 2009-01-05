@@ -12,14 +12,26 @@ conf_file = File.expand_path('~/.termtter')
 if File.exist? conf_file
   load conf_file
 else
-  puts <<EOS
-The configuration file does not exist.
-Example: 
-# ~/.termtter
-configatron.user_name = 'USERNAME'
-configatron.password = 'PASSWORD'
-EOS
-  exit 1
+  print "your twitter username: "
+  username = gets.chomp
+  print "your twitter password: "
+  password = gets.chomp
+  File.open(File.expand_path('~/.termtter'), 'w') {|io|
+    plugins = Dir.glob(File.dirname(__FILE__) + "/../lib/plugin/*.rb").map  {|f|
+      f.match(%r|lib/plugin/(.*?).rb$|)[1]
+    }
+    plugins -= %w[stdout standard_commands]
+    plugins.each do |p|
+      io.puts "#plugin '#{p}'"
+    end
+
+    io.puts "configatron.user_name = 'USERNAME'"
+    io.puts "configatron.password = 'PASSWORD'"
+    io.puts
+    io.puts "# vim: set filetype=ruby"
+  }
+  puts "generated: ~/.termtter"
+  puts "enjoy!"
 end
 
 Termtter::Client.run
