@@ -16,6 +16,17 @@ def plugin(s)
   require "plugin/#{s}"
 end
 
+# FIXME: delete this method after the major version up
+alias original_require require
+def require(s)
+  if %r|^termtter/(.*)| =~ s
+    puts "[WARNING] use plugin '#{$1}' instead of require"
+    original_require "plugin/#{$1}"
+  else
+    original_require s
+  end
+end
+
 module Termtter
   VERSION = '0.5.4'
 
