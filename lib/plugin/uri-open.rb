@@ -31,7 +31,7 @@ module Termtter::Client
   end
 end
 # ~/.termtter
-# require 'termtter/uri-open'
+# require 'plugin/uri-open'
 #
 # see also: http://ujihisa.nowa.jp/entry/c3dd00c4e0
 #
