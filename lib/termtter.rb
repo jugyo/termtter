@@ -85,47 +85,32 @@ module Termtter
     @@hooks = []
     @@commands = {}
 
-    def self.add_hook(&hook)
-      @@hooks << hook
-    end
-
-    def self.clear_hooks
-      @@hooks.clear
-    end
-
-    def self.add_command(regex, &block)
-      @@commands[regex] = block
-    end
-
-    def self.clear_commands
-      @@commands.clear
-    end
-
-    def self.public_storage
-      @@public_storage ||= {}
-      return @@public_storage
-    end
-
-    def self.call_hooks(statuses, event, tw)
-      @@hooks.each do |h|
-        begin
-          h.call(statuses.dup, event, tw)
-        rescue => e
-          puts "Error: #{e}"
-          puts e.backtrace.join("\n")
-        end
+    class << self
+      def add_hook(&hook)
+        @@hooks << hook
       end
-    end
 
-    def self.call_commands(text, tw)
-      return if text.empty?
+      def clear_hooks
+        @@hooks.clear
+      end
 
-      command_found = false
-      @@commands.each do |key, command|
-        if key =~ text
-          command_found = true
+      def add_command(regex, &block)
+        @@commands[regex] = block
+      end
+
+      def clear_commands
+        @@commands.clear
+      end
+
+      def public_storage
+        @@public_storage ||= {}
+        return @@public_storage
+      end
+
+      def call_hooks(statuses, event, tw)
+        @@hooks.each do |h|
           begin
-            command.call($~, tw)
+            h.call(statuses.dup, event, tw)
           rescue => e
             puts "Error: #{e}"
             puts e.backtrace.join("\n")
@@ -133,68 +118,84 @@ module Termtter
         end
       end
 
-      raise CommandNotFound unless command_found
-    end
+      def call_commands(text, tw)
+        return if text.empty?
 
-    def self.pause
-      @@pause = true
-    end
-
-    def self.resume
-      @@pause = false
-      @@update_thread.run
-    end
-
-    def self.exit
-      @@update_thread.kill
-      @@input_thread.kill
-    end
-
-    def self.run
-      @@pause = false
-      tw = Termtter::Twitter.new(configatron.user_name, configatron.password)
-
-      @@update_thread = Thread.new do
-        since_id = nil
-        loop do
-          begin
-            Thread.stop if @@pause
-
-            statuses = tw.get_friends_timeline(since_id)
-            unless statuses.empty?
-              since_id = statuses[0].id
+        command_found = false
+        @@commands.each do |key, command|
+          if key =~ text
+            command_found = true
+            begin
+              command.call($~, tw)
+            rescue => e
+              puts "Error: #{e}"
+              puts e.backtrace.join("\n")
             end
-            call_hooks(statuses, :update_friends_timeline, tw)
-
-          rescue => e
-            puts "Error: #{e}"
-            puts e.backtrace.join("\n")
-          ensure
-            sleep configatron.update_interval
           end
         end
+
+        raise CommandNotFound unless command_found
       end
 
-      @@input_thread = Thread.new do
-        while buf = Readline.readline("", true)
-          begin
-            call_commands(buf, tw)
-          rescue CommandNotFound => e
-            puts "Unknown command \"#{buf}\""
-            puts 'Enter "help" for instructions'
-          rescue => e
-            puts "Error: #{e}"
-            puts e.backtrace.join("\n")
+      def pause
+        @@pause = true
+      end
+
+      def resume
+        @@pause = false
+        @@update_thread.run
+      end
+
+      def exit
+        @@update_thread.kill
+        @@input_thread.kill
+      end
+
+      def run
+        @@pause = false
+        tw = Termtter::Twitter.new(configatron.user_name, configatron.password)
+
+        @@update_thread = Thread.new do
+          since_id = nil
+          loop do
+            begin
+              Thread.stop if @@pause
+
+              statuses = tw.get_friends_timeline(since_id)
+              unless statuses.empty?
+                since_id = statuses[0].id
+              end
+              call_hooks(statuses, :update_friends_timeline, tw)
+
+            rescue => e
+              puts "Error: #{e}"
+              puts e.backtrace.join("\n")
+            ensure
+              sleep configatron.update_interval
+            end
           end
         end
+
+        @@input_thread = Thread.new do
+          while buf = Readline.readline("", true)
+            begin
+              call_commands(buf, tw)
+            rescue CommandNotFound => e
+              puts "Unknown command \"#{buf}\""
+              puts 'Enter "help" for instructions'
+            rescue => e
+              puts "Error: #{e}"
+              puts e.backtrace.join("\n")
+            end
+          end
+        end
+
+        stty_save = `stty -g`.chomp
+        trap("INT") { system "stty", stty_save; exit }
+
+        @@input_thread.join
       end
-
-      stty_save = `stty -g`.chomp
-      trap("INT") { system "stty", stty_save; exit }
-
-      @@input_thread.join
     end
-
   end
 
   class CommandNotFound < StandardError; end
