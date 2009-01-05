@@ -17,7 +17,7 @@ def plugin(s)
 end
 
 module Termtter
-  VERSION = '0.5.3'
+  VERSION = '0.5.4'
 
   class Twitter
 
