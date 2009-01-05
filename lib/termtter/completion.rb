@@ -25,32 +25,23 @@ module Termtter
 
     Commands = %w[exit help list pause update resume replies search show uri-open]
 
+    def self.find_candidates(a, b)
+      if a.empty?
+        Termtter::Client.public_storage[:users].to_a
+      else
+        Termtter::Client.public_storage[:users].
+          grep(/^#{Regexp.quote a}/i).map {|u| b % u }
+      end
+    end
+
     CompletionProc = proc {|input|
       case input
       when /^l(ist)? +(.*)/
-        username = $2
-        if username.empty?
-          Termtter::Client.public_storage[:users].to_a
-        else
-          Termtter::Client.public_storage[:users].to_a.
-            grep(/^#{Regexp.quote username}/).map{|u| "list #{u}"}
-        end
+        find_candidates $2, "list %s"
       when /^(update|u)\s+(.*)@([^\s]*)$/
-        command, before, username = [$1, $2, $3]
-        if username.empty?
-          Termtter::Client.public_storage[:users].to_a
-        else
-          Termtter::Client.public_storage[:users].
-            grep(/^#{Regexp.quote username}/i).map {|u| "#{command} #{before}@#{u}"}
-        end
+        find_candidates $3, "#{$1} #{$2}@%s"
       when /^uri-open +(.*)/
-        uri_open_com = $1
-        if uri_open_com.empty?
-          %w[clear list]
-        else
-          %w[clear list].
-            grep(/^#{Regexp.quote uri_open_com}/).map{|c| "uri-open #{c}"}
-        end
+        find_candidates $1, "uri-open %s"
       else
         Commands.grep(/^#{Regexp.quote input}/)
       end
