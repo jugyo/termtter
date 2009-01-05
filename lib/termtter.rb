@@ -5,9 +5,12 @@ require 'cgi'
 require 'readline'
 require 'enumerator'
 require 'parsedate'
+require 'configatron'
 
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
+
+configatron.set_default(:update_interval, 300)
 
 module Termtter
   VERSION = '0.5.2'

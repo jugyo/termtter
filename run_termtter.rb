@@ -13,7 +13,8 @@ $:.unshift(File.dirname(self_file) + "/lib")
 require 'termtter'
 require 'termtter/standard_commands'
 require 'termtter/stdout'
-require 'configatron'
+
+configatron.update_interval
 
 conf_file = File.expand_path('~/.termtter')
 if File.exist? conf_file
