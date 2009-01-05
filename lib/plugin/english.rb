@@ -1,8 +1,10 @@
 Termtter::Client.clear_hooks # FIXME: not to clear all but to clear just stdout.rb
 
-# english? :: String -> Boolean
-def english?(message)
-  /[一-龠]+|[ぁ-ん]+|[ァ-ヴー]+|[ａ-ｚＡ-Ｚ０-９]+/ !~ message
+module Termtter::Plugin
+  # english? :: String -> Boolean
+  def self.english?(message)
+    /[一-龠]+|[ぁ-ん]+|[ァ-ヴー]+|[ａ-ｚＡ-Ｚ０-９]+/ !~ message
+  end
 end
 
 # FIXME: The code below is a copy from stdout.rb so it's not DRY. DRY it.
@@ -15,7 +17,7 @@ Termtter::Client.add_hook do |statuses, event|
       if event == :update_friends_timeline then statuses = statuses.reverse end
       statuses.each do |s|
         text = s.text.gsub("\n", '')
-        next unless english?(text) # if you substitute "if" for "unless", this script will be "japanese.rb"
+        next unless Termtter::Plugin.english?(text) # if you substitute "if" for "unless", this script will be "japanese.rb"
         color_num = colors[s.user_screen_name.hash % colors.size]
         status = "#{s.user_screen_name}: #{text}"
         if s.in_reply_to_status_id

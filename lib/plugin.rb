@@ -1,0 +1,2 @@
+module Termtter::Plugin
+end

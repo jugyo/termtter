@@ -1,5 +1,7 @@
-def color(str, num)
-  "\e[#{num}m#{str}\e[0m"
+module Termtter::Plugin
+  def color(str, num)
+    "\e[#{num}m#{str}\e[0m"
+  end
 end
 
 Termtter::Client.add_hook do |statuses, event|
