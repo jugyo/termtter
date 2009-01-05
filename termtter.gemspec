@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{termtter}
-  s.version = "0.5.2"
+  s.version = "0.5.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jugyo"]
-  s.date = %q{2009-01-05}
+  s.date = %q{2009-01-06}
   s.default_executable = %q{termtter}
   s.description = %q{Termtter is a terminal based Twitter client}
   s.email = ["jugyo.org@gmail.com"]

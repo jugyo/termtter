@@ -13,7 +13,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 configatron.set_default(:update_interval, 300)
 
 module Termtter
-  VERSION = '0.5.2'
+  VERSION = '0.5.3'
 
   class Twitter
 
