@@ -147,19 +147,19 @@ module Termtter
 
     def self.resume
       @@pause = false
-      @@update.run
+      @@update_thread.run
     end
 
     def self.exit
-      @@update.kill
-      @@input.kill
+      @@update_thread.kill
+      @@input_thread.kill
     end
 
     def self.run
       @@pause = false
       tw = Termtter::Twitter.new(configatron.user_name, configatron.password)
 
-      @@update = Thread.new do
+      @@update_thread = Thread.new do
         since_id = nil
         loop do
           begin
@@ -180,7 +180,7 @@ module Termtter
         end
       end
 
-      @@input = Thread.new do
+      @@input_thread = Thread.new do
         while buf = Readline.readline("", true)
           begin
             call_commands(buf, tw)
@@ -197,7 +197,7 @@ module Termtter
       stty_save = `stty -g`.chomp
       trap("INT") { system "stty", stty_save; exit }
 
-      @@input.join
+      @@input_thread.join
     end
 
   end
