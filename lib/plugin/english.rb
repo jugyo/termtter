@@ -47,5 +47,5 @@ end
 
 # USAGE:
 #   Write the line on the *first line* of your ~/.termtter
-#     require 'plugin/english'
+#     plugin 'english'
 #   (english.rb will destroy plugins which were required before)

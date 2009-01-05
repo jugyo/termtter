@@ -11,8 +11,8 @@ self_file =
 $:.unshift(File.dirname(self_file) + "/lib")
 
 require 'termtter'
-require 'plugin/standard_commands'
-require 'plugin/stdout'
+plugin 'standard_commands'
+plugin 'stdout'
 
 configatron.update_interval
 

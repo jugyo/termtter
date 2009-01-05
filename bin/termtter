@@ -4,9 +4,9 @@ $KCODE = 'u'
 
 require 'rubygems'
 require 'termtter'
-require 'plugin/standard_commands'
-require 'plugin/stdout'
 require 'configatron'
+plugin 'standard_commands'
+plugin 'stdout'
 
 conf_file = File.expand_path('~/.termtter')
 if File.exist? conf_file
