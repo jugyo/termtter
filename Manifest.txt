@@ -3,6 +3,7 @@ Manifest.txt
 PostInstall.txt
 README.rdoc
 Rakefile
+run_termtter.rb
 bin/termtter
 lib/termtter.rb
 lib/termtter/stdout.rb

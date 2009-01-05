@@ -2,7 +2,14 @@
 
 $KCODE = 'u'
 
-require 'rubygems'
+self_file =
+  if File.ftype(__FILE__) == 'link'
+    File.readlink(__FILE__)
+  else
+    __FILE__
+  end
+$:.unshift(File.dirname(self_file) + "/lib")
+
 require 'termtter'
 require 'termtter/standard_commands'
 require 'termtter/stdout'
@@ -12,14 +19,10 @@ conf_file = File.expand_path('~/.termtter')
 if File.exist? conf_file
   load conf_file
 else
-  puts <<EOS
-The configuration file does not exist.
-Example: 
-# ~/.termtter
-configatron.user_name = 'USERNAME'
-configatron.password = 'PASSWORD'
-EOS
+  puts '~/.termtter not found.'
   exit 1
 end
 
 Termtter::Client.run
+
+# Startup scripts for development
