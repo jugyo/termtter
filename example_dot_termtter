@@ -3,6 +3,7 @@
 #require 'termtter/notify-send'
 #require 'termtter/uri-open'
 #require 'termtter/growl'
+#require 'termtter/completion'
 
 configatron.user_name = 'USERNAME'
 configatron.password = 'PASSWORD'
