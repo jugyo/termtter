@@ -21,8 +21,15 @@ Run:
 
 == INSTALL:
 
-  sudo gem source -a http://gems.github.com
+  sudo gem source -a http://gems.github.com (you only have to do this once)
   sudo gem install jugyo-termtter
+
+create configuration file named '.termtter' in your HOME directory.
+
+  vim ~/.termtter
+
+  configatron.user_name = 'USERNAME'
+  configatron.password = 'PASSWORD'
 
 == LICENSE:
 
