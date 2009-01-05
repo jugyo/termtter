@@ -1,0 +1,10 @@
+#require 'termtter/english'
+#require 'termtter/say'
+#require 'termtter/notify-send'
+#require 'termtter/uri-open'
+#require 'termtter/growl'
+
+configatron.user_name = 'USERNAME'
+configatron.password = 'PASSWORD'
+#configatron.update_interval = 120
+
