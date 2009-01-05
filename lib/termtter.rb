@@ -65,20 +65,15 @@ module Termtter
 
     def get_timeline(uri)
       data = JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password]).read)
-      data =  if data.instance_of? Array
-                data
-              else
-                [data]
-              end
+      data = [data] unless data.instance_of? Array
       return data.map do |s|
-        u = s["user"]
         status = Status.new
         status.created_at = Time.utc(*ParseDate::parsedate(s["created_at"])).localtime
         %w(id text truncated in_reply_to_status_id in_reply_to_user_id).each do |key|
           status.__send__("#{key}=".to_sym, s[key])
         end
         %w(id name screen_name url profile_image_url).each do |key|
-          status.__send__("user_#{key}=".to_sym, u[key])
+          status.__send__("user_#{key}=".to_sym, s["user"][key])
         end
         status
       end

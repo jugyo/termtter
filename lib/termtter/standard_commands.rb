@@ -54,7 +54,7 @@ resume            Resume updating
 replies,r         List the most recent @replies for the authenticating user
 search,s TEXT     Search for Twitter
 show ID           Show a single status
-EOS
+    EOS
   end
 
   add_command /^eval\s+(.*)$/ do |m, t|
