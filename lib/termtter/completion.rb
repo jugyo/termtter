@@ -35,6 +35,14 @@ module Termtter
           Termtter::Client.public_storage[:users].to_a.
             grep(/^#{Regexp.quote username}/).map{|u| "list #{u}"}
         end
+      when /^(update|u)\s+(.*)@([^\s]*)$/
+        command, before, username = [$1, $2, $3]
+        if username.empty?
+          Termtter::Client.public_storage[:users].to_a
+        else
+          Termtter::Client.public_storage[:users].
+            grep(/^#{Regexp.quote username}/i).map {|u| "#{command} #{before}@#{u}"}
+        end
       when /^uri-open +(.*)/
         uri_open_com = $1
         if uri_open_com.empty?
