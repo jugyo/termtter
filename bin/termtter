@@ -25,13 +25,14 @@ else
       io.puts "#plugin '#{p}'"
     end
 
-    io.puts "configatron.user_name = 'USERNAME'"
-    io.puts "configatron.password = 'PASSWORD'"
+    io.puts "configatron.user_name = '#{username}'"
+    io.puts "configatron.password = '#{password}'"
     io.puts
     io.puts "# vim: set filetype=ruby"
   }
   puts "generated: ~/.termtter"
   puts "enjoy!"
+  load conf_file
 end
 
 Termtter::Client.run
