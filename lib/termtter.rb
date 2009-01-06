@@ -28,7 +28,7 @@ def require(s)
 end
 
 module Termtter
-  VERSION = '0.5.6'
+  VERSION = '0.5.7'
 
   class Twitter
 
@@ -128,7 +128,9 @@ module Termtter
 
       Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
       Readline.completion_proc = proc {|input|
-        @@completions.map {|completion| completion.call(input)}.flatten
+        @@completions.map {|completion|
+          completion.call(input)
+        }.flatten.compact
       }
 
       def public_storage
