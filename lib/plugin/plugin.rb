@@ -14,6 +14,7 @@ module Termtter::Client
     end
   end
 
+  add_help 'plugins', 'Show list of plugins'
   add_command /^plugins$/ do |m, t|
     puts public_storage[:plugins].join("\n")
   end
