@@ -1,6 +1,8 @@
 module Termtter::Client
   public_storage[:log] = []
 
+  add_help '/word', 'Search log'
+
   add_hook do |statuses,event|
     case event
     when :update_friends_timeline
