@@ -78,16 +78,27 @@ show ID           Show a single status
     statuses.each do |s|
       public_storage[:users].add(s.user_screen_name)
       public_storage[:users] += s.text.scan(/@([a-zA-Z_0-9]*)/).flatten
+      public_storage[:status_ids].add(s.id.to_s)
+      public_storage[:status_ids].add(s.in_reply_to_status_id.to_s) if s.in_reply_to_status_id
     end
+  end
+
+  def self.find_status_id_candidates(a, b)
+    if a.empty?
+      public_storage[:status_ids].to_a
+    else
+      public_storage[:status_ids].grep(/#{Regexp.quote a}/)
+    end.
+    map {|u| b % u }
   end
 
   def self.find_user_candidates(a, b)
     if a.empty?
-      Termtter::Client.public_storage[:users].to_a
+      public_storage[:users].to_a
     else
-      Termtter::Client.public_storage[:users].
-        grep(/^#{Regexp.quote a}/i).map {|u| b % u }
-    end
+      public_storage[:users].grep(/^#{Regexp.quote a}/i)
+    end.
+    map {|u| b % u }
   end
 
   add_completion do |input|
@@ -97,6 +108,8 @@ show ID           Show a single status
       find_user_candidates $2, "#{$1} %s"
     when /^(update|u)\s+(.*)@([^\s]*)$/
       find_user_candidates $3, "#{$1} #{$2}@%s"
+    when /^show\s+(.*)/
+      find_status_id_candidates $1, "show %s"
     else
       standard_commands.grep(/^#{Regexp.quote input}/)
     end
