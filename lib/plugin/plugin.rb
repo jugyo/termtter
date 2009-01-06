@@ -1,4 +1,6 @@
 module Termtter::Client
+  add_help 'plugin FILE', 'Load a plugin'
+
   add_command /^plugin\s+(.*)/ do |m, t|
     begin
       result = plugin m[1]
