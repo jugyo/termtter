@@ -40,7 +40,8 @@ module Termtter
 
     def update_status(status)
       Net::HTTP.start("twitter.com", 80) do |http|
-        http.request(post_request, "status=#{CGI.escape(status)}")
+        uri = '/statuses/update.xml'
+        http.request(post_request(uri), "status=#{CGI.escape(status)}")
       end
     end
 
@@ -90,7 +91,7 @@ module Termtter
       end
     end
 
-    def post_request
+    def post_request(uri)
       req = Net::HTTP::Post.new(uri)
       req.basic_auth(@user_name, @password)
       req.add_field('User-Agent', 'Termtter http://github.com/jugyo/termtter')

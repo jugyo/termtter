@@ -32,7 +32,7 @@ module Termtter
       uri = "http://twitter.com/favourings/create/#{id}.json"
 
       Net::HTTP.start('twitter.com', 80) do |http|
-        http.request(post_request)
+        http.request(post_request(uri))
       end
     end
   end
