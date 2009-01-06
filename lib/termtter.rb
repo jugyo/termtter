@@ -102,6 +102,7 @@ module Termtter
     @@hooks = []
     @@commands = {}
     @@completions = []
+    @@helps = []
 
     class << self
       def add_hook(&hook)
@@ -126,6 +127,14 @@ module Termtter
 
       def clear_completions
         @@completions.clear
+      end
+
+      def add_help(name, desc)
+        @@helps << [name, desc]
+      end
+
+      def clear_helps
+        @@helps.clear
       end
 
       Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
