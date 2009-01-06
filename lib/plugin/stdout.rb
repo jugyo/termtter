@@ -1,3 +1,7 @@
+require 'erb'
+
+configatron.set_default(:timeline_format, '<%= color(time, 90) %> <%= status %> <%= color(id, 90) %>')
+
 def color(str, num)
   "\e[#{num}m#{str}\e[0m"
 end
@@ -23,19 +27,22 @@ Termtter::Client.add_hook do |statuses, event|
         else
           time_format = '%m-%d %H:%M'
         end
-        time_str = "(#{s.created_at.strftime(time_format)})"
 
-        puts "#{color(time_str, 90)} #{color(s.id, 90)} #{color(status, color_num)}"
+        time = "(#{s.created_at.strftime(time_format)})"
+        status = color(status, color_num)
+        id = s.id
+        puts ERB.new(configatron.timeline_format).result(binding)
       end
     end
   when :search
     statuses.each do |s|
       text = s.text.gsub("\n", '')
       color_num = colors[s.user_screen_name.hash % colors.size]
-      status = "#{s.user_screen_name}: #{text}"
-      time_str = "(#{s.created_at.strftime('%m-%d %H:%M')})"
 
-      puts "#{color(time_str, 90)} #{color(status, color_num)}"
+      status = color("#{s.user_screen_name}: #{text}", color_num)
+      time = "(#{s.created_at.strftime('%m-%d %H:%M')})"
+      id = s.id
+      puts ERB.new(configatron.timeline_format).result(binding)
     end
   end
 end
