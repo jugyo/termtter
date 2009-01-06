@@ -53,6 +53,11 @@ module Termtter
 
     def get_user_timeline(screen_name)
       return get_timeline("http://twitter.com/statuses/user_timeline/#{screen_name}.json")
+    rescue OpenURI::HTTPError => e
+      puts "No such user: #{screen_name}"
+      nears = near_users(screen_name)
+      puts 'near users: ' + nears unless nears.empty?
+      return {}
     end
 
     def search(query)
@@ -89,6 +94,13 @@ module Termtter
         end
         status
       end
+    end
+
+    def near_users(screen_name)
+      Client::public_storage[:users].select {|user|
+        screen_name =~ /#{user}/i ||
+        user =~ /#{screen_name}/i
+      }.join(', ')
     end
 
     def post_request(uri)
