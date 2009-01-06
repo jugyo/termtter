@@ -11,6 +11,7 @@ $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 configatron.set_default(:update_interval, 300)
+configatron.set_default(:prompt, '> ')
 
 def plugin(s)
   require "plugin/#{s}"
@@ -184,6 +185,8 @@ module Termtter
       end
 
       def run
+        puts 'initializing...'
+        initialized = false
         @@pause = false
         tw = Termtter::Twitter.new(configatron.user_name, configatron.password)
 
@@ -198,6 +201,7 @@ module Termtter
                 since_id = statuses[0].id
               end
               call_hooks(statuses, :update_friends_timeline, tw)
+              initialized = true
 
             rescue => e
               puts "Error: #{e}"
@@ -208,8 +212,10 @@ module Termtter
           end
         end
 
+        until initialized; end
+
         @@input_thread = Thread.new do
-          while buf = Readline.readline("", true)
+          while buf = Readline.readline(configatron.prompt, true)
             begin
               call_commands(buf, tw)
             rescue CommandNotFound => e
