@@ -1,6 +1,6 @@
 require 'erb'
 
-configatron.set_default(:timeline_format, '<%= color(time, 90) %> <%= status %> <%= color(id, 90) %>')
+configatron.set_default(:timeline_format, '<%= color(time, 90) %> <%= color(status, status_color) %> <%= color(id, 90) %>')
 
 def color(str, num)
   "\e[#{num}m#{str}\e[0m"
@@ -15,7 +15,7 @@ Termtter::Client.add_hook do |statuses, event|
       if event == :update_friends_timeline then statuses = statuses.reverse end
       statuses.each do |s|
         text = s.text.gsub("\n", '')
-        color_num = colors[s.user_screen_name.hash % colors.size]
+        status_color = colors[s.user_screen_name.hash % colors.size]
         status = "#{s.user_screen_name}: #{text}"
         if s.in_reply_to_status_id
           status += " (reply to #{s.in_reply_to_status_id})"
@@ -27,19 +27,19 @@ Termtter::Client.add_hook do |statuses, event|
         else
           time_format = '%m-%d %H:%M'
         end
-
         time = "(#{s.created_at.strftime(time_format)})"
-        status = color(status, color_num)
+
         id = s.id
+
         puts ERB.new(configatron.timeline_format).result(binding)
       end
     end
   when :search
     statuses.each do |s|
       text = s.text.gsub("\n", '')
-      color_num = colors[s.user_screen_name.hash % colors.size]
+      status_color = colors[s.user_screen_name.hash % colors.size]
 
-      status = color("#{s.user_screen_name}: #{text}", color_num)
+      status = "#{s.user_screen_name}: #{text}"
       time = "(#{s.created_at.strftime('%m-%d %H:%M')})"
       id = s.id
       puts ERB.new(configatron.timeline_format).result(binding)
