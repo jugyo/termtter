@@ -27,8 +27,8 @@ Thread.new do
     begin
       if s = queue.pop
         arg = ['growlnotify', s.user_screen_name, '-m', s.text.gsub("\n",''), '-n', 'termtter']
-        icon_path = get_icon_path(s)
-        arg += ['--image', icon_path] if icon_path
+        #icon_path = get_icon_path(s)
+        #arg += ['--image', icon_path] if icon_path
         system *arg
       end
     rescue => e
