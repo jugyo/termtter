@@ -1,10 +1,17 @@
 module Termtter::Client
+
   public_storage[:plugins] = Dir["#{File.dirname(__FILE__)}/*.rb"].map do |f|
     f.match(%r|([^/]+).rb$|)[1]
   end
 
+  add_help 'plugin FILE', 'Load a plugin'
   add_command /^plugin\s+(.*)/ do |m, t|
-    plugin m[1]
+    begin
+      result = plugin m[1]
+    rescue LoadError
+    ensure
+      puts "=> #{result.inspect}"
+    end
   end
 
   add_command /^plugins$/ do |m, t|
@@ -35,5 +42,6 @@ end
 #   > u <%= not erbed %>
 #   => <%= not erbed %>
 #   > plugin erb
+#   => true
 #   > u <%= 1 + 2 %>
 #   => 3
