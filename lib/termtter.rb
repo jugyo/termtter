@@ -62,7 +62,7 @@ module Termtter
     rescue OpenURI::HTTPError => e
       puts "No such user: #{screen_name}"
       nears = near_users(screen_name)
-      puts 'near users: ' + nears unless nears.empty?
+      puts "near users: #{nears}" unless nears.empty?
       return {}
     end
 
@@ -104,10 +104,10 @@ module Termtter
 
     def near_users(screen_name)
       Client::public_storage[:users].select {|user|
-        screen_name =~ /#{user}/i ||
-        user =~ /#{screen_name}/i
+        /#{user}/i =~ screen_name || /#{screen_name}/i =~ user
       }.join(', ')
     end
+    private :near_users
 
     def post_request(uri)
       req = Net::HTTP::Post.new(uri)
