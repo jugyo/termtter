@@ -126,6 +126,7 @@ module Termtter
         @@completions.clear
       end
 
+      Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
       Readline.completion_proc = proc {|input|
         @@completions.map {|completion| completion.call(input)}.flatten
       }
