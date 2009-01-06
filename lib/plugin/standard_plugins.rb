@@ -1,5 +1,7 @@
 module Termtter::Client
 
+  # standard commands
+
   add_command /^(update|u)\s+(.*)/ do |m, t|
     text = m[2]
     unless text.empty?
@@ -63,6 +65,54 @@ show ID           Show a single status
       puts "=> #{result.inspect}"
     rescue SyntaxError => e
       puts e
+    end
+  end
+
+  # completion for standard commands
+
+  require 'set'
+  public_storage[:users] ||= Set.new
+  public_storage[:status_ids] ||= Set.new
+
+  def self.find_status_id_candidates(a, b)
+    if a.empty?
+      Termtter::Client.public_storage[:status_ids].to_a
+    else
+      Termtter::Client.public_storage[:status_ids].
+        grep(/#{Regexp.quote a}/).map {|u| b % u }
+    end
+  end
+
+  def self.find_user_candidates(a, b)
+    if a.empty?
+      Termtter::Client.public_storage[:users].to_a
+    else
+      Termtter::Client.public_storage[:users].
+        grep(/^#{Regexp.quote a}/i).map {|u| b % u }
+    end
+  end
+
+  add_hook do |statuses, event, t|
+    statuses.each do |s|
+      public_storage[:users].add(s.user_screen_name)
+      public_storage[:users] += s.text.scan(/@([a-zA-Z_0-9]*)/).flatten
+      public_storage[:status_ids].add(s.id.to_s)
+      public_storage[:status_ids].add(s.in_reply_to_status_id.to_s) if s.in_reply_to_status_id
+    end
+  end
+
+  add_completion do |input|
+    # TODO: show コマンドのID補完
+    standard_commands = %w[exit help list pause update resume replies search show]
+    case input
+    when /^(list|l)?\s+(.*)/
+      find_user_candidates $2, "#{$1} %s"
+    when /^(update|u)\s+(.*)@([^\s]*)$/
+      find_user_candidates $3, "#{$1} #{$2}@%s"
+    when /^show\s+(.*)/
+      find_status_id_candidates $1, "show %s"
+    else
+      standard_commands.grep(/^#{Regexp.quote input}/)
     end
   end
 

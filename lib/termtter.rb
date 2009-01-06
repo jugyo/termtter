@@ -99,6 +99,7 @@ module Termtter
 
     @@hooks = []
     @@commands = {}
+    @@completions = []
 
     class << self
       def add_hook(&hook)
@@ -116,6 +117,19 @@ module Termtter
       def clear_commands
         @@commands.clear
       end
+
+      def add_completion(&completion)
+        @@completions << completion
+      end
+
+      def clear_completions
+        @@completions.clear
+      end
+
+      Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
+      Readline.completion_proc = proc {|input|
+        @@completions.map {|completion| completion.call(input)}.flatten
+      }
 
       def public_storage
         @@public_storage ||= {}
@@ -210,7 +224,9 @@ module Termtter
 
         @@input_thread.join
       end
+
     end
+
   end
 
   class CommandNotFound < StandardError; end
