@@ -18,11 +18,6 @@ $:.unshift(File.dirname(__FILE__)) unless
 
 configatron.set_default(:update_interval, 300)
 configatron.set_default(:prompt, '> ')
-configatron.set_default(:editing_mode, 'vi')
-
-editing_mode = configatron.editing_mode
-editing_mode = 'vi' unless %w[ vi emacs ].include? editing_mode
-Readline.__send__("#{editing_mode}_editing_mode")
 
 def plugin(s)
   require "plugin/#{s}"
