@@ -102,7 +102,6 @@ show ID           Show a single status
   end
 
   add_completion do |input|
-    # TODO: show コマンドのID補完
     standard_commands = %w[exit help list pause update resume replies search show]
     case input
     when /^(list|l)?\s+(.*)/
