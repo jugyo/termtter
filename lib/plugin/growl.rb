@@ -1,9 +1,10 @@
 require 'tmpdir'
 require 'open-uri'
 require 'uri'
+require 'fileutils'
 
 configatron.plugins.growl.set_default(:icon_cache_dir, "#{Dir.tmpdir}/termtter-icon-cache-dir")
-Dir.mkdir_p(configatron.plugins.growl.icon_cache_dir) unless File.exist?(configatron.plugins.growl.icon_cache_dir)
+FileUtils.mkdir_p(configatron.plugins.growl.icon_cache_dir) unless File.exist?(configatron.plugins.growl.icon_cache_dir)
 
 def get_icon_path(s)
   cache_file = "%s/%s%s" % [  configatron.plugins.growl.icon_cache_dir, 
