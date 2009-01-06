@@ -5,7 +5,7 @@ $KCODE = 'u'
 require 'rubygems'
 require 'termtter'
 require 'configatron'
-plugin 'standard_commands'
+plugin 'standard_plugins'
 plugin 'stdout'
 
 conf_file = File.expand_path('~/.termtter')
@@ -20,7 +20,7 @@ else
     plugins = Dir.glob(File.dirname(__FILE__) + "/../lib/plugin/*.rb").map  {|f|
       f.match(%r|lib/plugin/(.*?).rb$|)[1]
     }
-    plugins -= %w[stdout standard_commands]
+    plugins -= %w[stdout standard_plugins]
     plugins.each do |p|
       io.puts "#plugin '#{p}'"
     end

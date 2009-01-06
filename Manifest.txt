@@ -9,7 +9,7 @@ bin/termtter
 lib/termtter.rb
 lib/plugin/stdout.rb
 lib/plugin/notify-send.rb
-lib/plugin/standard_commands.rb
+lib/plugin/standard_plugins.rb
 lib/plugin/uri-open.rb
 lib/plugin/growl.rb
 lib/plugin/say.rb
