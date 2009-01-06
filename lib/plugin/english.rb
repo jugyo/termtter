@@ -1,53 +1,60 @@
+require 'erb'
+
 Termtter::Client.clear_hooks # FIXME: not to clear all but to clear just stdout.rb
+
+configatron.set_default(
+  :timeline_format,
+  '<%= color(time, 90) %> <%= color(status, status_color) %> <%= color(id, 90) %>')
 
 # english? :: String -> Boolean
 def english?(message)
-  /[‰∏Ä-Èæ†]+|[„ÅÅ-„Çì]+|[„Ç°-„É¥„Éº]+|[ÔΩÅ-ÔΩöÔº°-Ôº∫Ôºê-Ôºô]+/ !~ message
+  /[∞Ï-Û˛]+|[§°-§Û]+|[•°-•Ù°º]+|[£·-£˙£¡-£⁄£∞-£π]+/ !~ message
+end
+
+def color(str, num)
+  "\e[#{num}m#{str}\e[0m"
 end
 
 # FIXME: The code below is a copy from stdout.rb so it's not DRY. DRY it.
+
 Termtter::Client.add_hook do |statuses, event|
   colors = %w(0 31 32 33 34 35 36 91 92 93 94 95 96)
 
   case event
   when :update_friends_timeline, :list_friends_timeline, :list_user_timeline, :show, :replies
     unless statuses.empty?
-      if event == :update_friends_timeline then statuses = statuses.reverse end
+      statuses.reverse! if event == :update_friends_timeline
       statuses.each do |s|
         text = s.text.gsub("\n", '')
         next unless english?(text) # if you substitute "if" for "unless", this script will be "japanese.rb"
-        color_num = colors[s.user_screen_name.hash % colors.size]
+        status_color = colors[s.user_screen_name.hash % colors.size]
         status = "#{s.user_screen_name}: #{text}"
         if s.in_reply_to_status_id
           status += " (reply to #{s.in_reply_to_status_id})"
         end
 
-        case event
-        when :update_friends_timeline, :list_friends_timeline
-          time_format = '%H:%M:%S'
-        else
-          time_format = '%m-%d %H:%d'
-        end
-        time_str = "(#{s.created_at.strftime(time_format)})"
+        time_format = case event
+          when :update_friends_timeline, :list_friends_timeline
+            '%H:%M:%S'
+          else
+            '%m-%d %H:%M'
+          end
+        time = "(#{s.created_at.strftime(time_format)})"
 
-        puts "#{color(time_str, 90)} #{color(status, color_num)}"
+        id = s.id
+
+        puts ERB.new(configatron.timeline_format).result(binding)
       end
     end
   when :search
     statuses.each do |s|
       text = s.text.gsub("\n", '')
-      color_num = colors[s.user_screen_name.hash % colors.size]
-      status = "#{s.user_screen_name}: #{text}"
-      time_str = "(#{s.created_at.strftime('%m-%d %H:%d')})"
+      status_color = colors[s.user_screen_name.hash % colors.size]
 
-      puts "#{color(time_str, 90)} #{color(status, color_num)}"
+      status = "#{s.user_screen_name}: #{text}"
+      time = "(#{s.created_at.strftime('%m-%d %H:%M')})"
+      id = s.id
+      puts ERB.new(configatron.timeline_format).result(binding)
     end
   end
 end
-
-# USAGE:
-#   Write the line on the *first line* of your ~/.termtter
-#     plugin 'english'
-#   (english.rb will destroy plugins which were required before)
-# KNOWN BUG:
-#   This plugin disables completion.
