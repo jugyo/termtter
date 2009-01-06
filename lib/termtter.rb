@@ -151,7 +151,6 @@ module Termtter
 
       def public_storage
         @@public_storage ||= {}
-        return @@public_storage
       end
 
       def call_hooks(statuses, event, tw)

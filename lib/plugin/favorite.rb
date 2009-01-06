@@ -9,19 +9,21 @@ module Termtter::Client
     end
   end
 
-  add_command %r'^(?:favorite|fav)\s+/(.+)$' do |m,t|
-    pat = Regexp.new(m[1])
-    statuses = public_storage[:log].select { |s| s.text =~ pat }
-    if statuses.size == 1
-      status = statuses.first
-      res = t.favorite(status.id)
-      if res.code == '200'
-        puts %Q(Favorited "#{status.user_screen_name}: #{status.text}")
+  if public_storage[:log]
+    add_command %r'^(?:favorite|fav)\s+/(.+)$' do |m,t|
+      pat = Regexp.new(m[1])
+      statuses = public_storage[:log].select { |s| s.text =~ pat }
+      if statuses.size == 1
+        status = statuses.first
+        res = t.favorite(status.id)
+        if res.code == '200'
+          puts %Q(Favorited "#{status.user_screen_name}: #{status.text}")
+        else
+          puts "Failed: #{res}"
+        end
       else
-        puts "Failed: #{res}"
+        puts "#{pat} does not match single status"
       end
-    else
-      puts "#{pat} does not match single status"
     end
   end
 end
