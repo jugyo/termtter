@@ -4,7 +4,6 @@ PostInstall.txt
 README.rdoc
 Rakefile
 run_termtter.rb
-example_dot_termtter
 bin/termtter
 lib/termtter.rb
 lib/plugin/stdout.rb
