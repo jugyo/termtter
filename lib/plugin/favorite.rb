@@ -30,15 +30,9 @@ module Termtter
   class Twitter
     def favorite(id)
       uri = "http://twitter.com/favourings/create/#{id}.json"
-      req = Net::HTTP::Post.new(uri)
-      req.basic_auth(@user_name, @password)
-      req.add_field('User-Agent', 'Termtter http://github.com/jugyo/termtter')
-      req.add_field('X-Twitter-Client', 'Termtter')
-      req.add_field('X-Twitter-Client-URL', 'http://github.com/jugyo/termtter')
-      req.add_field('X-Twitter-Client-Version', '0.1')
 
       Net::HTTP.start('twitter.com', 80) do |http|
-        http.request(req)
+        http.request(post_request)
       end
     end
   end
