@@ -36,6 +36,7 @@ end
 
 module Termtter
   VERSION = '0.5.8'
+  APP_NAME = 'termtter'
 
   class Twitter
 
@@ -47,7 +48,7 @@ module Termtter
     def update_status(status)
       Net::HTTP.start("twitter.com", 80) do |http|
         uri = '/statuses/update.xml'
-        http.request(post_request(uri), "status=#{CGI.escape(status)}")
+        http.request(post_request(uri), "status=#{CGI.escape(status)}&source=#{APP_NAME}")
       end
     end
 
