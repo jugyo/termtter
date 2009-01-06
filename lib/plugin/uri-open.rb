@@ -9,25 +9,47 @@ module Termtter::Client
     end
   end
 
+  def self.open_uri(uri)
+    # FIXME: works only in OSX and other *NIXs
+    if /linux/ =~ RUBY_PLATFORM
+      system 'firefox', uri
+    else
+      system 'open', uri
+    end
+  end
+
   add_command /^uri-open\s*$/ do |m, t|
     public_storage[:uris].each do |uri|
-      # FIXME: works only in OSX and other *NIXs
-      if /linux/ =~ RUBY_PLATFORM
-        system 'firefox', uri
-      else
-        system 'open', uri
-      end
+      open_uri(uri)
     end
     public_storage[:uris].clear
   end
 
+  add_command /^uri-open\s+(\d+)$/ do |m, t|
+    if m[1]
+      index = m[1].to_i
+      open_uri(public_storage[:uris][index])
+      public_storage[:uris].delete_at(index)
+    end
+  end
+
   add_command /^uri-open\s+list\s*$/ do |m, t|
-    puts public_storage[:uris]
+    public_storage[:uris].each_with_index do |uri, index|
+      puts "#{index}: #{uri}"
+    end
+  end
+
+  add_command /^uri-open\s+delete\s+(\d+)$/ do |m, t|
+    public_storage[:uris].delete_at(m[1].to_i) if m[1]
   end
 
   add_command /^uri-open\s+clear\s*$/ do |m, t|
     public_storage[:uris].clear
     puts "clear uris"
+  end
+
+  add_completion do |input|
+    ['uri-open ', 'uri-open list', 'uri-open delete', 'uri-open clear'].grep(/^#{Regexp.quote input}/)
   end
 end
 # ~/.termtter
