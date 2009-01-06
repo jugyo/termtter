@@ -63,6 +63,7 @@ module Termtter
       results = JSON.parse(open('http://search.twitter.com/search.json?q=' + CGI.escape(query)).read)['results']
       return results.map do |s|
         status = Status.new
+        status.id = s['id']
         status.text = s['text']
         status.created_at = Time.utc(*ParseDate::parsedate(s["created_at"])).localtime
         status.user_screen_name = s['from_user']
