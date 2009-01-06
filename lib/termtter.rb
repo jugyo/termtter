@@ -7,6 +7,12 @@ require 'enumerator'
 require 'parsedate'
 require 'configatron'
 
+if RUBY_VERSION < '1.8.7'
+  class Array
+    def take(n) at(0...n) end
+  end
+end
+
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
