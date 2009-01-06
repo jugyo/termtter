@@ -21,7 +21,7 @@ Termtter::Client.add_hook do |statuses, event|
         when :update_friends_timeline, :list_friends_timeline
           time_format = '%H:%M:%S'
         else
-          time_format = '%m-%d %H:%S'
+          time_format = '%m-%d %H:%M'
         end
         time_str = "(#{s.created_at.strftime(time_format)})"
 
@@ -33,7 +33,7 @@ Termtter::Client.add_hook do |statuses, event|
       text = s.text.gsub("\n", '')
       color_num = colors[s.user_screen_name.hash % colors.size]
       status = "#{s.user_screen_name}: #{text}"
-      time_str = "(#{s.created_at.strftime('%m-%d %H:%S')})"
+      time_str = "(#{s.created_at.strftime('%m-%d %H:%M')})"
 
       puts "#{color(time_str, 90)} #{color(status, color_num)}"
     end
