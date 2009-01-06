@@ -1,6 +1,11 @@
 module Termtter::Client
   add_command /^plugin\s+(.*)/ do |m, t|
-    plugin m[1]
+    begin
+      result = plugin m[1]
+    rescue LoadError
+    ensure
+      puts "=> #{result.inspect}"
+    end
   end
 end
 
@@ -10,5 +15,6 @@ end
 #   > u <%= not erbed %>
 #   => <%= not erbed %>
 #   > plugin erb
+#   => true
 #   > u <%= 1 + 2 %>
 #   => 3
