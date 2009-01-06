@@ -25,8 +25,10 @@ else
       io.puts "#plugin '#{p}'"
     end
 
+    io.puts
     io.puts "configatron.user_name = '#{username}'"
     io.puts "configatron.password = '#{password}'"
+    io.puts "#configatron.update_interval = 120"
     io.puts
     io.puts "# vim: set filetype=ruby"
   }
