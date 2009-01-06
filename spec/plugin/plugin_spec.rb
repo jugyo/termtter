@@ -1,13 +1,24 @@
 require File.dirname(__FILE__) + '/../../lib/termtter'
 
-describe Termtter::Client, 'when the plugin plugin is loaded' do
-  it 'should add command plugin' do
-    Termtter::Client.should_receive(:add_command).with(/^plugin\s+(.*)/)
-    plugin 'plugin'
+module Termtter
+  describe Client, 'when the plugin plugin is loaded' do
+    it 'should add command plugin and plugins' do
+      Termtter::Client.should_receive(:add_command).with(/^plugin\s+(.*)/)
+      Termtter::Client.should_receive(:add_command).with(/^plugins$/)
+      plugin 'plugin'
+    end
+
+    it 'should set public_storage[:plugins]' do
+      plugin 'plugin'
+      Client::public_storage[:plugins].should_not be_empty
+    end
+
+    describe 'after the plugin plugin is loaded' do
+      before { plugin 'plugin' }
+
+      it 'should load the given plugin in the command plugin'
+      # hmm... How can I write it...?
+    end
   end
 end
 
-describe Termtter::Client, 'after the plugin plugin is loaded' do
-  it 'should load the given plugin in the command plugin'
-  # hmm... How can I write it...?
-end
