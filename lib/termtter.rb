@@ -39,14 +39,9 @@ module Termtter
     end
 
     def update_status(status)
-      req = Net::HTTP::Post.new('/statuses/update.xml')
-      req.basic_auth(@user_name, @password)
-      req.add_field("User-Agent", "Termtter http://github.com/jugyo/termtter")
-      req.add_field("X-Twitter-Client", "Termtter")
-      req.add_field("X-Twitter-Client-URL", "http://github.com/jugyo/termtter")
-      req.add_field("X-Twitter-Client-Version", "0.1")
       Net::HTTP.start("twitter.com", 80) do |http|
-        http.request(req, "status=#{CGI.escape(status)}")
+        uri = '/statuses/update.xml'
+        http.request(post_request(uri), "status=#{CGI.escape(status)}")
       end
     end
 
@@ -58,6 +53,11 @@ module Termtter
 
     def get_user_timeline(screen_name)
       return get_timeline("http://twitter.com/statuses/user_timeline/#{screen_name}.json")
+    rescue OpenURI::HTTPError => e
+      puts "No such user: #{screen_name}"
+      nears = near_users(screen_name)
+      puts 'near users: ' + nears unless nears.empty?
+      return {}
     end
 
     def search(query)
@@ -95,6 +95,23 @@ module Termtter
         status
       end
     end
+
+    def near_users(screen_name)
+      Client::public_storage[:users].select {|user|
+        screen_name =~ /#{user}/i ||
+        user =~ /#{screen_name}/i
+      }.join(', ')
+    end
+
+    def post_request(uri)
+      req = Net::HTTP::Post.new(uri)
+      req.basic_auth(@user_name, @password)
+      req.add_field('User-Agent', 'Termtter http://github.com/jugyo/termtter')
+      req.add_field('X-Twitter-Client', 'Termtter')
+      req.add_field('X-Twitter-Client-URL', 'http://github.com/jugyo/termtter')
+      req.add_field('X-Twitter-Client-Version', '0.1')
+      req
+    end
   end
 
   module Client
@@ -102,6 +119,7 @@ module Termtter
     @@hooks = []
     @@commands = {}
     @@completions = []
+    @@helps = []
 
     class << self
       def add_hook(&hook)
@@ -126,6 +144,14 @@ module Termtter
 
       def clear_completions
         @@completions.clear
+      end
+
+      def add_help(name, desc)
+        @@helps << [name, desc]
+      end
+
+      def clear_helps
+        @@helps.clear
       end
 
       Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("

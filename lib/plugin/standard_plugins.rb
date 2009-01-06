@@ -57,6 +57,7 @@ replies,r         List the most recent @replies for the authenticating user
 search,s TEXT     Search for Twitter
 show ID           Show a single status
     EOS
+		puts formatted_help unless @@helps.empty?
   end
 
   add_command /^eval\s+(.*)$/ do |m, t|
@@ -67,6 +68,15 @@ show ID           Show a single status
       puts e
     end
   end
+
+	def self.formatted_help
+		width = @@helps.map {|n, d| n.size }.max
+		space = 3
+		"\nuser commands:\n" +
+		@@helps.map {|name, desc|
+			name.to_s.ljust(width + space) + desc.to_s
+		}.join("\n")
+	end
 
   # completion for standard commands
 
