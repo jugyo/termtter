@@ -1,6 +1,8 @@
 require 'erb'
 
-configatron.set_default(:timeline_format, '<%= color(time, 90) %> <%= color(status, status_color) %> <%= color(id, 90) %>')
+configatron.set_default(
+  :timeline_format,
+  '<%= color(time, 90) %> <%= color(status, status_color) %> <%= color(id, 90) %>')
 
 def color(str, num)
   "\e[#{num}m#{str}\e[0m"
@@ -12,7 +14,7 @@ Termtter::Client.add_hook do |statuses, event|
   case event
   when :update_friends_timeline, :list_friends_timeline, :list_user_timeline, :show, :replies
     unless statuses.empty?
-      if event == :update_friends_timeline then statuses = statuses.reverse end
+      statuses.reverse! if event == :update_friends_timeline
       statuses.each do |s|
         text = s.text.gsub("\n", '')
         status_color = colors[s.user_screen_name.hash % colors.size]
@@ -21,12 +23,12 @@ Termtter::Client.add_hook do |statuses, event|
           status += " (reply to #{s.in_reply_to_status_id})"
         end
 
-        case event
-        when :update_friends_timeline, :list_friends_timeline
-          time_format = '%H:%M:%S'
-        else
-          time_format = '%m-%d %H:%M'
-        end
+        time_format = case event
+          when :update_friends_timeline, :list_friends_timeline
+            '%H:%M:%S'
+          else
+            '%m-%d %H:%M'
+          end
         time = "(#{s.created_at.strftime(time_format)})"
 
         id = s.id
