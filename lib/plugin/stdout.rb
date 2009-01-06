@@ -25,7 +25,7 @@ Termtter::Client.add_hook do |statuses, event|
         end
         time_str = "(#{s.created_at.strftime(time_format)})"
 
-        puts "#{color(time_str, 90)} #{color(status, color_num)}"
+        puts "#{color(time_str, 90)} #{color(s.id, 90)} #{color(status, color_num)}"
       end
     end
   when :search
