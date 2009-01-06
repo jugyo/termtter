@@ -15,6 +15,8 @@ lib/plugin/growl.rb
 lib/plugin/say.rb
 lib/plugin/english.rb
 lib/plugin/completion.rb
+lib/plugin/log.rb
+lib/plugin/favorite.rb
 test/test_termtter.rb
 test/friends_timeline.json
 test/search.json
