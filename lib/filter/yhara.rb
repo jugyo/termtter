@@ -4,7 +4,7 @@ module Termtter
 
   class Status
     def yharian?
-      self.text =~ /^(?:\s|(y\s)|(?:hara\s))+\s*(?:y|(?:hara))(?:\?|!)?\s*$/
+      self.text =~ /^(?:\s|(y\s)|(?:hara\s))+\s*(?:y|(?:hara))(?:\?|!|\.)?\s*$/
     end
   end
 

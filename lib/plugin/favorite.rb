@@ -12,7 +12,7 @@ module Termtter::Client
   end
 
   if public_storage[:log]
-    add_help 'favorite,fav /word', 'Favorite a status by searching'
+    add_help 'favorite,fav /WORD', 'Favorite a status by searching'
 
     add_command %r'^(?:favorite|fav)\s+/(.+)$' do |m,t|
       pat = Regexp.new(m[1])
@@ -29,6 +29,10 @@ module Termtter::Client
         puts "#{pat} does not match single status"
       end
     end
+  end
+
+  add_completion do |input|
+    %w(favorite).grep(/^#{Regexp.quote input}/)
   end
 end
 

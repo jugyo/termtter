@@ -10,9 +10,11 @@ module Termtter::Client
   end
 
   def self.open_uri(uri)
-    # FIXME: works only in OSX and other *NIXs
-    if /linux/ =~ RUBY_PLATFORM
+    case RUBY_PLATFORM
+    when /linux/
       system 'firefox', uri
+    when /mswin(?!ce)|mingw|bccwin/
+      system 'explorer', uri
     else
       system 'open', uri
     end

@@ -1,24 +1,47 @@
+$:.unshift(File.dirname(__FILE__)) unless
+  $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
+
 require 'rubygems'
 require 'json'
+require 'net/https'
 require 'open-uri'
 require 'cgi'
 require 'readline'
 require 'enumerator'
 require 'parsedate'
 require 'configatron'
-require 'filter'
 
 if RUBY_VERSION < '1.8.7'
   class Array
-    def take(n) at(0...n) end
+    def take(n) self[0...n] end
   end
 end
 
-$:.unshift(File.dirname(__FILE__)) unless
-  $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
+if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
+  require 'kconv'
+  module Readline
+    alias :old_readline :readline
+    def readline(*a)
+      old_readline(*a).toutf8
+    end
+    module_function :old_readline, :readline
+  end
+end
 
 configatron.set_default(:update_interval, 300)
 configatron.set_default(:prompt, '> ')
+configatron.namespace(:proxy) do |proxy|
+  proxy.port = '8080'
+end
+
+# FIXME: we need public_storage all around the script
+module Termtter
+  module Client
+    def self.public_storage
+      @@public_storage ||= {}
+    end
+  end
+end
 
 def plugin(s)
   require "plugin/#{s}"
@@ -26,6 +49,12 @@ end
 
 def filter(s)
   load "filter/#{s}.rb"
+rescue LoadError
+  raise
+else
+  Termtter::Client.public_storage[:filters] = []
+  Termtter::Client.public_storage[:filters] << s
+  true
 end
 
 # FIXME: delete this method after the major version up
@@ -40,21 +69,49 @@ def require(s)
 end
 
 module Termtter
-  VERSION = '0.6.0'
+  VERSION = '0.7.0'
   APP_NAME = 'termtter'
+
+  class Connection
+    def initialize
+      @proxy_host = configatron.proxy.host
+      @proxy_port = configatron.proxy.port
+      @proxy_user = configatron.proxy.user_name
+      @proxy_password = configatron.proxy.password
+      @proxy_uri = nil
+
+      unless @proxy_host.empty?
+        @http_class = Net::HTTP::Proxy(@proxy_host, @proxy_port,
+                                       @proxy_user, @proxy_password)
+        @proxy_uri =  "http://" + @proxy_host + ":" + @proxy_port + "/"
+      else
+        @http_class = Net::HTTP
+      end
+    end
+
+    def start(host, port, &block)
+      @http_class.start(host, port, &block)
+    end
+
+    def proxy_uri
+      @proxy_uri
+    end
+  end
 
   class Twitter
 
     def initialize(user_name, password)
       @user_name = user_name
       @password = password
+      @connection = Connection.new
     end
 
     def update_status(status)
-      Net::HTTP.start("twitter.com", 80) do |http|
+      @connection.start("twitter.com", 80) do |http|
         uri = '/statuses/update.xml'
         http.request(post_request(uri), "status=#{CGI.escape(status)}&source=#{APP_NAME}")
       end
+      status
     end
 
     def get_friends_timeline(since_id = nil)
@@ -73,7 +130,7 @@ module Termtter
     end
 
     def search(query)
-      results = JSON.parse(open('http://search.twitter.com/search.json?q=' + CGI.escape(query)).read)['results']
+      results = JSON.parse(open('http://search.twitter.com/search.json?q=' + CGI.escape(query)).read, :proxy => @connection.proxy_uri)['results']
       return results.map do |s|
         status = Status.new
         status.id = s['id']
@@ -93,7 +150,7 @@ module Termtter
     end
 
     def get_timeline(uri)
-      data = JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password]).read)
+      data = JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password], :proxy => @connection.proxy_uri).read)
       data = [data] unless data.instance_of? Array
       return data.map do |s|
         status = Status.new
@@ -132,6 +189,7 @@ module Termtter
     @@hooks = []
     @@commands = {}
     @@completions = []
+    @@filters = []
     @@helps = []
 
     class << self
@@ -167,16 +225,33 @@ module Termtter
         @@helps.clear
       end
 
+      def add_filter(&filter)
+        @@filters << filter
+      end
+
+      def clear_filters
+        @@filters.clear
+      end
+
+      # memo: each filter must return Array of Status
+      def apply_filters(statuses)
+        filtered = statuses
+        @@filters.each do |f|
+          filtered = f.call(filtered)
+        end
+        filtered
+      rescue => e
+        puts "Error: #{e}"
+        puts e.backtrace.join("\n")
+        statuses
+      end
+
       Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
       Readline.completion_proc = proc {|input|
         @@completions.map {|completion|
           completion.call(input)
         }.flatten.compact
       }
-
-      def public_storage
-        @@public_storage ||= {}
-      end
 
       def call_hooks(statuses, event, tw)
         statuses = apply_filters(statuses)
@@ -272,8 +347,11 @@ module Termtter
           end
         end
 
-        stty_save = `stty -g`.chomp
-        trap("INT") { system "stty", stty_save; exit }
+        begin
+          stty_save = `stty -g`.chomp
+          trap("INT") { system "stty", stty_save; exit }
+        rescue Errno::ENOENT
+        end
 
         @@input_thread.join
       end

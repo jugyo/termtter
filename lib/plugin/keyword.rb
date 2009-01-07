@@ -12,5 +12,5 @@ end
 # keyword.rb
 #   provides a keyword watching method
 # example config
-#   configatron.timeline_format = '<%= color(time, 90) %> <%= color(status, s.has_keyword ? 4 : status_color) %> <%= color(id, 90) %>'
+#   configatron.plugins.stdout.timeline_format = '<%= color(time, 90) %> <%= color(status, s.has_keyword ? 4 : status_color) %> <%= color(id, 90) %>'
 #   configatron.plugins.keyword.keywords = [ /motemen/ ]

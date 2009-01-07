@@ -29,6 +29,10 @@ else
     io.puts "configatron.user_name = '#{username}'"
     io.puts "configatron.password = '#{password}'"
     io.puts "#configatron.update_interval = 120"
+    io.puts "#configatron.proxy.host = 'proxy host'"
+    io.puts "#configatron.proxy.port = '8080'"
+    io.puts "#configatron.proxy.user_name = 'proxy user'"
+    io.puts "#configatron.proxy.password = 'proxy password'"
     io.puts
     io.puts "# vim: set filetype=ruby"
   }
