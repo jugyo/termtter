@@ -51,7 +51,7 @@ def require(s)
 end
 
 module Termtter
-  VERSION = '0.6.0'
+  VERSION = '0.7.0'
   APP_NAME = 'termtter'
 
   class Twitter
