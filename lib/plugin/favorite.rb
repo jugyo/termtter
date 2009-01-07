@@ -1,7 +1,7 @@
 module Termtter::Client
   add_help 'favorite,fav ID', 'Favorite a status'
 
-  add_command %r'^(?:favorite|fav)\s+(\d+)$' do |m,t|
+  add_command %r'^(?:favorite|fav)\s+(\d+)$' do |m, t|
     id = m[1]
     res = t.favorite(id)
     if res.code == '200'
@@ -14,9 +14,9 @@ module Termtter::Client
   if public_storage[:log]
     add_help 'favorite,fav /WORD', 'Favorite a status by searching'
 
-    add_command %r'^(?:favorite|fav)\s+/(.+)$' do |m,t|
+    add_command %r'^(?:favorite|fav)\s+/(.+)$' do |m, t|
       pat = Regexp.new(m[1])
-      statuses = public_storage[:log].select { |s| s.text =~ pat }
+      statuses = public_storage[:log].select {|s| pat =~ s.text }
       if statuses.size == 1
         status = statuses.first
         res = t.favorite(status.id)
