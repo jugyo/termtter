@@ -287,6 +287,11 @@ module Termtter
     ).each do |attr|
       attr_accessor attr.to_sym
     end
+
+    # english? :: String -> Boolean
+    def self.english?(message)
+      /[一-龠]+|[ぁ-ん]+|[ァ-ヴー]+|[ａ-ｚＡ-Ｚ０-９]+/ !~ message
+    end
   end
 
 end
