@@ -73,7 +73,7 @@ module Termtter
       return results.map do |s|
         status = Status.new
         status.id = s['id']
-        status.text = CGI.unescapeHTML(s['text'])
+        status.text = CGI.unescapeHTML(s['text']).gsub(/(\n|\r)/, '')
         status.created_at = Time.utc(*ParseDate::parsedate(s["created_at"])).localtime
         status.user_screen_name = s['from_user']
         status
@@ -100,7 +100,7 @@ module Termtter
         %w(id name screen_name url profile_image_url).each do |key|
           status.__send__("user_#{key}=".to_sym, s["user"][key])
         end
-        status.text = CGI.unescapeHTML(status.text)
+        status.text = CGI.unescapeHTML(status.text).gsub(/(\n|\r)/, '')
         status
       end
     end
