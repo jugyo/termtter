@@ -4,8 +4,18 @@ configatron.set_default(
   :timeline_format,
   '<%= color(time, 90) %> <%= color(status, status_color) %> <%= color(id, 90) %>')
 
-def color(str, num)
-  "\e[#{num}m#{str}\e[0m"
+if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
+  require 'kconv'
+  def color(str, num)
+    str.to_s.tosjis
+  end
+  def puts(str)
+    STDOUT.puts(str.tosjis)
+  end
+else
+  def color(str, num)
+    "\e[#{num}m#{str}\e[0m"
+  end
 end
 
 Termtter::Client.add_hook do |statuses, event|

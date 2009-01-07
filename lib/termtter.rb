@@ -14,6 +14,17 @@ if RUBY_VERSION < '1.8.7'
   end
 end
 
+if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
+  require 'kconv'
+  module Readline
+    alias :old_readline :readline
+    def readline(*a)
+      old_readline(*a).toutf8
+    end
+    module_function :old_readline, :readline
+  end
+end
+
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
@@ -272,8 +283,11 @@ module Termtter
           end
         end
 
-        stty_save = `stty -g`.chomp
-        trap("INT") { system "stty", stty_save; exit }
+        begin
+          stty_save = `stty -g`.chomp
+          trap("INT") { system "stty", stty_save; exit }
+        rescue Errno::ENOENT
+        end
 
         @@input_thread.join
       end
