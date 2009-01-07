@@ -6,6 +6,7 @@ require 'readline'
 require 'enumerator'
 require 'parsedate'
 require 'configatron'
+require 'filter'
 
 if RUBY_VERSION < '1.8.7'
   class Array
@@ -174,6 +175,7 @@ module Termtter
       end
 
       def call_hooks(statuses, event, tw)
+        statuses = apply_filters(statuses)
         @@hooks.each do |h|
           begin
             h.call(statuses.dup, event, tw)
