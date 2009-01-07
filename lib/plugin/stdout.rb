@@ -1,8 +1,7 @@
 require 'erb'
 
 configatron.plugins.stdout.set_default(:colors, [0, 31, 32, 33, 34, 35, 36, 91, 92, 93, 94, 95, 96])
-
-configatron.set_default(
+configatron.plugins.stdout.set_default(
   :timeline_format,
   '<%= color(time, 90) %> <%= color(status, status_color) %> <%= color(id, 90) %>')
 
@@ -43,7 +42,7 @@ Termtter::Client.add_hook do |statuses, event|
 
         id = s.id
 
-        puts ERB.new(configatron.timeline_format).result(binding)
+        puts ERB.new(configatron.plugins.stdout.timeline_format).result(binding)
       end
     end
   when :search
@@ -54,7 +53,13 @@ Termtter::Client.add_hook do |statuses, event|
       status = "#{s.user_screen_name}: #{text}"
       time = "(#{s.created_at.strftime('%m-%d %H:%M')})"
       id = s.id
-      puts ERB.new(configatron.timeline_format).result(binding)
+      puts ERB.new(configatron.plugins.stdout.timeline_format).result(binding)
     end
   end
 end
+
+# stdout.rb
+#   output statuses to stdout
+# example config
+#   configatron.plugins.stdout.colors = [0, 31, 32, 33, 34, 35, 36, 91, 92, 93, 94, 95, 96]
+#   configatron.plugins.stdout.timeline_format = '<%= color(time, 90) %> <%= color(status, status_color) %> <%= color(id, 90) %>'
