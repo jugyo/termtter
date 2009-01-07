@@ -6,7 +6,6 @@ Rakefile
 run_termtter.rb
 bin/termtter
 lib/termtter.rb
-lib/filter.rb
 lib/plugin/english.rb
 lib/plugin/erb.rb
 lib/plugin/favorite.rb
