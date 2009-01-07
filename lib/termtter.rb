@@ -9,7 +9,6 @@ require 'readline'
 require 'enumerator'
 require 'parsedate'
 require 'configatron'
-require 'filter'
 
 if RUBY_VERSION < '1.8.7'
   class Array
@@ -31,12 +30,27 @@ end
 configatron.set_default(:update_interval, 300)
 configatron.set_default(:prompt, '> ')
 
+# FIXME: we need public_storage all araund the script
+module Termtter
+  module Client
+    def self.public_storage
+      @@public_storage ||= {}
+    end
+  end
+end
+
 def plugin(s)
   require "plugin/#{s}"
 end
 
 def filter(s)
   load "filter/#{s}.rb"
+rescue LoadError
+  raise
+else
+  Termtter::Client.public_storage[:filters] = []
+  Termtter::Client.public_storage[:filters] << s
+  true
 end
 
 # FIXME: delete this method after the major version up
@@ -144,6 +158,7 @@ module Termtter
     @@hooks = []
     @@commands = {}
     @@completions = []
+    @@filters = []
     @@helps = []
 
     class << self
@@ -179,16 +194,33 @@ module Termtter
         @@helps.clear
       end
 
+      def add_filter(&filter)
+        @@filters << filter
+      end
+
+      def clear_filters
+        @@filters.clear
+      end
+
+      # memo: each filter must return Array of Status
+      def apply_filters(statuses)
+        filtered = statuses
+        @@filters.each do |f|
+          filtered = f.call(filtered)
+        end
+        filtered
+      rescue => e
+        puts "Error: #{e}"
+        puts e.backtrace.join("\n")
+        statuses
+      end
+
       Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
       Readline.completion_proc = proc {|input|
         @@completions.map {|completion|
           completion.call(input)
         }.flatten.compact
       }
-
-      def public_storage
-        @@public_storage ||= {}
-      end
 
       def call_hooks(statuses, event, tw)
         statuses = apply_filters(statuses)
