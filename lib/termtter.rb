@@ -51,10 +51,12 @@ module Termtter
     end
 
     def update_status(status)
+      status = CGI.escape(status)
       Net::HTTP.start("twitter.com", 80) do |http|
         uri = '/statuses/update.xml'
-        http.request(post_request(uri), "status=#{CGI.escape(status)}&source=#{APP_NAME}")
+        http.request(post_request(uri), "status=#{status}&source=#{APP_NAME}")
       end
+      status
     end
 
     def get_friends_timeline(since_id = nil)
