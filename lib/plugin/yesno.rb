@@ -6,7 +6,7 @@ module Termtter::Client
       pause
       print "update? #{text} [Y/n] "
       buf = Readline.readline("", false)
-      t.update_status(text) if buf =~ /^y?$/i
+      t.update_status(text) if /^y?$/i =~ buf
       resume
     end
   end
@@ -23,3 +23,4 @@ module Termtter::Client
 end
 
 # FIXME!!! command name
+#   * confirm.rb
