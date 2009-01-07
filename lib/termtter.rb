@@ -249,6 +249,11 @@ module Termtter
 
         until initialized; end
 
+        vi_or_emacs = configatron.editing_mode
+        unless vi_or_emacs.empty?
+          Readline.__send__("#{vi_or_emacs}_editing_mode")
+        end
+
         @@input_thread = Thread.new do
           while buf = Readline.readline(configatron.prompt, true)
             begin
