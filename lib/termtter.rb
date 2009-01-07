@@ -30,10 +30,7 @@ end
 
 configatron.set_default(:update_interval, 300)
 configatron.set_default(:prompt, '> ')
-# FIXME: It's buggy.
-#configatron.namespace(:proxy) do |proxy|
-#  proxy.port = '8080'
-#end
+configatron.proxy.set_default(:port, '8080')
 
 # FIXME: we need public_storage all around the script
 module Termtter
