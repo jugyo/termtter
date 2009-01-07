@@ -38,6 +38,10 @@ You can edit the file anytime.
 
 To update the config, just restart your termtter proccess.
 
+== FORUM:
+
+http://www.lingr.com/room/termtter
+
 == LICENSE:
 
 (The MIT License)
