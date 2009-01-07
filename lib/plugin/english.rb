@@ -8,7 +8,7 @@ configatron.set_default(
 
 # english? :: String -> Boolean
 def english?(message)
-  /[°ì-óş]+|[¤¡-¤ó]+|[¥¡-¥ô¡¼]+|[£á-£ú£Á-£Ú£°-£¹]+/ !~ message
+  /[ä¸€-é¾ ]+|[ã-ã‚“]+|[ã‚¡-ãƒ´ãƒ¼]+|[ï½-ï½šï¼¡-ï¼ºï¼-ï¼™]+/ !~ message
 end
 
 def color(str, num)
