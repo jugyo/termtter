@@ -21,12 +21,18 @@ def en2ja(text)
   }
 end
 
+# filter-en2ja.rb として切り出す
 Termtter::Client.add_filter do |statuses|
   statuses.each do |s|
     if s.english?
       s.text = en2ja(s.text)
     end
   end
+end
+
+Termtter::Client.add_command /^en2ja\s+(.*)$/ do |m, t|
+  puts "translating..."
+  puts "=> #{en2ja(m[1])}"
 end
 
 # This plugin does not work yet.
