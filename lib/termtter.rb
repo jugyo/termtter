@@ -3,6 +3,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 
 require 'rubygems'
 require 'json'
+require 'net/https'
 require 'open-uri'
 require 'cgi'
 require 'readline'
@@ -29,6 +30,9 @@ end
 
 configatron.set_default(:update_interval, 300)
 configatron.set_default(:prompt, '> ')
+configatron.namespace(:proxy) do |proxy|
+  proxy.port = '8080'
+end
 
 # FIXME: we need public_storage all araund the script
 module Termtter
@@ -68,15 +72,42 @@ module Termtter
   VERSION = '0.7.0'
   APP_NAME = 'termtter'
 
+  class Connection
+    def initialize
+      @proxy_host = configatron.proxy.host
+      @proxy_port = configatron.proxy.port
+      @proxy_user = configatron.proxy.user_name
+      @proxy_password = configatron.proxy.password
+      @proxy_uri = nil
+
+      unless @proxy_host.empty?
+        @http_class = Net::HTTP::Proxy(@proxy_host, @proxy_port,
+                                       @proxy_user, @proxy_password)
+        @proxy_uri =  "http://" + @proxy_host + ":" + @proxy_port + "/"
+      else
+        @http_class = Net::HTTP
+      end
+    end
+
+    def start(host, port, &block)
+      @http_class.start(host, port, &block)
+    end
+
+    def proxy_uri
+      @proxy_uri
+    end
+  end
+
   class Twitter
 
     def initialize(user_name, password)
       @user_name = user_name
       @password = password
+      @connection = Connection.new
     end
 
     def update_status(status)
-      Net::HTTP.start("twitter.com", 80) do |http|
+      @connection.start("twitter.com", 80) do |http|
         uri = '/statuses/update.xml'
         http.request(post_request(uri), "status=#{CGI.escape(status)}&source=#{APP_NAME}")
       end
@@ -99,7 +130,7 @@ module Termtter
     end
 
     def search(query)
-      results = JSON.parse(open('http://search.twitter.com/search.json?q=' + CGI.escape(query)).read)['results']
+      results = JSON.parse(open('http://search.twitter.com/search.json?q=' + CGI.escape(query)).read, :proxy => @connection.proxy_uri)['results']
       return results.map do |s|
         status = Status.new
         status.id = s['id']
@@ -119,7 +150,7 @@ module Termtter
     end
 
     def get_timeline(uri)
-      data = JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password]).read)
+      data = JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password], :proxy => @connection.proxy_uri).read)
       data = [data] unless data.instance_of? Array
       return data.map do |s|
         status = Status.new
