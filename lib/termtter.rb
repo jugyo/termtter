@@ -66,6 +66,7 @@ module Termtter
         uri = '/statuses/update.xml'
         http.request(post_request(uri), "status=#{CGI.escape(status)}&source=#{APP_NAME}")
       end
+      status
     end
 
     def get_friends_timeline(since_id = nil)
