@@ -16,28 +16,6 @@ class TestTermtter < Test::Unit::TestCase
     end
   end
 
-  def test_get_timeline
-    statuses = swap_open('friends_timeline.json') { @twitter.get_timeline('') }
-
-    assert_equal 3, statuses.size
-
-    assert_equal 102, statuses[0].user_id
-    assert_equal 'test2', statuses[0].user_screen_name
-    assert_equal 'Test User 2', statuses[0].user_name
-    assert_equal 'texttext 2', statuses[0].text
-    assert_equal 'http://twitter.com/test2', statuses[0].user_url
-    assert_equal 'http://s3.amazonaws.com/twitter_production/profile_images/000/102.png', statuses[0].user_profile_image_url
-    assert_equal 'Sat Jan 03 21:13:45 +0900 2009', statuses[0].created_at.to_s
-
-    assert_equal 100, statuses[2].user_id
-    assert_equal 'test0', statuses[2].user_screen_name
-    assert_equal 'Test User 0', statuses[2].user_name
-    assert_equal 'texttext 0', statuses[2].text
-    assert_equal 'http://twitter.com/test0', statuses[2].user_url
-    assert_equal 'http://s3.amazonaws.com/twitter_production/profile_images/000/100.png', statuses[2].user_profile_image_url
-    assert_equal 'Sat Jan 03 21:13:45 +0900 2009', statuses[2].created_at.to_s
-  end
-
   def test_search
     statuses = swap_open('search.json') { @twitter.search('') }
     assert_equal 3, statuses.size
