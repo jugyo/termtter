@@ -73,7 +73,7 @@ show ID           Show a single status
     begin
       result = `#{m[2]}` unless m[2].empty?
       unless m[1].nil? || result.empty?
-        t.update_status(result)
+        t.update_status(result.gsub("\n", " "))
       end
       puts "=> #{result}"
     rescue => e

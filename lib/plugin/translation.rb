@@ -10,7 +10,6 @@ def transelate(text, langpair)
   Net::HTTP.version_1_2 # Proxy に対応してない
   Net::HTTP.start('translate.google.co.jp', 80) {|http|
     response = http.request(req, "langpair=#{langpair}&text=#{URI.escape(text)}")
-    open('en2ja_test.html', 'w'){|f| f << response.body}
     doc = Nokogiri::HTML.parse(response.body, nil, 'utf-8')
     return doc.css('#result_box').text
   }
