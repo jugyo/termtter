@@ -14,8 +14,6 @@ require 'termtter'
 plugin 'standard_plugins'
 plugin 'stdout'
 
-configatron.update_interval
-
 conf_file = File.expand_path('~/.termtter')
 if File.exist? conf_file
   load conf_file
