@@ -3,16 +3,6 @@ require 'net/http'
 require 'kconv'
 require 'uri'
 
-#plugin 'english'
-
-module Termtter
-  class Status
-    def english?
-      @text !~ /[一-龠]+|[ぁ-ん]+|[ァ-ヴー]+|[ａ-ｚＡ-Ｚ０-９]+/
-    end
-  end
-end
-
 def transelate(text, langpair)
   req = Net::HTTP::Post.new('/translate_t')
   req.add_field('Content-Type', 'application/x-www-form-urlencoded')
