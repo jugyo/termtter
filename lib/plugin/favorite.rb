@@ -30,6 +30,10 @@ module Termtter::Client
       end
     end
   end
+
+  add_completion do |input|
+    %w(favorite).grep(/^#{Regexp.quote input}/)
+  end
 end
 
 module Termtter
