@@ -6,6 +6,7 @@ require 'readline'
 require 'enumerator'
 require 'parsedate'
 require 'configatron'
+require 'filter'
 
 if RUBY_VERSION < '1.8.7'
   class Array
@@ -21,6 +22,10 @@ configatron.set_default(:prompt, '> ')
 
 def plugin(s)
   require "plugin/#{s}"
+end
+
+def filter(s)
+  load "filter/#{s}.rb"
 end
 
 # FIXME: delete this method after the major version up
@@ -72,7 +77,7 @@ module Termtter
       return results.map do |s|
         status = Status.new
         status.id = s['id']
-        status.text = CGI.unescapeHTML(s['text'])
+        status.text = CGI.unescapeHTML(s['text']).gsub(/(\n|\r)/, '')
         status.created_at = Time.utc(*ParseDate::parsedate(s["created_at"])).localtime
         status.user_screen_name = s['from_user']
         status
@@ -99,7 +104,7 @@ module Termtter
         %w(id name screen_name url profile_image_url).each do |key|
           status.__send__("user_#{key}=".to_sym, s["user"][key])
         end
-        status.text = CGI.unescapeHTML(status.text)
+        status.text = CGI.unescapeHTML(status.text).gsub(/(\n|\r)/, '')
         status
       end
     end
@@ -174,6 +179,7 @@ module Termtter
       end
 
       def call_hooks(statuses, event, tw)
+        statuses = apply_filters(statuses)
         @@hooks.each do |h|
           begin
             h.call(statuses.dup, event, tw)
@@ -247,6 +253,11 @@ module Termtter
 
         until initialized; end
 
+        vi_or_emacs = configatron.editing_mode
+        unless vi_or_emacs.empty?
+          Readline.__send__("#{vi_or_emacs}_editing_mode")
+        end
+
         @@input_thread = Thread.new do
           while buf = Readline.readline(configatron.prompt, true)
             begin
@@ -280,6 +291,15 @@ module Termtter
     ).each do |attr|
       attr_accessor attr.to_sym
     end
-  end
 
+    def english?
+      self.class.english?(self.text)
+    end
+
+    # english? :: String -> Boolean
+    def self.english?(message)
+      /[一-龠]+|[ぁ-ん]+|[ァ-ヴー]+|[ａ-ｚＡ-Ｚ０-９]+/ !~ message
+    end
+  end
 end
+

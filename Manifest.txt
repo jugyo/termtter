@@ -6,6 +6,7 @@ Rakefile
 run_termtter.rb
 bin/termtter
 lib/termtter.rb
+lib/filter.rb
 lib/plugin/stdout.rb
 lib/plugin/notify-send.rb
 lib/plugin/standard_plugins.rb
@@ -18,6 +19,11 @@ lib/plugin/log.rb
 lib/plugin/favorite.rb
 lib/plugin/plugin.rb
 lib/plugin/erb.rb
+lib/plugin/fib.rb
+lib/plugin/keyword.rb
+lib/filter/english.rb
+lib/filter/reverse.rb
+lib/filter/yhara.rb
 test/test_termtter.rb
 test/friends_timeline.json
 test/search.json

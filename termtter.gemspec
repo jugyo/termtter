@@ -1,4 +1,5 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8; mode: ruby -*-
+# vim: fenc=utf8 filetype=ruby
 
 Gem::Specification.new do |s|
   s.name = %q{termtter}
