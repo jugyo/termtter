@@ -1,5 +1,7 @@
 require 'erb'
 
+configatron.plugins.stdout.set_default(:colors, [0, 31, 32, 33, 34, 35, 36, 91, 92, 93, 94, 95, 96])
+
 configatron.set_default(
   :timeline_format,
   '<%= color(time, 90) %> <%= color(status, status_color) %> <%= color(id, 90) %>')
@@ -19,15 +21,13 @@ else
 end
 
 Termtter::Client.add_hook do |statuses, event|
-  colors = %w(0 31 32 33 34 35 36 91 92 93 94 95 96)
-
   case event
   when :update_friends_timeline, :list_friends_timeline, :list_user_timeline, :show, :replies
     unless statuses.empty?
       statuses.reverse! if event == :update_friends_timeline
       statuses.each do |s|
         text = s.text
-        status_color = colors[s.user_screen_name.hash % colors.size]
+        status_color = configatron.plugins.stdout.colors[s.user_screen_name.hash % configatron.plugins.stdout.colors.size]
         status = "#{s.user_screen_name}: #{text}"
         if s.in_reply_to_status_id
           status += " (reply to #{s.in_reply_to_status_id})"
@@ -49,7 +49,7 @@ Termtter::Client.add_hook do |statuses, event|
   when :search
     statuses.each do |s|
       text = s.text
-      status_color = colors[s.user_screen_name.hash % colors.size]
+      status_color = configatron.plugins.stdout.colors[s.user_screen_name.hash % configatron.plugins.stdout.colors.size]
 
       status = "#{s.user_screen_name}: #{text}"
       time = "(#{s.created_at.strftime('%m-%d %H:%M')})"
