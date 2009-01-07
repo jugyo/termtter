@@ -34,7 +34,7 @@ configatron.namespace(:proxy) do |proxy|
   proxy.port = '8080'
 end
 
-# FIXME: we need public_storage all araund the script
+# FIXME: we need public_storage all around the script
 module Termtter
   module Client
     def self.public_storage
