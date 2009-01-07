@@ -24,6 +24,10 @@ def plugin(s)
   require "plugin/#{s}"
 end
 
+def filter(s)
+  load "filter/#{s}.rb"
+end
+
 # FIXME: delete this method after the major version up
 alias original_require require
 def require(s)
@@ -297,5 +301,5 @@ module Termtter
       /[一-龠]+|[ぁ-ん]+|[ァ-ヴー]+|[ａ-ｚＡ-Ｚ０-９]+/ !~ message
     end
   end
-
 end
+

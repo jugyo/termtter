@@ -1,7 +1,7 @@
 module Termtter
   module Client
     @@filters = []
-    
+
     class << self
       def add_filter(&filter)
         @@filters << filter
