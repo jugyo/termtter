@@ -36,6 +36,13 @@ You can edit the file anytime.
   configatron.user_name = 'USERNAME'
   configatron.password = 'PASSWORD'
 
+If you would like to use proxy server, add configurations like this:
+
+  configatron.proxy.host = 'PROXYHOST'
+  configatron.proxy.port = 'PROXYPORT'
+  configatron.proxy.user_name = 'USERNAME'
+  configatron.proxy.password = 'PASSWORD'
+
 To update the config, just restart your termtter proccess.
 
 == FORUM:
