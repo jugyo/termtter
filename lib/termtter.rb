@@ -12,7 +12,7 @@ require 'configatron'
 
 if RUBY_VERSION < '1.8.7'
   class Array
-    def take(n) at(0...n) end
+    def take(n) self[0...n] end
   end
 end
 
