@@ -9,8 +9,6 @@ module Termtter::Client
       result = filter m[1].strip
     rescue LoadError
       result = false
-    else
-      public_storage[:filters] << m[1].strip
     ensure
       puts "=> #{result.inspect}"
     end
