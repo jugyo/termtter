@@ -13,6 +13,8 @@ module Termtter::Client
     # FIXME: works only in OSX and other *NIXs
     if /linux/ =~ RUBY_PLATFORM
       system 'firefox', uri
+    elsif RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
+      system 'explorer', uri
     else
       system 'open', uri
     end
