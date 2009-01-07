@@ -288,6 +288,10 @@ module Termtter
       attr_accessor attr.to_sym
     end
 
+    def english?
+      /[一-龠]+|[ぁ-ん]+|[ァ-ヴー]+|[ａ-ｚＡ-Ｚ０-９]+/ !~ self.text
+    end
+
     # english? :: String -> Boolean
     def self.english?(message)
       /[一-龠]+|[ぁ-ん]+|[ァ-ヴー]+|[ａ-ｚＡ-Ｚ０-９]+/ !~ message
