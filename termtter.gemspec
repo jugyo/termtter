@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.email = ["jugyo.org@gmail.com"]
   s.executables = ["termtter"]
   s.extra_rdoc_files = ["History.txt", "Manifest.txt", "PostInstall.txt", "README.rdoc"]
-  s.files = ["History.txt", "Manifest.txt", "PostInstall.txt", "README.rdoc", "Rakefile", "run_termtter.rb", "bin/termtter", "lib/termtter.rb", "lib/plugin/stdout.rb", "lib/plugin/notify-send.rb", "lib/plugin/standard_plugins.rb", "lib/plugin/uri-open.rb", "lib/plugin/growl.rb", "lib/plugin/say.rb", "lib/plugin/english.rb", "lib/plugin/completion.rb", "lib/plugin/log.rb", "lib/plugin/favorite.rb", "lib/plugin/plugin.rb", "lib/plugin/erb.rb", "test/test_termtter.rb", "test/friends_timeline.json", "test/search.json"]
+  s.files = ["History.txt", "Manifest.txt", "PostInstall.txt", "README.rdoc", "Rakefile", "run_termtter.rb", "bin/termtter", "lib/termtter.rb", "lib/filter.rb", "lib/plugin/stdout.rb", "lib/plugin/notify-send.rb", "lib/plugin/standard_plugins.rb", "lib/plugin/uri-open.rb", "lib/plugin/growl.rb", "lib/plugin/say.rb", "lib/plugin/english.rb", "lib/plugin/log.rb", "lib/plugin/favorite.rb", "lib/plugin/plugin.rb", "lib/plugin/erb.rb", "test/test_termtter.rb", "test/friends_timeline.json", "test/search.json"]
   s.has_rdoc = true
   s.homepage = %q{http://github.com/jugyo/termtter}
   s.post_install_message = %q{PostInstall.txt}
