@@ -16,7 +16,7 @@ Termtter::Client.add_hook do |statuses, event|
     unless statuses.empty?
       statuses.reverse! if event == :update_friends_timeline
       statuses.each do |s|
-        text = s.text.gsub("\n", '')
+        text = s.text
         status_color = colors[s.user_screen_name.hash % colors.size]
         status = "#{s.user_screen_name}: #{text}"
         if s.in_reply_to_status_id
@@ -38,7 +38,7 @@ Termtter::Client.add_hook do |statuses, event|
     end
   when :search
     statuses.each do |s|
-      text = s.text.gsub("\n", '')
+      text = s.text
       status_color = colors[s.user_screen_name.hash % colors.size]
 
       status = "#{s.user_screen_name}: #{text}"
