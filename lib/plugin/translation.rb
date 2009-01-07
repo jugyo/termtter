@@ -3,7 +3,7 @@ require 'net/http'
 require 'kconv'
 require 'uri'
 
-def transelate(text, langpair)
+def translate(text, langpair)
   req = Net::HTTP::Post.new('/translate_t')
   req.add_field('Content-Type', 'application/x-www-form-urlencoded')
   req.add_field('User-Agent', 'Mozilla/5.0')
@@ -18,7 +18,7 @@ end
 Termtter::Client.add_command /^(en2ja|ja2en)\s+(.*)$/ do |m, t|
   langpair = m[1].gsub('2', '|')
   puts "translating..."
-  puts "=> #{transelate(m[2], langpair)}"
+  puts "=> #{translate(m[2], langpair)}"
 end
 
 # This plugin does not work yet.
