@@ -289,7 +289,7 @@ module Termtter
     end
 
     def english?
-      /[一-龠]+|[ぁ-ん]+|[ァ-ヴー]+|[ａ-ｚＡ-Ｚ０-９]+/ !~ self.text
+      self.class.english?(self.text)
     end
 
     # english? :: String -> Boolean
