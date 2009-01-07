@@ -69,6 +69,18 @@ show ID           Show a single status
     end
   end
 
+  add_command /^!(!)?\s*(.*)$/ do |m, t|
+    begin
+      result = `#{m[2]}` unless m[2].empty?
+      unless m[1].nil? || result.empty?
+        t.update_status(result)
+      end
+      puts "=> #{result}"
+    rescue => e
+      puts e
+    end
+  end
+
   def self.formatted_help
     width = @@helps.map {|n, d| n.size }.max
     space = 3
