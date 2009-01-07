@@ -1,7 +1,7 @@
 module Termtter::Client
   public_storage[:log] = []
 
-  add_help '/word', 'Search log'
+  add_help '/WORD', 'Search log for WORD'
 
   add_hook do |statuses,event|
     case event
