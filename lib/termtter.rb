@@ -17,7 +17,11 @@ if RUBY_VERSION < '1.8.7'
   end
 end
 
-if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
+def win?
+  RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
+end
+
+if win?
   require 'kconv'
   module Readline
     alias :old_readline :readline
@@ -366,7 +370,7 @@ module Termtter
               unless statuses.empty?
                 since_id = statuses[0].id
               end
-              # TODO: erase prompt
+              print "\e[1K\e[0G" if !statuses.empty? && !win?
               call_hooks(statuses, :update_friends_timeline, tw)
               initialized = true
               @@input_thread.kill if @@input_thread && !statuses.empty?
