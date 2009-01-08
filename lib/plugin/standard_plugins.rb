@@ -133,7 +133,7 @@ show ID           Show a single status
   end
 
   add_completion do |input|
-    standard_commands = %w[exit help list pause update resume replies search show]
+    standard_commands = %w[exit help list pause update resume replies search show limit]
     case input
     when /^(list|l)?\s+(.*)/
       find_user_candidates $2, "#{$1} %s"
