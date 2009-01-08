@@ -1,4 +1,4 @@
-if RUBY_VERSION < "1.9.0"
+if RUBY_VERSION < "1.8.7"
   class Array
     def choice
       at(rand(size))
