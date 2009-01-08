@@ -35,8 +35,8 @@ module Termtter::Client
   # TODO: Change colors when remaining_hits is low.
   # TODO: Simmulate remaining_hits.
   add_command /^(limit|lm)\s*$/ do |m, t|
-    limit = t.get_rate_limit_status_hash
-    puts "=> #{limit['remaining_hits']}/#{limit['hourly_limit']}"
+    limit = t.get_rate_limit_status
+    puts "=> #{limit.remaining_hits}/#{limit.hourly_limit}"
   end
 
 
