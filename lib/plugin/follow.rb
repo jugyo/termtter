@@ -1,23 +1,12 @@
 module Termtter::Client
-  add_help 'follow @USER', 'Follow user'
+  add_help 'follow USER', 'Follow user'
+  add_help 'leave USER', 'Leave user'
 
-  add_command %r'^follow\s+(\w+)$' do |m, t|
-    user = m[1]
-    res = t.follow(user)
+  add_command %r'^(follow|leave)\s+(\w+)\s*$' do |m, t|
+    user = m[2]
+    res = t.social(user, m[1].to_sym)
     if res.code == '200'
-      puts "Followed user @#{user}"
-    else
-      puts "Failed: #{res}"
-    end
-  end
-
-  add_help 'leave @USER', 'Leave user'
-
-  add_command %r'^leave\s+(\w+)$' do |m, t|
-    user = m[1]
-    res = t.leave(user)
-    if res.code == '200'
-      puts "Leaved user @#{user}"
+      puts "#{m[1].capitalize}ed user @#{user}"
     else
       puts "Failed: #{res}"
     end
@@ -35,16 +24,13 @@ end
 
 module Termtter
   class Twitter
-    def follow(user)
-      uri = "http://twitter.com/friendships/create/#{user}.json"
-
-      Net::HTTP.start('twitter.com', 80) do |http|
-        http.request(post_request(uri))
-      end
-    end
-
-    def leave(user)
-      uri = "http://twitter.com/friendships/destroy/#{user}.json"
+    def social(user, type)
+      type =
+        case type.to_sym
+        when :follow then 'create'
+        when :leave  then 'destroy'
+        end
+      uri = "http://twitter.com/friendships/#{type}/#{user}.json"
 
       Net::HTTP.start('twitter.com', 80) do |http|
         http.request(post_request(uri))
