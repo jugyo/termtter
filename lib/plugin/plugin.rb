@@ -16,7 +16,7 @@ module Termtter::Client
 
   add_help 'plugins', 'Show list of plugins'
   add_command /^plugins$/ do |m, t|
-    puts public_storage[:plugins].join("\n")
+    puts public_storage[:plugins].sort.join("\n")
   end
 
   def self.find_plugin_candidates(a, b)
