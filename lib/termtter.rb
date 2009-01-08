@@ -315,6 +315,7 @@ module Termtter
 
       def exit
         call_hooks([], :exit, nil)
+        @@main_thread.kill
         @@update_thread.kill
         @@input_thread.kill
       end
@@ -326,6 +327,7 @@ module Termtter
         tw = Termtter::Twitter.new(configatron.user_name, configatron.password)
         call_hooks([], :initialize, tw)
 
+        @@input_thread = nil
         @@update_thread = Thread.new do
           since_id = nil
           loop do
@@ -336,9 +338,10 @@ module Termtter
               unless statuses.empty?
                 since_id = statuses[0].id
               end
+              # TODO: erase prompt
               call_hooks(statuses, :update_friends_timeline, tw)
               initialized = true
-
+              @@input_thread.kill if @@input_thread && !statuses.empty?
             rescue => e
               puts "Error: #{e}"
               puts e.backtrace.join("\n")
@@ -355,7 +358,23 @@ module Termtter
           Readline.__send__("#{vi_or_emacs}_editing_mode")
         end
 
-        @@input_thread = Thread.new do
+        begin
+          stty_save = `stty -g`.chomp
+          trap("INT") { system "stty", stty_save; exit }
+        rescue Errno::ENOENT
+        end
+
+        @@main_thread = Thread.new do
+          loop do
+            @@input_thread = create_input_thread(tw)
+            @@input_thread.join
+          end
+        end
+        @@main_thread.join
+      end
+
+      def create_input_thread(tw)
+        Thread.new do
           erb = ERB.new(configatron.prompt)
           while buf = Readline.readline(erb.result(tw.__send__(:binding)), true)
             begin
@@ -369,14 +388,6 @@ module Termtter
             end
           end
         end
-
-        begin
-          stty_save = `stty -g`.chomp
-          trap("INT") { system "stty", stty_save; exit }
-        rescue Errno::ENOENT
-        end
-
-        @@input_thread.join
       end
 
     end
