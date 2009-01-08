@@ -10,13 +10,17 @@ module Termtter::Client
   end
 
   def self.open_uri(uri)
-    case RUBY_PLATFORM
-    when /linux/
-      system 'firefox', uri
-    when /mswin(?!ce)|mingw|bccwin/
-      system 'explorer', uri
+    unless configatron.plugins.uri_open.browser.nil?
+      system configatron.plugins.uri_open.browser, uri
     else
-      system 'open', uri
+      case RUBY_PLATFORM
+      when /linux/
+        system 'firefox', uri
+      when /mswin(?!ce)|mingw|bccwin/
+        system 'explorer', uri
+      else
+        system 'open', uri
+      end
     end
   end
 
