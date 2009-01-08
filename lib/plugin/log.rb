@@ -10,7 +10,7 @@ module Termtter::Client
       public_storage[:log] += statuses
       max_size = configatron.plugins.log.max_size
       if public_storage[:log].size > max_size
-        public_storage[:log] = public_storage[:log].reverse[0, max_size].reverse
+        public_storage[:log] = public_storage[:log][-max_size..-1]
       end
       public_storage[:log].uniq!
     end
