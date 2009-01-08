@@ -3,8 +3,9 @@
 $KCODE = 'u'
 
 require 'rubygems'
-require 'termtter'
 require 'configatron'
+require 'highline'
+require 'termtter'
 plugin 'standard_plugins'
 plugin 'stdout'
 
@@ -12,10 +13,11 @@ conf_file = File.expand_path('~/.termtter')
 if File.exist? conf_file
   load conf_file
 else
-  print "your twitter username: "
-  username = gets.chomp
-  print "your twitter password: "
-  password = gets.chomp
+  HighLine.track_eof = false
+  ui = HighLine.new
+  username = ui.ask('your twitter username: ')
+  password = ui.ask('your twitter password: ') { |q| q.echo = false }
+
   File.open(File.expand_path('~/.termtter'), 'w') {|io|
     plugins = Dir.glob(File.dirname(__FILE__) + "/../lib/plugin/*.rb").map  {|f|
       f.match(%r|lib/plugin/(.*?).rb$|)[1]

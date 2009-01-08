@@ -30,9 +30,7 @@ end
 
 configatron.set_default(:update_interval, 300)
 configatron.set_default(:prompt, '> ')
-configatron.namespace(:proxy) do |proxy|
-  proxy.port = '8080'
-end
+configatron.proxy.set_default(:port, '8080')
 
 # FIXME: we need public_storage all around the script
 module Termtter
@@ -164,6 +162,12 @@ module Termtter
         status.text = CGI.unescapeHTML(status.text).gsub(/(\n|\r)/, '')
         status
       end
+    end
+
+    def get_rate_limit_status
+      uri = 'http://twitter.com/account/rate_limit_status.json'
+      data = JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password], :proxy => @connection.proxy_uri).read)
+      return data['remaining_hits']
     end
 
     def near_users(screen_name)
@@ -334,7 +338,8 @@ module Termtter
         end
 
         @@input_thread = Thread.new do
-          while buf = Readline.readline(configatron.prompt, true)
+          # TODO: 毎回取りにいかずにコマンドで取りにいくように変更する（まずはインパクト重要）
+          while buf = Readline.readline("#{tw.get_rate_limit_status}#{configatron.prompt}", true)
             begin
               call_commands(buf, tw)
             rescue CommandNotFound => e

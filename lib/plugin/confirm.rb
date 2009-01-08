@@ -1,6 +1,6 @@
 module Termtter::Client
 
-  add_command /^yesno\s+(.*)/ do |m, t|
+  add_command /^confirm\s+(.*)/ do |m, t|
     text = m[1]
     unless text.empty?
       pause
@@ -13,14 +13,12 @@ module Termtter::Client
 
   add_completion do |input|
     case input
-    when /^(yesno)\s+(.*)@([^\s]*)$/
+    when /^(confirm)\s+(.*)@([^\s]*)$/
       find_user_candidates $3, "#{$1} #{$2}@%s"
     else
-      ['yesno'].grep(/^#{Regexp.quote input}/)
+      ['confirm'].grep(/^#{Regexp.quote input}/)
     end
   end
 
 end
 
-# FIXME!!! command name
-#   * confirm.rb

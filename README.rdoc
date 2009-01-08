@@ -24,6 +24,15 @@ Run:
   sudo gem source -a http://gems.github.com (you only have to do this once)
   sudo gem install jugyo-termtter
 
+  if you want to install gem package from source code, install like following.
+
+  git clone git://github.com/jugyo/termtter.git
+  cd termtter
+  rake manifest
+  rake gemspec
+  gem build termtter.gemspec
+  gem install *.gem
+
 Just run a new command termtter.
 
   termtter

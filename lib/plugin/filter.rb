@@ -61,4 +61,4 @@ end
 #   => true
 #   > list
 #   (15:48:02) termtter: hello
-
+# vim: fenc=utf8

@@ -1,7 +1,7 @@
 module Termtter::Client
   add_help 'favorite,fav ID', 'Favorite a status'
 
-  add_command %r'^(?:favorite|fav)\s+(\d+)$' do |m,t|
+  add_command %r'^(?:favorite|fav)\s+(\d+)$' do |m, t|
     id = m[1]
     res = t.favorite(id)
     if res.code == '200'
@@ -11,12 +11,28 @@ module Termtter::Client
     end
   end
 
+  add_help 'favorite,fav USER', 'Favorite last status on the user'
+
+  add_command %r'^(?:favorite|fav)\s+@(.+)$' do |m, t|
+    user = m[1]
+    statuses = t.get_user_timeline(user)
+    unless statuses.empty?
+      id = statuses[0].id
+      res = t.favorite(id)
+      if res.code == '200'
+        puts "Favorited last status ##{id} on user @#{user}"
+      else
+        puts "Failed: #{res}"
+      end
+    end
+  end
+
   if public_storage[:log]
     add_help 'favorite,fav /WORD', 'Favorite a status by searching'
 
-    add_command %r'^(?:favorite|fav)\s+/(.+)$' do |m,t|
+    add_command %r'^(?:favorite|fav)\s+/(.+)$' do |m, t|
       pat = Regexp.new(m[1])
-      statuses = public_storage[:log].select { |s| s.text =~ pat }
+      statuses = public_storage[:log].select {|s| pat =~ s.text }
       if statuses.size == 1
         status = statuses.first
         res = t.favorite(status.id)
@@ -32,7 +48,12 @@ module Termtter::Client
   end
 
   add_completion do |input|
-    %w(favorite).grep(/^#{Regexp.quote input}/)
+    case input
+    when /^(favorite|fav)?\s+@(.*)/
+      find_user_candidates $2, "#{$1} @%s"
+    else
+      %w(favorite).grep(/^#{Regexp.quote input}/)
+    end
   end
 end
 
