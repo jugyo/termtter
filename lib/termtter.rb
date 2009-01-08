@@ -172,6 +172,12 @@ module Termtter
       return data['remaining_hits']
     end
 
+    def get_rate_limit_status_hash
+      uri = 'http://twitter.com/account/rate_limit_status.json'
+      data = JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password], :proxy => @connection.proxy_uri).read)
+      data
+    end
+
     def near_users(screen_name)
       Client::public_storage[:users].select {|user|
         /#{user}/i =~ screen_name || /#{screen_name}/i =~ user
@@ -340,8 +346,7 @@ module Termtter
         end
 
         @@input_thread = Thread.new do
-          # TODO: 毎回取りにいかずにコマンドで取りにいくように変更する（まずはインパクト重要）
-          while buf = Readline.readline("#{tw.get_rate_limit_status}#{configatron.prompt}", true)
+          while buf = Readline.readline(configatron.prompt, true)
             begin
               call_commands(buf, tw)
             rescue CommandNotFound => e

@@ -32,6 +32,14 @@ module Termtter::Client
     call_hooks(t.show(m[1]), :show, t)
   end
 
+  # TODO: Change colors when remaining_hits is low.
+  # TODO: Simmulate remaining_hits.
+  add_command /^(limit|lm)\s*$/ do |m, t|
+    limit = t.get_rate_limit_status_hash
+    puts "=> #{limit['remaining_hits']}/#{limit['hourly_limit']}"
+  end
+
+
   add_command /^pause\s*$/ do |m, t|
     pause
   end
@@ -50,6 +58,7 @@ exit,e            Exit
 help              Print this help message
 list,l            List the posts in your friends timeline
 list,l USERNAME   List the posts in the the given user's timeline
+limit,lm          Show the API limit status
 pause             Pause updating
 update,u TEXT     Post a new message
 resume            Resume updating
@@ -124,7 +133,7 @@ show ID           Show a single status
   end
 
   add_completion do |input|
-    standard_commands = %w[exit help list pause update resume replies search show]
+    standard_commands = %w[exit help list pause update resume replies search show limit]
     case input
     when /^(list|l)?\s+(.*)/
       find_user_candidates $2, "#{$1} %s"
