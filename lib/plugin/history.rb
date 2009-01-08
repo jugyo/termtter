@@ -12,10 +12,12 @@ module Termtter::Client
 
     if File.exist?(filename)
       history = YAML.load_file(filename)
-      keys.each do |key|
-        public_storage[key] = history[key]
+      if history
+        keys.each do |key|
+          public_storage[key] = history[key] if history[key]
+        end
+        puts "history loaded(#{File.size(filename)}bytes)"
       end
-      puts "history loaded(#{File.size(filename)}bytes)"
     end
   end
 
@@ -28,7 +30,6 @@ module Termtter::Client
     end
 
     YAML.dump( history, File.open(filename, 'w') )
-    
     puts "history saved(#{File.size(filename)}bytes)"
   end
 
