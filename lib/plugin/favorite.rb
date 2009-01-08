@@ -11,6 +11,22 @@ module Termtter::Client
     end
   end
 
+  add_help 'favorite,fav @USER', 'Favorite last status on the user'
+
+  add_command %r'^(?:favorite|fav)\s+@(.+)$' do |m, t|
+    user = m[1]
+    statuses = t.get_user_timeline(user)
+    unless statuses.empty?
+      id = statuses[0].id
+      res = t.favorite(id)
+      if res.code == '200'
+        puts "Favorited last status ##{id} on user @#{user}"
+      else
+        puts "Failed: #{res}"
+      end
+    end
+  end
+
   if public_storage[:log]
     add_help 'favorite,fav /WORD', 'Favorite a status by searching'
 
