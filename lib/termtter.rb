@@ -150,7 +150,7 @@ module Termtter
     end
 
     def get_timeline(uri)
-      data = JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password], :proxy => @connection.proxy_uri).read)
+      data = JSON.parse(open(uri, :http_basic_authentication => [user_name, password], :proxy => @connection.proxy_uri).read)
       data = [data] unless data.instance_of? Array
       return data.map do |s|
         status = Status.new
@@ -170,7 +170,7 @@ module Termtter
     APILIMIT = Struct.new("APILimit", :reset_time, :reset_time_in_seconds, :remaining_hits, :hourly_limit)
     def get_rate_limit_status
       uri = 'http://twitter.com/account/rate_limit_status.json'
-      data = JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password], :proxy => @connection.proxy_uri).read)
+      data = JSON.parse(open(uri, :http_basic_authentication => [user_name, password], :proxy => @connection.proxy_uri).read)
 
       reset_time = Time.parse(data['reset_time'])
       reset_time_in_seconds = data['reset_time_in_seconds'].to_i
@@ -180,16 +180,33 @@ module Termtter
 
     alias :apilimit :get_rate_limit_status
 
+    private
+
+    def user_name
+      unless @user_name.instance_of? String
+        @user_name = Readline.readline('user name: ', false)
+      end
+      @user_name
+    end
+
+    def password
+      unless @password.instance_of? String
+        system 'stty -echo'
+        @password = Readline.readline('password: ', false)
+        system 'stty echo'
+      end
+      @password
+    end
+
     def near_users(screen_name)
       Client::public_storage[:users].select {|user|
         /#{user}/i =~ screen_name || /#{screen_name}/i =~ user
       }.join(', ')
     end
-    private :near_users
 
     def post_request(uri)
       req = Net::HTTP::Post.new(uri)
-      req.basic_auth(@user_name, @password)
+      req.basic_auth(user_name, password)
       req.add_field('User-Agent', 'Termtter http://github.com/jugyo/termtter')
       req.add_field('X-Twitter-Client', 'Termtter')
       req.add_field('X-Twitter-Client-URL', 'http://github.com/jugyo/termtter')
@@ -315,8 +332,8 @@ module Termtter
 
       def exit
         call_hooks([], :exit, nil)
-        @@update_thread.kill
-        @@input_thread.kill
+        @@update_thread.exit!
+        @@input_thread.exit!
       end
 
       def run
@@ -339,6 +356,13 @@ module Termtter
               call_hooks(statuses, :update_friends_timeline, tw)
               initialized = true
 
+            rescue OpenURI::HTTPError => e
+              if e.message == '401 Unauthorized'
+                puts
+                puts 'Could not login'
+                puts 'plese check your account settings'
+                exit!
+              end
             rescue => e
               puts "Error: #{e}"
               puts e.backtrace.join("\n")
@@ -378,9 +402,7 @@ module Termtter
 
         @@input_thread.join
       end
-
     end
-
   end
 
   class CommandNotFound < StandardError; end
