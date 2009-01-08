@@ -1,9 +1,9 @@
 require 'highline'
 require 'erb'
 
-configatron.plugins.stdout.set_default(:colors, [
-    HighLine::WHITE, HighLine::RED, HighLine::GREEN, HighLine::YELLOW,
-    HighLine::BLUE, HighLine::MAGENTA, HighLine::CYAN ])
+configatron.plugins.stdout.set_default(
+  :colors,
+  [:white, :red, :green, :yellow, :blue, :magenta, :cyan])
 configatron.plugins.stdout.set_default(
   :timeline_format,
   '<%= color(time, 90) %> <%= color(status, status_color) %> <%= color(id, 90) %>')
@@ -20,8 +20,11 @@ if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
   end
 else
   def color(str, value)
-    if value.instance_of?(String)
+    case value
+    when String
       $highline.color(str, value)
+    when Symbol
+      $highline.color(str, HighLine.const_get(value.to_s.upcase))
     else
       "\e[#{value}m#{str}\e[0m"
     end
