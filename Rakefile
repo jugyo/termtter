@@ -12,6 +12,7 @@ $hoe = Hoe.new('termtter', Termtter::VERSION) do |p|
   p.extra_deps         = [
     ['json'],
     ['configatron'],
+    ['highline'],
   ]
   #p.extra_dev_deps = [
   #  ['newgem', ">= #{::Newgem::VERSION}"]
