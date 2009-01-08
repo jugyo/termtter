@@ -440,6 +440,9 @@ module Termtter
       attr_accessor attr.to_sym
     end
 
+    def eql?(other); self.id == other.id end
+    def hash; self.id end
+
     def english?
       self.class.english?(self.text)
     end
