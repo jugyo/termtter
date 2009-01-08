@@ -23,6 +23,8 @@ module Termtter::Client
       case input
       when /^(group|g)?\s+(.+)/
         find_group_candidates($2, "#{$1} %s")
+      when /^(group|g)\s+$/
+        configatron.plugins.group.groups.keys
       else
         %w(group).grep(/^#{Regexp.quote input}/)
       end
