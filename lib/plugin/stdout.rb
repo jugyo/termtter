@@ -73,5 +73,5 @@ end
 # stdout.rb
 #   output statuses to stdout
 # example config
-#   configatron.plugins.stdout.colors = [0, 31, 32, 33, 34, 35, 36, 91, 92, 93, 94, 95, 96]
+#   configatron.plugins.stdout.colors = [:white, :red, :green, :yellow, :blue, :magenta, :cyan]
 #   configatron.plugins.stdout.timeline_format = '<%= color(time, 90) %> <%= color(status, status_color) %> <%= color(id, 90) %>'
