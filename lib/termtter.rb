@@ -166,19 +166,19 @@ module Termtter
       end
     end
 
-    # note
-    # APIKey.reset_time_in_seconds = APIKey.reset_time.to_i
-    APIKEY = Struct.new("APIKey", :reset_time, :reset_time_in_seconds, :remaining_hits, :hourly_limit)
+    # note: APILimit.reset_time_in_seconds == APILimit.reset_time.to_i
+    APILIMIT = Struct.new("APILimit", :reset_time, :reset_time_in_seconds, :remaining_hits, :hourly_limit)
     def get_rate_limit_status
-      
       uri = 'http://twitter.com/account/rate_limit_status.json'
       data = JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password], :proxy => @connection.proxy_uri).read)
 
       reset_time = Time.parse(data['reset_time'])
       reset_time_in_seconds = data['reset_time_in_seconds'].to_i
       
-      APIKEY.new(reset_time, reset_time_in_seconds, data['remaining_hits'], data['hourly_limit'])
+      APILIMIT.new(reset_time, reset_time_in_seconds, data['remaining_hits'], data['hourly_limit'])
     end
+
+    alias :apilimit :get_rate_limit_status
 
     def near_users(screen_name)
       Client::public_storage[:users].select {|user|
