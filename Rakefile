@@ -37,3 +37,8 @@ Spec::Rake::SpecTask.new do |t|
   t.spec_opts = ['-c']
 end
 
+desc "update coverage files and open"
+task :rcov do
+  sh "rcov -Ispec:lib:lib spec/*_spec.rb"
+  sh "open coverage/index.html" if PLATFORM['darwin']
+end
