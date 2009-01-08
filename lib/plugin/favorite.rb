@@ -50,7 +50,7 @@ module Termtter::Client
   add_completion do |input|
     case input
     when /^(favorite|fav)?\s+(.*)/
-      find_user_candidates $2, "#{$1} %s"
+      find_user_candidates $2, "#{$1} @%s"
     else
       %w(favorite).grep(/^#{Regexp.quote input}/)
     end
