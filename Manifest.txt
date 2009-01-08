@@ -23,6 +23,7 @@ lib/plugin/standard_plugins.rb
 lib/plugin/stdout.rb
 lib/plugin/translation.rb
 lib/plugin/uri-open.rb
+lib/filter/yhara.rb
 lib/filter/english.rb
 lib/filter/reverse.rb
 lib/filter/yhara.rb
