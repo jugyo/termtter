@@ -56,14 +56,16 @@ else
 end
 
 # FIXME: delete this method after the major version up
-alias original_require require
-def require(s)
-  if %r|^termtter/(.*)| =~ s
-    puts "[WARNING] use plugin '#{$1}' instead of require"
-    puts "  Such a legacy .termtter file will not be supported until version 1.0.0"
-    s = "plugin/#{$1}"
+unless defined? original_require
+  alias original_require require
+  def require(s)
+    if %r|^termtter/(.*)| =~ s
+      puts "[WARNING] use plugin '#{$1}' instead of require"
+      puts "  Such a legacy .termtter file will not be supported until version 1.0.0"
+      s = "plugin/#{$1}"
+    end
+    original_require s
   end
-  original_require s
 end
 
 module Termtter
