@@ -30,6 +30,7 @@ end
 
 configatron.set_default(:update_interval, 300)
 configatron.set_default(:prompt, '> ')
+configatron.set_default(:enable_ssl, false)
 configatron.proxy.set_default(:port, '8080')
 
 # FIXME: we need public_storage all around the script
@@ -73,12 +74,17 @@ module Termtter
   APP_NAME = 'termtter'
 
   class Connection
+    attr_reader :protocol, :port, :proxy_uri
+
     def initialize
       @proxy_host = configatron.proxy.host
       @proxy_port = configatron.proxy.port
       @proxy_user = configatron.proxy.user_name
       @proxy_password = configatron.proxy.password
       @proxy_uri = nil
+      @enable_ssl = configatron.enable_ssl
+      @protocol = "http"
+      @port = 80
 
       unless @proxy_host.empty?
         @http_class = Net::HTTP::Proxy(@proxy_host, @proxy_port,
@@ -87,14 +93,18 @@ module Termtter
       else
         @http_class = Net::HTTP
       end
+
+      if @enable_ssl
+        @protocol = "https"
+        @port = 443
+      end
     end
 
     def start(host, port, &block)
-      @http_class.start(host, port, &block)
-    end
-
-    def proxy_uri
-      @proxy_uri
+      http = @http_class.new(host, port)
+      http.use_ssl = @enable_ssl
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE if http.use_ssl
+      http.start(&block)
     end
   end
 
@@ -107,7 +117,7 @@ module Termtter
     end
 
     def update_status(status)
-      @connection.start("twitter.com", 80) do |http|
+      @connection.start("twitter.com", @connection.port) do |http|
         uri = '/statuses/update.xml'
         http.request(post_request(uri), "status=#{CGI.escape(status)}&source=#{APP_NAME}")
       end
@@ -115,13 +125,13 @@ module Termtter
     end
 
     def get_friends_timeline(since_id = nil)
-      uri = "http://twitter.com/statuses/friends_timeline.json"
+      uri =  "#{@connection.protocol}://twitter.com/statuses/friends_timeline.json"
       uri << "?since_id=#{since_id}" if since_id
       return get_timeline(uri)
     end
 
     def get_user_timeline(screen_name)
-      return get_timeline("http://twitter.com/statuses/user_timeline/#{screen_name}.json")
+      return get_timeline("#{@connection.protocol}://twitter.com/statuses/user_timeline/#{screen_name}.json")
     rescue OpenURI::HTTPError => e
       puts "No such user: #{screen_name}"
       nears = near_users(screen_name)
@@ -130,7 +140,7 @@ module Termtter
     end
 
     def search(query)
-      results = JSON.parse(open('http://search.twitter.com/search.json?q=' + CGI.escape(query)).read, :proxy => @connection.proxy_uri)['results']
+      results = JSON.parse(open("#{@connection.protocol}://search.twitter.com/search.json?q=" + CGI.escape(query)).read, :proxy => @connection.proxy_uri)['results']
       return results.map do |s|
         status = Status.new
         status.id = s['id']
@@ -142,11 +152,11 @@ module Termtter
     end
 
     def show(id)
-      return get_timeline("http://twitter.com/statuses/show/#{id}.json")
+      return get_timeline("#{@connection.protocol}://twitter.com/statuses/show/#{id}.json")
     end
 
     def replies
-      return get_timeline("http://twitter.com/statuses/replies.json")
+      return get_timeline("#{@connection.protocol}://twitter.com/statuses/replies.json")
     end
 
     def get_timeline(uri)
