@@ -166,13 +166,18 @@ module Termtter
       end
     end
 
+    # note
+    # APIKey.reset_time_in_seconds = APIKey.reset_time.to_i
     APIKEY = Struct.new("APIKey", :reset_time, :reset_time_in_seconds, :remaining_hits, :hourly_limit)
     def get_rate_limit_status
       
       uri = 'http://twitter.com/account/rate_limit_status.json'
       data = JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password], :proxy => @connection.proxy_uri).read)
 
-      APIKEY.new(data['reset_time'], data['reset_time_in_seconds'], data['remaining_hits'], data['hourly_limit'])
+      reset_time = Time.parse(data['reset_time'])
+      reset_time_in_seconds = data['reset_time_in_seconds'].to_i
+      
+      APIKEY.new(reset_time, reset_time_in_seconds, data['remaining_hits'], data['hourly_limit'])
     end
 
     def near_users(screen_name)
