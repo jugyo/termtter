@@ -314,6 +314,7 @@ module Termtter
       end
 
       def exit
+        call_hooks([], :exit, nil)
         @@update_thread.kill
         @@input_thread.kill
       end
@@ -323,6 +324,7 @@ module Termtter
         initialized = false
         @@pause = false
         tw = Termtter::Twitter.new(configatron.user_name, configatron.password)
+        call_hooks([], :initialize, tw)
 
         @@update_thread = Thread.new do
           since_id = nil
