@@ -33,6 +33,6 @@ end
 # group.rb
 #   plugin 'group'
 #   configatron.plugins.group.groups = {
-#       :rits => %w(hakobe isano hitode909)
+#     :rits => %w(hakobe isano hitode909)
 #   }
 # NOTE: group.rb needs plugin/log
