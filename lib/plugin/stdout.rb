@@ -10,7 +10,7 @@ configatron.plugins.stdout.set_default(
 
 $highline = HighLine.new
 
-if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
+if win?
   require 'kconv'
   def color(str, num)
     str.to_s.tosjis
