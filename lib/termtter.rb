@@ -219,6 +219,12 @@ module Termtter
         @@commands[regex] = block
       end
 
+      def add_macro(r, s)
+        add_command(r) do |t, m|
+          call_commands(s, t % m)
+        end
+      end
+
       def clear_commands
         @@commands.clear
       end
