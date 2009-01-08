@@ -1,9 +1,8 @@
-require 'yaml'
 
-configatron.plugins.history.set_default('filename',
-                                        '~/.termtter_history')
-configatron.plugins.history.set_default('keys',
-                                        [:log, :users, :status_ids])
+configatron.plugins.history.
+  set_default('filename', '~/.termtter_history')
+configatron.plugins.history.
+  set_default('keys', [:log, :users, :status_ids])
 
 module Termtter::Client
   def self.load_history
@@ -11,7 +10,7 @@ module Termtter::Client
     keys = configatron.plugins.history.keys
 
     if File.exist?(filename)
-      history = YAML.load_file(filename)
+      history = Marshal.load File.read(filename)
       if history
         keys.each do |key|
           public_storage[key] = history[key] if history[key]
@@ -29,7 +28,9 @@ module Termtter::Client
       history[key] = public_storage[key]
     end
 
-    YAML.dump( history, File.open(filename, 'w') )
+    File.open(filename, 'w') do |f|
+      f.write Marshal.dump(history)
+    end
     puts "history saved(#{File.size(filename)}bytes)"
   end
 
