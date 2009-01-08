@@ -1,9 +1,14 @@
+require 'highline'
 require 'erb'
 
-configatron.plugins.stdout.set_default(:colors, [0, 31, 32, 33, 34, 35, 36, 91, 92, 93, 94, 95, 96])
+configatron.plugins.stdout.set_default(:colors, [
+    HighLine::WHITE, HighLine::RED, HighLine::GREEN, HighLine::YELLOW,
+    HighLine::BLUE, HighLine::MAGENTA, HighLine::CYAN ])
 configatron.plugins.stdout.set_default(
   :timeline_format,
   '<%= color(time, 90) %> <%= color(status, status_color) %> <%= color(id, 90) %>')
+
+$highline = HighLine.new
 
 if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
   require 'kconv'
@@ -14,8 +19,12 @@ if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
     STDOUT.puts(str.tosjis)
   end
 else
-  def color(str, num)
-    "\e[#{num}m#{str}\e[0m"
+  def color(str, value)
+    if value.instance_of?(String)
+      $highline.color(str, value)
+    else
+      "\e[#{value}m#{str}\e[0m"
+    end
   end
 end
 
