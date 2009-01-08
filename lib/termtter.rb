@@ -348,7 +348,8 @@ module Termtter
         end
 
         @@input_thread = Thread.new do
-          while buf = Readline.readline(configatron.prompt, true)
+          erb = ERB.new(configatron.prompt)
+          while buf = Readline.readline(erb.result(tw.__send__(:binding)), true)
             begin
               call_commands(buf, tw)
             rescue CommandNotFound => e
