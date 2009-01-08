@@ -9,6 +9,7 @@ lib/termtter.rb
 lib/plugin/english.rb
 lib/plugin/erb.rb
 lib/plugin/favorite.rb
+lib/plugin/follow.rb
 lib/plugin/fib.rb
 lib/plugin/filter.rb
 lib/plugin/growl.rb
