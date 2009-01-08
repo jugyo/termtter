@@ -56,14 +56,16 @@ else
 end
 
 # FIXME: delete this method after the major version up
-alias original_require require
-def require(s)
-  if %r|^termtter/(.*)| =~ s
-    puts "[WARNING] use plugin '#{$1}' instead of require"
-    puts "  Such a legacy .termtter file will not be supported until version 1.0.0"
-    s = "plugin/#{$1}"
+unless defined? original_require
+  alias original_require require
+  def require(s)
+    if %r|^termtter/(.*)| =~ s
+      puts "[WARNING] use plugin '#{$1}' instead of require"
+      puts "  Such a legacy .termtter file will not be supported until version 1.0.0"
+      s = "plugin/#{$1}"
+    end
+    original_require s
   end
-  original_require s
 end
 
 module Termtter
@@ -164,11 +166,19 @@ module Termtter
       end
     end
 
+    # note: APILimit.reset_time_in_seconds == APILimit.reset_time.to_i
+    APILIMIT = Struct.new("APILimit", :reset_time, :reset_time_in_seconds, :remaining_hits, :hourly_limit)
     def get_rate_limit_status
       uri = 'http://twitter.com/account/rate_limit_status.json'
       data = JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password], :proxy => @connection.proxy_uri).read)
-      return data['remaining_hits']
+
+      reset_time = Time.parse(data['reset_time'])
+      reset_time_in_seconds = data['reset_time_in_seconds'].to_i
+      
+      APILIMIT.new(reset_time, reset_time_in_seconds, data['remaining_hits'], data['hourly_limit'])
     end
+
+    alias :apilimit :get_rate_limit_status
 
     def near_users(screen_name)
       Client::public_storage[:users].select {|user|
@@ -207,6 +217,12 @@ module Termtter
 
       def add_command(regex, &block)
         @@commands[regex] = block
+      end
+
+      def add_macro(r, s)
+        add_command(r) do |m, t|
+          call_commands(s % m, t)
+        end
       end
 
       def clear_commands
@@ -338,8 +354,8 @@ module Termtter
         end
 
         @@input_thread = Thread.new do
-          # TODO: 毎回取りにいかずにコマンドで取りにいくように変更する（まずはインパクト重要）
-          while buf = Readline.readline("#{tw.get_rate_limit_status}#{configatron.prompt}", true)
+          erb = ERB.new(configatron.prompt)
+          while buf = Readline.readline(erb.result(tw.__send__(:binding)), true)
             begin
               call_commands(buf, tw)
             rescue CommandNotFound => e
