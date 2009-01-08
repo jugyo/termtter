@@ -11,7 +11,7 @@ module Termtter::Client
     end
   end
 
-  add_help 'favorite,fav @USER', 'Favorite last status on the user'
+  add_help 'favorite,fav USER', 'Favorite last status on the user'
 
   add_command %r'^(?:favorite|fav)\s+@(.+)$' do |m, t|
     user = m[1]
