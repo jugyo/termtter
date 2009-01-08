@@ -178,7 +178,7 @@ module Termtter
       APILIMIT.new(reset_time, reset_time_in_seconds, data['remaining_hits'], data['hourly_limit'])
     end
 
-    alias :apilimit :get_rate_limit_status
+    alias :api_limit :get_rate_limit_status
 
     private
 
@@ -194,6 +194,7 @@ module Termtter
         system 'stty -echo'
         @password = Readline.readline('password: ', false)
         system 'stty echo'
+        puts
       end
       @password
     end
@@ -358,7 +359,6 @@ module Termtter
 
             rescue OpenURI::HTTPError => e
               if e.message == '401 Unauthorized'
-                puts
                 puts 'Could not login'
                 puts 'plese check your account settings'
                 exit!
