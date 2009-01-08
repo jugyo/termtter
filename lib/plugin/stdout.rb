@@ -21,10 +21,8 @@ if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
 else
   def color(str, value)
     case value
-    when String
+    when String, Symbol
       $highline.color(str, value)
-    when Symbol
-      $highline.color(str, HighLine.const_get(value.to_s.upcase))
     else
       "\e[#{value}m#{str}\e[0m"
     end
