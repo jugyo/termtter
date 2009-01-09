@@ -22,7 +22,7 @@ module Termtter::Client
   add_command %r'^/(.+)' do |m, t|
     pat = Regexp.new(m[1])
     statuses = public_storage[:log].select { |s| s.text =~ pat }
-    call_hooks(statuses, :search, t)
+    call_hooks(statuses.reverse, :search, t)
   end
 
   # log
@@ -30,7 +30,7 @@ module Termtter::Client
     statuses = public_storage[:log]
     print_max = configatron.plugins.log.print_max_size
     print_max = 0 if statuses.size < print_max
-    call_hooks(statuses[-print_max..-1], :search, t)
+    call_hooks(statuses[-print_max..-1].reverse, :search, t)
   end
 
   # log (user) (max)
@@ -40,7 +40,7 @@ module Termtter::Client
     id = vars
     statuses = id.first ? public_storage[:log].select{ |s| id.include? s.user_screen_name} : public_storage[:log]
     print_max = 0 if statuses.size < print_max
-    call_hooks(statuses[-print_max..-1].compact, :search, t)
+    call_hooks(statuses[-print_max..-1].reverse, :search, t)
   end
 
   add_completion do |input|
