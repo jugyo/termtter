@@ -1,25 +1,21 @@
 module Termtter::Client
   def self.scrape_group(group, t)
-    statuses = []
     members = configatron.plugins.group.groups[group] || []
-    members.each_with_index{ |member, index|
-      statuses += t.get_user_timeline(member)
-    }
-    statuses
+    members.map {|member|
+      t.get_user_timeline(member)
+    }.flatten
   end
 
   def self.scrape_groups(t)
-    statuses = []
     groups = configatron.plugins.group.groups
-    groups.each_with_index{ |group, index|
-      statuses += scrape_group(t)
-    }
-    statuses
+    groups.map {|group|
+      scrape_group(group, t)
+    }.flatten
   end
 
   add_help 'scrape_group GROUPNAME', 'Get the group timeline'
   add_help 'scrape_groups', 'Get all groups timeline'
-  
+
   add_command /^(?:scrape_group)\s+(.+)/ do |m, t|
     group_name = m[1].to_sym
     statuses = scrape_group(group_name, t)
