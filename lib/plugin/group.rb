@@ -4,6 +4,12 @@ module Termtter::Client
   if public_storage[:log]
     add_help 'group,g GROUPNAME', 'Filter by group members'
 
+    add_command /^(?:group|g)\s*$/ do |m, t|
+      configatron.plugins.group.groups.each_pair do |key, value|
+        puts "#{key}: #{value.join(',')}"
+      end
+    end
+
     add_command /^(?:group|g)\s+(.+)/ do |m, t|
       group_name = m[1].to_sym
       group = configatron.plugins.group.groups[group_name]
