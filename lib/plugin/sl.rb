@@ -14,9 +14,9 @@ module Termtter::Client
   add_help 'cd USER', 'Change current directory'
   add_command /^cd\s+(.*)/ do |m, t|
     directory = m[1].strip
-    direcroty = '' if /~/ =~ direcroty
-    public_storage[:current] = direcroty
-    puts "=> #{direcroty}"
+    directory = '' if /\~/ =~ directory
+    public_storage[:current] = directory
+    puts "=> #{directory}"
   end
   add_macro /^cd$/, 'eval public_storage[:current] = ""'
 
