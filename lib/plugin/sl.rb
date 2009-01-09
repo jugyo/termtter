@@ -3,9 +3,10 @@ module Termtter::Client
 
   add_macro /^sl\s*$/, 'eval system "sl"'
 
+  add_help 'pwd', 'Show current direcroty'
   add_macro /^pwd\s*$/, 'eval public_storage[:current]'
 
-  add_help 'ls', 'Show current directory'
+  add_help 'ls', 'Show list in current directory'
   add_command /^ls\s*$/ do |m, t|
     call_commands "list #{public_storage[:current]}", t
   end
