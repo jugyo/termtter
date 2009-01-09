@@ -125,14 +125,29 @@ end
 module Termtter::Client
 
   add_help 'yhara', 'Post a new Yharian sentence'
+  add_help 'yhara USER', 'Speak to the user in Yharian'
   
-  add_command /^(yhara|y)\s*/ do |m, t|
+  add_command /^(yhara)\s*$/ do |m, t|
     text = Yharian::text
-    unless text.empty?
-      t.update_status(text)
-      puts "=> #{text}"
+    t.update_status(text)
+    puts "=> #{text}"
+  end
+
+  add_command /^(yhara)\s+(\w+)/ do |m, t|
+    text = "@#{m[2]} #{Yharian::text}"
+    t.update_status(text)
+    puts "=> #{text}"
+  end
+
+  add_completion do |input|
+    case input
+    when /^(yhara)\s+(.*)/
+      find_user_candidates $2, "#{$1} %s"
+    else
+      %w[ yhara ].grep(/^#{Regexp.quote input}/)
     end
   end
+
 end
 
 # yhara.rb

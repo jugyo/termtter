@@ -10,6 +10,7 @@ lib/filter/expand-tinyurl.rb
 lib/filter/fib.rb
 lib/filter/reverse.rb
 lib/filter/yhara.rb
+lib/plugin/bomb.rb
 lib/plugin/confirm.rb
 lib/plugin/english.rb
 lib/plugin/erb.rb
@@ -19,13 +20,16 @@ lib/plugin/filter.rb
 lib/plugin/follow.rb
 lib/plugin/group.rb
 lib/plugin/growl.rb
+lib/plugin/history.rb
 lib/plugin/keyword.rb
 lib/plugin/log.rb
 lib/plugin/notify-send.rb
 lib/plugin/plugin.rb
 lib/plugin/quicklook.rb
+lib/plugin/reload.rb
 lib/plugin/say.rb
 lib/plugin/shell.rb
+lib/plugin/sl.rb
 lib/plugin/spam.rb
 lib/plugin/standard_plugins.rb
 lib/plugin/stdout.rb

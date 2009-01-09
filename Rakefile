@@ -4,8 +4,8 @@ require File.dirname(__FILE__) + '/lib/termtter'
 # Generate all the Rake tasks
 # Run 'rake -T' to see list of generated tasks (from gem root directory)
 $hoe = Hoe.new('termtter', Termtter::VERSION) do |p|
-  p.author = ['ujihisa']
-  p.developer('jugyo', 'jugyo.org@gmail.com')
+  p.author = %w[jugyo hakobe motemen koichiro Sixeight mattn ujihisa yanbe hitode909 bubblegum].sort_by{|i|i.downcase}
+  p.email = ['jugyo.org@gmail.com']
   p.changes              = p.paragraphs_of("History.txt", 0..1).join("\n\n")
   p.post_install_message = 'PostInstall.txt' # TODO remove if post-install message not required
   p.rubyforge_name       = p.name # TODO this is default value

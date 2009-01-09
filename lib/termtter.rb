@@ -74,7 +74,7 @@ unless defined? original_require
 end
 
 module Termtter
-  VERSION = '0.7.0'
+  VERSION = '0.7.6'
   APP_NAME = 'termtter'
 
   class Connection
@@ -287,7 +287,7 @@ module Termtter
 
       # memo: each filter must return Array of Status
       def apply_filters(statuses)
-        filtered = statuses
+        filtered = statuses.map{|s| s.dup }
         @@filters.each do |f|
           filtered = f.call(filtered)
         end
@@ -305,8 +305,7 @@ module Termtter
         }.flatten.compact
       }
 
-      def call_hooks(statuses, event, tw)
-        statuses = apply_filters(statuses)
+      def do_hooks(statuses, event, tw)
         @@hooks.each do |h|
           begin
             h.call(statuses.dup, event, tw)
@@ -315,6 +314,11 @@ module Termtter
             puts e.backtrace.join("\n")
           end
         end
+      end
+      
+      def call_hooks(statuses, event, tw)
+        do_hooks(statuses, :pre_filter, tw)
+        do_hooks(apply_filters(statuses), event, tw)
       end
 
       def call_commands(text, tw)
@@ -425,6 +429,7 @@ module Termtter
               puts e.backtrace.join("\n")
             end
           end
+          exit # exit when press Control-D
         end
       end
     end

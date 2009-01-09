@@ -6,13 +6,13 @@ module Termtter::Client
 
   add_hook do |statuses, event|
     case event
-    when :update_friends_timeline
+    when :pre_filter
       public_storage[:log] += statuses
       max_size = configatron.plugins.log.max_size
       if public_storage[:log].size > max_size
         public_storage[:log] = public_storage[:log][-max_size..-1]
       end
-      public_storage[:log].uniq!
+      public_storage[:log] = public_storage[:log].uniq.sort_by{|a| a.created_at} if statuses.first
     end
   end
 
