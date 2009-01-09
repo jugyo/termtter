@@ -140,7 +140,7 @@ module Termtter
       puts "No such user: #{screen_name}"
       nears = near_users(screen_name)
       puts "near users: #{nears}" unless nears.empty?
-      return {}
+      return []
     end
 
     def search(query)
