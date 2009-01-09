@@ -17,7 +17,11 @@ if RUBY_VERSION < '1.8.7'
   end
 end
 
-if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
+def win?
+  RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
+end
+
+if win?
   require 'kconv'
   module Readline
     alias :old_readline :readline
@@ -30,6 +34,7 @@ end
 
 configatron.set_default(:update_interval, 300)
 configatron.set_default(:prompt, '> ')
+configatron.set_default(:enable_ssl, false)
 configatron.proxy.set_default(:port, '8080')
 
 # FIXME: we need public_storage all around the script
@@ -69,16 +74,21 @@ unless defined? original_require
 end
 
 module Termtter
-  VERSION = '0.7.0'
+  VERSION = '0.7.6'
   APP_NAME = 'termtter'
 
   class Connection
+    attr_reader :protocol, :port, :proxy_uri
+
     def initialize
       @proxy_host = configatron.proxy.host
       @proxy_port = configatron.proxy.port
       @proxy_user = configatron.proxy.user_name
       @proxy_password = configatron.proxy.password
       @proxy_uri = nil
+      @enable_ssl = configatron.enable_ssl
+      @protocol = "http"
+      @port = 80
 
       unless @proxy_host.empty?
         @http_class = Net::HTTP::Proxy(@proxy_host, @proxy_port,
@@ -87,14 +97,18 @@ module Termtter
       else
         @http_class = Net::HTTP
       end
+
+      if @enable_ssl
+        @protocol = "https"
+        @port = 443
+      end
     end
 
     def start(host, port, &block)
-      @http_class.start(host, port, &block)
-    end
-
-    def proxy_uri
-      @proxy_uri
+      http = @http_class.new(host, port)
+      http.use_ssl = @enable_ssl
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE if http.use_ssl
+      http.start(&block)
     end
   end
 
@@ -107,7 +121,7 @@ module Termtter
     end
 
     def update_status(status)
-      @connection.start("twitter.com", 80) do |http|
+      @connection.start("twitter.com", @connection.port) do |http|
         uri = '/statuses/update.xml'
         http.request(post_request(uri), "status=#{CGI.escape(status)}&source=#{APP_NAME}")
       end
@@ -115,13 +129,13 @@ module Termtter
     end
 
     def get_friends_timeline(since_id = nil)
-      uri = "http://twitter.com/statuses/friends_timeline.json"
+      uri =  "#{@connection.protocol}://twitter.com/statuses/friends_timeline.json"
       uri << "?since_id=#{since_id}" if since_id
       return get_timeline(uri)
     end
 
     def get_user_timeline(screen_name)
-      return get_timeline("http://twitter.com/statuses/user_timeline/#{screen_name}.json")
+      return get_timeline("#{@connection.protocol}://twitter.com/statuses/user_timeline/#{screen_name}.json")
     rescue OpenURI::HTTPError => e
       puts "No such user: #{screen_name}"
       nears = near_users(screen_name)
@@ -130,7 +144,7 @@ module Termtter
     end
 
     def search(query)
-      results = JSON.parse(open('http://search.twitter.com/search.json?q=' + CGI.escape(query)).read, :proxy => @connection.proxy_uri)['results']
+      results = JSON.parse(open("#{@connection.protocol}://search.twitter.com/search.json?q=" + CGI.escape(query)).read, :proxy => @connection.proxy_uri)['results']
       return results.map do |s|
         status = Status.new
         status.id = s['id']
@@ -142,15 +156,15 @@ module Termtter
     end
 
     def show(id)
-      return get_timeline("http://twitter.com/statuses/show/#{id}.json")
+      return get_timeline("#{@connection.protocol}://twitter.com/statuses/show/#{id}.json")
     end
 
     def replies
-      return get_timeline("http://twitter.com/statuses/replies.json")
+      return get_timeline("#{@connection.protocol}://twitter.com/statuses/replies.json")
     end
 
     def get_timeline(uri)
-      data = JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password], :proxy => @connection.proxy_uri).read)
+      data = JSON.parse(open(uri, :http_basic_authentication => [user_name, password], :proxy => @connection.proxy_uri).read)
       data = [data] unless data.instance_of? Array
       return data.map do |s|
         status = Status.new
@@ -170,7 +184,7 @@ module Termtter
     APILIMIT = Struct.new("APILimit", :reset_time, :reset_time_in_seconds, :remaining_hits, :hourly_limit)
     def get_rate_limit_status
       uri = 'http://twitter.com/account/rate_limit_status.json'
-      data = JSON.parse(open(uri, :http_basic_authentication => [@user_name, @password], :proxy => @connection.proxy_uri).read)
+      data = JSON.parse(open(uri, :http_basic_authentication => [user_name, password], :proxy => @connection.proxy_uri).read)
 
       reset_time = Time.parse(data['reset_time'])
       reset_time_in_seconds = data['reset_time_in_seconds'].to_i
@@ -178,18 +192,36 @@ module Termtter
       APILIMIT.new(reset_time, reset_time_in_seconds, data['remaining_hits'], data['hourly_limit'])
     end
 
-    alias :apilimit :get_rate_limit_status
+    alias :api_limit :get_rate_limit_status
+
+    private
+
+    def user_name
+      unless @user_name.instance_of? String
+        @user_name = Readline.readline('user name: ', false)
+      end
+      @user_name
+    end
+
+    def password
+      unless @password.instance_of? String
+        system 'stty -echo'
+        @password = Readline.readline('password: ', false)
+        system 'stty echo'
+        puts
+      end
+      @password
+    end
 
     def near_users(screen_name)
       Client::public_storage[:users].select {|user|
         /#{user}/i =~ screen_name || /#{screen_name}/i =~ user
       }.join(', ')
     end
-    private :near_users
 
     def post_request(uri)
       req = Net::HTTP::Post.new(uri)
-      req.basic_auth(@user_name, @password)
+      req.basic_auth(user_name, password)
       req.add_field('User-Agent', 'Termtter http://github.com/jugyo/termtter')
       req.add_field('X-Twitter-Client', 'Termtter')
       req.add_field('X-Twitter-Client-URL', 'http://github.com/jugyo/termtter')
@@ -255,7 +287,7 @@ module Termtter
 
       # memo: each filter must return Array of Status
       def apply_filters(statuses)
-        filtered = statuses
+        filtered = statuses.map{|s| s.dup }
         @@filters.each do |f|
           filtered = f.call(filtered)
         end
@@ -273,8 +305,7 @@ module Termtter
         }.flatten.compact
       }
 
-      def call_hooks(statuses, event, tw)
-        statuses = apply_filters(statuses)
+      def do_hooks(statuses, event, tw)
         @@hooks.each do |h|
           begin
             h.call(statuses.dup, event, tw)
@@ -283,6 +314,11 @@ module Termtter
             puts e.backtrace.join("\n")
           end
         end
+      end
+      
+      def call_hooks(statuses, event, tw)
+        do_hooks(statuses, :pre_filter, tw)
+        do_hooks(apply_filters(statuses), event, tw)
       end
 
       def call_commands(text, tw)
@@ -314,6 +350,8 @@ module Termtter
       end
 
       def exit
+        call_hooks([], :exit, nil)
+        @@main_thread.kill
         @@update_thread.kill
         @@input_thread.kill
       end
@@ -323,7 +361,9 @@ module Termtter
         initialized = false
         @@pause = false
         tw = Termtter::Twitter.new(configatron.user_name, configatron.password)
+        call_hooks([], :initialize, tw)
 
+        @@input_thread = nil
         @@update_thread = Thread.new do
           since_id = nil
           loop do
@@ -334,9 +374,16 @@ module Termtter
               unless statuses.empty?
                 since_id = statuses[0].id
               end
+              print "\e[1K\e[0G" if !statuses.empty? && !win?
               call_hooks(statuses, :update_friends_timeline, tw)
               initialized = true
-
+              @@input_thread.kill if @@input_thread && !statuses.empty?
+            rescue OpenURI::HTTPError => e
+              if e.message == '401 Unauthorized'
+                puts 'Could not login'
+                puts 'plese check your account settings'
+                exit!
+              end
             rescue => e
               puts "Error: #{e}"
               puts e.backtrace.join("\n")
@@ -353,7 +400,23 @@ module Termtter
           Readline.__send__("#{vi_or_emacs}_editing_mode")
         end
 
-        @@input_thread = Thread.new do
+        begin
+          stty_save = `stty -g`.chomp
+          trap("INT") { system "stty", stty_save; exit }
+        rescue Errno::ENOENT
+        end
+
+        @@main_thread = Thread.new do
+          loop do
+            @@input_thread = create_input_thread(tw)
+            @@input_thread.join
+          end
+        end
+        @@main_thread.join
+      end
+
+      def create_input_thread(tw)
+        Thread.new do
           erb = ERB.new(configatron.prompt)
           while buf = Readline.readline(erb.result(tw.__send__(:binding)), true)
             begin
@@ -366,19 +429,10 @@ module Termtter
               puts e.backtrace.join("\n")
             end
           end
+          exit # exit when press Control-D
         end
-
-        begin
-          stty_save = `stty -g`.chomp
-          trap("INT") { system "stty", stty_save; exit }
-        rescue Errno::ENOENT
-        end
-
-        @@input_thread.join
       end
-
     end
-
   end
 
   class CommandNotFound < StandardError; end
@@ -390,6 +444,9 @@ module Termtter
     ).each do |attr|
       attr_accessor attr.to_sym
     end
+
+    def eql?(other); self.id == other.id end
+    def hash; self.id end
 
     def english?
       self.class.english?(self.text)
