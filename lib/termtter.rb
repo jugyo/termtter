@@ -156,7 +156,11 @@ module Termtter
     end
 
     def show(id)
-      return get_timeline("#{@connection.protocol}://twitter.com/statuses/show/#{id}.json")
+      statuses = get_timeline("#{@connection.protocol}://twitter.com/statuses/show/#{id}.json")
+      if id = statuses[0].in_reply_to_status_id
+        statuses += show id
+      end
+      statuses.flatten
     end
 
     def replies
