@@ -25,7 +25,7 @@ if win?
 
   $colorMap = {
        0 => 7,     # black/white
-      37 => 8 + 8, # white/intensity
+      37 => 8,     # white/intensity
       31 => 4 + 8, # red/red
       32 => 2 + 8, # green/green
       33 => 6 + 8, # yellow/yellow
