@@ -169,7 +169,7 @@ module Termtter
       return data.map do |s|
         status = Status.new
         status.created_at = Time.utc(*ParseDate::parsedate(s["created_at"])).localtime
-        %w(id text truncated in_reply_to_status_id in_reply_to_user_id).each do |key|
+        %w(id text truncated in_reply_to_status_id in_reply_to_user_id in_reply_to_screen_name).each do |key|
           status.__send__("#{key}=".to_sym, s[key])
         end
         %w(id name screen_name url profile_image_url).each do |key|
@@ -439,7 +439,8 @@ module Termtter
 
   class Status
     %w(
-      id text created_at truncated in_reply_to_status_id in_reply_to_user_id 
+      id text created_at truncated
+      in_reply_to_status_id in_reply_to_user_id in_reply_to_screen_name
       user_id user_name user_screen_name user_url user_profile_image_url
     ).each do |attr|
       attr_accessor attr.to_sym
