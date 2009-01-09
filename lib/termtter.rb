@@ -74,7 +74,7 @@ unless defined? original_require
 end
 
 module Termtter
-  VERSION = '0.7.5'
+  VERSION = '0.7.6'
   APP_NAME = 'termtter'
 
   class Connection

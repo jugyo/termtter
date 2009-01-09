@@ -52,10 +52,10 @@ module Termtter::Client
     exit
   end
 
-  add_command /^help\s*$/ do |m, t|
+  add_command /^(help|h)\s*$/ do |m, t|
     puts <<-EOS
 exit,e            Exit
-help              Print this help message
+help,h            Print this help message
 list,l            List the posts in your friends timeline
 list,l USERNAME   List the posts in the the given user's timeline
 limit,lm          Show the API limit status
