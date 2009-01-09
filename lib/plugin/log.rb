@@ -1,8 +1,11 @@
 module Termtter::Client
   public_storage[:log] = []
   configatron.plugins.log.set_default('max_size', 1/0.0)
+  configatron.plugins.log.set_default('print_max_size', 30)
 
   add_help '/WORD', 'Search log for WORD'
+  add_help 'log', 'Show local log'
+  add_help 'log (USER(S)) (MAX)', 'Show local log of the user(s)'
 
   add_hook do |statuses, event|
     case event
@@ -22,16 +25,22 @@ module Termtter::Client
     call_hooks(statuses, :list_friends_timeline, t)
   end
 
-  add_help 'log', 'Show local log'
-  add_help 'log USER', 'Show local log of the user'
-
+  # log
   add_command /^(log)\s*$/ do |m, t|
-    call_hooks(public_storage[:log], :list_friends_timeline, t)
+    statuses = public_storage[:log]
+    print_max = configatron.plugins.log.print_max_size
+    print_max = 0 if statuses.size < print_max
+    call_hooks(statuses[-print_max..-1], :list_friends_timeline, t)
   end
 
-  add_command /^(log)\s+([^\s]+)/ do |m, t|
-    statuses = public_storage[:log].select{ |s| s.user_name == m[2]}
-    call_hooks(statuses, :list_friends_timeline, t)
+  # log (user) (max)
+  add_command /^(log)\s+(.+)\s*/ do |m, t|
+    vars = m[2].split(' ')
+    print_max = vars.last =~ /^\d+$/ ? vars.pop.to_i : configatron.plugins.log.print_max_size
+    id = vars
+    statuses = id.first ? public_storage[:log].select{ |s| id.include? s.user_screen_name} : public_storage[:log]
+    print_max = 0 if statuses.size < print_max
+    call_hooks(statuses[-print_max..-1].compact, :list_friends_timeline, t)
   end
 
   add_completion do |input|
