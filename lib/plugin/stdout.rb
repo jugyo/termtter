@@ -1,3 +1,4 @@
+require 'highline'
 require 'erb'
 
 configatron.plugins.stdout.set_default(
