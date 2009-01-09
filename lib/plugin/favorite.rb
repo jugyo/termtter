@@ -60,9 +60,9 @@ end
 module Termtter
   class Twitter
     def favorite(id)
-      uri = "http://twitter.com/favourings/create/#{id}.json"
+      uri = "#{@connection.protocol}://twitter.com/favourings/create/#{id}.json"
 
-      Net::HTTP.start('twitter.com', 80) do |http|
+      @connection.start('twitter.com', @connection.port) do |http|
         http.request(post_request(uri))
       end
     end
