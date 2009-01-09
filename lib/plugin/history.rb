@@ -1,9 +1,11 @@
 require 'zlib'
 
 configatron.plugins.history.
-  set_default('filename', '~/.termtter_history')
+  set_default(:filename, '~/.termtter_history')
 configatron.plugins.history.
-  set_default('keys', [:log, :users, :status_ids])
+  set_default(:keys, [:log, :users, :status_ids])
+configatron.plugins.history.
+  set_default(:max_of_history, 100)
 
 module Termtter::Client
   def self.load_history
@@ -20,6 +22,7 @@ module Termtter::Client
         keys.each do |key|
           public_storage[key] = history[key] if history[key]
         end
+        Readline::HISTORY.push *history[:history] if history[:history]
         puts "history loaded(#{File.size(filename)}bytes)"
       end
     end
@@ -31,6 +34,11 @@ module Termtter::Client
     history = { }
     keys.each do |key|
       history[key] = public_storage[key]
+    end
+    max_of_history = configatron.plugins.history.max_of_history
+    history[:history] = Readline::HISTORY.map {|h| h }.uniq
+    if history[:history].size > max_of_history
+      history[:history] = history[:history][-max_of_history..-1]
     end
 
     File.open(filename, 'w') do |f|

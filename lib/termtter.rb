@@ -424,6 +424,7 @@ module Termtter
         Thread.new do
           erb = ERB.new(configatron.prompt)
           while buf = Readline.readline(erb.result(tw.__send__(:binding)), true)
+            Readline::HISTORY.pop if /^(u|update)\s+(.+)$/ =~ buf
             begin
               call_commands(buf, tw)
             rescue CommandNotFound => e
