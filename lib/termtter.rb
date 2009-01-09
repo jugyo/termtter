@@ -305,8 +305,7 @@ module Termtter
         }.flatten.compact
       }
 
-      def call_hooks(statuses, event, tw)
-        statuses = apply_filters(statuses)
+      def do_hooks(statuses, event, tw)
         @@hooks.each do |h|
           begin
             h.call(statuses.dup, event, tw)
@@ -315,6 +314,11 @@ module Termtter
             puts e.backtrace.join("\n")
           end
         end
+      end
+      
+      def call_hooks(statuses, event, tw)
+        do_hooks(statuses, :pre_filter, tw)
+        do_hooks(apply_filters(statuses), event, tw)
       end
 
       def call_commands(text, tw)
