@@ -1,3 +1,4 @@
+require 'zlib'
 
 configatron.plugins.history.
   set_default('filename', '~/.termtter_history')
@@ -10,7 +11,11 @@ module Termtter::Client
     keys = configatron.plugins.history.keys
 
     if File.exist?(filename)
-      history = Marshal.load File.read(filename)
+      begin
+        history = Marshal.load Zlib::Inflate.inflate(File.read(filename))
+      rescue Zlib::DataError
+        history = Marshal.load File.read(filename)
+      end
       if history
         keys.each do |key|
           public_storage[key] = history[key] if history[key]
@@ -29,7 +34,7 @@ module Termtter::Client
     end
 
     File.open(filename, 'w') do |f|
-      f.write Marshal.dump(history)
+      f.write Zlib::Deflate.deflate(Marshal.dump(history))
     end
     puts "history saved(#{File.size(filename)}bytes)"
   end
