@@ -55,7 +55,7 @@ def filter(s)
 rescue LoadError
   raise
 else
-  Termtter::Client.public_storage[:filters] = []
+  Termtter::Client.public_storage[:filters] ||= []
   Termtter::Client.public_storage[:filters] << s
   true
 end
