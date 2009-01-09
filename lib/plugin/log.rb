@@ -12,7 +12,7 @@ module Termtter::Client
       if public_storage[:log].size > max_size
         public_storage[:log] = public_storage[:log][-max_size..-1]
       end
-      public_storage[:log].uniq!
+      public_storage[:log] = public_storage[:log].uniq.sort_by{|a| a.created_at} if statuses.first
     end
   end
 
