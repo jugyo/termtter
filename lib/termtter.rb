@@ -35,6 +35,7 @@ end
 configatron.set_default(:update_interval, 300)
 configatron.set_default(:prompt, '> ')
 configatron.set_default(:enable_ssl, false)
+configatron.commands.show.set_default(:read_the_air, false)
 configatron.proxy.set_default(:port, '8080')
 
 # FIXME: we need public_storage all around the script
@@ -157,8 +158,8 @@ module Termtter
 
     def show(id)
       statuses = get_timeline("#{@connection.protocol}://twitter.com/statuses/show/#{id}.json")
-      if id = statuses[0].in_reply_to_status_id
-        statuses += show id
+      if configatron.commands.show.read_the_air
+        statuses += show id if id = statuses[0].in_reply_to_status_id
       end
       statuses.flatten
     end
