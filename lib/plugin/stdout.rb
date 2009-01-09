@@ -3,7 +3,7 @@ require 'erb'
 
 configatron.plugins.stdout.set_default(
   :colors,
-  [:white, :red, :green, :yellow, :blue, :magenta, :cyan])
+  [:none, :red, :green, :yellow, :blue, :magenta, :cyan])
 configatron.plugins.stdout.set_default(
   :timeline_format,
   '<%= color(time, 90) %> <%= color(status, status_color) %> <%= color(id, 90) %>')
@@ -50,6 +50,7 @@ if win?
 end
 
 def color(str, value)
+  return str if value == :none
   case value
   when String, Symbol
     $highline.color(str, value)
