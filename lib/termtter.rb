@@ -425,6 +425,7 @@ module Termtter
               puts e.backtrace.join("\n")
             end
           end
+          exit # exit when press Control-D
         end
       end
     end
