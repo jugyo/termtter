@@ -1,4 +1,3 @@
-require 'highline'
 require 'erb'
 
 configatron.plugins.stdout.set_default(
@@ -12,20 +11,49 @@ $highline = HighLine.new
 
 if win?
   require 'kconv'
-  def color(str, num)
-    str.to_s.tosjis
-  end
+  require 'Win32API'
+  STD_OUTPUT_HANDLE = 0xFFFFFFF5
+  $wSetConsoleTextAttribute = Win32API.new('kernel32','SetConsoleTextAttribute','II','I')
+  $wGetConsoleScreenBufferInfo = Win32API.new("kernel32", "GetConsoleScreenBufferInfo", ['l', 'p'], 'i')
+  $wGetStdHandle = Win32API.new('kernel32','GetStdHandle','I','I')
+
+  $hStdOut = $wGetStdHandle.call(STD_OUTPUT_HANDLE)
+  lpBuffer = ' ' * 22
+  $wGetConsoleScreenBufferInfo.call($hStdOut, lpBuffer)
+  $oldColor = lpBuffer.unpack('SSSSSssssSS')[4]
+
+  $colorMap = {
+       0 => 7,     # black/white
+      37 => 8 + 8, # white/intensity
+      31 => 4 + 8, # red/red
+      32 => 2 + 8, # green/green
+      33 => 6 + 8, # yellow/yellow
+      34 => 1 + 8, # blue/blue
+      35 => 5 + 8, # magenta/purple
+      36 => 3 + 8, # cyan/aqua
+      90 => 7,     # erase/white
+  }
   def puts(str)
-    STDOUT.puts(str.tosjis)
-  end
-else
-  def color(str, value)
-    case value
-    when String, Symbol
-      $highline.color(str, value)
-    else
-      "\e[#{value}m#{str}\e[0m"
+    str = str.tosjis
+    tokens = str.split(/(\e\[\d+m)/)
+    tokens.each do |token|
+      if token =~ /\e\[(\d+)m/
+        $wSetConsoleTextAttribute.call $hStdOut, $colorMap[$1.to_i].to_i
+      else
+        STDOUT.print token
+      end
     end
+    $wSetConsoleTextAttribute.call $hStdOut, $oldColor
+    STDOUT.puts
+  end
+end
+
+def color(str, value)
+  case value
+  when String, Symbol
+    $highline.color(str, value)
+  else
+    "\e[#{value}m#{str}\e[0m"
   end
 end
 
