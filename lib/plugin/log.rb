@@ -21,4 +21,26 @@ module Termtter::Client
     statuses = public_storage[:log].select { |s| s.text =~ pat }
     call_hooks(statuses, :list_friends_timeline, t)
   end
+
+  add_help 'log', 'Show local log'
+  add_help 'log USER', 'Show local log of the user'
+
+  add_command /^(log)\s*$/ do |m, t|
+    call_hooks(public_storage[:log], :list_friends_timeline, t)
+  end
+
+  add_command /^(log)\s+([^\s]+)/ do |m, t|
+    statuses = public_storage[:log].select{ |s| s.user_name == m[2]}
+    call_hooks(statuses, :list_friends_timeline, t)
+  end
+
+  add_completion do |input|
+    case input
+    when /^(log)\s+(.*)/
+      find_user_candidates $2, "#{$1} %s"
+    else
+      %w[ log ].grep(/^#{Regexp.quote input}/)
+    end
+  end
+
 end

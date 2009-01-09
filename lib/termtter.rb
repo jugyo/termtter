@@ -287,7 +287,7 @@ module Termtter
 
       # memo: each filter must return Array of Status
       def apply_filters(statuses)
-        filtered = statuses
+        filtered = statuses.map{|s| s.dup }
         @@filters.each do |f|
           filtered = f.call(filtered)
         end

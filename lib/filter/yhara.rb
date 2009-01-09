@@ -10,7 +10,7 @@ module Termtter
 
   module Client
     add_filter do |statuses|
-      statuses.select &:yharian?
+      statuses.select{|s| s.yharian? }
     end
   end
 end
