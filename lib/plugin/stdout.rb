@@ -63,8 +63,7 @@ Termtter::Client.add_hook do |statuses, event|
   case event
   when :update_friends_timeline, :list_friends_timeline, :list_user_timeline, :show, :replies
     unless statuses.empty?
-      statuses.reverse! if event == :update_friends_timeline
-      statuses.each do |s|
+      statuses.reverse.each do |s|
         text = s.text
         status_color = configatron.plugins.stdout.colors[s.user_screen_name.hash % configatron.plugins.stdout.colors.size]
         status = "#{s.user_screen_name}: #{text}"
@@ -86,7 +85,7 @@ Termtter::Client.add_hook do |statuses, event|
       end
     end
   when :search
-    statuses.each do |s|
+    statuses.reverse.each do |s|
       text = s.text
       status_color = configatron.plugins.stdout.colors[s.user_screen_name.hash % configatron.plugins.stdout.colors.size]
 
