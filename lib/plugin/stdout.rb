@@ -69,7 +69,7 @@ Termtter::Client.add_hook do |statuses, event|
       status_color = configatron.plugins.stdout.colors[s.user_screen_name.hash % configatron.plugins.stdout.colors.size]
       status = "#{s.user_screen_name}: #{text}"
       if s.in_reply_to_status_id
-        status += " (reply to #{s.in_reply_to_screen_name})"
+        status += " (reply to #{s.in_reply_to_status_id})"
       end
 
       time_format = case event
