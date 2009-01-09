@@ -60,29 +60,29 @@ def color(str, value)
 end
 
 Termtter::Client.add_hook do |statuses, event|
+  next if statuses.empty?
+
   case event
   when :update_friends_timeline, :list_friends_timeline, :list_user_timeline, :show, :replies
-    unless statuses.empty?
-      statuses.reverse.each do |s|
-        text = s.text
-        status_color = configatron.plugins.stdout.colors[s.user_screen_name.hash % configatron.plugins.stdout.colors.size]
-        status = "#{s.user_screen_name}: #{text}"
-        if s.in_reply_to_status_id
-          status += " (reply to #{s.in_reply_to_status_id})"
-        end
-
-        time_format = case event
-          when :update_friends_timeline, :list_friends_timeline
-            '%H:%M:%S'
-          else
-            '%m-%d %H:%M'
-          end
-        time = "(#{s.created_at.strftime(time_format)})"
-
-        id = s.id
-
-        puts ERB.new(configatron.plugins.stdout.timeline_format).result(binding)
+    statuses.reverse.each do |s|
+      text = s.text
+      status_color = configatron.plugins.stdout.colors[s.user_screen_name.hash % configatron.plugins.stdout.colors.size]
+      status = "#{s.user_screen_name}: #{text}"
+      if s.in_reply_to_status_id
+        status += " (reply to #{s.in_reply_to_status_id})"
       end
+
+      time_format = case event
+        when :update_friends_timeline, :list_friends_timeline
+          '%H:%M:%S'
+        else
+          '%m-%d %H:%M'
+        end
+      time = "(#{s.created_at.strftime(time_format)})"
+
+      id = s.id
+
+      puts ERB.new(configatron.plugins.stdout.timeline_format).result(binding)
     end
   when :search
     statuses.reverse.each do |s|
