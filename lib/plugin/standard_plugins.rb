@@ -40,9 +40,9 @@ module Termtter::Client
     limit = t.get_rate_limit_status
     remaining_time = "%dmin %dsec" % (limit.reset_time - Time.now).divmod(60)
     remaining_color =
-      case limit.remaining_hits
-      when 20..40 then :yellow
-      when  0..20 then :red
+      case limit.remaining_hits / limit.hourly_limit.to_f
+      when 0.2..0.4 then :yellow
+      when 0..0.2   then :red
       else             :green
       end
     puts "=> #{color(limit.remaining_hits, remaining_color)}/#{limit.hourly_limit} until #{limit.reset_time} (#{remaining_time} remaining)"
