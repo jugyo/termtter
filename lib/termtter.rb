@@ -24,6 +24,8 @@ require 'termtter/status'
 module Termtter
   VERSION = '0.7.6'
   APP_NAME = 'termtter'
+  CONF_FILE = '~/.termtterrc' # still does not use
+  CONF_DIR = '~/.termtter' # still does not use
 end
 
 if RUBY_VERSION < '1.8.7'
@@ -73,4 +75,6 @@ unless defined? original_require
     original_require s
   end
 end
+
+$:.unshift(Termtter::CONF_DIR) # still does not use
 
