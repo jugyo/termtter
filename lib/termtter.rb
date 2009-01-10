@@ -156,10 +156,10 @@ module Termtter
     end
 
     def show(id, rth = false)
-      statuses = get_timeline("#{@connection.protocol}://twitter.com/statuses/show/#{id}.json")
-      if rth && id = statuses[0].in_reply_to_status_id
-        statuses += show id, true
-      end
+      get_status = lambda { get_timeline("#{@connection.protocol}://twitter.com/statuses/show/#{id}.json")[0] }
+      statuses = []
+      statuses << status = Array(Client.public_storage[:log]).detect(get_status) {|s| s.id == id.to_i }
+      statuses << show(id, true) if rth && id = status.in_reply_to_status_id
       statuses.flatten
     end
 
