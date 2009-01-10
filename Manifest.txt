@@ -41,6 +41,10 @@ lib/plugin/translation.rb
 lib/plugin/uri-open.rb
 lib/plugin/yhara.rb
 lib/termtter.rb
+lib/termtter/client.rb
+lib/termtter/connection.rb
+lib/termtter/status.rb
+lib/termtter/twitter.rb
 run_termtter.rb
 test/friends_timeline.json
 test/search.json
