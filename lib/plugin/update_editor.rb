@@ -20,10 +20,15 @@ module Termtter::Client
 
   add_command /^(update_editor|ue)\s*$/ do |m, t|
     pause
-    text = input_editor.gsub("\n", " ")
+    text = input_editor
     unless text.empty?
-      t.update_status(text)
-      puts "=> #{text}"
+      text = ERB.new(text).result(binding)
+      text.split("\n").each do |post|
+        unless post.empty?
+          t.update_status(post)
+          puts "=> #{post}"
+        end
+      end
     end
     resume
   end
