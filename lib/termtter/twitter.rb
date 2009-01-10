@@ -35,7 +35,7 @@ module Termtter
       return results.map do |s|
         status = Status.new
         status.id = s['id']
-        status.text = CGI.unescapeHTML(s['text']).gsub(/(\n|\r)/, '')
+        status.text = CGI.unescapeHTML(s['text']).gsub(/(\n|\r)/, '').gsub(query, color(color(query, 41), 37))
         status.created_at = Time.utc(*ParseDate::parsedate(s["created_at"])).localtime
         status.user_screen_name = s['from_user']
         status
