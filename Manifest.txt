@@ -8,10 +8,12 @@ lib/filter/en2ja.rb
 lib/filter/english.rb
 lib/filter/expand-tinyurl.rb
 lib/filter/fib.rb
+lib/filter/ignore.rb
 lib/filter/reverse.rb
 lib/filter/yhara.rb
 lib/plugin/bomb.rb
 lib/plugin/confirm.rb
+lib/plugin/cool.rb
 lib/plugin/english.rb
 lib/plugin/erb.rb
 lib/plugin/favorite.rb
@@ -38,6 +40,7 @@ lib/plugin/spam.rb
 lib/plugin/standard_plugins.rb
 lib/plugin/stdout.rb
 lib/plugin/translation.rb
+lib/plugin/update_editor.rb
 lib/plugin/uri-open.rb
 lib/plugin/yhara.rb
 lib/termtter.rb
