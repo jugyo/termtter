@@ -14,7 +14,7 @@ module Termtter::Client
     file.close
     system("#{editor} #{file.path}")
     result = file.open.read
-    file.close
+    file.close(false)
     result
   end
 
