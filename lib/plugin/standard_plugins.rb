@@ -8,9 +8,11 @@ module Termtter::Client
     text = ERB.new(m[2]).result(binding).gsub(/\n/, ' ')
     unless text.empty?
       text =~ /(@(.+))*\s+(.+)/
-      msg = $3
-      text = $1.split(/\s+/).map {|u| "#{u} #{msg}" }
-      text.each do |post|
+      if $1
+        msg = $3
+        text = $1.split(/\s+/).map {|u| "#{u} #{msg}" }
+      end
+      Array(text).each do |post|
         t.update_status(post)
         puts "=> #{post}"
       end
