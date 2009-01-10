@@ -30,7 +30,7 @@ module Termtter::Client
     call_hooks(t.replies(), :replies, t)
   end
 
-  add_command /^show(s)?\s+(?:[^\d]*:)?(\d+)/ do |m, t|
+  add_command /^show(s)?\s+(?:[\w\d]+:)?(\d+)/ do |m, t|
     call_hooks(t.show(m[2], m[1]), :show, t)
   end
 
@@ -152,7 +152,7 @@ show ID           Show a single status
       find_user_candidates $2, "#{$1} %s"
     when /^(update|u)\s+(.*)@([^\s]*)$/
       find_user_candidates $3, "#{$1} #{$2}@%s"
-    when /^show(s)?\s+(([^\d]*):)?(\d*)/
+    when /^show(s)?\s+(([\w\d]+):)?(\d*)/
       find_status_id_candidates $4, "show#{$1} #{$2}%s", $3
     else
       standard_commands.grep(/^#{Regexp.quote input}/)
