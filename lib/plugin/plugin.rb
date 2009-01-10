@@ -16,21 +16,21 @@ module Termtter::Client
 
   add_help 'plugins', 'Show list of plugins'
   add_command /^plugins$/ do |m, t|
-    puts public_storage[:plugins].join("\n")
+    puts public_storage[:plugins].sort.join("\n")
   end
 
   def self.find_plugin_candidates(a, b)
-    if a.empty?
-      public_storage[:plugins].to_a
-    else
-      public_storage[:plugins].grep(/^#{Regexp.quote a}/i)
-    end.
-    map {|u| b % u }
+    public_storage[:plugins].
+      grep(/^#{Regexp.quote a}/i).
+      map {|u| b % u }
   end
 
   add_completion do |input|
-    if input =~ /^(plugin)\s+(.*)/
+    case input
+    when /^(plugin)\s+(.+)/
       find_plugin_candidates $2, "#{$1} %s"
+    when /^(plugin)\s+$/
+      public_storage[:plugins].sort
     else
       %w[ plugin plugins ].grep(/^#{Regexp.quote input}/)
     end

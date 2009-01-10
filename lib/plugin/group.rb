@@ -4,13 +4,19 @@ module Termtter::Client
   if public_storage[:log]
     add_help 'group,g GROUPNAME', 'Filter by group members'
 
+    add_command /^(?:group|g)\s*$/ do |m, t|
+      configatron.plugins.group.groups.each_pair do |key, value|
+        puts "#{key}: #{value.join(',')}"
+      end
+    end
+
     add_command /^(?:group|g)\s+(.+)/ do |m, t|
       group_name = m[1].to_sym
       group = configatron.plugins.group.groups[group_name]
       statuses = group ? public_storage[:log].select { |s|
         group.include?(s.user_screen_name) 
       } : []
-      call_hooks(statuses, :list_friends_timeline, t)
+      call_hooks(statuses, :search, t)
     end
 
     def self.find_group_candidates(a, b)
@@ -23,6 +29,8 @@ module Termtter::Client
       case input
       when /^(group|g)?\s+(.+)/
         find_group_candidates($2, "#{$1} %s")
+      when /^(group|g)\s+$/
+        configatron.plugins.group.groups.keys
       else
         %w(group).grep(/^#{Regexp.quote input}/)
       end

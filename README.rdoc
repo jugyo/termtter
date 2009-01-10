@@ -58,6 +58,10 @@ To update the config, just restart your termtter proccess.
 
 http://www.lingr.com/room/termtter
 
+== DOCUMENT:
+
+http://wiki.github.com/jugyo/termtter/home (in Japanese)
+
 == LICENSE:
 
 (The MIT License)

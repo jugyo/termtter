@@ -2,7 +2,7 @@ raise 'say.rb runs only in OSX Leopard' if /darwin9/ !~ RUBY_PLATFORM
 
 # say :: String -> String -> IO ()
 def say(who, what)
-  voices = %w(Alex Bruce Fred Junior Ralph Agnes Kathy Princess Vicki Victoria Albert Bad\ News Bahh Bells Boing Bubbles Cellos Deranged Good\ News Hysterical Pipe\ Organ Trinoids Whisper Zarvox)
+  voices = %w(Alex Alex Bruce Fred Ralph Agnes Kathy Vicki)
   voice = voices[who.hash % voices.size]
   system 'say', '-v', voice, what
 end

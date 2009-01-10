@@ -30,9 +30,9 @@ module Termtter
         when :follow then 'create'
         when :leave  then 'destroy'
         end
-      uri = "http://twitter.com/friendships/#{type}/#{user}.json"
+      uri = "#{@connection.protocol}://twitter.com/friendships/#{type}/#{user}.json"
 
-      Net::HTTP.start('twitter.com', 80) do |http|
+      @connection.start('twitter.com', @connection.port) do |http|
         http.request(post_request(uri))
       end
     end

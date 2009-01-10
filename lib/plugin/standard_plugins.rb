@@ -1,9 +1,11 @@
+require 'erb'
+
 module Termtter::Client
 
   # standard commands
 
   add_command /^(update|u)\s+(.*)/ do |m, t|
-    text = m[2]
+    text = ERB.new(m[2]).result(binding).gsub(/\n/, ' ')
     unless text.empty?
       t.update_status(text)
       puts "=> #{text}"
@@ -28,15 +30,22 @@ module Termtter::Client
     call_hooks(t.replies(), :replies, t)
   end
 
-  add_command /^show\s+([^\s]+)/ do |m, t|
-    call_hooks(t.show(m[1]), :show, t)
+  add_command /^show(s)?\s+([^\s]+)/ do |m, t|
+    call_hooks(t.show(m[2], m[1]), :show, t)
   end
 
   # TODO: Change colors when remaining_hits is low.
   # TODO: Simmulate remaining_hits.
   add_command /^(limit|lm)\s*$/ do |m, t|
-    limit = t.get_rate_limit_status_hash
-    puts "=> #{limit['remaining_hits']}/#{limit['hourly_limit']}"
+    limit = t.get_rate_limit_status
+    remaining_time = "%dmin %dsec" % (limit.reset_time - Time.now).divmod(60)
+    remaining_color =
+      case limit.remaining_hits / limit.hourly_limit.to_f
+      when 0.2..0.4 then :yellow
+      when 0..0.2   then :red
+      else             :green
+      end
+    puts "=> #{color(limit.remaining_hits, remaining_color)}/#{limit.hourly_limit} until #{limit.reset_time} (#{remaining_time} remaining)"
   end
 
 
@@ -52,10 +61,10 @@ module Termtter::Client
     exit
   end
 
-  add_command /^help\s*$/ do |m, t|
+  add_command /^(help|h)\s*$/ do |m, t|
     puts <<-EOS
 exit,e            Exit
-help              Print this help message
+help,h            Print this help message
 list,l            List the posts in your friends timeline
 list,l USERNAME   List the posts in the the given user's timeline
 limit,lm          Show the API limit status
@@ -139,8 +148,8 @@ show ID           Show a single status
       find_user_candidates $2, "#{$1} %s"
     when /^(update|u)\s+(.*)@([^\s]*)$/
       find_user_candidates $3, "#{$1} #{$2}@%s"
-    when /^show\s+(.*)/
-      find_status_id_candidates $1, "show %s"
+    when /^show(s)?\s+(.*)/
+      find_status_id_candidates $2, "show#{$1} %s"
     else
       standard_commands.grep(/^#{Regexp.quote input}/)
     end
