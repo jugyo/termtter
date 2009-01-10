@@ -73,13 +73,6 @@ module Termtter
         statuses
       end
 
-      Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
-      Readline.completion_proc = proc {|input|
-        @@completions.map {|completion|
-          completion.call(input)
-        }.flatten.compact
-      }
-
       def do_hooks(statuses, event, tw)
         @@hooks.each do |h|
           begin
@@ -172,9 +165,23 @@ module Termtter
         end
       end
 
+      def setup_readline
+        Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
+        Readline.completion_proc = proc {|input|
+          @@completions.map {|completion|
+            completion.call(input)
+          }.flatten.compact
+        }
+        vi_or_emacs = configatron.editing_mode
+        unless vi_or_emacs.empty?
+          Readline.__send__("#{vi_or_emacs}_editing_mode")
+        end
+      end
+
       def run
         load_default_plugins()
         load_config()
+        setup_readline()
 
         puts 'initializing...'
         initialized = false
@@ -213,11 +220,6 @@ module Termtter
         end
 
         until initialized; end
-
-        vi_or_emacs = configatron.editing_mode
-        unless vi_or_emacs.empty?
-          Readline.__send__("#{vi_or_emacs}_editing_mode")
-        end
 
         begin
           stty_save = `stty -g`.chomp
