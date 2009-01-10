@@ -38,7 +38,14 @@ module Termtter::Client
   # TODO: Simmulate remaining_hits.
   add_command /^(limit|lm)\s*$/ do |m, t|
     limit = t.get_rate_limit_status
-    puts "=> #{limit.remaining_hits}/#{limit.hourly_limit}"
+    remaining_time = "%dmin %dsec" % (limit.reset_time - Time.now).divmod(60)
+    remaining_color =
+      case limit.remaining_hits
+      when 20..40 then :yellow
+      when  0..20 then :red
+      else             :green
+      end
+    puts "=> #{color(limit.remaining_hits, remaining_color)}/#{limit.hourly_limit} until #{limit.reset_time} (#{remaining_time} remaining)"
   end
 
 
