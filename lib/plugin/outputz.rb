@@ -10,8 +10,13 @@ module Termtter::Client
     add_command /^(update|u)\s+(.*)/ do |m, t|
       text = ERB.new(m[2]).result(binding).gsub(/\n/, ' ')
       unless text.empty?
-        t.update_status(text)
-        puts "=> #{text}"
+        text =~ /(@(.+))*\s+(.+)/
+        msg = $3
+        post_text = $1.split(/\s+/).map {|u| "#{u} #{msg}" }
+        post_text.each do |post|
+          t.update_status(post)
+          puts "=> #{post}"
+        end
       end
       t.instance_variable_get('@connection').
         start('outputz.com', 80) do |http|

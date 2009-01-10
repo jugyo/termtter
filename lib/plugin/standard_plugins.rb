@@ -7,8 +7,13 @@ module Termtter::Client
   add_command /^(update|u)\s+(.*)/ do |m, t|
     text = ERB.new(m[2]).result(binding).gsub(/\n/, ' ')
     unless text.empty?
-      t.update_status(text)
-      puts "=> #{text}"
+      text =~ /(@(.+))*\s+(.+)/
+      msg = $3
+      text = $1.split(/\s+/).map {|u| "#{u} #{msg}" }
+      text.each do |post|
+        t.update_status(post)
+        puts "=> #{post}"
+      end
     end
   end
 
