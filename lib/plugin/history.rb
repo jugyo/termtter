@@ -36,7 +36,7 @@ module Termtter::Client
       history[key] = public_storage[key]
     end
     max_of_history = configatron.plugins.history.max_of_history
-    history[:history] = Readline::HISTORY.to_a.uniq
+    history[:history] = Readline::HISTORY.to_a.reverse.uniq.reverse
     if history[:history].size > max_of_history
       history[:history] = history[:history][-max_of_history..-1]
     end
