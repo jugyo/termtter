@@ -30,7 +30,7 @@ module Termtter::Client
     call_hooks(t.replies(), :replies, t)
   end
 
-  add_command /^show(s)?\s+([^\s]+)/ do |m, t|
+  add_command /^show(s)?\s+(?:[^\d]*:)?(\d+)/ do |m, t|
     call_hooks(t.show(m[2], m[1]), :show, t)
   end
 
@@ -123,11 +123,15 @@ show ID           Show a single status
     end
   end
 
-  def self.find_status_id_candidates(a, b)
+  def self.find_status_id_candidates(a, b, u = nil)
+    candidates = public_storage[:status_ids].to_a
+    if u && c = public_storage[:log].select {|s| s.user_screen_name == u }.map {|s| s.id.to_s }
+      candidates = c unless c.empty?
+    end
     if a.empty?
-      public_storage[:status_ids].to_a
+      candidates
     else
-      public_storage[:status_ids].grep(/#{Regexp.quote a}/)
+      candidates.grep(/#{Regexp.quote a}/)
     end.
     map {|u| b % u }
   end
@@ -148,8 +152,8 @@ show ID           Show a single status
       find_user_candidates $2, "#{$1} %s"
     when /^(update|u)\s+(.*)@([^\s]*)$/
       find_user_candidates $3, "#{$1} #{$2}@%s"
-    when /^show(s)?\s+(.*)/
-      find_status_id_candidates $2, "show#{$1} %s"
+    when /^show(s)?\s+(([^\d]*):)?(\d*)/
+      find_status_id_candidates $4, "show#{$1} #{$2}%s", $3
     else
       standard_commands.grep(/^#{Regexp.quote input}/)
     end
