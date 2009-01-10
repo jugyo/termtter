@@ -152,8 +152,12 @@ show ID           Show a single status
       find_user_candidates $2, "#{$1} %s"
     when /^(update|u)\s+(.*)@([^\s]*)$/
       find_user_candidates $3, "#{$1} #{$2}@%s"
-    when /^show(s)?\s+(([\w\d]+):)?(\d*)/
-      find_status_id_candidates $4, "show#{$1} #{$2}%s", $3
+    when /^show(s)?\s+(([\w\d]+):)?\s*(.*)/
+      if $2
+        find_status_id_candidates $4, "show#{$1} #{$2}%s", $3
+      else
+        find_user_candidates $4, "show#{$1} %s:"
+      end
     else
       standard_commands.grep(/^#{Regexp.quote input}/)
     end
