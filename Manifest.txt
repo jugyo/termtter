@@ -27,6 +27,7 @@ lib/plugin/history.rb
 lib/plugin/keyword.rb
 lib/plugin/log.rb
 lib/plugin/msagent.rb
+lib/plugin/multi_reply.rb
 lib/plugin/notify-send.rb
 lib/plugin/outputz.rb
 lib/plugin/plugin.rb
