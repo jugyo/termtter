@@ -11,8 +11,9 @@ module Termtter::Client
   def self.input_editor
     file = Tempfile.new('termtter')
     editor = configatron.plugins.update_editor.editor
+    file.close
     system("#{editor} #{file.path}")
-    result = file.read
+    result = file.open.read
     file.close
     result
   end
