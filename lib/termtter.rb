@@ -257,7 +257,7 @@ module Termtter
 
       def add_macro(r, s)
         add_command(r) do |m, t|
-          call_commands(s % m, t)
+          call_commands(s % m.to_a[1..-1], t)
         end
       end
 
