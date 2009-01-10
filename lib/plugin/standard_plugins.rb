@@ -1,9 +1,11 @@
+require 'erb'
+
 module Termtter::Client
 
   # standard commands
 
   add_command /^(update|u)\s+(.*)/ do |m, t|
-    text = m[2]
+    text = ERB.new(m[2]).result(binding).gsub(/\n/, ' ')
     unless text.empty?
       t.update_status(text)
       puts "=> #{text}"
