@@ -156,7 +156,9 @@ show ID           Show a single status
       if $2
         find_status_id_candidates $4, "show#{$1} #{$2}%s", $3
       else
-        find_user_candidates $4, "show#{$1} %s:"
+        result = find_user_candidates $4, "show#{$1} %s:"
+        result = find_status_id_candidates $4, "show#{$1} %s"  if result.empty?
+        result
       end
     else
       standard_commands.grep(/^#{Regexp.quote input}/)
