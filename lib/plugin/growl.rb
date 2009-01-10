@@ -6,7 +6,7 @@ require 'fileutils'
 begin
   require 'ruby-growl'
   growl = Growl.new "localhost", "termtter", "termtter status notification"
-rescue
+rescue LoadError
   growl = nil
 end
 
