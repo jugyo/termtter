@@ -30,8 +30,8 @@ module Termtter::Client
     call_hooks(t.replies(), :replies, t)
   end
 
-  add_command /^show\s+([^\s]+)/ do |m, t|
-    call_hooks(t.show(m[1]), :show, t)
+  add_command /^show(s)?\s+([^\s]+)/ do |m, t|
+    call_hooks(t.show(m[2], m[1]), :show, t)
   end
 
   # TODO: Change colors when remaining_hits is low.
