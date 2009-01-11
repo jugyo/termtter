@@ -20,6 +20,7 @@ require 'termtter/twitter'
 require 'termtter/connection'
 require 'termtter/client'
 require 'termtter/status'
+require 'termtter/command'
 
 module Termtter
   VERSION = '0.7.6'
