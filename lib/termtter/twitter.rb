@@ -1,3 +1,5 @@
+require 'highline'
+
 module Termtter
   class Twitter
 
@@ -89,17 +91,16 @@ module Termtter
 
     def user_name
       unless @user_name.instance_of? String
-        @user_name = Readline.readline('user name: ', false)
+        HighLine.track_eof = false
+        @user_name = HighLine.new.ask('your twitter username: ')
       end
       @user_name
     end
 
     def password
       unless @password.instance_of? String
-        system 'stty -echo'
-        @password = Readline.readline('password: ', false)
-        system 'stty echo'
-        puts
+        HighLine.track_eof = false
+        @password = HighLine.new.ask('your twitter password: ') { |q| q.echo = false }
       end
       @password
     end
