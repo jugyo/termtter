@@ -14,8 +14,12 @@ module Termtter
         @@public_storage ||= {}
       end
 
-      def add_hook(&hook)
-        @@hooks << hook
+      %w[hook completion filter].each do |n|
+        eval <<-EOF
+          def add_#{n}(&b)
+            @@#{n}s << b
+          end
+        EOF
       end
 
       def add_command(regex, &block)
@@ -28,16 +32,8 @@ module Termtter
         end
       end
 
-      def add_completion(&completion)
-        @@completions << completion
-      end
-
       def add_help(name, desc)
         @@helps << [name, desc]
-      end
-
-      def add_filter(&filter)
-        @@filters << filter
       end
 
       %w[hooks commands completions helps filters].each do |n|
