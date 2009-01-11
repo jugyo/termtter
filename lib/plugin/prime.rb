@@ -1,4 +1,4 @@
-def prime(n)
+def primes(n)
   table = []
   (2 .. n).each do |i|
     table << i
@@ -12,10 +12,10 @@ def prime(n)
   end
 
   r = (table+prime).sort {|a, b| a<=>b }
-  r.join(' ')
+  r.join(', ')
 end
 
 module Termtter::Client
-  add_command /^prime\s(\d+)/ do|m,t|t.update_status x="prime(#{n=m[1].to_i}) = #{prime n}"
-    puts "=> #{x}" end
+  add_command /^primes\s(\d+)/ do|m,t|t.update_status x="primes(#{n=m[1].to_i}) = {#{primes n}}"
+  puts "=> #{x}" end
 end
