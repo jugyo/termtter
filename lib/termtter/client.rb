@@ -18,10 +18,6 @@ module Termtter
         @@hooks << hook
       end
 
-      def clear_hooks
-        @@hooks.clear
-      end
-
       def add_command(regex, &block)
         @@commands[regex] = block
       end
@@ -32,28 +28,32 @@ module Termtter
         end
       end
 
-      def clear_commands
-        @@commands.clear
-      end
-
       def add_completion(&completion)
         @@completions << completion
-      end
-
-      def clear_completions
-        @@completions.clear
       end
 
       def add_help(name, desc)
         @@helps << [name, desc]
       end
 
-      def clear_helps
-        @@helps.clear
-      end
-
       def add_filter(&filter)
         @@filters << filter
+      end
+
+      def clear_hooks
+        @@hooks.clear
+      end
+
+      def clear_commands
+        @@commands.clear
+      end
+
+      def clear_completions
+        @@completions.clear
+      end
+
+      def clear_helps
+        @@helps.clear
       end
 
       def clear_filters
