@@ -129,21 +129,6 @@ module Termtter
         plugin 'stdout'
       end
 
-      def self.wrap_require
-        # FIXME: delete this method after the major version up
-        alias original_require require
-        def require(s)
-          if %r|^termtter/(.*)| =~ s
-            puts "[WARNING] use plugin '#{$1}' instead of require"
-            puts "  Such a legacy .termtter file will not be supported until version 1.0.0"
-            s = "plugin/#{$1}"
-          end
-          original_require s
-        end
-        yield
-        alias require original_require
-      end
-
       def load_config
         conf_file = File.expand_path('~/.termtter')
         if File.exist? conf_file
@@ -273,6 +258,22 @@ module Termtter
           exit # exit when press Control-D
         end
       end
+
+      def wrap_require
+        # FIXME: delete this method after the major version up
+        alias original_require require
+        def require(s)
+          if %r|^termtter/(.*)| =~ s
+            puts "[WARNING] use plugin '#{$1}' instead of require"
+            puts "  Such a legacy .termtter file will not be supported until version 1.0.0"
+            s = "plugin/#{$1}"
+          end
+          original_require s
+        end
+        yield
+        alias require original_require
+      end
+      private :wrap_require
     end
   end
 end
