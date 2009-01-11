@@ -40,24 +40,12 @@ module Termtter
         @@filters << filter
       end
 
-      def clear_hooks
-        @@hooks.clear
-      end
-
-      def clear_commands
-        @@commands.clear
-      end
-
-      def clear_completions
-        @@completions.clear
-      end
-
-      def clear_helps
-        @@helps.clear
-      end
-
-      def clear_filters
-        @@filters.clear
+      %w[hooks commands completions helps filters].each do |n|
+        eval <<-EOF
+          def clear_#{n}
+            @@#{n}.clear
+          end
+        EOF
       end
 
       # memo: each filter must return Array of Status
