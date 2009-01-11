@@ -129,7 +129,7 @@ module Termtter
         plugin 'stdout'
       end
 
-      def load_config
+      def self.wrap_require
         # FIXME: delete this method after the major version up
         alias original_require require
         def require(s)
@@ -140,10 +140,16 @@ module Termtter
           end
           original_require s
         end
+        yield
+        alias require original_require
+      end
 
+      def load_config
         conf_file = File.expand_path('~/.termtter')
         if File.exist? conf_file
-          load conf_file
+          wrap_require do
+            load conf_file
+          end
         else
           HighLine.track_eof = false
           ui = HighLine.new
@@ -172,10 +178,10 @@ module Termtter
           }
           puts "generated: ~/.termtter"
           puts "enjoy!"
-          load conf_file
+          wrap_require do
+            load conf_file
+          end
         end
-
-        alias require original_require
       end
 
       def setup_readline
