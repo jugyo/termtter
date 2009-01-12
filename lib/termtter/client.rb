@@ -198,9 +198,6 @@ module Termtter
                 puts 'plese check your account settings'
                 exit!
               end
-            rescue => e
-              puts "Error: #{e}"
-              puts e.backtrace.join("\n")
             ensure
               sleep configatron.update_interval
             end
@@ -234,9 +231,6 @@ module Termtter
             rescue CommandNotFound => e
               puts "Unknown command \"#{buf}\""
               puts 'Enter "help" for instructions'
-            rescue => e
-              puts "Error: #{e}"
-              puts e.backtrace.join("\n")
             end
           end
           exit # exit when press Control-D
