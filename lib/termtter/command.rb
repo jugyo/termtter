@@ -13,23 +13,26 @@ module Termtter
       @exec_proc = args[:exec]
       @completion_proc = args[:completion]
       @help = args[:help]
-
-      @pattern = /^(#{names.map{|i|Regexp.quote(i)}.join('|')})\s*(.*)/
     end
 
     def complement(input)
       completion_proc.call(input)
     end
 
-    # MEMO: Termtter:Client からはこのメソッドを呼び出すことになると思う。
+    # MEMO: Termtter:Client からはこのメソッドを呼び出すことになるとお思う。
+    # MEMO: ArgumentError が発生したときは呼び出し元で Command#help を表示するなどしてほしい
     def exec_if_match(input)
       if input =~ pattern
-        execute($2.split(/\s/))
+        execute($2)
       end
     end
 
-    def execute(*args)
-      exec_proc.call(*args)
+    def execute(arg)
+      exec_proc.call(arg)
+    end
+
+    def pattern
+      /^(#{names.map{|i|Regexp.quote(i)}.join('|')})\s*(.*)/
     end
   end
 end

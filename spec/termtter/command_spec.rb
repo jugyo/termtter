@@ -1,15 +1,13 @@
 require File.dirname(__FILE__) + '/../../lib/termtter'
 
 module Termtter
-  describe Twitter, 'when initialize' do
+  describe Command do
     it '' do
-      command_arg1 = nil
-      command_arg2 = nil
+      command_arg = nil
       command = Command.new(
                   :names => ['update', 'u'],
-                  :exec => proc {|args|
-                    command_arg1 = args[0]
-                    command_arg2 = args[1]
+                  :exec => proc {|arg|
+                    command_arg = arg
                   },
                   :completion => proc {|input|
                     ['test foo', 'test fooo', 'test bar'].grep(/^#{Regexp.quote(input)}/)
@@ -20,8 +18,7 @@ module Termtter
       command.names.should == ['update', 'u']
       command.pattern.should == /^(update|u)\s*(.*)/
       command.help.should == ['update,u TEXT', 'test command']
-      command_arg1.should == nil
-      command_arg2.should == nil
+      command_arg.should == nil
 
       # complement
       command.complement('test').should == ['test foo', 'test fooo', 'test bar']
@@ -29,9 +26,8 @@ module Termtter
       command.complement('test fooo').should == ['test fooo']
 
       # exec command
-      command.exec_if_match('update arg1 arg2')
-      command_arg1.should == 'arg1'
-      command_arg2.should == 'arg2'
+      command.exec_if_match('update test test')
+      command_arg.should == 'test test'
 
       # redefine command.proc
       $new_command_called = false
