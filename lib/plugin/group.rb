@@ -28,7 +28,7 @@ module Termtter::Client
       statuses = group ? public_storage[:log].select { |s|
         group.include?(s.user_screen_name) 
       } : []
-      call_hooks(statuses.reverse, :search, t)
+      call_hooks(statuses, :search, t)
     end
 
     def self.find_group_candidates(a, b)
