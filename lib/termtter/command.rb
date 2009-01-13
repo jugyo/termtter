@@ -3,16 +3,16 @@ module Termtter
     attr_accessor :name, :aliases, :exec_proc, :completion_proc, :help, :pattern
 
     # args
-    #   name:       Command name
-    #   aliases:    Array of command alias (ex. ['u', 'up'])
+    #   name:            Symbol as command name
+    #   aliases:         Array of command alias (ex. ['u', 'up'])
     #   exec_proc:       Proc for procedure of the command. If need the proc must return object for hook.
     #   completion_proc: Proc for input completion. The proc must return Array of candidates (Optional)
-    #   help:       help text for the command (Optional)
+    #   help:            help text for the command (Optional)
     def initialize(args)
       [:name, :exec_proc].each do |i|
         raise ArgumentError, ":#{i.to_s} is not given." unless args.has_key?(i)
       end
-      @name = args[:name]
+      @name = args[:name].to_sym
       @aliases = args[:aliases] || []
       @exec_proc = args[:exec_proc]
       @completion_proc = args[:completion_proc]
@@ -24,7 +24,7 @@ module Termtter
       if command_info
         [completion_proc.call(command_info[0], command_info[1])].flatten.compact
       else
-        [name]
+        [name.to_s]
       end
     end
 
@@ -58,7 +58,7 @@ module Termtter
     end
 
     def commands
-      aliases.unshift(name)
+      aliases.unshift(name.to_s)
     end
   end
 end
