@@ -21,7 +21,7 @@ module Termtter
       completion_proc.call(input)
     end
 
-    # MEMO: Termtter:Client からはこのメソッドを呼び出すことになるとお思う。
+    # MEMO: Termtter:Client からはこのメソッドを呼び出すことになると思う。
     def exec_if_match(input)
       if input =~ pattern
         execute($2.split(/\s/))
