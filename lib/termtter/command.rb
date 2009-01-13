@@ -22,11 +22,9 @@ module Termtter
     end
 
     # MEMO: Termtter:Client からはこのメソッドを呼び出すことになるとお思う。
-    # MEMO: ArgumentError が発生したときは呼び出し元で Command#help を表示するなどしてほしい
     def exec_if_match(input)
       if input =~ pattern
-        args = $~.to_a[2..-1]
-        execute(*args)
+        execute($2.split(/\s/))
       end
     end
 
