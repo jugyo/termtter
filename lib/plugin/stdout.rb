@@ -24,15 +24,15 @@ if win?
   $oldColor = lpBuffer.unpack('SSSSSssssSS')[4]
 
   $colorMap = {
-       0 => 7,     # black/white
-      37 => 8,     # white/intensity
-      31 => 4 + 8, # red/red
-      32 => 2 + 8, # green/green
-      33 => 6 + 8, # yellow/yellow
-      34 => 1 + 8, # blue/blue
-      35 => 5 + 8, # magenta/purple
-      36 => 3 + 8, # cyan/aqua
-      90 => 7,     # erase/white
+    0 => 7,     # black/white
+    37 => 8,     # white/intensity
+    31 => 4 + 8, # red/red
+    32 => 2 + 8, # green/green
+    33 => 6 + 8, # yellow/yellow
+    34 => 1 + 8, # blue/blue
+    35 => 5 + 8, # magenta/purple
+    36 => 3 + 8, # cyan/aqua
+    90 => 7,     # erase/white
   }
   def puts(str)
     str = str.to_s.tosjis
@@ -59,44 +59,39 @@ def color(str, value)
   end
 end
 
-Termtter::Client.add_hook do |statuses, event|
-  next if statuses.empty?
+module Termtter::Client
 
-  case event
-  when :update_friends_timeline, :list_friends_timeline, :list_user_timeline, :show, :replies
-    statuses.reverse_each do |s|
+  def self.print_statuses(statuses, sort = true, time_format = '%H:%M:%S')
+    (sort ? statuses.sort_by{ |s| s.created_at} : statuses).each do |s|
       text = s.text
       status_color = configatron.plugins.stdout.colors[s.user_screen_name.hash % configatron.plugins.stdout.colors.size]
       status = "#{s.user_screen_name}: #{text}"
       if s.in_reply_to_status_id
         status += " (reply to #{s.in_reply_to_status_id})"
       end
-
-      time_format = case event
-        when :update_friends_timeline, :list_friends_timeline
-          '%H:%M:%S'
-        else
-          '%m-%d %H:%M'
-        end
+      
       time = "(#{s.created_at.strftime(time_format)})"
-
-      id = s.id
-
-      puts ERB.new(configatron.plugins.stdout.timeline_format).result(binding)
-    end
-  when :search
-    statuses.reverse_each do |s|
-      text = s.text
-      status_color = configatron.plugins.stdout.colors[s.user_screen_name.hash % configatron.plugins.stdout.colors.size]
-
-      status = "#{s.user_screen_name}: #{text}"
-      time = "(#{s.created_at.strftime('%m-%d %H:%M')})"
       id = s.id
       puts ERB.new(configatron.plugins.stdout.timeline_format).result(binding)
     end
   end
-end
 
+  def self.print_statuses_with_date(statuses, sort = true)
+    print_statuses(statuses, sort, '%m-%d %H:%M')
+  end
+  
+  add_hook do |statuses, event|
+    next if statuses.empty?
+    
+    case event
+    when :update_friends_timeline, :list_friends_timeline
+      print_statuses(statuses)
+    when :search, :list_user_timeline, :show, :replies
+      print_statuses_with_date(statuses)
+    end
+  end
+  
+end
 # stdout.rb
 #   output statuses to stdout
 # example config
