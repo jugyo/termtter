@@ -16,7 +16,7 @@ module Termtter::Client
       statuses = group ? public_storage[:log].select { |s|
         group.include?(s.user_screen_name) 
       } : []
-      call_hooks(statuses, :list_friends_timeline, t)
+      call_hooks(statuses.reverse, :search, t)
     end
 
     def self.find_group_candidates(a, b)
@@ -41,6 +41,6 @@ end
 # group.rb
 #   plugin 'group'
 #   configatron.plugins.group.groups = {
-#       :rits => %w(hakobe isano hitode909)
+#     :rits => %w(hakobe isano hitode909)
 #   }
 # NOTE: group.rb needs plugin/log

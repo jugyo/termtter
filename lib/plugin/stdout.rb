@@ -60,33 +60,32 @@ def color(str, value)
 end
 
 Termtter::Client.add_hook do |statuses, event|
+  next if statuses.empty?
+
   case event
   when :update_friends_timeline, :list_friends_timeline, :list_user_timeline, :show, :replies
-    unless statuses.empty?
-      statuses.reverse! if event == :update_friends_timeline
-      statuses.each do |s|
-        text = s.text
-        status_color = configatron.plugins.stdout.colors[s.user_screen_name.hash % configatron.plugins.stdout.colors.size]
-        status = "#{s.user_screen_name}: #{text}"
-        if s.in_reply_to_status_id
-          status += " (reply to #{s.in_reply_to_status_id})"
-        end
-
-        time_format = case event
-          when :update_friends_timeline, :list_friends_timeline
-            '%H:%M:%S'
-          else
-            '%m-%d %H:%M'
-          end
-        time = "(#{s.created_at.strftime(time_format)})"
-
-        id = s.id
-
-        puts ERB.new(configatron.plugins.stdout.timeline_format).result(binding)
+    statuses.reverse_each do |s|
+      text = s.text
+      status_color = configatron.plugins.stdout.colors[s.user_screen_name.hash % configatron.plugins.stdout.colors.size]
+      status = "#{s.user_screen_name}: #{text}"
+      if s.in_reply_to_status_id
+        status += " (reply to #{s.in_reply_to_status_id})"
       end
+
+      time_format = case event
+        when :update_friends_timeline, :list_friends_timeline
+          '%H:%M:%S'
+        else
+          '%m-%d %H:%M'
+        end
+      time = "(#{s.created_at.strftime(time_format)})"
+
+      id = s.id
+
+      puts ERB.new(configatron.plugins.stdout.timeline_format).result(binding)
     end
   when :search
-    statuses.each do |s|
+    statuses.reverse_each do |s|
       text = s.text
       status_color = configatron.plugins.stdout.colors[s.user_screen_name.hash % configatron.plugins.stdout.colors.size]
 
@@ -101,5 +100,5 @@ end
 # stdout.rb
 #   output statuses to stdout
 # example config
-#   configatron.plugins.stdout.colors = [:white, :red, :green, :yellow, :blue, :magenta, :cyan]
+#   configatron.plugins.stdout.colors = [:none, :red, :green, :yellow, :blue, :magenta, :cyan]
 #   configatron.plugins.stdout.timeline_format = '<%= color(time, 90) %> <%= color(status, status_color) %> <%= color(id, 90) %>'

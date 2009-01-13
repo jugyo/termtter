@@ -11,17 +11,6 @@ self_file =
 $:.unshift(File.dirname(self_file) + "/lib")
 
 require 'termtter'
-plugin 'standard_plugins'
-plugin 'stdout'
-
-conf_file = File.expand_path('~/.termtter')
-if File.exist? conf_file
-  load conf_file
-else
-  puts '~/.termtter not found.'
-  exit 1
-end
-
 Termtter::Client.run
 
 # Startup scripts for development

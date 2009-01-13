@@ -1,9 +1,11 @@
+require 'erb'
+
 module Termtter::Client
 
   # standard commands
 
   add_command /^(update|u)\s+(.*)/ do |m, t|
-    text = m[2]
+    text = ERB.new(m[2]).result(binding).gsub(/\n/, ' ')
     unless text.empty?
       t.update_status(text)
       puts "=> #{text}"
@@ -28,15 +30,22 @@ module Termtter::Client
     call_hooks(t.replies(), :replies, t)
   end
 
-  add_command /^show\s+([^\s]+)/ do |m, t|
-    call_hooks(t.show(m[1]), :show, t)
+  add_command /^show(s)?\s+(?:[\w\d]+:)?(\d+)/ do |m, t|
+    call_hooks(t.show(m[2], m[1]), :show, t)
   end
 
   # TODO: Change colors when remaining_hits is low.
   # TODO: Simmulate remaining_hits.
   add_command /^(limit|lm)\s*$/ do |m, t|
     limit = t.get_rate_limit_status
-    puts "=> #{limit.remaining_hits}/#{limit.hourly_limit}"
+    remaining_time = "%dmin %dsec" % (limit.reset_time - Time.now).divmod(60)
+    remaining_color =
+      case limit.remaining_hits / limit.hourly_limit.to_f
+      when 0.2..0.4 then :yellow
+      when 0..0.2   then :red
+      else             :green
+      end
+    puts "=> #{color(limit.remaining_hits, remaining_color)}/#{limit.hourly_limit} until #{limit.reset_time} (#{remaining_time} remaining)"
   end
 
 
@@ -114,11 +123,15 @@ show ID           Show a single status
     end
   end
 
-  def self.find_status_id_candidates(a, b)
+  def self.find_status_id_candidates(a, b, u = nil)
+    candidates = public_storage[:status_ids].to_a
+    if u && c = public_storage[:log].select {|s| s.user_screen_name == u }.map {|s| s.id.to_s }
+      candidates = c unless c.empty?
+    end
     if a.empty?
-      public_storage[:status_ids].to_a
+      candidates
     else
-      public_storage[:status_ids].grep(/#{Regexp.quote a}/)
+      candidates.grep(/#{Regexp.quote a}/)
     end.
     map {|u| b % u }
   end
@@ -139,8 +152,14 @@ show ID           Show a single status
       find_user_candidates $2, "#{$1} %s"
     when /^(update|u)\s+(.*)@([^\s]*)$/
       find_user_candidates $3, "#{$1} #{$2}@%s"
-    when /^show\s+(.*)/
-      find_status_id_candidates $1, "show %s"
+    when /^show(s)?\s+(([\w\d]+):)?\s*(.*)/
+      if $2
+        find_status_id_candidates $4, "show#{$1} #{$2}%s", $3
+      else
+        result = find_user_candidates $4, "show#{$1} %s:"
+        result = find_status_id_candidates $4, "show#{$1} %s"  if result.empty?
+        result
+      end
     else
       standard_commands.grep(/^#{Regexp.quote input}/)
     end
