@@ -1,6 +1,5 @@
 module Termtter
   class Command
-
     attr_accessor :name, :aliases, :exec_proc, :completion_proc, :help, :pattern
 
     # args
@@ -21,7 +20,8 @@ module Termtter
     end
 
     def complement(input)
-      if command_info = match?(input)
+      command_info = match?(input)
+      if command_info
         [completion_proc.call(command_info[0], command_info[1])].flatten.compact
       else
         [name]
@@ -40,7 +40,7 @@ module Termtter
 
     # return array like [command, arg]
     def match?(input)
-     if input =~ pattern
+      if pattern =~ input
         [$2 || $3, $4]  # $2 or $3 => command, $4 => argument
       else
         nil
@@ -48,7 +48,7 @@ module Termtter
     end
 
     def pattern
-      commands_regex = commands.map{|i|Regexp.quote(i)}.join('|')
+      commands_regex = commands.map {|i| Regexp.quote(i) }.join('|')
       /^\s*((#{commands_regex})|(#{commands_regex})\s+(.*?))\s*$/
     end
 
