@@ -36,6 +36,14 @@ module Termtter
       @command.pattern.should == /^\s*((update|u|up)|(update|u|up)\s+(.*?))\s*$/
     end
 
+    it 'should return name' do
+      @command.name.should == :update
+    end
+
+    it 'should return aliases' do
+      @command.aliases.should == ['u', 'up']
+    end
+
     it 'should return commands' do
       @command.commands.should == ['update', 'u', 'up']
     end
