@@ -35,7 +35,7 @@ if win?
       90 => 7,     # erase/white
   }
   def puts(str)
-    str = str.tosjis
+    str = str.to_s.tosjis
     tokens = str.split(/(\e\[\d+m)/)
     tokens.each do |token|
       if token =~ /\e\[(\d+)m/
