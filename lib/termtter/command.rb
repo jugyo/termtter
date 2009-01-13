@@ -41,7 +41,7 @@ module Termtter
     # return array like [command, arg]
     def match?(input)
      if input =~ pattern
-        [$2 || $3, $4]  # $3 => command, $4 => argument
+        [$2 || $3, $4]  # $2 or $3 => command, $4 => argument
       else
         nil
       end
