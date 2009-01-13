@@ -2,42 +2,92 @@ require File.dirname(__FILE__) + '/../../lib/termtter'
 
 module Termtter
   describe Command do
-    it '' do
-      command_arg = nil
+    
+    before do
+      @command = 
       command = Command.new(
-                  :names => ['update', 'u'],
+                  :name => 'update',
+                  :aliases => ['u', 'up'],
                   :exec => proc {|arg|
-                    command_arg = arg
+                    arg
                   },
-                  :completion => proc {|input|
-                    ['test foo', 'test fooo', 'test bar'].grep(/^#{Regexp.quote(input)}/)
+                  :completion => proc {|command, arg|
+                    ['complete1', 'complete2']
                   },
                   :help => ['update,u TEXT', 'test command']
                 )
+    end
 
-      command.names.should == ['update', 'u']
-      command.pattern.should == /^(update|u)\s*(.*)/
-      command.help.should == ['update,u TEXT', 'test command']
+    it 'should execute' do
+      result = @command.exec_if_match('update test test')
+      result.should == 'test test'
+      result = @command.exec_if_match('update   test test  ')
+      result.should == 'test test'
+      result = @command.exec_if_match('update test   test')
+      result.should == 'test   test'
+    end
+
+    it 'should failed on execute' do
+      result = @command.exec_if_match('upda test test')
+      result.should == nil
+    end
+
+    it 'should return command regex' do
+      @command.pattern.should == /^\s*((update|u|up)|(update|u|up)\s+(.*?))\s*$/
+    end
+
+    it 'should return commands' do
+      @command.commands.should == ['update', 'u', 'up']
+    end
+
+    it 'should return help' do
+      @command.help.should == ['update,u TEXT', 'test command']
+    end
+
+    it 'should return candidates for completion' do
+      # complement
+      @command.complement('upd').should == ['update']
+      @command.complement(' upd').should == ['update']
+      @command.complement(' upd ').should == ['update']
+      @command.complement('upda').should == ['update']
+      @command.complement('update').should == ['complete1', 'complete2']
+      @command.complement('update ').should == ['complete1', 'complete2']
+      @command.complement(' update  ').should == ['complete1', 'complete2']
+      @command.complement('u foo').should == ['complete1', 'complete2']
+      @command.complement('u').should == ['complete1', 'complete2']
+      @command.complement('up').should == ['complete1', 'complete2']
+    end
+    
+    it 'should can redefine exec_proc' do
+      # redefine exec_proc
+      command_arg = nil
+      @command.exec_proc = proc {|arg|
+        command_arg = arg
+        'result'
+      }
       command_arg.should == nil
 
-      # complement
-      command.complement('test').should == ['test foo', 'test fooo', 'test bar']
-      command.complement('test foo').should == ['test foo', 'test fooo']
-      command.complement('test fooo').should == ['test fooo']
-
       # exec command
-      command.exec_if_match('update test test')
+      result = @command.exec_if_match('update test test')
       command_arg.should == 'test test'
+      result.should == 'result'
+    end
 
-      # redefine command.proc
-      $new_command_called = false
-      def command.exec_proc
-        proc {|text| $new_command_called = true }
-      end
-      $new_command_called.should == false
-      command.exec_if_match('update test')
-      $new_command_called.should == true
+    it 'should return command_info when call method "match?"' do
+      @command.match?('update').should == ['update', nil]
+      @command.match?('up').should == ['up', nil]
+      @command.match?('u').should == ['u', nil]
+      @command.match?('update ').should == ['update', nil]
+      @command.match?(' update ').should == ['update', nil]
+
+      @command.match?('update foo').should == ['update', 'foo']
+      @command.match?(' update foo').should == ['update', 'foo']
+      @command.match?(' update foo ').should == ['update', 'foo']
+      @command.match?('u foo').should == ['u', 'foo']
+      @command.match?('up foo').should == ['up', 'foo']
+      @command.match?('upd foo').should == nil
+      @command.match?('upd foo').should == nil
     end
   end
 end
- 
+
