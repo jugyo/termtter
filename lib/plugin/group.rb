@@ -1,5 +1,17 @@
 configatron.set_default('plugins.group.groups', {})
 
+module Termtter
+  class Status
+    def is_member?(group = nil)
+      if group
+        configatron.plugins.group.groups[:group].include? self.user_screen_name
+      else
+        configatron.plugins.group.groups.values.flatten.include? self.user_screen_name
+      end
+    end
+  end
+end
+
 module Termtter::Client
   if public_storage[:log]
     add_help 'group,g GROUPNAME', 'Filter by group members'
