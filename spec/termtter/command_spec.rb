@@ -1,11 +1,11 @@
 require File.dirname(__FILE__) + '/../../lib/termtter'
 
 module Termtter
+
   describe Command do
     
     before do
-      @command = 
-      command = Command.new(
+      @command = Command.new(
                   :name => 'update',
                   :aliases => ['u', 'up'],
                   :exec => proc {|arg|
@@ -87,6 +87,15 @@ module Termtter
       @command.match?('up foo').should == ['up', 'foo']
       @command.match?('upd foo').should == nil
       @command.match?('upd foo').should == nil
+    end
+
+    it 'should raise ArgumentError when constructor arguments are deficient' do
+      lambda {
+        Command.new(:exec => proc {|arg| })
+      }.should raise_error(ArgumentError)
+      lambda {
+        Command.new(:name => 'update')
+      }.should raise_error(ArgumentError)
     end
   end
 end

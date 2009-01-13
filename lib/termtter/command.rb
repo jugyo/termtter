@@ -10,6 +10,9 @@ module Termtter
     #   completion: Proc for input completion. The proc must return Array of candidates (Optional)
     #   help:       help text for the command (Optional)
     def initialize(args)
+      [:name, :exec].each do |i|
+        raise ArgumentError, ":#{i.to_s} is not given." unless args.has_key?(i)
+      end
       @name = args[:name]
       @aliases = args[:aliases] || []
       @exec_proc = args[:exec]
