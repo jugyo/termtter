@@ -6,11 +6,15 @@ module Termtter::Client
   else
     configatron.plugins.update_editor.set_default('editor', 'vi')
   end
+  configatron.plugins.update_editor.set_default('add_completion', false)
 
   
   def self.input_editor
     file = Tempfile.new('termtter')
     editor = configatron.plugins.update_editor.editor
+    if configatron.plugins.update_editor.add_completion
+      file.puts "\n"*100 + "__END__\n" + public_storage[:users].to_a.join(' ')
+    end
     file.close
     system("#{editor} #{file.path}")
     result = file.open.read
@@ -24,6 +28,7 @@ module Termtter::Client
     unless text.empty?
       text = ERB.new(text).result(binding)
       text.split("\n").each do |post|
+        break if post =~ /^__END__$/
         unless post.empty?
           t.update_status(post)
           puts "=> #{post}"
