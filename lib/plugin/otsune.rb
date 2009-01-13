@@ -14,3 +14,4 @@ module Termtter::Client
     end
   end
 end
+# vim: fenc=utf8
