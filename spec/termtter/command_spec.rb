@@ -8,10 +8,10 @@ module Termtter
       @command = Command.new(
                   :name => 'update',
                   :aliases => ['u', 'up'],
-                  :exec => proc {|arg|
+                  :exec_proc => proc {|arg|
                     arg
                   },
-                  :completion => proc {|command, arg|
+                  :completion_proc => proc {|command, arg|
                     ['complete1', 'complete2']
                   },
                   :help => ['update,u TEXT', 'test command']
@@ -91,7 +91,7 @@ module Termtter
 
     it 'should raise ArgumentError when constructor arguments are deficient' do
       lambda {
-        Command.new(:exec => proc {|arg| })
+        Command.new(:exec_proc => proc {|arg| })
       }.should raise_error(ArgumentError)
       lambda {
         Command.new(:name => 'update')

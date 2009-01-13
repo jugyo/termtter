@@ -6,17 +6,17 @@ module Termtter
     # args
     #   name:       Command name
     #   aliases:    Array of command alias (ex. ['u', 'up'])
-    #   exec:       Proc for procedure of the command. If need the proc must return object for hook.
-    #   completion: Proc for input completion. The proc must return Array of candidates (Optional)
+    #   exec_proc:       Proc for procedure of the command. If need the proc must return object for hook.
+    #   completion_proc: Proc for input completion. The proc must return Array of candidates (Optional)
     #   help:       help text for the command (Optional)
     def initialize(args)
-      [:name, :exec].each do |i|
+      [:name, :exec_proc].each do |i|
         raise ArgumentError, ":#{i.to_s} is not given." unless args.has_key?(i)
       end
       @name = args[:name]
       @aliases = args[:aliases] || []
-      @exec_proc = args[:exec]
-      @completion_proc = args[:completion]
+      @exec_proc = args[:exec_proc]
+      @completion_proc = args[:completion_proc]
       @help = args[:help]
     end
 
