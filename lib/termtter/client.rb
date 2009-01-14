@@ -100,10 +100,12 @@ module Termtter
         end
 
         @@new_commands.each do |key, command|
-          result = command.exec_if_match(text)
+          command_text, arg = command.match?(text)
+          # TODO: call hook for before command here.
+          result = command.execute(arg)
           if result
             command_found = true
-            # TODO: call hook with result
+            # TODO: call hook for after command with result.
           end
         end
 
