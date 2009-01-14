@@ -9,12 +9,10 @@ module Termtter
     #   completion_proc: Proc for input completion. The proc must return Array of candidates (Optional)
     #   help:            help text for the command (Optional)
     def initialize(args)
-      [:name, :exec_proc].each do |i|
-        raise ArgumentError, ":#{i.to_s} is not given." unless args.has_key?(i)
-      end
+      raise ArgumentError, ":name is not given." unless args.has_key?(:name)
       @name = args[:name].to_sym
       @aliases = args[:aliases] || []
-      @exec_proc = args[:exec_proc]
+      @exec_proc = args[:exec_proc] || proc {|arg|}
       @completion_proc = args[:completion_proc]
       @help = args[:help]
     end
@@ -32,7 +30,7 @@ module Termtter
     def exec_if_match(input)
       command_info = match?(input)
       if command_info
-        return execute(command_info[1])
+        return exec_proc.call(command_info[1])
       else
         return nil
       end
@@ -50,11 +48,6 @@ module Termtter
     def pattern
       commands_regex = commands.map {|i| Regexp.quote(i) }.join('|')
       /^\s*((#{commands_regex})|(#{commands_regex})\s+(.*?))\s*$/
-    end
-
-    # When no arguments for the command you should give nil as method arguments
-    def execute(arg)
-      exec_proc.call(arg)
     end
 
     def commands

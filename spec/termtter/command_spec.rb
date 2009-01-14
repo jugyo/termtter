@@ -36,6 +36,11 @@ module Termtter
       @command.pattern.should == /^\s*((update|u|up)|(update|u|up)\s+(.*?))\s*$/
     end
 
+    it 'should be given name as String or Symbol' do
+      Command.new(:name => 'foo').name.should == :foo
+      Command.new(:name => :foo).name.should == :foo
+    end
+
     it 'should return name' do
       @command.name.should == :update
     end
@@ -98,12 +103,32 @@ module Termtter
     end
 
     it 'should raise ArgumentError when constructor arguments are deficient' do
-      lambda {
-        Command.new(:exec_proc => proc {|arg| })
-      }.should raise_error(ArgumentError)
-      lambda {
-        Command.new(:name => 'update')
-      }.should raise_error(ArgumentError)
+      lambda { Command.new }.should raise_error(ArgumentError)
+      lambda { Command.new(:exec_proc => proc {|args|}) }.should raise_error(ArgumentError)
+      lambda { Command.new(:aliases => ['u']) }.should raise_error(ArgumentError)
+    end
+
+    it 'should redefine method "exec_if_match"' do
+      # add method
+      class << @command
+        def exec_if_match(input)
+          case input
+          when /^update\s+foo\s*(.*)/
+            foo($1)
+          when /^update\s+bar\s*(.*)/
+            bar($1)
+          end
+        end
+        def foo(arg)
+          "foo(#{arg})"
+        end
+        def bar(arg)
+          "bar(#{arg})"
+        end
+      end
+
+      @command.exec_if_match('update foo xxx').should == 'foo(xxx)'
+      @command.exec_if_match('update bar xxx').should == 'bar(xxx)'
     end
   end
 end
