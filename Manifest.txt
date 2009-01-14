@@ -9,6 +9,7 @@ lib/filter/english.rb
 lib/filter/expand-tinyurl.rb
 lib/filter/fib.rb
 lib/filter/ignore.rb
+lib/filter/reply.rb
 lib/filter/reverse.rb
 lib/filter/yhara.rb
 lib/plugin/bomb.rb
@@ -35,6 +36,7 @@ lib/plugin/outputz.rb
 lib/plugin/plugin.rb
 lib/plugin/primes.rb
 lib/plugin/quicklook.rb
+lib/plugin/reblog.rb
 lib/plugin/reload.rb
 lib/plugin/say.rb
 lib/plugin/scrape.rb
