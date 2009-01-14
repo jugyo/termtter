@@ -39,7 +39,12 @@ module Termtter::Client
   end
 
   add_completion do |input|
-    %w(hatebu).grep(/^#{Regexp.quote input}/)
+    case input
+    when /^(hatebu)\s+(\d*)$/
+      find_status_id_candidates $2, "#{$1} %s"
+    else
+      %w(hatebu).grep(/^#{Regexp.quote input}/)
+    end
   end
 end
 
