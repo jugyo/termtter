@@ -8,6 +8,11 @@ module Termtter
       Client.get_command(:test).should == command
     end
 
+    it 'should take command as Hash' do
+      Client.register_command(:name => :test)
+      Client.get_command(:test).name.should == :test
+    end
+
     it 'should call new_command' do
       command_arg = nil
       command = Command.new(:name => :test, :exec_proc => proc {|arg| command_arg = arg || 'nil'})

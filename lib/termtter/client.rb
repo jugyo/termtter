@@ -27,12 +27,15 @@ module Termtter
         @@commands[regex] = block
       end
 
-      def register_command(command)
-        if command.instance_of?(Command)
-          @@new_commands[command.name] = command
+      def register_command(arg)
+        if arg.instance_of?(Command)
+          command = arg
+        elsif arg.instance_of?(Hash)
+          command = Command.new(arg)
         else
-          #TODO: 
+          raise ArgumentError, 'must be given Termtter::Command or Hash'
         end
+        @@new_commands[command.name] = command
       end
 
       def get_command(name)
