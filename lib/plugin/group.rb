@@ -39,7 +39,7 @@ module Termtter::Client
 
     add_completion do |input|
       case input
-      when /^(group|g)?\s+(.+)/
+      when /^(group|g)\s+(.+)/
         find_group_candidates($2, "#{$1} %s")
       when /^(group|g)\s+$/
         configatron.plugins.group.groups.keys
