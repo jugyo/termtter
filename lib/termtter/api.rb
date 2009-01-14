@@ -1,15 +1,12 @@
 module Termtter
   module API
-    def self.setup
-      @@connection = Connection.new
-      @@twitter = Termtter::Twitter.new(configatron.user_name, configatron.password)
-    end
-    def self.twitter
-      @@twitter
-    end
-    def self.connection
-      @@connection
+    class << self
+      attr_reader :connection, :twitter
+      def setup
+        @connection = Connection.new
+        @twitter = Termtter::Twitter.new(configatron.user_name, configatron.password)
+      end
     end
   end
 end
-
+# Termtter::API.connection, Termtter::API.twitter can be accessed.
