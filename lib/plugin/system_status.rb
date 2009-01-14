@@ -1,11 +1,11 @@
 require 'erb'
 
-configatron.plugins.termtter_status.set_default(:interval, 1)
-configatron.plugins.termtter_status.set_default(:default_color, :on_blue)
-configatron.plugins.termtter_status.set_default(:format, '<%= status %>')
+configatron.plugins.system_status.set_default(:interval, 1)
+configatron.plugins.system_status.set_default(:default_color, :on_blue)
+configatron.plugins.system_status.set_default(:format, '<%= status %>')
 
 def out_put_status(status, color)
-  formatted_status = ERB.new(configatron.plugins.termtter_status.format).result(binding)
+  formatted_status = ERB.new(configatron.plugins.system_status.format).result(binding)
   colored_status = color(formatted_status, color)
   print "\e[s\e[1000G\e[#{status.size - 1}D#{colored_status}\e[u"
   $stdout.flush
@@ -17,9 +17,9 @@ module Termtter::Client
       status = public_storage[:system_status] || 
                   Time.now.strftime("%x %X")
       color = public_storage[:system_status_color] || 
-                      configatron.plugins.termtter_status.default_color
+                      configatron.plugins.system_status.default_color
       out_put_status(status, color)
-      sleep configatron.plugins.termtter_status.interval
+      sleep configatron.plugins.system_status.interval
     end
   end
 end
@@ -28,7 +28,7 @@ end
 #   show system status on left side.
 #   output public_storage[:system_status] or Time.now.strftime("%x %X") if nil
 # example config
-#   configatron.plugins.termtter_status.interval = 1
-#   configatron.plugins.termtter_status.default_color = :on_blue
-#   configatron.plugins.termtter_status.format = '<%= status %>'
+#   configatron.plugins.system_status.interval = 1
+#   configatron.plugins.system_status.default_color = :on_blue
+#   configatron.plugins.system_status.format = '<%= status %>'
 
