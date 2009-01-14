@@ -30,7 +30,7 @@ module Termtter
     def exec_if_match(input)
       command_info = match?(input)
       if command_info
-        result = exec_proc.call(command_info[1])
+        result = execute(command_info[1])
         unless result.nil?
           return result
         else
@@ -48,6 +48,10 @@ module Termtter
       else
         nil
       end
+    end
+
+    def execute(arg)
+      exec_proc.call(arg)
     end
 
     def pattern

@@ -113,6 +113,13 @@ module Termtter
       command.exec_if_match('test').should == true
     end
 
+    it 'should call exec_proc when call method "execute"' do
+      @command.execute('test').should == 'test'
+      @command.execute(' test').should == ' test'
+      @command.execute(' test ').should == ' test '
+      @command.execute('test test').should == 'test test'
+    end
+
     it 'should redefine method "exec_if_match"' do
       # add method
       class << @command
