@@ -1,5 +1,6 @@
 require 'erb'
 
+configatron.plugins.system_status.set_default(:default_status_proc, proc { Time.now.strftime("%x %X") })
 configatron.plugins.system_status.set_default(:interval, 1)
 configatron.plugins.system_status.set_default(:default_color, :on_blue)
 configatron.plugins.system_status.set_default(:format, '<%= status %>')
@@ -14,10 +15,15 @@ end
 module Termtter::Client
   Thread.new do
     loop do
-      status = public_storage[:system_status] || 
-                  Time.now.strftime("%x %X")
-      color = public_storage[:system_status_color] || 
-                      configatron.plugins.system_status.default_color
+      begin
+        status = public_storage[:system_status] ||
+                    configatron.plugins.system_status.default_status_proc.call
+        color = public_storage[:system_status_color] ||
+                        configatron.plugins.system_status.default_color
+      rescue => e
+        status = e.message
+        color = :on_red
+      end
       out_put_status(status, color)
       sleep configatron.plugins.system_status.interval
     end
