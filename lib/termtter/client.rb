@@ -178,9 +178,14 @@ module Termtter
       def setup_readline
         Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
         Readline.completion_proc = proc {|input|
-          @@completions.map {|completion|
+          # FIXME: when migrate to Termtter::Command
+          completions = @@completions.map {|completion|
             completion.call(input)
-          }.flatten.compact
+          }
+          completions += @@new_commands.map {|name, command|
+            command.complement(input)
+          }
+          completions.flatten.compact
         }
         vi_or_emacs = configatron.editing_mode
         unless vi_or_emacs.empty?
