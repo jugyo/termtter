@@ -28,13 +28,14 @@ module Termtter
       end
 
       def register_command(arg)
-        if arg.instance_of?(Command)
-          command = arg
-        elsif arg.instance_of?(Hash)
-          command = Command.new(arg)
-        else
-          raise ArgumentError, 'must be given Termtter::Command or Hash'
-        end
+        command = case arg
+          when Command
+            arg
+          when Hash
+            Command.new(arg)
+          else
+            raise ArgumentError, 'must be given Termtter::Command or Hash'
+          end
         @@new_commands[command.name] = command
       end
 
