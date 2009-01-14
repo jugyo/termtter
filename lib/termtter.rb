@@ -56,8 +56,8 @@ if win?
           out << $iconv_sj_to_u8.iconv(str)
           break
         rescue Iconv::Failure
-          out << $!.success
-          str = $!.failed
+          out << "#{$!.success}?"
+          str = $!.failed[1..-1]
         end
       end
       return out
@@ -98,8 +98,8 @@ if win?
             STDOUT.print $iconv_u8_to_sj.iconv(token)
             break
           rescue Iconv::Failure
-            STDOUT.print $!.success
-            token = $!.failed
+            STDOUT.print "#{$!.success}?"
+            token = $!.failed[1..-1]
           end
         end
       end
