@@ -110,14 +110,21 @@ if win?
   end
 end
 
+def handle_error(e)
+  puts "Error: #{e}"
+  puts e.backtrace.join("\n")
+end
+
 def plugin(s)
   require "plugin/#{s}"
+rescue => e
+  handle_error(e)
 end
 
 def filter(s)
   load "filter/#{s}.rb"
-rescue LoadError
-  raise
+rescue => e
+  handle_error(e)
 else
   Termtter::Client.public_storage[:filters] ||= []
   Termtter::Client.public_storage[:filters] << s

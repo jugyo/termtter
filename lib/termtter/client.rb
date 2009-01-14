@@ -52,8 +52,7 @@ module Termtter
         end
         filtered
       rescue => e
-        puts "Error: #{e}"
-        puts e.backtrace.join("\n")
+        handle_error(e)
         statuses
       end
 
@@ -62,8 +61,7 @@ module Termtter
           begin
             h.call(statuses.dup, event, tw)
           rescue => e
-            puts "Error: #{e}"
-            puts e.backtrace.join("\n")
+            handle_error(e)
           end
         end
       end
@@ -83,8 +81,7 @@ module Termtter
             begin
               command.call($~, tw)
             rescue => e
-              puts "Error: #{e}"
-              puts e.backtrace.join("\n")
+              handle_error(e)
             end
           end
         end
