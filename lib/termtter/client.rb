@@ -27,12 +27,15 @@ module Termtter
         @@commands[regex] = block
       end
 
-      # FIXME: Change method name to add_command at someday.
-      def add_new_command(command)
-        @@new_commands[command.name] = command
+      def register_command(command)
+        if command.instance_of?(Command)
+          @@new_commands[command.name] = command
+        else
+          #TODO: 
+        end
       end
 
-      def get_new_command(name)
+      def get_command(name)
         @@new_commands[name]
       end
 
