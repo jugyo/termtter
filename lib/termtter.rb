@@ -82,7 +82,7 @@ if win?
   $iconv_u8_to_sj = Iconv.new("CP#{$wGetACP.call()}", 'UTF-8')
   def puts(str)
     #str.to_s.tosjis.split(/(\e\[\d+m)/).each do |token|
-    str.to_s.split(/(\e\[\d+m)/).each do |token|
+    str.to_s.gsub("\xef\xbd\x9e", "\xe3\x80\x9c").split(/(\e\[\d+m)/).each do |token|
       if token =~ /\e\[(\d+)m/
         $wSetConsoleTextAttribute.call $hStdOut, $colorMap[$1.to_i].to_i
       else
