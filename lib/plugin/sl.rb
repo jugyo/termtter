@@ -12,7 +12,7 @@ module Termtter::Client
   end
 
   add_help 'cd USER', 'Change current directory'
-  add_command /^cd\s+(.*)/ do |m, t|
+  add_command /^(?:cd\s+|\.\/)(.*)/ do |m, t|
     directory = m[1].strip
     directory = '' if /\~/ =~ directory
     public_storage[:current] = directory
@@ -22,10 +22,10 @@ module Termtter::Client
 
   add_completion do |input|
     case input
-    when /^(cd)\s+(.*)/
-      find_user_candidates $2, "#{$1} %s"
+    when /^(cd\s+|\.\/)(.*)/
+      find_user_candidates $2, "#{$1.gsub(/\s+/, ' ')}%s"
     else
-      %w[ sl ls cd pwd ].grep(/^#{Regexp.quote input}/)
+      %w[ sl ls cd pwd ./ ].grep(/^#{Regexp.quote input}/)
     end
   end
 end

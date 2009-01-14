@@ -11,6 +11,8 @@ require 'enumerator'
 require 'parsedate'
 require 'configatron'
 
+Thread.abort_on_exception = true
+
 configatron.set_default(:update_interval, 300)
 configatron.set_default(:prompt, '> ')
 configatron.set_default(:enable_ssl, false)
@@ -18,9 +20,9 @@ configatron.proxy.set_default(:port, '8080')
 
 require 'termtter/twitter'
 require 'termtter/connection'
-require 'termtter/client'
 require 'termtter/status'
 require 'termtter/command'
+require 'termtter/client'
 
 module Termtter
   VERSION = '0.7.6'

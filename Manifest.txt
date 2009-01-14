@@ -23,14 +23,17 @@ lib/plugin/follow.rb
 lib/plugin/graduatter.rb
 lib/plugin/group.rb
 lib/plugin/growl.rb
+lib/plugin/hatebu.rb
 lib/plugin/history.rb
 lib/plugin/keyword.rb
 lib/plugin/log.rb
 lib/plugin/msagent.rb
 lib/plugin/multi_reply.rb
 lib/plugin/notify-send.rb
+lib/plugin/otsune.rb
 lib/plugin/outputz.rb
 lib/plugin/plugin.rb
+lib/plugin/primes.rb
 lib/plugin/quicklook.rb
 lib/plugin/reload.rb
 lib/plugin/say.rb
