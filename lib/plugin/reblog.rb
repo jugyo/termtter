@@ -20,7 +20,12 @@ module Termtter::Client
   end
 
   add_completion do |input|
-    %w(reblog).grep(/^#{Regexp.quote input}/)
+    case input
+    when /^(reblog)\s+(\d*)$/
+      find_status_id_candidates $2, "#{$1} %s"
+    else
+      %w(reblog).grep(/^#{Regexp.quote input}/)
+    end
   end
 end
 
