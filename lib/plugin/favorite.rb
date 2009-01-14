@@ -14,7 +14,7 @@ module Termtter::Client
   add_help 'favorite,fav USER', 'Favorite last status on the user'
 
   add_command %r'^(?:favorite|fav)\s+@(.+)$' do |m, t|
-    user = m[1]
+    user = m[1].strip
     statuses = t.get_user_timeline(user)
     unless statuses.empty?
       id = statuses[0].id
@@ -49,7 +49,7 @@ module Termtter::Client
 
   add_completion do |input|
     case input
-    when /^(favorite|fav)?\s+@(.*)/
+    when /^(favorite|fav)\s+@(.*)/
       find_user_candidates $2, "#{$1} @%s"
     else
       %w(favorite).grep(/^#{Regexp.quote input}/)
