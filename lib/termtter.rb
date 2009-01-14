@@ -42,13 +42,60 @@ def win?
 end
 
 if win?
-  require 'kconv'
+  require 'iconv'
+  require 'Win32API'
+  $wGetACP = Win32API.new('kernel32','GetACP','','I')
+
   module Readline
+    $iconv_sj_to_u8 = Iconv.new('UTF-8', "CP#{$wGetACP.call()}")
     alias :old_readline :readline
     def readline(*a)
-      old_readline(*a).toutf8
+      begin
+        $iconv_sj_to_u8.iconv(old_readline(*a))
+      rescue
+        old_readline(*a)
+      end
     end
     module_function :old_readline, :readline
+  end
+
+  $wSetConsoleTextAttribute = Win32API.new('kernel32','SetConsoleTextAttribute','II','I')
+  $wGetConsoleScreenBufferInfo = Win32API.new("kernel32", "GetConsoleScreenBufferInfo", ['l', 'p'], 'i')
+  $wGetStdHandle = Win32API.new('kernel32','GetStdHandle','I','I')
+  $wGetACP = Win32API.new('kernel32','GetACP','','I')
+
+  $hStdOut = $wGetStdHandle.call(0xFFFFFFF5)
+  lpBuffer = ' ' * 22
+  $wGetConsoleScreenBufferInfo.call($hStdOut, lpBuffer)
+  $oldColor = lpBuffer.unpack('SSSSSssssSS')[4]
+
+  $colorMap = {
+    0 => 7,     # black/white
+    37 => 8,     # white/intensity
+    31 => 4 + 8, # red/red
+    32 => 2 + 8, # green/green
+    33 => 6 + 8, # yellow/yellow
+    34 => 1 + 8, # blue/blue
+    35 => 5 + 8, # magenta/purple
+    36 => 3 + 8, # cyan/aqua
+    90 => 7,     # erase/white
+  }
+  $iconv_u8_to_sj = Iconv.new("CP#{$wGetACP.call()}", 'UTF-8')
+  def puts(str)
+    #str.to_s.tosjis.split(/(\e\[\d+m)/).each do |token|
+    str.to_s.gsub("\xef\xbd\x9e", "\xe3\x80\x9c").split(/(\e\[\d+m)/).each do |token|
+      if token =~ /\e\[(\d+)m/
+        $wSetConsoleTextAttribute.call $hStdOut, $colorMap[$1.to_i].to_i
+      else
+        begin
+          STDOUT.print $iconv_u8_to_sj.iconv(token)
+        rescue
+          STDOUT.print token
+        end
+      end
+    end
+    $wSetConsoleTextAttribute.call $hStdOut, $oldColor
+    STDOUT.puts
   end
 end
 
