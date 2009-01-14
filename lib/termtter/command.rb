@@ -13,7 +13,7 @@ module Termtter
       @name = args[:name].to_sym
       @aliases = args[:aliases] || []
       @exec_proc = args[:exec_proc] || proc {|arg|}
-      @completion_proc = args[:completion_proc]
+      @completion_proc = args[:completion_proc] || proc {|command, arg| [] }
       @help = args[:help]
     end
 
@@ -22,7 +22,7 @@ module Termtter
       if command_info
         [completion_proc.call(command_info[0], command_info[1])].flatten.compact
       else
-        [name.to_s]
+        [name.to_s].grep(/^#{Regexp.quote(input)}/)
       end
     end
 
