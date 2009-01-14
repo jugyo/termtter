@@ -30,7 +30,12 @@ module Termtter
     def exec_if_match(input)
       command_info = match?(input)
       if command_info
-        return exec_proc.call(command_info[1])
+        result = exec_proc.call(command_info[1])
+        unless result.nil?
+          return result
+        else
+          return true
+        end
       else
         return nil
       end

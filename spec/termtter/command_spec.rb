@@ -108,6 +108,11 @@ module Termtter
       lambda { Command.new(:aliases => ['u']) }.should raise_error(ArgumentError)
     end
 
+    it 'should return true with the exec_proc return nil' do
+      command = Command.new(:name => :test, :exec_proc => proc {|args|})
+      command.exec_if_match('test').should == true
+    end
+
     it 'should redefine method "exec_if_match"' do
       # add method
       class << @command
