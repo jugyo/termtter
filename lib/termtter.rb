@@ -53,7 +53,7 @@ if win?
       out = ''
       loop do
         begin
-          out << $iconv_u8_to_sj.iconv(str)
+          out << $iconv_sj_to_u8.iconv(str)
           break
         rescue Iconv::Failure
           out << $!.success
