@@ -27,7 +27,6 @@ lib/plugin/growl.rb
 lib/plugin/hatebu.rb
 lib/plugin/history.rb
 lib/plugin/keyword.rb
-lib/plugin/lingr.rb
 lib/plugin/log.rb
 lib/plugin/msagent.rb
 lib/plugin/multi_reply.rb
