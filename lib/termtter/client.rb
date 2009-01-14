@@ -5,6 +5,7 @@ module Termtter
 
     @@hooks = []
     @@commands = {}
+    @@new_commands = {}
     @@completions = []
     @@filters = []
     @@helps = []
@@ -24,6 +25,15 @@ module Termtter
 
       def add_command(regex, &block)
         @@commands[regex] = block
+      end
+
+      # FIXME: Change method name to add_command at someday.
+      def add_new_command(command)
+        @@new_commands[command.name] = command
+      end
+
+      def get_new_command(name)
+        @@new_commands[name]
       end
 
       def add_macro(r, s)
@@ -86,6 +96,14 @@ module Termtter
               puts "Error: #{e}"
               puts e.backtrace.join("\n")
             end
+          end
+        end
+
+        @@new_commands.each do |key, command|
+          result = command.exec_if_match(text)
+          if result
+            command_found = true
+            # TODO: call hook with result
           end
         end
 
