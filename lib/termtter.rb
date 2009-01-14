@@ -23,6 +23,7 @@ require 'termtter/connection'
 require 'termtter/status'
 require 'termtter/command'
 require 'termtter/client'
+require 'termtter/api'
 
 module Termtter
   VERSION = '0.7.6'

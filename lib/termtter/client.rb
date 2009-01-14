@@ -201,10 +201,15 @@ module Termtter
         end
       end
 
+      def setup_api()
+        Termtter::API.setup()
+      end
+
       def run
         load_default_plugins()
         load_config()
         setup_readline()
+        setup_api()
 
         puts 'initializing...'
         initialized = false
