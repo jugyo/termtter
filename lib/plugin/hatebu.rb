@@ -4,9 +4,9 @@ require 'atomutil'
 module Termtter::Client
   add_help 'hatebu ID', 'Hatena bookmark a status'
 
-  add_command %r'^hatebu\s+(\d+)\s+(.*)$' do |m, t|
+  add_command %r'^hatebu\s+(\d+)(.*)$' do |m, t|
     id = m[1]
-    comment = m[2]
+    comment = m[2].strip
     statuses = public_storage[:log].select { |s| s.id == id }
     unless statuses.empty?
       status = statuses.first
