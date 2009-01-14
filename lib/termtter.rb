@@ -49,11 +49,18 @@ if win?
     $iconv_sj_to_u8 = Iconv.new('UTF-8', "CP#{$wGetACP.call()}")
     alias :old_readline :readline
     def readline(*a)
-      begin
-        $iconv_sj_to_u8.iconv(old_readline(*a))
-      rescue
-        old_readline(*a)
+      str = old_readline(*a)
+      out = ''
+      loop do
+        begin
+          out << $iconv_u8_to_sj.iconv(str)
+          break
+        rescue Iconv::Failure
+          out << $!.success
+          str = $!.failed
+        end
       end
+      return out
     end
     module_function :old_readline, :readline
   end
@@ -86,15 +93,20 @@ if win?
       if token =~ /\e\[(\d+)m/
         $wSetConsoleTextAttribute.call $hStdOut, $colorMap[$1.to_i].to_i
       else
-        begin
-          STDOUT.print $iconv_u8_to_sj.iconv(token)
-        rescue
-          STDOUT.print token
+        loop do
+          begin
+            STDOUT.print $iconv_u8_to_sj.iconv(token)
+            break
+          rescue Iconv::Failure
+            STDOUT.print $!.success
+            token = $!.failed
+          end
         end
       end
     end
     $wSetConsoleTextAttribute.call $hStdOut, $oldColor
     STDOUT.puts
+    $iconv_u8_to_sj.iconv(nil)
   end
 end
 
