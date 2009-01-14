@@ -1,6 +1,6 @@
 module Termtter
   class Command
-    attr_accessor :name, :aliases, :exec_proc, :completion_proc, :help, :pattern
+    attr_accessor :name, :aliases, :exec_proc, :completion_proc, :help
 
     # args
     #   name:            Symbol as command name
