@@ -102,6 +102,7 @@ show ID           Show a single status
     end
   end
 
+  # TODO: output Termtter::Command#help
   def self.formatted_help
     width = @@helps.map {|n, d| n.size }.max
     space = 3
