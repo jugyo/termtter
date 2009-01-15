@@ -62,20 +62,24 @@ module Termtter::Client
   end
 
   add_command /^(help|h)\s*$/ do |m, t|
-    puts <<-EOS
-exit,e            Exit
-help,h            Print this help message
-list,l            List the posts in your friends timeline
-list,l USERNAME   List the posts in the the given user's timeline
-limit,lm          Show the API limit status
-pause             Pause updating
-update,u TEXT     Post a new message
-resume            Resume updating
-replies,r         List the most recent @replies for the authenticating user
-search,s TEXT     Search for Twitter
-show ID           Show a single status
-    EOS
-    puts formatted_help unless @@helps.empty?
+    # TODO: migrate to use Termtter::Command#help
+    helps = [
+      ["exit,e", "Exit"],
+      ["help,h", "Print this help message"],
+      ["list,l", "List the posts in your friends timeline"],
+      ["list,l USERNAME", "List the posts in the the given user's timeline"],
+      ["limit,lm", "Show the API limit status"],
+      ["pause", "Pause updating"],
+      ["update,u TEXT", "Post a new message"],
+      ["resume", "Resume updating"],
+      ["replies,r", "List the most recent @replies for the authenticating user"],
+      ["search,s TEXT", "Search for Twitter"],
+      ["show ID", "Show a single status"]
+    ]
+    helps += @@helps
+    helps += @@new_commands.map {|name, command| command.help}
+    helps.compact!
+    puts formatted_help(helps)
   end
 
   add_command /^eval\s+(.*)$/ do |m, t|
@@ -99,14 +103,13 @@ show ID           Show a single status
     end
   end
 
-  # TODO: output Termtter::Command#help
-  def self.formatted_help
-    width = @@helps.map {|n, d| n.size }.max
+  def self.formatted_help(helps)
+    helps = helps.sort_by{|a, b| a[0] <=> b[0]}
+    width = helps.map {|n, d| n.size }.max
     space = 3
-    "\nuser commands:\n" +
-      @@helps.map {|name, desc|
-        name.to_s.ljust(width + space) + desc.to_s
-      }.join("\n")
+    helps.map {|name, desc|
+      name.to_s.ljust(width + space) + desc.to_s
+    }.join("\n")
   end
 
   # completion for standard commands
