@@ -45,12 +45,15 @@ lib/plugin/sl.rb
 lib/plugin/spam.rb
 lib/plugin/standard_plugins.rb
 lib/plugin/stdout.rb
+lib/plugin/system_status.rb
 lib/plugin/translation.rb
 lib/plugin/update_editor.rb
 lib/plugin/uri-open.rb
 lib/plugin/yhara.rb
 lib/termtter.rb
+lib/termtter/api.rb
 lib/termtter/client.rb
+lib/termtter/command.rb
 lib/termtter/connection.rb
 lib/termtter/status.rb
 lib/termtter/twitter.rb
