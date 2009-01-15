@@ -36,29 +36,39 @@ module Termtter::Client
 
   # TODO: Change colors when remaining_hits is low.
   # TODO: Simmulate remaining_hits.
-  add_command /^(limit|lm)\s*$/ do |m, t|
-    limit = t.get_rate_limit_status
-    remaining_time = "%dmin %dsec" % (limit.reset_time - Time.now).divmod(60)
-    remaining_color =
-      case limit.remaining_hits / limit.hourly_limit.to_f
-      when 0.2..0.4 then :yellow
-      when 0..0.2   then :red
-      else             :green
-      end
-    puts "=> #{color(limit.remaining_hits, remaining_color)}/#{limit.hourly_limit} until #{limit.reset_time} (#{remaining_time} remaining)"
-  end
+  register_command(
+    :name => :limit, :aliases => ['lm'],
+    :exec_proc => proc {|arg|
+      limit = Termtter::API.twitter.get_rate_limit_status
+      remaining_time = "%dmin %dsec" % (limit.reset_time - Time.now).divmod(60)
+      remaining_color =
+        case limit.remaining_hits / limit.hourly_limit.to_f
+        when 0.2..0.4 then :yellow
+        when 0..0.2   then :red
+        else               :green
+        end
+      puts "=> #{color(limit.remaining_hits, remaining_color)}/#{limit.hourly_limit} until #{limit.reset_time} (#{remaining_time} remaining)"
+    },
+    :help => ["limit,lm", "Show the API limit status"]
+  )
 
-  register_command( :name => :pause,
-                    :exec_proc => proc {|arg| pause},
-                    :help => ["pause", "Pause updating"] )
+  register_command( 
+    :name => :pause,
+    :exec_proc => proc {|arg| pause},
+    :help => ["pause", "Pause updating"]
+  )
 
-  register_command( :name => :resume,
-                    :exec_proc => proc {|arg| resume},
-                    :help => ["resume", "Resume updating"] )
+  register_command(
+    :name => :resume,
+    :exec_proc => proc {|arg| resume},
+    :help => ["resume", "Resume updating"]
+  )
 
-  register_command( :name => :exit, :aliases => ['e'],
-                    :exec_proc => proc {|arg| exit},
-                    :help => ['exit,e', 'Exit'] )
+  register_command(
+    :name => :exit, :aliases => ['e'],
+    :exec_proc => proc {|arg| exit},
+    :help => ['exit,e', 'Exit']
+  )
 
   add_command /^(help|h)\s*$/ do |m, t|
     # TODO: migrate to use Termtter::Command#help
@@ -66,7 +76,6 @@ module Termtter::Client
       ["help,h", "Print this help message"],
       ["list,l", "List the posts in your friends timeline"],
       ["list,l USERNAME", "List the posts in the the given user's timeline"],
-      ["limit,lm", "Show the API limit status"],
       ["update,u TEXT", "Post a new message"],
       ["replies,r", "List the most recent @replies for the authenticating user"],
       ["search,s TEXT", "Search for Twitter"],
