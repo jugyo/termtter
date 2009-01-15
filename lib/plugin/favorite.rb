@@ -18,9 +18,10 @@ module Termtter::Client
     statuses = t.get_user_timeline(user)
     unless statuses.empty?
       id = statuses[0].id
+      text = statuses[0].text
       res = t.favorite(id)
       if res.code == '200'
-        puts "Favorited last status ##{id} on user @#{user}"
+        puts %Q(Favorited last status ##{id} on user @#{user}: "#{text}")
       else
         puts "Failed: #{res}"
       end
