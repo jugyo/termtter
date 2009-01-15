@@ -12,7 +12,7 @@ module Termtter::Client
       req = Net::HTTP::Post.new("/statuses/update.json?")
       req.basic_auth configatron.plugins.wassr_post.username, configatron.plugins.wassr_post.password
       Net::HTTP.start('api.wassr.jp', 80) do |http|
-        res = http.request(req, "status=#{URI.escape(text)}&via=Termtter")
+        res = http.request(req, "status=#{URI.escape(text)}&source=Termtter")
       end
     rescue
       puts "RuntimeError: #{$!}"
