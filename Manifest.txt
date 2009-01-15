@@ -49,6 +49,7 @@ lib/plugin/system_status.rb
 lib/plugin/translation.rb
 lib/plugin/update_editor.rb
 lib/plugin/uri-open.rb
+lib/plugin/wassr_post.rb
 lib/plugin/yhara.rb
 lib/termtter.rb
 lib/termtter/api.rb

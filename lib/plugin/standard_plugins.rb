@@ -91,10 +91,7 @@ show ID           Show a single status
     begin
       result = `#{m[2]}` unless m[2].empty?
       unless m[1].nil? || result.empty?
-        status = result.gsub("\n", " ")
-        call_hooks(status, :before_update_status, t)
-        t.update_status(status) unless status.empty?
-        call_hooks(status, :after_update_status, t)
+        t.update_status(result.gsub("\n", " "))
       end
       puts "=> #{result}"
     rescue => e
