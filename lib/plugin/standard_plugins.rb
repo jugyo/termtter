@@ -48,30 +48,26 @@ module Termtter::Client
     puts "=> #{color(limit.remaining_hits, remaining_color)}/#{limit.hourly_limit} until #{limit.reset_time} (#{remaining_time} remaining)"
   end
 
+  register_command( :name => :pause,
+                    :exec_proc => proc {|arg| pause},
+                    :help => ["pause", "Pause updating"] )
 
-  add_command /^pause\s*$/ do |m, t|
-    pause
-  end
+  register_command( :name => :resume,
+                    :exec_proc => proc {|arg| resume},
+                    :help => ["resume", "Resume updating"] )
 
-  add_command /^resume\s*$/ do |m, t|
-    resume
-  end
-
-  add_command /^(exit|e)\s*$/ do |m, t|
-    exit
-  end
+  register_command( :name => :exit, :aliases => ['e'],
+                    :exec_proc => proc {|arg| exit},
+                    :help => ['exit,e', 'Exit'] )
 
   add_command /^(help|h)\s*$/ do |m, t|
     # TODO: migrate to use Termtter::Command#help
     helps = [
-      ["exit,e", "Exit"],
       ["help,h", "Print this help message"],
       ["list,l", "List the posts in your friends timeline"],
       ["list,l USERNAME", "List the posts in the the given user's timeline"],
       ["limit,lm", "Show the API limit status"],
-      ["pause", "Pause updating"],
       ["update,u TEXT", "Post a new message"],
-      ["resume", "Resume updating"],
       ["replies,r", "List the most recent @replies for the authenticating user"],
       ["search,s TEXT", "Search for Twitter"],
       ["show ID", "Show a single status"]
@@ -104,7 +100,7 @@ module Termtter::Client
   end
 
   def self.formatted_help(helps)
-    helps = helps.sort_by{|a, b| a[0] <=> b[0]}
+    helps = helps.sort_by{|help| help[0]}
     width = helps.map {|n, d| n.size }.max
     space = 3
     helps.map {|name, desc|
