@@ -184,7 +184,7 @@ module Termtter::Client
     when /^(direct|d)\s+(.*)@([^\s]*)$/
       find_user_candidates $3, "#{$1} #{$2}@%s"
     when /^(profile|p)?\s+(.*)/
-      find_user_candidates $3, "#{$1} #{$2}@%s"
+      find_user_candidates $2, "#{$1} %s"
     when /^show(s)?\s+(([\w\d]+):)?\s*(.*)/
       if $2
         find_status_id_candidates $4, "show#{$1} #{$2}%s", $3
