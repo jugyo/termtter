@@ -17,6 +17,14 @@ module Termtter
       status
     end
 
+    def direct_message(user, status)
+      @connection.start("twitter.com", @connection.port) do |http|
+        uri = '/direct_messages/new.xml'
+        http.request(post_request(uri), "user=#{CGI.escape(user)}&text=#{CGI.escape(status)}&source=#{APP_NAME}")
+      end
+      [user, status]
+    end
+
     def get_friends_timeline(since_id = nil)
       uri =  "#{@connection.protocol}://twitter.com/statuses/friends_timeline.json"
       uri << "?since_id=#{since_id}" if since_id
