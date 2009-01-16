@@ -23,7 +23,7 @@ end
 module Termtter::Client
 
   def self.print_statuses(statuses, sort = true, time_format = '%H:%M:%S')
-    (sort ? statuses.sort_by{ |s| s.created_at} : statuses).each do |s|
+    (sort ? statuses.sort_by{ |s| s.id} : statuses).each do |s|
       text = s.text
       status_color = configatron.plugins.stdout.colors[s.user_screen_name.hash % configatron.plugins.stdout.colors.size]
       status = "#{s.user_screen_name}: #{text}"
