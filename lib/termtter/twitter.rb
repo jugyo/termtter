@@ -25,6 +25,11 @@ module Termtter
       [user, status]
     end
 
+    def get_user_profile(screen_name)
+      uri = "#{@connection.protocol}://twitter.com/users/show/#{screen_name}.json"
+      return JSON.parse(open(uri, :http_basic_authentication => [user_name, password], :proxy => @connection.proxy_uri).read)
+    end
+
     def get_friends_timeline(since_id = nil)
       uri =  "#{@connection.protocol}://twitter.com/statuses/friends_timeline.json"
       uri << "?since_id=#{since_id}" if since_id

@@ -21,6 +21,15 @@ module Termtter::Client
     end
   end
 
+  add_command /^(profile|p)\s+([^\s]+)/ do |m, t|
+    profile = t.get_user_profile(m[2])
+    if profile
+      %w[ name favourites_count url id description protected utc_offset time_zone screen_name notifications statuses_count followers_count friends_count profile_image_url location following created_at ].each do |key|
+        puts "#{key} : #{profile[key]}" if profile.key?(key)
+      end
+    end
+  end
+
   add_command /^(list|l)\s*$/ do |m, t|
     statuses = t.get_friends_timeline()
     call_hooks(statuses, :list_friends_timeline, t)
@@ -86,7 +95,8 @@ module Termtter::Client
       ["list,l", "List the posts in your friends timeline"],
       ["list,l USERNAME", "List the posts in the the given user's timeline"],
       ["update,u TEXT", "Post a new message"],
-      ["direct,d @USER TEXT", "Send direct message"],
+      ["direct,d @USERNAME TEXT", "Send direct message"],
+      ["profile,p USERNAME", "Show user's profile"],
       ["replies,r", "List the most recent @replies for the authenticating user"],
       ["search,s TEXT", "Search for Twitter"],
       ["show ID", "Show a single status"]
@@ -165,13 +175,15 @@ module Termtter::Client
   end
 
   add_completion do |input|
-    standard_commands = %w[exit help list pause update direct resume replies search show limit]
+    standard_commands = %w[exit help list pause profile update direct resume replies search show limit]
     case input
     when /^(list|l)?\s+(.*)/
       find_user_candidates $2, "#{$1} %s"
     when /^(update|u)\s+(.*)@([^\s]*)$/
       find_user_candidates $3, "#{$1} #{$2}@%s"
     when /^(direct|d)\s+(.*)@([^\s]*)$/
+      find_user_candidates $3, "#{$1} #{$2}@%s"
+    when /^(profile|p)?\s+(.*)/
       find_user_candidates $3, "#{$1} #{$2}@%s"
     when /^show(s)?\s+(([\w\d]+):)?\s*(.*)/
       if $2
