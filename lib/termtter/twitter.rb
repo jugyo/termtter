@@ -3,10 +3,10 @@ require 'highline'
 module Termtter
   class Twitter
 
-    def initialize(user_name, password)
+    def initialize(user_name, password, connection)
       @user_name = user_name
       @password = password
-      @connection = Connection.new
+      @connection = connection
     end
 
     def update_status(status)
