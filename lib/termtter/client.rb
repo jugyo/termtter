@@ -44,8 +44,8 @@ module Termtter
       end
 
       def add_macro(r, s)
-        add_command(r) do |m, t|
-          call_commands(s % m.to_a[1..-1], t)
+        add_command(r) do |m|
+          call_commands(s % m.to_a[1..-1])
         end
       end
 
@@ -73,22 +73,23 @@ module Termtter
         statuses
       end
 
-      def do_hooks(statuses, event, tw)
+      def do_hooks(statuses, event)
         @@hooks.each do |h|
           begin
-            h.call(statuses.dup, event, tw)
+            h.call(statuses.dup, event, Termtter::API.twitter)
           rescue => e
             handle_error(e)
           end
         end
       end
-      
-      def call_hooks(statuses, event, tw)
-        do_hooks(statuses, :pre_filter, tw)
-        do_hooks(apply_filters(statuses), event, tw)
+
+      # TODO: delete argument "tw" when unnecessary
+      def call_hooks(statuses, event, tw = nil)
+        do_hooks(statuses, :pre_filter)
+        do_hooks(apply_filters(statuses), event)
       end
 
-      def call_commands(text, tw)
+      def call_commands(text)
         return if text.empty?
 
         command_found = false
@@ -96,7 +97,7 @@ module Termtter
           if key =~ text
             command_found = true
             begin
-              command.call($~, tw)
+              command.call($~, Termtter::API.twitter)
             rescue => e
               handle_error(e)
             end
@@ -128,7 +129,7 @@ module Termtter
       end
 
       def exit
-        call_hooks([], :exit, nil)
+        call_hooks([], :exit)
         @@main_thread.kill
         @@update_thread.kill
         @@input_thread.kill
@@ -214,8 +215,7 @@ module Termtter
         puts 'initializing...'
         initialized = false
         @@pause = false
-        tw = Termtter::Twitter.new(configatron.user_name, configatron.password)
-        call_hooks([], :initialize, tw)
+        call_hooks([], :initialize)
 
         @@input_thread = nil
         @@update_thread = Thread.new do
@@ -224,12 +224,12 @@ module Termtter
             begin
               Thread.stop if @@pause
 
-              statuses = tw.get_friends_timeline(since_id)
+              statuses = Termtter::API.twitter.get_friends_timeline(since_id)
               unless statuses.empty?
                 since_id = statuses[0].id
               end
               print "\e[1K\e[0G" if !statuses.empty? && !win?
-              call_hooks(statuses, :update_friends_timeline, tw)
+              call_hooks(statuses, :update_friends_timeline)
               initialized = true
               @@input_thread.kill if @@input_thread && !statuses.empty?
             rescue OpenURI::HTTPError => e
@@ -254,20 +254,20 @@ module Termtter
 
         @@main_thread = Thread.new do
           loop do
-            @@input_thread = create_input_thread(tw)
+            @@input_thread = create_input_thread()
             @@input_thread.join
           end
         end
         @@main_thread.join
       end
 
-      def create_input_thread(tw)
+      def create_input_thread()
         Thread.new do
           erb = ERB.new(configatron.prompt)
-          while buf = Readline.readline(erb.result(tw.__send__(:binding)), true)
+          while buf = Readline.readline(erb.result(Termtter::API.twitter.__send__(:binding)), true)
             Readline::HISTORY.pop if /^(u|update)\s+(.+)$/ =~ buf
             begin
-              call_commands(buf, tw)
+              call_commands(buf)
             rescue CommandNotFound => e
               puts "Unknown command \"#{buf}\""
               puts 'Enter "help" for instructions'

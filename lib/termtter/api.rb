@@ -4,7 +4,7 @@ module Termtter
       attr_reader :connection, :twitter
       def setup
         @connection = Connection.new
-        @twitter = Termtter::Twitter.new(configatron.user_name, configatron.password)
+        @twitter = Termtter::Twitter.new(configatron.user_name, configatron.password, @connection)
       end
     end
   end
