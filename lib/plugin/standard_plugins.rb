@@ -12,12 +12,12 @@ module Termtter::Client
     end
   end
 
-  add_command /^(direct|d)\s+@(\w+)\s+(.*)\s*$/ do |m, t|
+  add_command /^(direct|d)\s+([^\s]+)\s+(.*)\s*$/ do |m, t|
     user = m[2]
     text = ERB.new(m[3]).result(binding).gsub(/\n/, ' ')
     unless text.empty?
       t.direct_message(user, text)
-      puts "=> @#{user} #{text}"
+      puts "=> to:#{user} message:#{text}"
     end
   end
 
@@ -181,9 +181,9 @@ module Termtter::Client
       find_user_candidates $2, "#{$1} %s"
     when /^(update|u)\s+(.*)@([^\s]*)$/
       find_user_candidates $3, "#{$1} #{$2}@%s"
-    when /^(direct|d)\s+(.*)@([^\s]*)$/
-      find_user_candidates $3, "#{$1} #{$2}@%s"
-    when /^(profile|p)?\s+(.*)/
+    when /^(direct|d)\s+(.*)/
+      find_user_candidates $2, "#{$1} %s"
+    when /^(profile|p)\s+(.*)/
       find_user_candidates $2, "#{$1} %s"
     when /^show(s)?\s+(([\w\d]+):)?\s*(.*)/
       if $2
