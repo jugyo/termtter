@@ -44,7 +44,7 @@ module Termtter
       end
 
       def add_macro(r, s)
-        add_command(r) do |m|
+        add_command(r) do |m, t|
           call_commands(s % m.to_a[1..-1])
         end
       end
@@ -89,7 +89,7 @@ module Termtter
         do_hooks(apply_filters(statuses), event)
       end
 
-      def call_commands(text)
+      def call_commands(text, tw = nil)
         return if text.empty?
 
         command_found = false
