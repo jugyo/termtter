@@ -40,6 +40,7 @@ lib/plugin/reblog.rb
 lib/plugin/reload.rb
 lib/plugin/say.rb
 lib/plugin/scrape.rb
+lib/plugin/screen.rb
 lib/plugin/shell.rb
 lib/plugin/sl.rb
 lib/plugin/spam.rb
@@ -51,6 +52,7 @@ lib/plugin/update_editor.rb
 lib/plugin/uri-open.rb
 lib/plugin/wassr_post.rb
 lib/plugin/yhara.rb
+lib/plugin/yonda.rb
 lib/termtter.rb
 lib/termtter/api.rb
 lib/termtter/client.rb
