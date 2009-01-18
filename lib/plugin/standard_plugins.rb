@@ -35,7 +35,8 @@ module Termtter::Client
         puts "#{attr.gsub('_', ' ').rjust(label_width)}: #{value}"
       end
     },
-    :completion_proc => proc {|command, arg|
+    :completion_proc => proc {|cmd, arg|
+      find_user_candidates arg, "#{cmd} %s"
     }
   )
 
@@ -191,8 +192,6 @@ module Termtter::Client
     when /^(update|u)\s+(.*)@([^\s]*)$/
       find_user_candidates $3, "#{$1} #{$2}@%s"
     when /^(direct|d)\s+(.*)/
-      find_user_candidates $2, "#{$1} %s"
-    when /^(profile|p)\s+(.*)/
       find_user_candidates $2, "#{$1} %s"
     when /^show(s)?\s+(([\w\d]+):)?\s*(.*)/
       if $2
