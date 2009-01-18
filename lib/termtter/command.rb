@@ -11,7 +11,7 @@ module Termtter
     def initialize(args)
       raise ArgumentError, ":name is not given." unless args.has_key?(:name)
       @name = args[:name].to_sym
-      @aliases = args[:aliases] || []
+      @aliases = args[:aliases] ? args[:aliases].map {|i| i.to_sym } : []
       @exec_proc = args[:exec_proc] || proc {|arg|}
       @completion_proc = args[:completion_proc] || proc {|command, arg| [] }
       @help = args[:help]
@@ -55,12 +55,12 @@ module Termtter
     end
 
     def pattern
-      commands_regex = commands.map {|i| Regexp.quote(i) }.join('|')
-      /^\s*((#{commands_regex})|(#{commands_regex})\s+(.*?))\s*$/
+      commands_regex = commands.map {|i| Regexp.quote(i.to_s) }.join('|')
+      /^((#{commands_regex})|(#{commands_regex})\s+(.*?))\s*$/
     end
 
     def commands
-      aliases.unshift(name.to_s)
+      aliases.unshift(name)
     end
   end
 end

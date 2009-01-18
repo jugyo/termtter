@@ -33,7 +33,7 @@ module Termtter
     end
 
     it 'should return command regex' do
-      @command.pattern.should == /^\s*((update|u|up)|(update|u|up)\s+(.*?))\s*$/
+      @command.pattern.should == /^((update|u|up)|(update|u|up)\s+(.*?))\s*$/
     end
 
     it 'should be given name as String or Symbol' do
@@ -46,11 +46,11 @@ module Termtter
     end
 
     it 'should return aliases' do
-      @command.aliases.should == ['u', 'up']
+      @command.aliases.should == [:u, :up]
     end
 
     it 'should return commands' do
-      @command.commands.should == ['update', 'u', 'up']
+      @command.commands.should == [:update, :u, :up]
     end
 
     it 'should return help' do
@@ -60,12 +60,12 @@ module Termtter
     it 'should return candidates for completion' do
       # complement
       @command.complement('upd').should == ['update']
-      @command.complement(' upd').should == ['update']
-      @command.complement(' upd ').should == ['update']
+      @command.complement(' upd').should == []
+      @command.complement(' upd ').should == []
       @command.complement('upda').should == ['update']
       @command.complement('update').should == ['complete1', 'complete2']
       @command.complement('update ').should == ['complete1', 'complete2']
-      @command.complement(' update  ').should == ['complete1', 'complete2']
+      @command.complement(' update  ').should == []
       @command.complement('u foo').should == ['complete1', 'complete2']
       @command.complement('u').should == ['complete1', 'complete2']
       @command.complement('up').should == ['complete1', 'complete2']
@@ -91,11 +91,11 @@ module Termtter
       @command.match?('up').should == ['up', nil]
       @command.match?('u').should == ['u', nil]
       @command.match?('update ').should == ['update', nil]
-      @command.match?(' update ').should == ['update', nil]
+      @command.match?(' update ').should == nil
 
       @command.match?('update foo').should == ['update', 'foo']
-      @command.match?(' update foo').should == ['update', 'foo']
-      @command.match?(' update foo ').should == ['update', 'foo']
+      @command.match?(' update foo').should == nil
+      @command.match?(' update foo ').should == nil
       @command.match?('u foo').should == ['u', 'foo']
       @command.match?('up foo').should == ['up', 'foo']
       @command.match?('upd foo').should == nil
