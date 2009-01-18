@@ -21,6 +21,7 @@ configatron.proxy.set_default(:port, '8080')
 require 'termtter/twitter'
 require 'termtter/connection'
 require 'termtter/status'
+require 'termtter/user'
 require 'termtter/command'
 require 'termtter/client'
 require 'termtter/api'
