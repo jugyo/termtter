@@ -81,9 +81,21 @@ module Termtter::Client
     }
   )
 
-  add_command /^show(s)?\s+(?:[\w\d]+:)?(\d+)/ do |m, t|
-    call_hooks(t.show(m[2], m[1]), :show, t)
-  end
+  register_command(
+    :name => :show,
+    :exec_proc => proc {|arg|
+      id = arg.gsub(/.*:/, '')
+      call_hooks(Termtter::API.twitter.show(id), :show)
+    }
+  )
+
+  register_command(
+    :name => :shows,
+    :exec_proc => proc {|arg|
+      id = arg.gsub(/.*:/, '')
+      call_hooks(Termtter::API.twitter.show(id, true), :show)
+    }
+  )
 
   # TODO: Change colors when remaining_hits is low.
   # TODO: Simmulate remaining_hits.
