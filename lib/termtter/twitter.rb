@@ -27,7 +27,15 @@ module Termtter
 
     def get_user_profile(screen_name)
       uri = "#{@connection.protocol}://twitter.com/users/show/#{screen_name}.json"
-      return JSON.parse(open(uri, :http_basic_authentication => [user_name, password], :proxy => @connection.proxy_uri).read)
+      result = JSON.parse(open(uri, :http_basic_authentication => [user_name, password], :proxy => @connection.proxy_uri).read)
+      user = User.new
+      %w[ name favourites_count url id description protected utc_offset time_zone
+          screen_name notifications statuses_count followers_count friends_count
+          profile_image_url location following created_at
+      ].each do |attr|
+        user.__send__("#{attr}=".to_sym, result[attr])
+      end
+      return user
     end
 
     def get_friends_timeline(since_id = nil)

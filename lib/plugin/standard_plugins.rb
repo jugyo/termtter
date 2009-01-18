@@ -22,11 +22,15 @@ module Termtter::Client
   end
 
   add_command /^(profile|p)\s+([^\s]+)/ do |m, t|
-    profile = t.get_user_profile(m[2])
-    if profile
-      %w[ name favourites_count url id description protected utc_offset time_zone screen_name notifications statuses_count followers_count friends_count profile_image_url location following created_at ].each do |key|
-        puts "#{key} : #{profile[key]}" if profile.key?(key)
-      end
+    user = t.get_user_profile(m[2])
+    attrs = %w[ name screen_name url description profile_image_url location protected following
+        friends_count followers_count statuses_count favourites_count
+        id time_zone created_at utc_offset notifications
+    ]
+    label_width = attrs.map{|i|i.size}.max
+    attrs.each do |attr|
+      value = user.__send__(attr.to_sym)
+      puts "#{attr.gsub('_', ' ').rjust(label_width)}: #{value}"
     end
   end
 
