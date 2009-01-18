@@ -12,7 +12,7 @@ module Termtter::Client
       puts "=> #{text}"
     },
     :completion_proc => proc {|cmd, args|
-      if args =~ /(.*)@([^\s]*)$/
+      if /(.*)@([^\s]*)$/ =~ args
         find_user_candidates $2, "#{cmd} #{$1}@%s"
       end
     }
