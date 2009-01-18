@@ -21,18 +21,23 @@ module Termtter::Client
     end
   end
 
-  add_command /^(profile|p)\s+([^\s]+)/ do |m, t|
-    user = t.get_user_profile(m[2])
-    attrs = %w[ name screen_name url description profile_image_url location protected following
-        friends_count followers_count statuses_count favourites_count
-        id time_zone created_at utc_offset notifications
-    ]
-    label_width = attrs.map{|i|i.size}.max
-    attrs.each do |attr|
-      value = user.__send__(attr.to_sym)
-      puts "#{attr.gsub('_', ' ').rjust(label_width)}: #{value}"
-    end
-  end
+  register_command(
+    :name => :profile, :alias => :p,
+    :exec_proc => proc {|arg|
+      user = Termtter::API.twitter.get_user_profile(arg)
+      attrs = %w[ name screen_name url description profile_image_url location protected following
+          friends_count followers_count statuses_count favourites_count
+          id time_zone created_at utc_offset notifications
+      ]
+      label_width = attrs.map{|i|i.size}.max
+      attrs.each do |attr|
+        value = user.__send__(attr.to_sym)
+        puts "#{attr.gsub('_', ' ').rjust(label_width)}: #{value}"
+      end
+    },
+    :completion_proc => proc {|command, arg|
+    }
+  )
 
   add_command /^(list|l)\s*$/ do |m, t|
     statuses = t.get_friends_timeline()
