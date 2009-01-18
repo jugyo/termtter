@@ -40,15 +40,16 @@ module Termtter::Client
     }
   )
 
-  add_command /^(list|l)\s*$/ do |m, t|
-    statuses = t.get_friends_timeline()
-    call_hooks(statuses, :list_friends_timeline, t)
-  end
-
-  add_command /^(list|l)\s+([^\s]+)/ do |m, t|
-    statuses = t.get_user_timeline(m[2])
-    call_hooks(statuses, :list_user_timeline, t)
-  end
+  register_command(
+    :name => :list, :aliases => [:l],
+    :exec_proc => proc {|arg|
+      if arg
+        call_hooks(Termtter::API.twitter.get_user_timeline(arg), :list_user_timeline)
+      else
+        call_hooks(Termtter::API.twitter.get_friends_timeline(), :list_friends_timeline)
+      end
+    }
+  )
 
   register_command(
     :name => :search, :aliases => [:s],
