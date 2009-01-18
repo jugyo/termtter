@@ -54,9 +54,12 @@ module Termtter::Client
     call_hooks(t.search(m[2]), :search, t)
   end
 
-  add_command /^(replies|r)\s*$/ do |m, t|
-    call_hooks(t.replies(), :replies, t)
-  end
+  register_command(
+    :name => :replies, :aliases => [:r],
+    :exec_proc => proc {
+      call_hooks(Termtter::API.twitter.replies(), :replies)
+    }
+  )
 
   add_command /^show(s)?\s+(?:[\w\d]+:)?(\d+)/ do |m, t|
     call_hooks(t.show(m[2], m[1]), :show, t)
