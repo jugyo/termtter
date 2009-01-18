@@ -230,7 +230,6 @@ module Termtter
               end
               print "\e[1K\e[0G" if !statuses.empty? && !win?
               call_hooks(statuses, :update_friends_timeline)
-              initialized = true
               @@input_thread.kill if @@input_thread && !statuses.empty?
             rescue OpenURI::HTTPError => e
               if e.message == '401 Unauthorized'
@@ -238,7 +237,10 @@ module Termtter
                 puts 'plese check your account settings'
                 exit!
               end
+            rescue => e
+              handle_error(e)
             ensure
+              initialized = true
               sleep configatron.update_interval
             end
           end
