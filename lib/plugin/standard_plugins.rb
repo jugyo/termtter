@@ -4,13 +4,14 @@ module Termtter::Client
 
   # standard commands
 
-  add_command /^(update|u)\s+(.*)/ do |m, t|
-    text = ERB.new(m[2]).result(binding).gsub(/\n/, ' ')
-    unless text.empty?
-      t.update_status(text)
+  register_command(
+    :name => :update, :aliases => [:u],
+    :exec_proc => proc {|arg|
+      text = ERB.new(arg).result(binding).gsub(/\n/, ' ')
+      Termtter::API.twitter.update_status(text)
       puts "=> #{text}"
-    end
-  end
+    }
+  )
 
   add_command /^(direct|d)\s+([^\s]+)\s+(.*)\s*$/ do |m, t|
     user = m[2]
@@ -22,7 +23,7 @@ module Termtter::Client
   end
 
   register_command(
-    :name => :profile, :alias => :p,
+    :name => :profile, :aliases => [:p],
     :exec_proc => proc {|arg|
       user = Termtter::API.twitter.get_user_profile(arg)
       attrs = %w[ name screen_name url description profile_image_url location protected following
@@ -48,6 +49,9 @@ module Termtter::Client
       else
         call_hooks(Termtter::API.twitter.get_friends_timeline(), :list_friends_timeline)
       end
+    },
+    :completion_proc => proc {|cmd, arg|
+      find_user_candidates arg, "#{cmd} %s"
     }
   )
 
@@ -183,7 +187,7 @@ module Termtter::Client
   end
 
   def self.find_user_candidates(a, b)
-    if a.empty?
+    if a.nil? || a.empty?
       public_storage[:users].to_a
     else
       public_storage[:users].grep(/^#{Regexp.quote a}/i)
@@ -194,8 +198,6 @@ module Termtter::Client
   add_completion do |input|
     standard_commands = %w[exit help list pause profile update direct resume replies search show limit]
     case input
-    when /^(list|l)?\s+(.*)/
-      find_user_candidates $2, "#{$1} %s"
     when /^(update|u)\s+(.*)@([^\s]*)$/
       find_user_candidates $3, "#{$1} #{$2}@%s"
     when /^(direct|d)\s+(.*)/
