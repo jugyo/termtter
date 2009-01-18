@@ -50,9 +50,12 @@ module Termtter::Client
     call_hooks(statuses, :list_user_timeline, t)
   end
 
-  add_command /^(search|s)\s+(.+)/ do |m, t|
-    call_hooks(t.search(m[2]), :search, t)
-  end
+  register_command(
+    :name => :search, :aliases => [:s],
+    :exec_proc => proc {|arg|
+      call_hooks(Termtter::API.twitter.search(arg), :search)
+    }
+  )
 
   register_command(
     :name => :replies, :aliases => [:r],
