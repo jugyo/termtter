@@ -10,6 +10,11 @@ module Termtter::Client
       text = ERB.new(arg).result(binding).gsub(/\n/, ' ')
       Termtter::API.twitter.update_status(text)
       puts "=> #{text}"
+    },
+    :completion_proc => proc {|cmd, args|
+      if args =~ /(.*)@([^\s]*)$/
+        find_user_candidates $2, "#{cmd} #{$1}@%s"
+      end
     }
   )
 
@@ -198,8 +203,6 @@ module Termtter::Client
   add_completion do |input|
     standard_commands = %w[exit help list pause profile update direct resume replies search show limit]
     case input
-    when /^(update|u)\s+(.*)@([^\s]*)$/
-      find_user_candidates $3, "#{$1} #{$2}@%s"
     when /^(direct|d)\s+(.*)/
       find_user_candidates $2, "#{$1} %s"
     when /^show(s)?\s+(([\w\d]+):)?\s*(.*)/
