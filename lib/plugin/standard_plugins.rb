@@ -18,14 +18,21 @@ module Termtter::Client
     }
   )
 
-  add_command /^(direct|d)\s+([^\s]+)\s+(.*)\s*$/ do |m, t|
-    user = m[2]
-    text = ERB.new(m[3]).result(binding).gsub(/\n/, ' ')
-    unless text.empty?
-      t.direct_message(user, text)
-      puts "=> to:#{user} message:#{text}"
-    end
-  end
+  register_command(
+    :name => :direct, :aliases => [:d],
+    :exec_proc => proc {|arg|
+      if arg =~ /^([^\s]+)\s+(.*)\s*$/
+        user, text = $1, $2
+        Termtter::API.twitter.direct_message(user, text)
+        puts "=> to:#{user} message:#{text}"
+      end
+    },
+    :completion_proc => proc {|cmd, args|
+      if args =~ /^([^\s]+)$/
+        find_user_candidates $1, "#{cmd} %s"
+      end
+    }
+  )
 
   register_command(
     :name => :profile, :aliases => [:p],
@@ -74,9 +81,21 @@ module Termtter::Client
     }
   )
 
-  add_command /^show(s)?\s+(?:[\w\d]+:)?(\d+)/ do |m, t|
-    call_hooks(t.show(m[2], m[1]), :show, t)
-  end
+  register_command(
+    :name => :show,
+    :exec_proc => proc {|arg|
+      id = arg.gsub(/.*:/, '')
+      call_hooks(Termtter::API.twitter.show(id), :show)
+    }
+  )
+
+  register_command(
+    :name => :shows,
+    :exec_proc => proc {|arg|
+      id = arg.gsub(/.*:/, '')
+      call_hooks(Termtter::API.twitter.show(id, true), :show)
+    }
+  )
 
   # TODO: Change colors when remaining_hits is low.
   # TODO: Simmulate remaining_hits.
@@ -203,8 +222,6 @@ module Termtter::Client
   add_completion do |input|
     standard_commands = %w[exit help list pause profile update direct resume replies search show limit]
     case input
-    when /^(direct|d)\s+(.*)/
-      find_user_candidates $2, "#{$1} %s"
     when /^show(s)?\s+(([\w\d]+):)?\s*(.*)/
       if $2
         find_status_id_candidates $4, "show#{$1} #{$2}%s", $3
