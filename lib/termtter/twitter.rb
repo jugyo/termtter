@@ -3,10 +3,10 @@ require 'highline'
 module Termtter
   class Twitter
 
-    def initialize(user_name, password)
+    def initialize(user_name, password, connection)
       @user_name = user_name
       @password = password
-      @connection = Connection.new
+      @connection = connection
     end
 
     def update_status(status)
@@ -15,6 +15,27 @@ module Termtter
         http.request(post_request(uri), "status=#{CGI.escape(status)}&source=#{APP_NAME}")
       end
       status
+    end
+
+    def direct_message(user, status)
+      @connection.start("twitter.com", @connection.port) do |http|
+        uri = '/direct_messages/new.xml'
+        http.request(post_request(uri), "user=#{CGI.escape(user)}&text=#{CGI.escape(status)}&source=#{APP_NAME}")
+      end
+      [user, status]
+    end
+
+    def get_user_profile(screen_name)
+      uri = "#{@connection.protocol}://twitter.com/users/show/#{screen_name}.json"
+      result = JSON.parse(open(uri, :http_basic_authentication => [user_name, password], :proxy => @connection.proxy_uri).read)
+      user = User.new
+      %w[ name favourites_count url id description protected utc_offset time_zone
+          screen_name notifications statuses_count followers_count friends_count
+          profile_image_url location following created_at
+      ].each do |attr|
+        user.__send__("#{attr}=".to_sym, result[attr])
+      end
+      return user
     end
 
     def get_friends_timeline(since_id = nil)

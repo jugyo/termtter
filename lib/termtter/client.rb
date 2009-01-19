@@ -5,6 +5,7 @@ module Termtter
 
     @@hooks = []
     @@commands = {}
+    @@new_commands = {}
     @@completions = []
     @@filters = []
     @@helps = []
@@ -26,9 +27,25 @@ module Termtter
         @@commands[regex] = block
       end
 
+      def register_command(arg)
+        command = case arg
+          when Command
+            arg
+          when Hash
+            Command.new(arg)
+          else
+            raise ArgumentError, 'must be given Termtter::Command or Hash'
+          end
+        @@new_commands[command.name] = command
+      end
+
+      def get_command(name)
+        @@new_commands[name]
+      end
+
       def add_macro(r, s)
         add_command(r) do |m, t|
-          call_commands(s % m.to_a[1..-1], t)
+          call_commands(s % m.to_a[1..-1])
         end
       end
 
@@ -52,28 +69,27 @@ module Termtter
         end
         filtered
       rescue => e
-        puts "Error: #{e}"
-        puts e.backtrace.join("\n")
+        handle_error(e)
         statuses
       end
 
-      def do_hooks(statuses, event, tw)
+      def do_hooks(statuses, event)
         @@hooks.each do |h|
           begin
-            h.call(statuses.dup, event, tw)
+            h.call(statuses.dup, event, Termtter::API.twitter)
           rescue => e
-            puts "Error: #{e}"
-            puts e.backtrace.join("\n")
+            handle_error(e)
           end
         end
       end
-      
-      def call_hooks(statuses, event, tw)
-        do_hooks(statuses, :pre_filter, tw)
-        do_hooks(apply_filters(statuses), event, tw)
+
+      # TODO: delete argument "tw" when unnecessary
+      def call_hooks(statuses, event, tw = nil)
+        do_hooks(statuses, :pre_filter)
+        do_hooks(apply_filters(statuses), event)
       end
 
-      def call_commands(text, tw)
+      def call_commands(text, tw = nil)
         return if text.empty?
 
         command_found = false
@@ -81,10 +97,21 @@ module Termtter
           if key =~ text
             command_found = true
             begin
-              command.call($~, tw)
+              command.call($~, Termtter::API.twitter)
             rescue => e
-              puts "Error: #{e}"
-              puts e.backtrace.join("\n")
+              handle_error(e)
+            end
+          end
+        end
+
+        @@new_commands.each do |key, command|
+          command_info = command.match?(text)
+          # TODO: call hook for before command here.
+          if command_info
+            command_found = true
+            result = command.execute(command_info[1])
+            if result
+              # TODO: call hook for after command with result.
             end
           end
         end
@@ -102,7 +129,7 @@ module Termtter
       end
 
       def exit
-        call_hooks([], :exit, nil)
+        call_hooks([], :exit)
         @@main_thread.kill
         @@update_thread.kill
         @@input_thread.kill
@@ -156,9 +183,18 @@ module Termtter
       def setup_readline
         Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
         Readline.completion_proc = proc {|input|
-          @@completions.map {|completion|
-            completion.call(input)
-          }.flatten.compact
+          begin
+            # FIXME: when migrate to Termtter::Command
+            completions = @@completions.map {|completion|
+              completion.call(input)
+            }
+            completions += @@new_commands.map {|name, command|
+              command.complement(input)
+            }
+            completions.flatten.compact
+          rescue => e
+            handle_error(e)
+          end
         }
         vi_or_emacs = configatron.editing_mode
         unless vi_or_emacs.empty?
@@ -166,16 +202,20 @@ module Termtter
         end
       end
 
+      def setup_api()
+        Termtter::API.setup()
+      end
+
       def run
         load_default_plugins()
         load_config()
         setup_readline()
+        setup_api()
 
         puts 'initializing...'
         initialized = false
         @@pause = false
-        tw = Termtter::Twitter.new(configatron.user_name, configatron.password)
-        call_hooks([], :initialize, tw)
+        call_hooks([], :initialize)
 
         @@input_thread = nil
         @@update_thread = Thread.new do
@@ -184,13 +224,12 @@ module Termtter
             begin
               Thread.stop if @@pause
 
-              statuses = tw.get_friends_timeline(since_id)
+              statuses = Termtter::API.twitter.get_friends_timeline(since_id)
               unless statuses.empty?
                 since_id = statuses[0].id
               end
               print "\e[1K\e[0G" if !statuses.empty? && !win?
-              call_hooks(statuses, :update_friends_timeline, tw)
-              initialized = true
+              call_hooks(statuses, :update_friends_timeline)
               @@input_thread.kill if @@input_thread && !statuses.empty?
             rescue OpenURI::HTTPError => e
               if e.message == '401 Unauthorized'
@@ -199,9 +238,9 @@ module Termtter
                 exit!
               end
             rescue => e
-              puts "Error: #{e}"
-              puts e.backtrace.join("\n")
+              handle_error(e)
             ensure
+              initialized = true
               sleep configatron.update_interval
             end
           end
@@ -217,26 +256,23 @@ module Termtter
 
         @@main_thread = Thread.new do
           loop do
-            @@input_thread = create_input_thread(tw)
+            @@input_thread = create_input_thread()
             @@input_thread.join
           end
         end
         @@main_thread.join
       end
 
-      def create_input_thread(tw)
+      def create_input_thread()
         Thread.new do
           erb = ERB.new(configatron.prompt)
-          while buf = Readline.readline(erb.result(tw.__send__(:binding)), true)
+          while buf = Readline.readline(erb.result(Termtter::API.twitter.__send__(:binding)), true)
             Readline::HISTORY.pop if /^(u|update)\s+(.+)$/ =~ buf
             begin
-              call_commands(buf, tw)
+              call_commands(buf)
             rescue CommandNotFound => e
               puts "Unknown command \"#{buf}\""
               puts 'Enter "help" for instructions'
-            rescue => e
-              puts "Error: #{e}"
-              puts e.backtrace.join("\n")
             end
           end
           exit # exit when press Control-D
