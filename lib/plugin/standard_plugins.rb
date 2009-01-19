@@ -1,72 +1,155 @@
+require 'erb'
+
 module Termtter::Client
 
   # standard commands
 
-  add_command /^(update|u)\s+(.*)/ do |m, t|
-    text = m[2]
-    unless text.empty?
-      t.update_status(text)
+  register_command(
+    :name => :update, :aliases => [:u],
+    :exec_proc => proc {|arg|
+      text = ERB.new(arg).result(binding).gsub(/\n/, ' ')
+      Termtter::API.twitter.update_status(text)
       puts "=> #{text}"
-    end
-  end
+    },
+    :completion_proc => proc {|cmd, args|
+      if /(.*)@([^\s]*)$/ =~ args
+        find_user_candidates $2, "#{cmd} #{$1}@%s"
+      end
+    }
+  )
 
-  add_command /^(list|l)\s*$/ do |m, t|
-    statuses = t.get_friends_timeline()
-    call_hooks(statuses, :list_friends_timeline, t)
-  end
+  register_command(
+    :name => :direct, :aliases => [:d],
+    :exec_proc => proc {|arg|
+      if arg =~ /^([^\s]+)\s+(.*)\s*$/
+        user, text = $1, $2
+        Termtter::API.twitter.direct_message(user, text)
+        puts "=> to:#{user} message:#{text}"
+      end
+    },
+    :completion_proc => proc {|cmd, args|
+      if args =~ /^([^\s]+)$/
+        find_user_candidates $1, "#{cmd} %s"
+      end
+    }
+  )
 
-  add_command /^(list|l)\s+([^\s]+)/ do |m, t|
-    statuses = t.get_user_timeline(m[2])
-    call_hooks(statuses, :list_user_timeline, t)
-  end
+  register_command(
+    :name => :profile, :aliases => [:p],
+    :exec_proc => proc {|arg|
+      user = Termtter::API.twitter.get_user_profile(arg)
+      attrs = %w[ name screen_name url description profile_image_url location protected following
+          friends_count followers_count statuses_count favourites_count
+          id time_zone created_at utc_offset notifications
+      ]
+      label_width = attrs.map{|i|i.size}.max
+      attrs.each do |attr|
+        value = user.__send__(attr.to_sym)
+        puts "#{attr.gsub('_', ' ').rjust(label_width)}: #{value}"
+      end
+    },
+    :completion_proc => proc {|cmd, arg|
+      find_user_candidates arg, "#{cmd} %s"
+    }
+  )
 
-  add_command /^(search|s)\s+(.+)/ do |m, t|
-    call_hooks(t.search(m[2]), :search, t)
-  end
+  register_command(
+    :name => :list, :aliases => [:l],
+    :exec_proc => proc {|arg|
+      if arg
+        call_hooks(Termtter::API.twitter.get_user_timeline(arg), :list_user_timeline)
+      else
+        call_hooks(Termtter::API.twitter.get_friends_timeline(), :list_friends_timeline)
+      end
+    },
+    :completion_proc => proc {|cmd, arg|
+      find_user_candidates arg, "#{cmd} %s"
+    }
+  )
 
-  add_command /^(replies|r)\s*$/ do |m, t|
-    call_hooks(t.replies(), :replies, t)
-  end
+  register_command(
+    :name => :search, :aliases => [:s],
+    :exec_proc => proc {|arg|
+      call_hooks(Termtter::API.twitter.search(arg), :search)
+    }
+  )
 
-  add_command /^show\s+([^\s]+)/ do |m, t|
-    call_hooks(t.show(m[1]), :show, t)
-  end
+  register_command(
+    :name => :replies, :aliases => [:r],
+    :exec_proc => proc {
+      call_hooks(Termtter::API.twitter.replies(), :replies)
+    }
+  )
+
+  register_command(
+    :name => :show,
+    :exec_proc => proc {|arg|
+      id = arg.gsub(/.*:/, '')
+      call_hooks(Termtter::API.twitter.show(id), :show)
+    }
+  )
+
+  register_command(
+    :name => :shows,
+    :exec_proc => proc {|arg|
+      id = arg.gsub(/.*:/, '')
+      call_hooks(Termtter::API.twitter.show(id, true), :show)
+    }
+  )
 
   # TODO: Change colors when remaining_hits is low.
   # TODO: Simmulate remaining_hits.
-  add_command /^(limit|lm)\s*$/ do |m, t|
-    limit = t.get_rate_limit_status
-    puts "=> #{limit.remaining_hits}/#{limit.hourly_limit}"
-  end
+  register_command(
+    :name => :limit, :aliases => ['lm'],
+    :exec_proc => proc {|arg|
+      limit = Termtter::API.twitter.get_rate_limit_status
+      remaining_time = "%dmin %dsec" % (limit.reset_time - Time.now).divmod(60)
+      remaining_color =
+        case limit.remaining_hits / limit.hourly_limit.to_f
+        when 0.2..0.4 then :yellow
+        when 0..0.2   then :red
+        else               :green
+        end
+      puts "=> #{color(limit.remaining_hits, remaining_color)}/#{limit.hourly_limit} until #{limit.reset_time} (#{remaining_time} remaining)"
+    },
+    :help => ["limit,lm", "Show the API limit status"]
+  )
 
+  register_command( 
+    :name => :pause,
+    :exec_proc => proc {|arg| pause},
+    :help => ["pause", "Pause updating"]
+  )
 
-  add_command /^pause\s*$/ do |m, t|
-    pause
-  end
+  register_command(
+    :name => :resume,
+    :exec_proc => proc {|arg| resume},
+    :help => ["resume", "Resume updating"]
+  )
 
-  add_command /^resume\s*$/ do |m, t|
-    resume
-  end
-
-  add_command /^(exit|e)\s*$/ do |m, t|
-    exit
-  end
+  register_command(
+    :name => :exit, :aliases => ['e'],
+    :exec_proc => proc {|arg| exit},
+    :help => ['exit,e', 'Exit']
+  )
 
   add_command /^(help|h)\s*$/ do |m, t|
-    puts <<-EOS
-exit,e            Exit
-help,h            Print this help message
-list,l            List the posts in your friends timeline
-list,l USERNAME   List the posts in the the given user's timeline
-limit,lm          Show the API limit status
-pause             Pause updating
-update,u TEXT     Post a new message
-resume            Resume updating
-replies,r         List the most recent @replies for the authenticating user
-search,s TEXT     Search for Twitter
-show ID           Show a single status
-    EOS
-    puts formatted_help unless @@helps.empty?
+    # TODO: migrate to use Termtter::Command#help
+    helps = [
+      ["help,h", "Print this help message"],
+      ["list,l", "List the posts in your friends timeline"],
+      ["list,l USERNAME", "List the posts in the the given user's timeline"],
+      ["update,u TEXT", "Post a new message"],
+      ["direct,d @USERNAME TEXT", "Send direct message"],
+      ["profile,p USERNAME", "Show user's profile"],
+      ["replies,r", "List the most recent @replies for the authenticating user"],
+      ["search,s TEXT", "Search for Twitter"],
+      ["show ID", "Show a single status"]
+    ]
+    helps += @@helps
+    helps += @@new_commands.map {|name, command| command.help}
+    helps.compact!
+    puts formatted_help(helps)
   end
 
   add_command /^eval\s+(.*)$/ do |m, t|
@@ -90,13 +173,13 @@ show ID           Show a single status
     end
   end
 
-  def self.formatted_help
-    width = @@helps.map {|n, d| n.size }.max
+  def self.formatted_help(helps)
+    helps = helps.sort_by{|help| help[0]}
+    width = helps.map {|n, d| n.size }.max
     space = 3
-    "\nuser commands:\n" +
-      @@helps.map {|name, desc|
-        name.to_s.ljust(width + space) + desc.to_s
-      }.join("\n")
+    helps.map {|name, desc|
+      name.to_s.ljust(width + space) + desc.to_s
+    }.join("\n")
   end
 
   # completion for standard commands
@@ -114,17 +197,21 @@ show ID           Show a single status
     end
   end
 
-  def self.find_status_id_candidates(a, b)
+  def self.find_status_id_candidates(a, b, u = nil)
+    candidates = public_storage[:status_ids].to_a
+    if u && c = public_storage[:log].select {|s| s.user_screen_name == u }.map {|s| s.id.to_s }
+      candidates = c unless c.empty?
+    end
     if a.empty?
-      public_storage[:status_ids].to_a
+      candidates
     else
-      public_storage[:status_ids].grep(/#{Regexp.quote a}/)
+      candidates.grep(/#{Regexp.quote a}/)
     end.
     map {|u| b % u }
   end
 
   def self.find_user_candidates(a, b)
-    if a.empty?
+    if a.nil? || a.empty?
       public_storage[:users].to_a
     else
       public_storage[:users].grep(/^#{Regexp.quote a}/i)
@@ -133,14 +220,16 @@ show ID           Show a single status
   end
 
   add_completion do |input|
-    standard_commands = %w[exit help list pause update resume replies search show limit]
+    standard_commands = %w[exit help list pause profile update direct resume replies search show limit]
     case input
-    when /^(list|l)?\s+(.*)/
-      find_user_candidates $2, "#{$1} %s"
-    when /^(update|u)\s+(.*)@([^\s]*)$/
-      find_user_candidates $3, "#{$1} #{$2}@%s"
-    when /^show\s+(.*)/
-      find_status_id_candidates $1, "show %s"
+    when /^show(s)?\s+(([\w\d]+):)?\s*(.*)/
+      if $2
+        find_status_id_candidates $4, "show#{$1} #{$2}%s", $3
+      else
+        result = find_user_candidates $4, "show#{$1} %s:"
+        result = find_status_id_candidates $4, "show#{$1} %s"  if result.empty?
+        result
+      end
     else
       standard_commands.grep(/^#{Regexp.quote input}/)
     end

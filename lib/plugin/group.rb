@@ -1,5 +1,17 @@
 configatron.set_default('plugins.group.groups', {})
 
+module Termtter
+  class Status
+    def is_member?(group = nil)
+      if group
+        configatron.plugins.group.groups[:group].include? self.user_screen_name
+      else
+        configatron.plugins.group.groups.values.flatten.include? self.user_screen_name
+      end
+    end
+  end
+end
+
 module Termtter::Client
   if public_storage[:log]
     add_help 'group,g GROUPNAME', 'Filter by group members'
@@ -16,7 +28,7 @@ module Termtter::Client
       statuses = group ? public_storage[:log].select { |s|
         group.include?(s.user_screen_name) 
       } : []
-      call_hooks(statuses, :list_friends_timeline, t)
+      call_hooks(statuses, :search, t)
     end
 
     def self.find_group_candidates(a, b)
@@ -27,7 +39,7 @@ module Termtter::Client
 
     add_completion do |input|
       case input
-      when /^(group|g)?\s+(.+)/
+      when /^(group|g)\s+(.+)/
         find_group_candidates($2, "#{$1} %s")
       when /^(group|g)\s+$/
         configatron.plugins.group.groups.keys
@@ -41,6 +53,6 @@ end
 # group.rb
 #   plugin 'group'
 #   configatron.plugins.group.groups = {
-#       :rits => %w(hakobe isano hitode909)
+#     :rits => %w(hakobe isano hitode909)
 #   }
 # NOTE: group.rb needs plugin/log

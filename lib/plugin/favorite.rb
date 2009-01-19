@@ -1,7 +1,7 @@
 module Termtter::Client
   add_help 'favorite,fav ID', 'Favorite a status'
 
-  add_command %r'^(?:favorite|fav)\s+(\d+)$' do |m, t|
+  add_command %r'^(?:favorite|fav)\s+(\d+)\s*$' do |m, t|
     id = m[1]
     res = t.favorite(id)
     if res.code == '200'
@@ -13,14 +13,15 @@ module Termtter::Client
 
   add_help 'favorite,fav USER', 'Favorite last status on the user'
 
-  add_command %r'^(?:favorite|fav)\s+@(.+)$' do |m, t|
-    user = m[1]
+  add_command %r'^(?:favorite|fav)\s+@(.+)\s*$' do |m, t|
+    user = m[1].strip
     statuses = t.get_user_timeline(user)
     unless statuses.empty?
       id = statuses[0].id
+      text = statuses[0].text
       res = t.favorite(id)
       if res.code == '200'
-        puts "Favorited last status ##{id} on user @#{user}"
+        puts %Q(Favorited last status ##{id} on user @#{user}: "#{text}")
       else
         puts "Failed: #{res}"
       end
@@ -49,8 +50,10 @@ module Termtter::Client
 
   add_completion do |input|
     case input
-    when /^(favorite|fav)?\s+@(.*)/
+    when /^(favorite|fav)\s+@(.*)/
       find_user_candidates $2, "#{$1} @%s"
+    when /^(favorite|fav)\s+(\d*)/
+      find_status_id_candidates $2, "#{$1} %s"
     else
       %w(favorite).grep(/^#{Regexp.quote input}/)
     end
@@ -60,9 +63,9 @@ end
 module Termtter
   class Twitter
     def favorite(id)
-      uri = "http://twitter.com/favourings/create/#{id}.json"
+      uri = "#{@connection.protocol}://twitter.com/favourings/create/#{id}.json"
 
-      Net::HTTP.start('twitter.com', 80) do |http|
+      @connection.start('twitter.com', @connection.port) do |http|
         http.request(post_request(uri))
       end
     end

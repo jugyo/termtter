@@ -3,6 +3,13 @@ require 'open-uri'
 require 'uri'
 require 'fileutils'
 
+begin
+  require 'ruby-growl'
+  growl = Growl.new "localhost", "termtter", "termtter status notification"
+rescue LoadError
+  growl = nil
+end
+
 configatron.plugins.growl.set_default(:icon_cache_dir, "#{Dir.tmpdir}/termtter-icon-cache-dir")
 FileUtils.mkdir_p(configatron.plugins.growl.icon_cache_dir) unless File.exist?(configatron.plugins.growl.icon_cache_dir)
 
@@ -27,10 +34,14 @@ Thread.new do
   loop do
     begin
       if s = queue.pop
-        arg = ['growlnotify', s.user_screen_name, '-m', s.text.gsub("\n",''), '-n', 'termtter']
-        #icon_path = get_icon_path(s)
-        #arg += ['--image', icon_path] if icon_path
-        system *arg
+        unless growl
+          arg = ['growlnotify', s.user_screen_name, '-m', s.text.gsub("\n",''), '-n', 'termtter']
+          #icon_path = get_icon_path(s)
+          #arg += ['--image', icon_path] if icon_path
+          system *arg
+        else
+          growl.notify "termtter status notification", s.text, s.user_screen_name
+        end
       end
     rescue => e
       puts e
