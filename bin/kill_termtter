@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+# If your termtter can't be exited, you might use this script.
+#
+# > exit
+# (no response...)
+# C-z
+# $ kill_termtter -i
+# y
+#
+# OPTION
+#   -i interactive
+def s(a)
+  puts a
+  #system a
+end
+
+`ps`.map(&:split).map {|i|
+  pid, runner, file = i[0], i[4], i[5]
+  if runner == 'ruby' && $$ != pid && /termtter/ =~ file
+    s "kill -KILL #{pid}"
+  end
+}
