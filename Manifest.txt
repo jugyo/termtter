@@ -33,6 +33,7 @@ lib/plugin/multi_reply.rb
 lib/plugin/notify-send.rb
 lib/plugin/otsune.rb
 lib/plugin/outputz.rb
+lib/plugin/pause.rb
 lib/plugin/plugin.rb
 lib/plugin/primes.rb
 lib/plugin/quicklook.rb
@@ -60,6 +61,7 @@ lib/termtter/command.rb
 lib/termtter/connection.rb
 lib/termtter/status.rb
 lib/termtter/twitter.rb
+lib/termtter/user.rb
 run_termtter.rb
 test/friends_timeline.json
 test/search.json
