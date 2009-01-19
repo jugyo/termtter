@@ -11,12 +11,12 @@
 #   -i interactive
 def s(a)
   puts a
-  #system a
+  system a
 end
 
 `ps`.map(&:split).map {|i|
   pid, runner, file = i[0], i[4], i[5]
-  if runner == 'ruby' && $$ != pid && /termtter/ =~ file
+  if runner == 'ruby' && $$ != pid.to_i && /termtter/ =~ file
     s "kill -KILL #{pid}"
   end
 }
