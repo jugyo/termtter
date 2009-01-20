@@ -100,11 +100,13 @@ if win?
     90 => 0x07|0x00|0x00|0x00, # erase/white
   }
   $iconv_u8_to_sj = Iconv.new("CP#{$wGetACP.call()}", 'UTF-8')
-  def puts(str)
-    #str.to_s.tosjis.split(/(\e\[\d+m)/).each do |token|
-    str.to_s.gsub("\xef\xbd\x9e", "\xe3\x80\x9c").split(/(\e\[\d+m)/).each do |token|
-      if token =~ /\e\[(\d+)m/
+  def print(str)
+    str.to_s.gsub("\xef\xbd\x9e", "\xe3\x80\x9c").split(/(\e\[\d*[a-zA-Z])/).each do |token|
+      case token
+      when /\e\[(\d+)m/
         $wSetConsoleTextAttribute.call $hStdOut, $colorMap[$1.to_i].to_i
+	  when /\e\[\d*[a-zA-Z]/
+        # do nothing
       else
         loop do
           begin
@@ -118,8 +120,11 @@ if win?
       end
     end
     $wSetConsoleTextAttribute.call $hStdOut, $oldColor
-    STDOUT.puts
     $iconv_u8_to_sj.iconv(nil)
+  end
+  def puts(str)
+    print str
+    STDOUT.puts
   end
 end
 
