@@ -37,3 +37,28 @@ Spec::Rake::SpecTask.new do |t|
   t.spec_opts = ['-c']
 end
 
+def egrep(pattern)
+  res = []
+  Dir['**/*.rb'].each do |fn|
+    count = 0
+    open(fn) do |f|
+      while line = f.gets
+        count += 1
+        if line =~ pattern
+          res << [fn, count.to_s, line.gsub(/\A\s+/, '')]
+        end
+      end
+    end
+  end
+  fmax = res.map {|i| i[0] }.map(&:size).max
+  cmax = res.map {|i| i[1] }.map(&:size).max
+  res.each do |fn, count, line|
+    puts "%s :%s:%s" % [fn.ljust(fmax), count.rjust(cmax), line]
+  end
+end
+
+desc "Look for TODO and FIXME tags in the code"
+task :todo do
+  egrep /(FIXME|TODO)/
+end
+
