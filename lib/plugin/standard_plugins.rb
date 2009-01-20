@@ -100,7 +100,7 @@ module Termtter::Client
   # TODO: Change colors when remaining_hits is low.
   # TODO: Simmulate remaining_hits.
   register_command(
-    :name => :limit, :aliases => ['lm'],
+    :name => :limit, :aliases => [:lm],
     :exec_proc => proc {|arg|
       limit = Termtter::API.twitter.get_rate_limit_status
       remaining_time = "%dmin %dsec" % (limit.reset_time - Time.now).divmod(60)
@@ -128,7 +128,7 @@ module Termtter::Client
   )
 
   register_command(
-    :name => :exit, :aliases => ['e'],
+    :name => :exit, :aliases => [:e],
     :exec_proc => proc {|arg| exit},
     :help => ['exit,e', 'Exit']
   )

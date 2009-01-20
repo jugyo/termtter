@@ -2,7 +2,8 @@ require File.dirname(__FILE__) + '/../../lib/termtter'
 
 describe Termtter::Client, 'when the plugin spam is loaded' do
   it 'should add command spam and post immediately' do
-    t = Termtter::Twitter.new('a', 'b')
+    connection = mock('connection', :null_object => true)
+    t = Termtter::Twitter.new('a', 'b', connection)
     Termtter::Twitter.should_receive(:new).and_return(t)
     t.should_receive(:update_status).with('*super spam time*')
 

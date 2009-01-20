@@ -5,9 +5,24 @@ require 'plugin/standard_plugins' # load plugins
 module Termtter
   describe Client do
     it 'shold return registerd commands' do
-      command = Client.get_command(:profile)
-      command.name.should == :profile
-      # TODO: more spec for commands
+      [
+        [:update,  [:u]],
+        [:direct,  [:d]],
+        [:profile, [:p]],
+        [:list,    [:l]],
+        [:search,  [:s]],
+        [:replies, [:r]],
+        [:show,    []],
+        [:shows,   []],
+        [:limit,   [:lm]],
+        [:pause,   []],
+        [:resume,  []],
+        [:exit,    [:e]],
+      ].each do |name, aliases|
+        command = Client.get_command(name)
+        command.name.should == name
+        command.aliases.should == aliases
+      end
     end
 
     it 'should return candidates when call find_status_id_candidates' do
