@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../lib/termtter'
+require File.dirname(__FILE__) + '/spec_helper'
 
 module Termtter
   describe Twitter, 'when get_timeline called' do

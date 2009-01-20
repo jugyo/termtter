@@ -1,30 +1,29 @@
-require File.dirname(__FILE__) + '/../../lib/termtter'
+require File.dirname(__FILE__) + '/../spec_helper'
 
 module Termtter
 
   describe Command do
-    
+
     before do
-      @command = Command.new(
-                  :name => 'update',
-                  :aliases => ['u', 'up'],
-                  :exec_proc => proc {|arg|
-                    arg
-                  },
-                  :completion_proc => proc {|command, arg|
-                    ['complete1', 'complete2']
-                  },
-                  :help => ['update,u TEXT', 'test command']
-                )
+      params =  {
+          :name            => 'update',
+          :aliases         => ['u', 'up'],
+          :exec_proc       => lambda {|arg| arg },
+          :completion_proc => lambda {|command, arg| ['complete1', 'complete2'] },
+          :help            => ['update,u TEXT', 'test command']
+      }
+      @command = Command.new(params)
     end
 
     it 'should execute' do
-      result = @command.exec_if_match('update test test')
-      result.should == 'test test'
-      result = @command.exec_if_match('update   test test  ')
-      result.should == 'test test'
-      result = @command.exec_if_match('update test   test')
-      result.should == 'test   test'
+      [
+        ['update test test',   'test test'],
+        ['update   test test', 'test test'],
+        ['update test   test', 'test   test'],
+      ].each do |input, args|
+        result = @command.exec_if_match(input)
+        result.should == args
+      end
     end
 
     it 'should failed on execute' do
@@ -59,22 +58,25 @@ module Termtter
 
     it 'should return candidates for completion' do
       # complement
-      @command.complement('upd').should == ['update']
-      @command.complement(' upd').should == []
-      @command.complement(' upd ').should == []
-      @command.complement('upda').should == ['update']
-      @command.complement('update').should == ['complete1', 'complete2']
-      @command.complement('update ').should == ['complete1', 'complete2']
-      @command.complement(' update  ').should == []
-      @command.complement('u foo').should == ['complete1', 'complete2']
-      @command.complement('u').should == ['complete1', 'complete2']
-      @command.complement('up').should == ['complete1', 'complete2']
+      [
+        ['upd',       ['update']],
+        [' upd',      []],
+        [' upd ',     []],
+        ['update',    ['complete1', 'complete2']],
+        ['update ',   ['complete1', 'complete2']],
+        [' update  ', []],
+        ['u foo',     ['complete1', 'complete2']],
+        ['u',         ['complete1', 'complete2']],
+        ['up',        ['complete1', 'complete2']],
+      ].each do |input, comp|
+        @command.complement(input).should == comp
+      end
     end
-    
+
     it 'should can redefine exec_proc' do
       # redefine exec_proc
       command_arg = nil
-      @command.exec_proc = proc {|arg|
+      @command.exec_proc = lambda {|arg|
         command_arg = arg
         'result'
       }
@@ -87,29 +89,32 @@ module Termtter
     end
 
     it 'should return command_info when call method "match?"' do
-      @command.match?('update').should == ['update', nil]
-      @command.match?('up').should == ['up', nil]
-      @command.match?('u').should == ['u', nil]
-      @command.match?('update ').should == ['update', nil]
-      @command.match?(' update ').should == nil
-
-      @command.match?('update foo').should == ['update', 'foo']
-      @command.match?(' update foo').should == nil
-      @command.match?(' update foo ').should == nil
-      @command.match?('u foo').should == ['u', 'foo']
-      @command.match?('up foo').should == ['up', 'foo']
-      @command.match?('upd foo').should == nil
-      @command.match?('upd foo').should == nil
+      [
+        ['update',       ['update', nil]],
+        ['up',           ['up', nil]],
+        ['u',            ['u', nil]],
+        ['update ',      ['update', nil]],
+        [' update ',     nil],
+        ['update foo',   ['update', 'foo']],
+        [' update foo',  nil],
+        [' update foo ', nil],
+        ['u foo',        ['u', 'foo']],
+        ['up foo',       ['up', 'foo']],
+        ['upd foo',      nil],
+        ['upd foo',      nil],
+      ].each do |input, result|
+        @command.match?(input).should == result
+      end
     end
 
     it 'should raise ArgumentError when constructor arguments are deficient' do
       lambda { Command.new }.should raise_error(ArgumentError)
-      lambda { Command.new(:exec_proc => proc {|args|}) }.should raise_error(ArgumentError)
+      lambda { Command.new(:exec_proc => lambda {|args|}) }.should raise_error(ArgumentError)
       lambda { Command.new(:aliases => ['u']) }.should raise_error(ArgumentError)
     end
 
     it 'should return true with the exec_proc return nil' do
-      command = Command.new(:name => :test, :exec_proc => proc {|args|})
+      command = Command.new(:name => :test, :exec_proc => lambda {|args|})
       command.exec_if_match('test').should == true
     end
 

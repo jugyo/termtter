@@ -1,7 +1,9 @@
-require File.dirname(__FILE__) + '/../../lib/termtter'
+require File.dirname(__FILE__) + '/../spec_helper'
 
 module Termtter
+
   describe Client do
+
     it 'should take new_command' do
       command = Command.new(:name => :test)
       Client.register_command(command)
@@ -15,18 +17,19 @@ module Termtter
 
     it 'should call new_command' do
       command_arg = nil
-      command = Command.new(:name => :test, :exec_proc => proc {|arg| command_arg = arg || 'nil'})
+      command = Command.new(:name => :test, :exec_proc => lambda {|arg| command_arg = arg || 'nil'})
       Client.register_command(command)
-
       command_arg.should == nil
-      Client.call_commands('test', nil)
-      command_arg.should == 'nil'
-      Client.call_commands('test foo bar', nil)
-      command_arg.should == 'foo bar'
-      Client.call_commands('test  foo bar ', nil)
-      command_arg.should == 'foo bar'
-      Client.call_commands('test  foo  bar ', nil)
-      command_arg.should == 'foo  bar'
+
+      [
+        ['test',            'nil'],
+        ['test foo bar',    'foo bar'],
+        ['test  foo bar ',  'foo bar'],
+        ['test  foo  bar ', 'foo  bar'],
+      ].each do |input, args|
+        Client.call_commands(input, nil)
+        command_arg.should == args
+      end
     end
   end
 end

@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../lib/termtter'
+require File.dirname(__FILE__) + '/../spec_helper'
 
 module Termtter
   describe Client, 'when the filter plugin is loaded' do
