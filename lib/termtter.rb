@@ -133,7 +133,12 @@ def handle_error(e)
   puts e.backtrace.join("\n")
 end
 
-def plugin(s)
+def plugin(s, init = {})
+  unless init.empty?
+    init.each do |key, value|
+      eval("configatron.plugins.#{s}").__send__("#{key}=", value)
+    end
+  end
   require "plugin/#{s}"
 rescue => e
   handle_error(e)
