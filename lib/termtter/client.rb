@@ -24,6 +24,7 @@ module Termtter
       end
 
       def add_command(regex, &block)
+        warn 'Termtter:Client.add_method will be removed. Use Termtter::Client.register_command() instead.'
         @@commands[regex] = block
       end
 
