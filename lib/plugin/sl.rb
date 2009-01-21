@@ -7,8 +7,13 @@ module Termtter::Client
   add_macro /^pwd\s*$/, 'eval public_storage[:current]'
 
   add_help 'ls', 'Show list in current directory'
-  add_command /^ls\s*$/ do |m, t|
-    call_commands "list #{public_storage[:current]}", t
+  add_command /^ls\s*([^\s]*)$/ do |m, t|
+    directory = m[1].strip
+    if directory.empty?
+      call_commands "list #{public_storage[:current]}", t
+    else
+      call_commands "list #{directory}", t
+    end
   end
 
   add_help 'cd USER', 'Change current directory'
