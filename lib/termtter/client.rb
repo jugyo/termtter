@@ -24,6 +24,8 @@ module Termtter
         EOF
       end
 
+      # Deprecated
+      # FIXME: delete when become unnecessary
       def add_command(regex, &block)
         warn 'Termtter:Client.add_command method will be removed. Use Termtter::Client.register_command() instead.'
         @@commands[regex] = block
@@ -45,7 +47,15 @@ module Termtter
         @@new_commands[name]
       end
 
-      def add_macro(name, macro, options = {})
+      # Deprecated
+      # FIXME: delete when become unnecessary
+      def add_macro(r, s)
+        add_command(r) do |m, t|
+          call_commands(s % m.to_a[1..-1])
+        end
+      end
+
+      def register_macro(name, macro, options = {})
         arg = {
           :name => name.to_sym,
           :exec_proc => proc {|arg| call_commands(macro % arg)}
@@ -306,4 +316,3 @@ module Termtter
     end
   end
 end
-
