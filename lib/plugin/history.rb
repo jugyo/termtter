@@ -23,7 +23,7 @@ module Termtter::Client
           public_storage[key] = history[key] if history[key]
         end
         Readline::HISTORY.push *history[:history] if history[:history]
-        puts "history loaded(#{File.size(filename)}bytes)"
+        puts "history loaded(#{File.size(filename)/1000}kb)"
       end
     end
   end
@@ -44,7 +44,7 @@ module Termtter::Client
     File.open(filename, 'w') do |f|
       f.write Zlib::Deflate.deflate(Marshal.dump(history))
     end
-    puts "history saved(#{File.size(filename)}bytes)"
+    puts "history saved(#{File.size(filename)/1000}kb)"
   end
 
   add_hook do |statuses, event|
