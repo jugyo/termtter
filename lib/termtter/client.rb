@@ -47,14 +47,6 @@ module Termtter
         @@new_commands[name]
       end
 
-      # Deprecated
-      # FIXME: delete when become unnecessary
-      def add_macro(r, s)
-        add_command(r) do |m, t|
-          call_commands(s % m.to_a[1..-1])
-        end
-      end
-
       def register_macro(name, macro, options = {})
         arg = {
           :name => name.to_sym,
