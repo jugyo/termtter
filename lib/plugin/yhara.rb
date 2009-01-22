@@ -123,7 +123,21 @@ module Yharian
 end
 
 module Termtter::Client
-
+  register_command(
+                   :name => :yhara,
+                   :exec_proc => proc{|arg|
+                     text = "#{'@' if arg[0..0] != '@'}#{arg} #{Yharian::text}"
+                     Termtter::API.twitter.update_status(text)
+                     puts "=> #{text}"
+                   },
+                   :completion_proc => proc {|cmd, args|
+                     if /(.*)@([^\s]*)$/ =~ args
+                       find_user_candidates $2, "#{cmd} #{$1}@%s"
+                     end
+                   },
+                   :help => ["yhara (USER)", 'Post a new Yharian sentence']
+                   )
+=begin
   add_help 'yhara', 'Post a new Yharian sentence'
   add_help 'yhara USER', 'Speak to the user in Yharian'
   
@@ -147,7 +161,7 @@ module Termtter::Client
       %w[ yhara ].grep(/^#{Regexp.quote input}/)
     end
   end
-
+=end
 end
 
 # yhara.rb
