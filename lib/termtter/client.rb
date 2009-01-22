@@ -9,6 +9,7 @@ module Termtter
     @@completions = []
     @@filters = []
     @@helps = []
+    @@updating_friends_timeline = false
 
     class << self
       def public_storage
@@ -225,6 +226,7 @@ module Termtter
             begin
               Thread.stop if @@pause
 
+              @@updating_friends_timeline = true
               statuses = Termtter::API.twitter.get_friends_timeline(since_id)
               unless statuses.empty?
                 since_id = statuses[0].id
@@ -241,6 +243,7 @@ module Termtter
             rescue => e
               handle_error(e)
             ensure
+              @@updating_friends_timeline = false
               initialized = true
               sleep configatron.update_interval
             end
@@ -270,6 +273,9 @@ module Termtter
           while buf = Readline.readline(erb.result(Termtter::API.twitter.__send__(:binding)), true)
             Readline::HISTORY.pop if /^(u|update)\s+(.+)$/ =~ buf
             begin
+              while @@updating_friends_timeline
+                sleep 0.1
+              end
               call_commands(buf)
             rescue CommandNotFound => e
               puts "Unknown command \"#{buf}\""
