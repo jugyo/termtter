@@ -32,7 +32,7 @@ module Termtter::Client
                        text.split("\n").each do |post|
                          break if post =~ /^__END__$/
                          unless post.empty?
-                           t.update_status(post)
+                           Termtter::API.twitter.update_status(post)
                            puts "=> #{post}"
                          end
                        end
