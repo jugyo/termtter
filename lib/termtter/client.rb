@@ -45,10 +45,12 @@ module Termtter
         @@new_commands[name]
       end
 
-      def add_macro(r, s)
-        add_command(r) do |m, t|
-          call_commands(s % m.to_a[1..-1])
-        end
+      def add_macro(name, macro, options = {})
+        arg = {
+          :name => name.to_sym,
+          :exec_proc => proc {|arg| call_commands(macro % arg)}
+        }.merge(options)
+        register_command(arg)
       end
 
       def add_help(name, desc)
