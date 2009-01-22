@@ -1,3 +1,1 @@
-module Termtter::Client
-  add_macro /^reload$/, 'eval exec $0'
-end
+Termtter::Client.register_macro :reload, "eval exec $0"
