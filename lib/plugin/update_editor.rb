@@ -22,27 +22,25 @@ module Termtter::Client
     result
   end
 
-  add_command /^(update_editor|ue)\s*$/ do |m, t|
-    pause
-    text = input_editor
-    unless text.empty?
-      text = ERB.new(text).result(binding)
-      text.split("\n").each do |post|
-        break if post =~ /^__END__$/
-        unless post.empty?
-          t.update_status(post)
-          puts "=> #{post}"
-        end
-      end
-    end
-    resume
-  end
-
-  add_help 'update_editor,ue', 'Update status from editor.'
-
-  add_completion do |input|
-    %w[ update_editor ].grep(/^#{Regexp.quote input}/)
-  end
+  register_command(
+                   :name => :update_editor, :aliases => [:ue],
+                   :exec_proc => proc{|arg|
+                     pause
+                     text = input_editor
+                     unless text.empty?
+                       text = ERB.new(text).result(binding)
+                       text.split("\n").each do |post|
+                         break if post =~ /^__END__$/
+                         unless post.empty?
+                           t.update_status(post)
+                           puts "=> #{post}"
+                         end
+                       end
+                     end
+                     resume
+                   },
+                   :help => ["update_editor,ue", "Update status from editor."]
+                   )
 end
 
 # update_editor.rb
