@@ -1,25 +1,39 @@
 module Termtter::Client
-  add_help 'follow USER', 'Follow user'
-  add_help 'leave USER', 'Leave user'
+  register_command(
+    :name => :follow, :aliases => [],
+    :exec_proc => proc {|arg|
+      if arg =~ /^(\w+)/
+        res = Termtter::API::twitter.social($1.strip, :follow)
+        if res.code == '200'
+          puts "Followed user @#{$1}"
+        else
+          puts "Failed: #{res}"
+        end
+      end
+    },
+    :completion_proc => proc {|cmd, args|
+      find_user_candidates args, "#{cmd} %s"
+    },
+	:help => ['follow USER', 'Follow user']
+  )
 
-  add_command %r'^(follow|leave)\s+(\w+)\s*$' do |m, t|
-    user = m[2]
-    res = t.social(user, m[1].to_sym)
-    if res.code == '200'
-      puts "#{m[1].capitalize}ed user @#{user}"
-    else
-      puts "Failed: #{res}"
-    end
-  end
-
-  add_completion do |input|
-    case input
-    when /^(follow|leave)?\s+(.*)/
-      find_user_candidates $2, "#{$1} %s"
-    else
-      %w[follow leave].grep(/^#{Regexp.quote input}/)
-    end
-  end
+  register_command(
+    :name => :leave, :aliases => [],
+    :exec_proc => proc {|arg|
+      if arg =~ /^(\w+)/
+        res = t.social($1.strip, :leave)
+        if res.code == '200'
+          puts "Leaved user @#{$1}"
+        else
+          puts "Failed: #{res}"
+        end
+      end
+    },
+    :completion_proc => proc {|cmd, args|
+      find_user_candidates args, "#{cmd} %s"
+    },
+	:help => ['leave USER', 'Leave user']
+  )
 end
 
 module Termtter
