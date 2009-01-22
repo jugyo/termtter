@@ -1,4 +1,12 @@
 module Termtter::Client
-  add_help 'shell,sh', 'Start your shell'
-  add_macro /^(?:shell|sh)\s*$/, "eval system ENV['SHELL'] || ENV['COMSPEC']"
+  register_command :name => :shell, :aliases => [:sh],
+    :help => ['shell,sh', 'Start your shell'],
+    :exec_proc => proc {|args|
+      begin
+        pause
+        system ENV['SHELL'] || ENV['COMSPEC']
+      ensure
+        resume
+      end
+    }
 end
