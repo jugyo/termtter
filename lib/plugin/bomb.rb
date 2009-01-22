@@ -6,14 +6,15 @@ module Termtter
   end
 
   module Client
-    add_help 'bomb WORD', 'Bomb it'
-    add_command %r'^bomb\s+(.+)$' do |m, t|
-      bomb = m[1]
-      msg = "#{bomb} 爆発しろ!"
-
-      puts msg
-      t.update_status msg
-    end
+    register_command(
+      :name => :bomb, :aliases => [],
+      :exec_proc => proc {|arg|
+        text = "#{arg.strip} 爆発しろ!"
+        Termtter::API::twitter.update_status(text)
+        puts "=> #{text}"
+      },
+      :help => ['bomb WORD', 'Bomb it']
+    )
   end
 end
 
