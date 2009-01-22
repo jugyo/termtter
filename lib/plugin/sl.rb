@@ -1,36 +1,51 @@
 module Termtter::Client
   public_storage[:current] = ''
 
-  add_macro /^sl\s*$/, 'eval system "sl"'
+  register_command(
+    :name => :sl, :aliases => [],
+    :exec_proc => proc {|arg|
+      eval system("sl")
+    },
+    :help => ['sl', 'The train pass in front of your screen']
+  )
 
-  add_help 'pwd', 'Show current direcroty'
-  add_macro /^pwd\s*$/, 'eval public_storage[:current]'
+  register_command(
+    :name => :pwd, :aliases => [],
+    :exec_proc => proc {|arg|
+      public_storage[:current]
+    },
+    :help => ['pwd', 'Show current direcroty']
+  )
 
-  add_help 'ls', 'Show list in current directory'
-  add_command /^ls\s*([^\s]*)$/ do |m, t|
-    directory = m[1].strip
-    if directory.empty?
-      call_commands "list #{public_storage[:current]}", t
-    else
-      call_commands "list #{directory}", t
-    end
-  end
+  register_command(
+    :name => :ls, :aliases => [],
+    :exec_proc => proc {|arg|
+      if arg.empty?
+        call_commands "list #{public_storage[:current]}", t
+      else
+        call_commands "list #{arg}", t
+      end
+    },
+    :completion_proc => proc {|cmd, args|
+      find_user_candidates args, "#{cmd} %s"
+    },
+    :help => ['ls', 'Show list in current directory']
+  )
 
-  add_help 'cd USER', 'Change current directory'
-  add_command /^(?:cd\s+|\.\/)(.*)/ do |m, t|
-    directory = m[1].strip
-    directory = '' if /\~/ =~ directory
-    public_storage[:current] = directory
-    puts "=> #{directory}"
-  end
-  add_macro /^cd$/, 'eval public_storage[:current] = ""'
-
-  add_completion do |input|
-    case input
-    when /^(cd\s+|\.\/)(.*)/
-      find_user_candidates $2, "#{$1.gsub(/\s+/, ' ')}%s"
-    else
-      %w[ sl ls cd pwd ./ ].grep(/^#{Regexp.quote input}/)
-    end
-  end
+  register_command(
+    :name => :cd, :aliases => [],
+    :exec_proc => proc {|arg|
+	  if arg.empty?
+        public_storage[:current] = ''
+      else
+        arg = '' if /\~/ =~ arg
+        public_storage[:current] = arg
+      end
+      puts "=> #{arg}"
+	},
+    :completion_proc => proc {|cmd, args|
+      find_user_candidates args, "#{cmd} %s"
+    },
+    :help => ['cd USER', 'Change current directory']
+  )
 end
