@@ -56,7 +56,7 @@ module Termtter::Client
   register_command(
     :name => :list, :aliases => [:l],
     :exec_proc => proc {|arg|
-      if arg
+      unless arg.empty?
         call_hooks(Termtter::API.twitter.get_user_timeline(arg), :list_user_timeline)
       else
         call_hooks(Termtter::API.twitter.get_friends_timeline(), :list_friends_timeline)

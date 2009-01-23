@@ -21,9 +21,10 @@ module Termtter::Client
     :name => :ls, :aliases => [],
     :exec_proc => proc {|arg|
       if arg.empty?
-        call_commands "list #{public_storage[:current]}", t
+puts public_storage[:current]
+        call_commands "list #{public_storage[:current]}"
       else
-        call_commands "list #{arg}", t
+        call_commands "list #{arg}"
       end
     },
     :completion_proc => proc {|cmd, args|
