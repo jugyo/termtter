@@ -51,7 +51,7 @@ module Termtter
     end
 
     def execute(arg)
-      exec_proc.call(arg)
+      exec_proc.call(arg || '')
     end
 
     def pattern
