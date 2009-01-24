@@ -22,7 +22,7 @@ module Termtter
       command_arg.should == nil
 
       [
-        ['test',            'nil'],
+        ['test',            ''],
         ['test foo bar',    'foo bar'],
         ['test  foo bar ',  'foo bar'],
         ['test  foo  bar ', 'foo  bar'],
