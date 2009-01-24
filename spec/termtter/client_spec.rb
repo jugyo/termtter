@@ -31,6 +31,17 @@ module Termtter
         command_arg.should == args
       end
     end
+
+    it 'should take new_hook' do
+      hook = Hook.new(:name => :test)
+      Client.register_hook(hook)
+      Client.get_hook(:test).should == hook
+    end
+
+    it 'should take hook as Hash' do
+      Client.register_hook(:name => :test)
+      Client.get_hook(:test).name.should == :test
+    end
   end
 end
 

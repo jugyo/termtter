@@ -23,6 +23,7 @@ require 'termtter/connection'
 require 'termtter/status'
 require 'termtter/user'
 require 'termtter/command'
+require 'termtter/hook'
 require 'termtter/client'
 require 'termtter/api'
 

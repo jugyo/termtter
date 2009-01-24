@@ -4,6 +4,7 @@ module Termtter
   module Client
 
     @@hooks = []
+    @@new_hooks = {}
     @@commands = {}
     @@new_commands = {}
     @@completions = []
@@ -29,6 +30,22 @@ module Termtter
       def add_command(regex, &block)
         warn 'Termtter:Client.add_command method will be removed. Use Termtter::Client.register_command() instead.'
         @@commands[regex] = block
+      end
+
+      def register_hook(arg)
+        hook = case arg
+          when Hook
+            arg
+          when Hash
+            Hook.new(arg)
+          else
+            raise ArgumentError, 'must be given Termtter::Hook or Hash'
+          end
+        @@new_hooks[hook.name] = hook
+      end
+
+      def get_hook(name)
+        @@new_hooks[name]
       end
 
       def register_command(arg)
