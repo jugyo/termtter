@@ -106,6 +106,16 @@ module Termtter
         end
       end
 
+      def call_new_hooks(point, *args)
+        get_hooks(point).each {|hook| hook.exec_proc.call(*args) }
+      end
+
+      def get_hooks(point)
+        @@new_hooks.values.select do |hook|
+          hook.match?(point)
+        end
+      end
+
       # TODO: delete argument "tw" when unnecessary
       def call_hooks(statuses, event, tw = nil)
         do_hooks(statuses, :pre_filter)
@@ -130,6 +140,7 @@ module Termtter
         @@new_commands.each do |key, command|
           command_info = command.match?(text)
           # TODO: call hook for before command here.
+          
           if command_info
             command_found = true
             result = command.execute(command_info[1])
