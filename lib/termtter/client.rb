@@ -4,6 +4,7 @@ module Termtter
   module Client
 
     @@hooks = []
+    @@new_hooks = {}
     @@commands = {}
     @@new_commands = {}
     @@completions = []
@@ -29,6 +30,22 @@ module Termtter
       def add_command(regex, &block)
         warn 'Termtter:Client.add_command method will be removed. Use Termtter::Client.register_command() instead.'
         @@commands[regex] = block
+      end
+
+      def register_hook(arg)
+        hook = case arg
+          when Hook
+            arg
+          when Hash
+            Hook.new(arg)
+          else
+            raise ArgumentError, 'must be given Termtter::Hook or Hash'
+          end
+        @@new_hooks[hook.name] = hook
+      end
+
+      def get_hook(name)
+        @@new_hooks[name]
       end
 
       def register_command(arg)
@@ -89,6 +106,17 @@ module Termtter
         end
       end
 
+      def call_new_hooks(point, *args)
+        # TODO: return exec_proc result
+        get_hooks(point).each {|hook| hook.exec_proc.call(*args) }
+      end
+
+      def get_hooks(point)
+        @@new_hooks.values.select do |hook|
+          hook.match?(point)
+        end
+      end
+
       # TODO: delete argument "tw" when unnecessary
       def call_hooks(statuses, event, tw = nil)
         do_hooks(statuses, :pre_filter)
@@ -112,12 +140,19 @@ module Termtter
 
         @@new_commands.each do |key, command|
           command_info = command.match?(text)
-          # TODO: call hook for before command here.
           if command_info
             command_found = true
-            result = command.execute(command_info[1])
-            if result
-              # TODO: call hook for after command with result.
+            input_command, arg = *command_info
+
+            decided_arg = call_new_hooks("decide_arg_for_#{command.name.to_s}", input_command, arg)
+            decided_arg = arg unless decided_arg.instance_of?(String)
+
+            if call_new_hooks("pre_exec_#{command.name.to_s}".to_sym, input_command, decided_arg)
+              # exec command
+              result = command.execute(arg)
+              if result
+                call_new_hooks("pre_exec_#{command.name.to_s}".to_sym, input_command, decided_arg, result)
+              end
             end
           end
         end
