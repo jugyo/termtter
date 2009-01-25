@@ -156,7 +156,7 @@ module Termtter
               # exec command
               result = command.execute(modified_arg)
               if result
-                call_new_hooks("post_exec_#{command.name.to_s}".to_sym, input_command, modified_arg, result)
+                call_new_hooks("post_exec_#{command.name.to_s}", input_command, modified_arg, result)
               end
             end
           end
