@@ -94,5 +94,29 @@ module Termtter
       input_arg.should == 'foo'
       decided_arg.should == 'FOO'
     end
+
+    it 'should call pre_exec hooks' do
+      hook_called = false
+      Client.register_hook( :name => :test2,
+                            :points => [:pre_exec_update],
+                            :exec_proc => proc {|cmd, arg| hook_called = true})
+      Client.register_command(:name => :update)
+
+      hook_called.should == false
+      Client.call_commands('update foo')
+      hook_called.should == true
+    end
+
+    it 'should able to cancel exec command' do
+      command_called = false
+      Client.register_hook( :name => :test2,
+                            :points => [:pre_exec_update],
+                            :exec_proc => proc {|cmd, arg| false})
+      Client.register_command(:name => :update, :exec_proc => proc {|cmd, arg| command_called = true})
+
+      command_called.should == false
+      Client.call_commands('update foo')
+      command_called.should == false
+    end
   end
 end
