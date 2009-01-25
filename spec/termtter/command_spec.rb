@@ -147,6 +147,13 @@ module Termtter
       @command.exec_if_match('update foo xxx').should == 'foo(xxx)'
       @command.exec_if_match('update bar xxx').should == 'bar(xxx)'
     end
+
+    it 'should raise ArgumentError at execute' do
+      lambda { @command.execute(nil) }.should_not raise_error(ArgumentError)
+      lambda { @command.execute('foo') }.should_not raise_error(ArgumentError)
+      lambda { @command.execute(false) }.should raise_error(ArgumentError)
+      lambda { @command.execute(Array.new) }.should raise_error(ArgumentError)
+    end
   end
 end
 
