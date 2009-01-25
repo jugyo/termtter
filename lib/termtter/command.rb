@@ -57,7 +57,7 @@ module Termtter
         when String
           arg
         else
-          raise ArgumentError, 'arg should be String or nil' # TODO: spec
+          raise ArgumentError, 'arg should be String or nil'
         end
       exec_proc.call(arg)
     end
