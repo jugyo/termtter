@@ -17,7 +17,7 @@ module Termtter
 
     it 'should call new_command' do
       command_arg = nil
-      command = Command.new(:name => :test, :exec_proc => lambda {|arg| command_arg = arg || 'nil'})
+      command = Command.new(:name => :test, :exec_proc => lambda {|arg| command_arg = arg})
       Client.register_command(command)
       command_arg.should == nil
 
@@ -88,9 +88,11 @@ module Termtter
 
       input_command.should == nil
       input_arg.should == nil
+      decided_arg.should == nil
       Client.call_commands('u foo')
       input_command.should == 'u'
       input_arg.should == 'foo'
+      decided_arg.should == 'FOO'
     end
   end
 end
