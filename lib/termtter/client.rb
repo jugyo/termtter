@@ -266,7 +266,9 @@ module Termtter
         puts 'initializing...'
         initialized = false
         @@pause = false
+
         call_hooks([], :initialize)
+        call_new_hooks(:initialize)
 
         @@update_thread = Thread.new do
           since_id = nil
