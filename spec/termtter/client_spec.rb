@@ -124,7 +124,7 @@ module Termtter
       Client.register_hook( :name => :test,
                             :points => [:post_exec_update],
                             :exec_proc => proc {|cmd, arg, result| command_result = result })
-      Client.register_command(:name => :update, :exec_proc => proc {|cmd, arg| 'foo'})
+      Client.register_command(:name => :update, :exec_proc => proc {|arg| 'foo'})
 
       command_result.should == nil
       Client.call_commands('update foo')
