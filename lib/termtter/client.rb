@@ -52,6 +52,12 @@ module Termtter
         @@new_hooks[name]
       end
 
+      def get_hooks(point)
+        @@new_hooks.values.select do |hook|
+          hook.match?(point)
+        end
+      end
+
       def register_command(arg)
         command = case arg
           when Command
@@ -118,12 +124,6 @@ module Termtter
           result = hook.exec_proc.call(*args)
         }
         return result
-      end
-
-      def get_hooks(point)
-        @@new_hooks.values.select do |hook|
-          hook.match?(point)
-        end
       end
 
       # TODO: delete argument "tw" when unnecessary
