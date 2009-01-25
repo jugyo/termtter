@@ -97,7 +97,7 @@ module Termtter
 
     it 'should call pre_exec hooks' do
       hook_called = false
-      Client.register_hook( :name => :test2,
+      Client.register_hook( :name => :test,
                             :points => [:pre_exec_update],
                             :exec_proc => proc {|cmd, arg| hook_called = true})
       Client.register_command(:name => :update)
@@ -109,7 +109,7 @@ module Termtter
 
     it 'should able to cancel exec command' do
       command_called = false
-      Client.register_hook( :name => :test2,
+      Client.register_hook( :name => :test,
                             :points => [:pre_exec_update],
                             :exec_proc => proc {|cmd, arg| false})
       Client.register_command(:name => :update, :exec_proc => proc {|cmd, arg| command_called = true})
@@ -117,6 +117,18 @@ module Termtter
       command_called.should == false
       Client.call_commands('update foo')
       command_called.should == false
+    end
+
+    it 'should call post_exec hooks' do
+      command_result = nil
+      Client.register_hook( :name => :test,
+                            :points => [:post_exec_update],
+                            :exec_proc => proc {|cmd, arg, result| command_result = result })
+      Client.register_command(:name => :update, :exec_proc => proc {|cmd, arg| 'foo'})
+
+      command_result.should == nil
+      Client.call_commands('update foo')
+      command_result.should == 'foo'
     end
   end
 end
