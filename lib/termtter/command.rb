@@ -51,7 +51,15 @@ module Termtter
     end
 
     def execute(arg)
-      exec_proc.call(arg || '')
+      arg = case arg
+        when nil
+          ''
+        when String
+          arg
+        else
+          raise ArgumentError, 'arg should be String or nil' # TODO: spec
+        end
+      exec_proc.call(arg)
     end
 
     def pattern

@@ -79,7 +79,7 @@ module Termtter
       input_arg = nil
       decided_arg = nil
       Client.register_hook( :name => :test1,
-                            :points => [:decide_arg_for_update],
+                            :points => [:modify_arg_for_update],
                             :exec_proc => proc {|cmd, arg| input_command = cmd; input_arg = arg; arg.upcase})
       Client.register_hook( :name => :test2,
                             :points => [:pre_exec_update],

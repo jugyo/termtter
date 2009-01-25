@@ -108,8 +108,11 @@ module Termtter
 
       # return last hook return value
       def call_new_hooks(point, *args)
-        result = true
-        get_hooks(point).each {|hook| result = hook.exec_proc.call(*args) }
+        result = nil
+        get_hooks(point).each {|hook|
+          break if result == false # interrupt if hook return false
+          result = hook.exec_proc.call(*args)
+        }
         return result
       end
 
@@ -146,14 +149,14 @@ module Termtter
             command_found = true
             input_command, arg = *command_info
 
-            decided_arg = call_new_hooks("decide_arg_for_#{command.name.to_s}", input_command, arg)
-            decided_arg = arg unless decided_arg.instance_of?(String)
+            modified_arg = call_new_hooks("modify_arg_for_#{command.name.to_s}", input_command, arg) || arg
+            pre_exec_hook_result = call_new_hooks("pre_exec_#{command.name.to_s}", input_command, modified_arg)
 
-            if call_new_hooks("pre_exec_#{command.name.to_s}".to_sym, input_command, decided_arg)
+            unless pre_exec_hook_result == false
               # exec command
-              result = command.execute(decided_arg)
+              result = command.execute(modified_arg)
               if result
-                call_new_hooks("pre_exec_#{command.name.to_s}".to_sym, input_command, decided_arg, result)
+                call_new_hooks("pre_exec_#{command.name.to_s}".to_sym, input_command, modified_arg, result)
               end
             end
           end
