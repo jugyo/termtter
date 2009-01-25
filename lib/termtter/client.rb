@@ -12,6 +12,10 @@ module Termtter
     @@helps = []
     @@updating_friends_timeline = false
 
+    @@main_thread = nil
+    @@update_thread = nil
+    @@input_thread = nil
+
     class << self
       def public_storage
         @@public_storage ||= {}
@@ -176,9 +180,10 @@ module Termtter
 
       def exit
         call_hooks([], :exit)
-        @@main_thread.kill
-        @@update_thread.kill
-        @@input_thread.kill
+        call_new_hooks(:exit)
+        @@main_thread.kill if @@main_thread
+        @@update_thread.kill if @@update_thread
+        @@input_thread.kill if @@input_thread
       end
 
       def load_default_plugins
@@ -263,7 +268,6 @@ module Termtter
         @@pause = false
         call_hooks([], :initialize)
 
-        @@input_thread = nil
         @@update_thread = Thread.new do
           since_id = nil
           loop do

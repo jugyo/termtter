@@ -130,5 +130,44 @@ module Termtter
       Client.call_commands('update foo')
       command_result.should == 'foo'
     end
+
+    it 'should call exit hooks' do
+      hook_called = false
+      Client.register_hook(
+        :name => :test,
+        :points => [:exit],
+        :exec_proc => proc { hook_called = true }
+      )
+
+      hook_called.should == false
+      Client.exit
+      hook_called.should == true
+    end
+
+    it 'should call plural hooks' do
+      hook1_called = false
+      hook2_called = false
+      Client.register_hook(:name => :hook1, :points => [:exit], :exec_proc => proc {hook1_called = true})
+      Client.register_hook(:name => :hook2, :points => [:exit], :exec_proc => proc {hook2_called = true})
+
+      hook1_called.should == false
+      hook2_called.should == false
+      Client.exit
+      hook1_called.should == true
+      hook2_called.should == true
+    end
+
+    it 'should able to override hooks' do
+      hook1_called = false
+      hook2_called = false
+      Client.register_hook(:name => :hook, :points => [:exit], :exec_proc => proc {hook1_called = true})
+      Client.register_hook(:name => :hook, :points => [:exit], :exec_proc => proc {hook2_called = true})
+
+      hook1_called.should == false
+      hook2_called.should == false
+      Client.exit
+      hook1_called.should == false
+      hook2_called.should == true
+    end
   end
 end
