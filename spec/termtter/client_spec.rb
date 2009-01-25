@@ -91,7 +91,6 @@ module Termtter
       Client.call_commands('u foo')
       input_command.should == 'u'
       input_arg.should == 'foo'
-      p decided_arg
     end
   end
 end
