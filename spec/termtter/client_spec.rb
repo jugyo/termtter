@@ -73,6 +73,25 @@ module Termtter
       hooks.include?(hook2).should == true
       hooks.include?(hook3).should == false
     end
+
+    it 'should call decide_arg hooks' do
+      input_command = nil
+      input_arg = nil
+      decided_arg = nil
+      Client.register_hook( :name => :test1,
+                            :points => [:decide_arg_for_update],
+                            :exec_proc => proc {|cmd, arg| input_command = cmd; input_arg = arg; arg.upcase})
+      Client.register_hook( :name => :test2,
+                            :points => [:pre_exec_update],
+                            :exec_proc => proc {|cmd, arg| decided_arg = arg})
+      Client.register_command(:name => :update, :aliases => [:u])
+
+      input_command.should == nil
+      input_arg.should == nil
+      Client.call_commands('u foo')
+      input_command.should == 'u'
+      input_arg.should == 'foo'
+      p decided_arg
+    end
   end
 end
-

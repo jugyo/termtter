@@ -107,6 +107,7 @@ module Termtter
       end
 
       def call_new_hooks(point, *args)
+        # TODO: return exec_proc result
         get_hooks(point).each {|hook| hook.exec_proc.call(*args) }
       end
 
@@ -139,13 +140,19 @@ module Termtter
 
         @@new_commands.each do |key, command|
           command_info = command.match?(text)
-          # TODO: call hook for before command here.
-          
           if command_info
             command_found = true
-            result = command.execute(command_info[1])
-            if result
-              # TODO: call hook for after command with result.
+            input_command, arg = *command_info
+
+            decided_arg = call_new_hooks("decide_arg_for_#{command.name.to_s}", input_command, arg)
+            decided_arg = arg unless decided_arg.instance_of?(String)
+
+            if call_new_hooks("pre_exec_#{command.name.to_s}".to_sym, input_command, decided_arg)
+              # exec command
+              result = command.execute(arg)
+              if result
+                call_new_hooks("pre_exec_#{command.name.to_s}".to_sym, input_command, decided_arg, result)
+              end
             end
           end
         end

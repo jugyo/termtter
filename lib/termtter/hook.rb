@@ -10,7 +10,7 @@ module Termtter
     end
 
     def match?(point)
-      points.include?(point)
+      points.include?(point.to_sym)
     end
   end
 end
