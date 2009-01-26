@@ -54,7 +54,7 @@ module Termtter
       Time.stub!(:now).and_return(time_now)
 
       called_count = 0
-      @task_manager.add_task(:repeat_interval => 10) {called_count += 1}
+      @task_manager.add_task(:interval => 10) {called_count += 1}
       @task_manager.step
 
       called_count.should == 1

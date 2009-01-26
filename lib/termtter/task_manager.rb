@@ -67,8 +67,8 @@ module Termtter
         @tasks.delete_if do |task|
           if task.exec_at <= time_now
             due_tasks << task
-            if task.repeat_interval
-              task.exec_at = time_now + task.repeat_interval
+            if task.interval
+              task.exec_at = time_now + task.interval
               false
             else
               true
