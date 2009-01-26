@@ -36,14 +36,17 @@ module Termtter
 
       task1_called.should == false
       task2_called.should == false
+      @task_manager.instance_eval('@tasks').size.should == 2
       @task_manager.run
       sleep 1
       task1_called.should == true
       task2_called.should == false
+      @task_manager.instance_eval('@tasks').size.should == 1
 
       Time.stub!(:now).and_return(time_now + 10)
       sleep 1
       task2_called.should == true
+      @task_manager.instance_eval('@tasks').size.should == 0
     end
   end
 end
