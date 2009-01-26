@@ -19,8 +19,6 @@ module Termtter::Client
     if File.exist?(filename)
       begin
         history = Marshal.load Zlib::Inflate.inflate(File.read(filename))
-      rescue Zlib::DataError
-        history = Marshal.load File.read(filename)
       end
       if history
         keys.each do |key|
