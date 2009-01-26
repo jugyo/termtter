@@ -1,21 +1,20 @@
 require 'uri'
 require 'net/http'
 
-module Termtter::Client
-  # NOTE: overwrite original update command
-  add_command /^(update|u)\s+(.*)/ do |m, t|
-    text = ERB.new(m[2]).result(binding).gsub(/\n/, ' ')
-    t.update_status(text)
-    puts "=> #{text}"
+Termtter::Client.register_hook(
+  :name => :wassr_post,
+  :points => [:modify_arg_for_update],
+  :exec_proc => proc {|cmd, arg|
     begin
       Net::HTTP.version_1_2
       req = Net::HTTP::Post.new("/statuses/update.json?")
       req.basic_auth configatron.plugins.wassr_post.username, configatron.plugins.wassr_post.password
       Net::HTTP.start('api.wassr.jp', 80) do |http|
-        res = http.request(req, "status=#{URI.escape(text)}&source=Termtter")
+        res = http.request(req, "status=#{URI.escape(arg.strip)}&source=Termtter")
       end
     rescue
       puts "RuntimeError: #{$!}"
     end
-  end
-end
+    return arg
+  }
+)

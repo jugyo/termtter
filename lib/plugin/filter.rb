@@ -1,34 +1,48 @@
 
 module Termtter::Client
-
   public_storage[:filters] = []
-
-  add_help 'filter FILE', 'Apply a filter'
-  add_command /^filter\s+(.*)/ do |m, t|
-    begin
-      result = filter m[1].strip
-    rescue LoadError
-      result = false
-    ensure
-      puts "=> #{result.inspect}"
-    end
+  filters = Dir["#{File.dirname(__FILE__)}/../filter/*.rb"].map do |f|
+    f.match(%r|([^/]+).rb$|)[1]
   end
 
-  add_help 'unfilter', 'Clear all filters'
-  add_command /^unfilter\s*$/ do |m, t|
-    clear_filters
-    public_storage[:filters].clear
-    puts '=> filter cleared'
-  end
+  register_command(
+    :name => :filter, :aliases => [],
+    :exec_proc => proc {|arg|
+      begin
+        result = filter arg.strip
+      rescue LoadError
+        result = false
+      ensure
+        puts "=> #{result.inspect}"
+      end
+    },
+    :completion_proc => proc {|cmd, args|
+      find_filter_candidates args, "#{cmd} %s", filters
+    },
+    :help => ['filter FILE', 'Apply a filter']
+  )
 
-  add_help 'filters', 'Show list of applied filters'
-  add_command /^filters\s*$/ do |m, t|
-    unless public_storage[:filters].empty?
-      puts public_storage[:filters].join(', ')
-    else
-      puts 'no filter was applied'
-    end
-  end
+  register_command(
+    :name => :unfilter, :aliases => [],
+    :exec_proc => proc {|arg|
+      clear_filters
+      public_storage[:filters].clear
+      puts '=> filter cleared'
+    },
+    :help => ['ufilter', 'Clear all filters']
+  )
+
+  register_command(
+    :name => :filters, :aliases => [],
+    :exec_proc => proc {|arg|
+      unless public_storage[:filters].empty?
+        puts public_storage[:filters].join(', ')
+      else
+        puts 'no filter was applied'
+      end
+    },
+    :help => ['filters', 'Show list of applied filters']
+  )
 
   def self.find_filter_candidates(a, b, filters)
     if a.empty?
@@ -37,17 +51,6 @@ module Termtter::Client
       filters.grep(/^#{Regexp.quote a}/i)
     end.
     map {|u| b % u }
-  end
-
-  filters = Dir["#{File.dirname(__FILE__)}/../filter/*.rb"].map do |f|
-    f.match(%r|([^/]+).rb$|)[1]
-  end
-  add_completion do |input|
-    if input =~ /^(filter)\s+(.*)/
-      find_filter_candidates $2, "#{$1} %s", filters
-    else
-      %w[ filter filters unfilter ].grep(/^#{Regexp.quote input}/)
-    end
   end
 end
 

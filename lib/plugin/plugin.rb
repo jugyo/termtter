@@ -4,36 +4,39 @@ module Termtter::Client
     f.match(%r|([^/]+).rb$|)[1]
   end
 
-  add_help 'plugin FILE', 'Load a plugin'
-  add_command /^plugin\s+(.*)/ do |m, t|
-    begin
-      result = plugin m[1].strip
-    rescue LoadError
-    ensure
-      puts "=> #{result.inspect}"
-    end
-  end
+  register_command(
+    :name      => :plugin, :aliases => [],
+    :exec_proc => proc {|arg|
+      begin
+        result = plugin arg.strip
+      rescue LoadError
+      ensure
+        puts "=> #{result.inspect}"
+      end
+    },
+    :completion_proc => proc {|cmd, args|
+      find_user_candidates args, "#{cmd} %s"
+      unless args.empty?
+        find_plugin_candidates args, "#{cmd} %s"
+      else
+        public_storage[:plugins].sort
+      end
+    },
+    :help      => ['plugin FILE', 'Load a plugin']
+  )
 
-  add_help 'plugins', 'Show list of plugins'
-  add_command /^plugins$/ do |m, t|
-    puts public_storage[:plugins].sort.join("\n")
-  end
+  register_command(
+    :name      => :plugins, :aliases => [],
+    :exec_proc => proc {|arg|
+      puts public_storage[:plugins].sort.join("\n")
+    },
+    :help      => ['plugins', 'Show list of plugins']
+  )
 
   def self.find_plugin_candidates(a, b)
     public_storage[:plugins].
       grep(/^#{Regexp.quote a}/i).
       map {|u| b % u }
-  end
-
-  add_completion do |input|
-    case input
-    when /^(plugin)\s+(.+)/
-      find_plugin_candidates $2, "#{$1} %s"
-    when /^(plugin)\s+$/
-      public_storage[:plugins].sort
-    else
-      %w[ plugin plugins ].grep(/^#{Regexp.quote input}/)
-    end
   end
 end
 
