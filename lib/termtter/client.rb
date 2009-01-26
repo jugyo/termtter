@@ -153,7 +153,7 @@ module Termtter
             command_found = true
             input_command, arg = *command_info
 
-            modified_arg = call_new_hooks("modify_arg_for_#{command.name.to_s}", input_command, arg) || arg
+            modified_arg = call_new_hooks("modify_arg_for_#{command.name.to_s}", input_command, arg) || arg || ''
             pre_exec_hook_result = call_new_hooks("pre_exec_#{command.name.to_s}", input_command, modified_arg)
 
             unless pre_exec_hook_result == false
