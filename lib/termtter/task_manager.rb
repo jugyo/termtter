@@ -6,11 +6,14 @@ module Termtter
     def initialize()
       @tasks = []
       @work = true
+      @mutex = Mutex.new
     end
 
     # TODO: to thread safe
     def add_task(args = {}, &block)
-      @tasks << Task.new(args, &block)
+      synchronize do
+        @tasks << Task.new(args, &block)
+      end
     end
 
     def run
@@ -40,22 +43,31 @@ module Termtter
 
     # TODO: to thread safe
     def pull_due_tasks()
-      time_now = Time.now
-      due_tasks = []
-      @tasks.delete_if do |task|
-        if task.exec_at <= time_now
-          due_tasks << task
-          if task.repeat_interval
-            task.exec_at += task.repeat_interval
-            false
+      synchronize do
+        time_now = Time.now
+        due_tasks = []
+        @tasks.delete_if do |task|
+          if task.exec_at <= time_now
+            due_tasks << task
+            if task.repeat_interval
+              task.exec_at += task.repeat_interval
+              false
+            else
+              true
+            end
           else
-            true
+            false
           end
-        else
-          false
         end
+        return due_tasks
       end
-      return due_tasks
     end
+
+    def synchronize
+      @mutex.synchronize {
+        yield
+      }
+    end
+
   end
 end
