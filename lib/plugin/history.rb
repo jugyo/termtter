@@ -6,6 +6,10 @@ configatron.plugins.history.
   set_default(:keys, [:log, :users, :status_ids])
 configatron.plugins.history.
   set_default(:max_of_history, 100)
+configatron.plugins.history.
+  set_default(:enable_autosave, true)
+configatron.plugins.history.
+  set_default(:autosave_interval, 3600)
 
 module Termtter::Client
   def self.load_history
@@ -55,6 +59,13 @@ module Termtter::Client
       save_history
     end
   end
+
+  if configatron.plugins.history.enable_autosave
+    Termtter::Client.add_task(:interval => configatron.plugins.history.autosave_interval) do
+      save_history
+    end
+  end
+  
 end
 
 # history.rb
