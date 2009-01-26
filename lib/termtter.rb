@@ -24,6 +24,8 @@ require 'termtter/status'
 require 'termtter/user'
 require 'termtter/command'
 require 'termtter/hook'
+require 'termtter/task'
+require 'termtter/task_manager'
 require 'termtter/client'
 require 'termtter/api'
 

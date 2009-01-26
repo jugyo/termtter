@@ -13,8 +13,9 @@ module Termtter
     @@updating_friends_timeline = false
 
     @@main_thread = nil
-    @@update_thread = nil
     @@input_thread = nil
+
+    @@task_manager = Termtter::TaskManager.new
 
     class << self
       def public_storage
@@ -170,19 +171,21 @@ module Termtter
       end
 
       def pause
-        @@pause = true
+        @@task_manager.pause
       end
 
       def resume
-        @@pause = false
-        @@update_thread.run
+        @@task_manager.resume
+      end
+
+      def add_task(*arg, &block)
+        @@task_manager.add_task(*arg, &block)
       end
 
       def exit
         call_hooks([], :exit)
         call_new_hooks(:exit)
         @@main_thread.kill if @@main_thread
-        @@update_thread.kill if @@update_thread
         @@input_thread.kill if @@input_thread
       end
 
@@ -232,6 +235,12 @@ module Termtter
       end
 
       def setup_readline
+        begin
+          stty_save = `stty -g`.chomp
+          trap("INT") { system "stty", stty_save; exit }
+        rescue Errno::ENOENT
+        end
+
         Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
         Readline.completion_proc = proc {|input|
           begin
@@ -265,48 +274,35 @@ module Termtter
 
         puts 'initializing...'
         initialized = false
-        @@pause = false
 
         call_hooks([], :initialize)
         call_new_hooks(:initialize)
 
-        @@update_thread = Thread.new do
-          since_id = nil
-          loop do
-            begin
-              Thread.stop if @@pause
-
-              @@updating_friends_timeline = true
-              statuses = Termtter::API.twitter.get_friends_timeline(since_id)
-              unless statuses.empty?
-                since_id = statuses[0].id
-              end
-              print "\e[1K\e[0G" if !statuses.empty? && !win?
-              call_hooks(statuses, :update_friends_timeline)
-              @@input_thread.kill if @@input_thread && !statuses.empty?
-            rescue OpenURI::HTTPError => e
-              if e.message == '401 Unauthorized'
-                puts 'Could not login'
-                puts 'plese check your account settings'
-                exit!
-              end
-            rescue => e
-              handle_error(e)
-            ensure
-              @@updating_friends_timeline = false
-              initialized = true
-              sleep configatron.update_interval
+        @@since_id = nil
+        @@task_manager.add_task(:repeat_interval => configatron.update_interval) do
+          begin
+            @@updating_friends_timeline = true
+            statuses = Termtter::API.twitter.get_friends_timeline(@@since_id)
+            unless statuses.empty?
+              @@since_id = statuses[0].id
             end
+            print "\e[1K\e[0G" if !statuses.empty? && !win?
+            call_hooks(statuses, :update_friends_timeline)
+            @@input_thread.kill if @@input_thread && !statuses.empty?
+          rescue OpenURI::HTTPError => e
+            if e.message == '401 Unauthorized'
+              puts 'Could not login'
+              puts 'plese check your account settings'
+              exit!
+            end
+          ensure
+            @@updating_friends_timeline = false
+            initialized = true
           end
         end
+        @@task_manager.run
 
         until initialized; end
-
-        begin
-          stty_save = `stty -g`.chomp
-          trap("INT") { system "stty", stty_save; exit }
-        rescue Errno::ENOENT
-        end
 
         @@main_thread = Thread.new do
           loop do

@@ -7,6 +7,7 @@ module Termtter
       @tasks = []
       @work = true
       @mutex = Mutex.new
+      @pause = false
     end
 
     # TODO: to thread safe
@@ -19,10 +20,18 @@ module Termtter
     def run
       Thread.new do
         while @work
-          step
+          step unless @pause
           sleep Interval
         end
       end
+    end
+
+    def pause
+      @pause = true
+    end
+
+    def resume
+      @pause = false
     end
 
     def step
@@ -35,7 +44,7 @@ module Termtter
       end
     end
 
-    def stop
+    def kill
       @work = false
     end
 
@@ -50,7 +59,7 @@ module Termtter
           if task.exec_at <= time_now
             due_tasks << task
             if task.repeat_interval
-              task.exec_at += task.repeat_interval
+              task.exec_at = time_now + task.repeat_interval
               false
             else
               true
