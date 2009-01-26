@@ -3,21 +3,22 @@ module Termtter
 
   module Client
 
-    @@hooks = []
-    @@new_hooks = {}
-    @@commands = {}
-    @@new_commands = {}
-    @@completions = []
-    @@filters = []
-    @@helps = []
-    @@updating_friends_timeline = false
-
-    @@main_thread = nil
-    @@input_thread = nil
-
-    @@task_manager = Termtter::TaskManager.new
-
     class << self
+
+      def init
+        @@hooks = []
+        @@new_hooks = {}
+        @@commands = {}
+        @@new_commands = {}
+        @@completions = []
+        @@filters = []
+        @@helps = []
+        @@since_id = nil
+        @@main_thread = nil
+        @@input_thread = nil
+        @@task_manager = Termtter::TaskManager.new
+      end
+
       def public_storage
         @@public_storage ||= {}
       end
@@ -134,40 +135,42 @@ module Termtter
       end
 
       def call_commands(text, tw = nil)
-        return if text.empty?
+        @@task_manager.invoke_later do
+          return if text.empty?
 
-        command_found = false
-        @@commands.each do |key, command|
-          if key =~ text
-            command_found = true
-            begin
-              command.call($~, Termtter::API.twitter)
-            rescue => e
-              handle_error(e)
-            end
-          end
-        end
-
-        @@new_commands.each do |key, command|
-          command_info = command.match?(text)
-          if command_info
-            command_found = true
-            input_command, arg = *command_info
-
-            modified_arg = call_new_hooks("modify_arg_for_#{command.name.to_s}", input_command, arg) || arg || ''
-            pre_exec_hook_result = call_new_hooks("pre_exec_#{command.name.to_s}", input_command, modified_arg)
-
-            unless pre_exec_hook_result == false
-              # exec command
-              result = command.execute(modified_arg)
-              if result
-                call_new_hooks("post_exec_#{command.name.to_s}", input_command, modified_arg, result)
+          command_found = false
+          @@commands.each do |key, command|
+            if key =~ text
+              command_found = true
+              begin
+                command.call($~, Termtter::API.twitter)
+              rescue => e
+                handle_error(e)
               end
             end
           end
-        end
 
-        raise CommandNotFound unless command_found
+          @@new_commands.each do |key, command|
+            command_info = command.match?(text)
+            if command_info
+              command_found = true
+              input_command, arg = *command_info
+
+              modified_arg = call_new_hooks("modify_arg_for_#{command.name.to_s}", input_command, arg) || arg || ''
+              pre_exec_hook_result = call_new_hooks("pre_exec_#{command.name.to_s}", input_command, modified_arg)
+
+              unless pre_exec_hook_result == false
+                # exec command
+                result = command.execute(modified_arg)
+                if result
+                  call_new_hooks("post_exec_#{command.name.to_s}", input_command, modified_arg, result)
+                end
+              end
+            end
+          end
+
+          raise CommandNotFound unless command_found
+        end
       end
 
       def pause
@@ -185,6 +188,7 @@ module Termtter
       def exit
         call_hooks([], :exit)
         call_new_hooks(:exit)
+        @@task_manager.kill
         @@main_thread.kill if @@main_thread
         @@input_thread.kill if @@input_thread
       end
@@ -278,10 +282,8 @@ module Termtter
         call_hooks([], :initialize)
         call_new_hooks(:initialize)
 
-        @@since_id = nil
         @@task_manager.add_task(:repeat_interval => configatron.update_interval) do
           begin
-            @@updating_friends_timeline = true
             statuses = Termtter::API.twitter.get_friends_timeline(@@since_id)
             unless statuses.empty?
               @@since_id = statuses[0].id
@@ -296,7 +298,6 @@ module Termtter
               exit!
             end
           ensure
-            @@updating_friends_timeline = false
             initialized = true
           end
         end
@@ -318,9 +319,6 @@ module Termtter
           while buf = Readline.readline(ERB.new(configatron.prompt).result(API.twitter.__send__(:binding)), true)
             Readline::HISTORY.pop if /^(u|update)\s+(.+)$/ =~ buf
             begin
-              while @@updating_friends_timeline
-                sleep 0.1
-              end
               call_commands(buf)
             rescue CommandNotFound => e
               puts "Unknown command \"#{buf}\""
@@ -349,3 +347,5 @@ module Termtter
     end
   end
 end
+
+Termtter::Client.init
