@@ -51,3 +51,4 @@ end
 #     :rits => %w(hakobe isano hitode909)
 #   }
 # NOTE: group.rb needs plugin/log
+
