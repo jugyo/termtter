@@ -59,7 +59,8 @@ module Termtter::Client
   end
 
   if configatron.plugins.history.enable_autosave
-    Termtter::Client.add_task(:interval => configatron.plugins.history.autosave_interval) do
+    Termtter::Client.add_task(:interval => configatron.plugins.history.autosave_interval,
+                              :after => configatron.plugins.history.autosave_interval) do
       save_history
     end
   end
