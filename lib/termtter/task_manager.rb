@@ -5,12 +5,38 @@ module Termtter
 
     def initialize()
       @tasks = []
+      @work = true
     end
 
     # TODO: to thread safe
     def add_task(args = {}, &block)
       @tasks << Task.new(args, &block)
     end
+
+    def run
+      Thread.new do
+        while @work
+          step
+          sleep Interval
+        end
+      end
+    end
+
+    def step
+      pull_due_tasks().each do |task|
+        begin
+          task.execute
+        rescue => e
+          handle_error(e)
+        end
+      end
+    end
+
+    def stop
+      @work = false
+    end
+
+    private
 
     # TODO: to thread safe
     def pull_due_tasks()
@@ -30,25 +56,6 @@ module Termtter
         end
       end
       return due_tasks
-    end
-
-    def run
-      Thread.new do
-        loop do
-          step
-          sleep Interval
-        end
-      end
-    end
-
-    def step
-      pull_due_tasks().each do |task|
-        begin
-          task.execute
-        rescue => e
-          handle_error(e)
-        end
-      end
     end
   end
 end

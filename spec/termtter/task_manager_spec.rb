@@ -21,7 +21,7 @@ module Termtter
       @task_manager.add_task() {}
       @task_manager.add_task(:after => 10) {}
 
-      due_tasks = @task_manager.pull_due_tasks
+      due_tasks = @task_manager.instance_eval('pull_due_tasks')
       due_tasks.size.should == 1
     end
 
