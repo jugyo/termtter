@@ -19,7 +19,12 @@ module Termtter
       @tasks.delete_if do |task|
         if task.exec_at <= time_now
           due_tasks << task
-          true
+          if task.repeat_interval
+            task.exec_at += task.repeat_interval
+            false
+          else
+            true
+          end
         else
           false
         end
@@ -30,17 +35,20 @@ module Termtter
     def run
       Thread.new do
         loop do
-          pull_due_tasks().each do |task|
-            begin
-              task.execute
-            rescue => e
-              handle_error(e)
-            end
-          end
+          step
           sleep Interval
         end
       end
     end
 
+    def step
+      pull_due_tasks().each do |task|
+        begin
+          task.execute
+        rescue => e
+          handle_error(e)
+        end
+      end
+    end
   end
 end
