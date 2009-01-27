@@ -1,14 +1,12 @@
 require 'erb'
 
-module Termtter::Client
-  add_command /^(update|u)\s+(.*)/ do |m, t|
-    text = ERB.new(m[2]).result(binding).gsub(/\n/, ' ')
-    unless text.empty?
-      t.update_status(text)
-      puts "=> #{text}"
-    end
-  end
-end
+Termtter::Client.register_hook(
+  :name => :erb,
+  :points => [:pre_exec_update],
+  :exec_proc => proc {|cmd, arg|
+    ERB.new(arg).result(binding)
+  }
+)
 
 # erb.rb
 #   enable to <%= %> in the command update
