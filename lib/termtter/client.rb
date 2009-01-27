@@ -34,7 +34,7 @@ module Termtter
       # Deprecated
       # FIXME: delete when become unnecessary
       def add_command(regex, &block)
-        warn 'Termtter:Client.add_command method will be removed. Use Termtter::Client.register_command() instead.'
+        warn "Termtter:Client.add_command method will be removed. Use Termtter::Client.register_command() instead. (#{caller.first})"
         @@commands[regex] = block
       end
 
