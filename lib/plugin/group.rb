@@ -24,7 +24,7 @@ module Termtter::Client
    :name => :group,
    :aliases => [:g],
    :exec_proc => proc {|arg|
-     if arg
+     unless arg.empty?
        group_name = arg.to_sym
        group = configatron.plugins.group.groups[group_name]
        statuses = group ? public_storage[:log].select { |s|
