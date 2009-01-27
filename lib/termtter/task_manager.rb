@@ -11,7 +11,6 @@ module Termtter
       @pause = false
     end
 
-    # TODO: to thread safe
     def add_task(args = {}, &block)
       @mutex_for_tasks_access.synchronize do
         @tasks << Task.new(args, &block)
@@ -59,7 +58,6 @@ module Termtter
 
     private
 
-    # TODO: to thread safe
     def pull_due_tasks()
       @mutex_for_tasks_access.synchronize do
         time_now = Time.now
