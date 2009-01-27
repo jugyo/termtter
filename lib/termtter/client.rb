@@ -271,13 +271,13 @@ module Termtter
       end
 
       def run
+        puts 'initializing...'
+        initialized = false
+
         load_default_plugins()
         load_config()
         setup_readline()
         setup_api()
-
-        puts 'initializing...'
-        initialized = false
 
         call_hooks([], :initialize)
         call_new_hooks(:initialize)
