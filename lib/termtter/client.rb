@@ -287,7 +287,7 @@ module Termtter
         call_hooks([], :initialize)
         call_new_hooks(:initialize)
 
-        add_task(:interval => configatron.update_interval) do
+        add_task(:name => :update_timeline, :interval => configatron.update_interval) do
           begin
             statuses = Termtter::API.twitter.get_friends_timeline(@@since_id)
             unless statuses.empty?
