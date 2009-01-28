@@ -133,6 +133,17 @@ module Termtter::Client
     :help => ['exit,e', 'Exit']
   )
 
+  register_hook(
+    :name => :default_error_handler,
+    :points => [:on_error],
+    :exec_proc => proc {|e|
+      puts "Error: #{e}"
+      if configatron.debug == true
+        puts e.backtrace.join("\n")
+      end
+    }
+  )
+
   add_command /^(help|h)\s*$/ do |m, t|
     # TODO: migrate to use Termtter::Command#help
     helps = [
