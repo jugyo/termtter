@@ -13,20 +13,11 @@ def out_put_status(status, color)
 end
 
 module Termtter::Client
-  Thread.new do
-    loop do
-      begin
-        status = public_storage[:system_status] ||
-                    configatron.plugins.system_status.default_status_proc.call
-        color = public_storage[:system_status_color] ||
-                        configatron.plugins.system_status.default_color
-      rescue => e
-        status = e.message
-        color = :on_red
-      end
-      out_put_status(status, color)
-      sleep configatron.plugins.system_status.interval
-    end
+  add_task(:name => :system_status, :interval => configatron.plugins.system_status.interval) do
+    status = (@@task_manager.get_task(:update_timeline).exec_at - Time.now).to_i.to_s
+    color = public_storage[:system_status_color] ||
+                    configatron.plugins.system_status.default_color
+    out_put_status(status, color)
   end
 end
 
@@ -38,4 +29,3 @@ end
 #   configatron.plugins.system_status.interval = 1
 #   configatron.plugins.system_status.default_color = :on_blue
 #   configatron.plugins.system_status.format = '<%= status %>'
-
