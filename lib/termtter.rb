@@ -131,11 +131,6 @@ if win?
   end
 end
 
-def handle_error(e)
-  puts "Error: #{e}"
-  puts e.backtrace.join("\n")
-end
-
 def plugin(s, init = {})
   unless init.empty?
     init.each do |key, value|
@@ -144,13 +139,13 @@ def plugin(s, init = {})
   end
   require "plugin/#{s}"
 rescue => e
-  handle_error(e)
+  Termtter::Client.handle_error(e)
 end
 
 def filter(s)
   load "filter/#{s}.rb"
 rescue => e
-  handle_error(e)
+  Termtter::Client.handle_error(e)
 else
   Termtter::Client.public_storage[:filters] ||= []
   Termtter::Client.public_storage[:filters] << s
