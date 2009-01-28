@@ -4,7 +4,7 @@ module Termtter
     INTERVAL = 1
 
     def initialize()
-      @tasks = []
+      @tasks = {}
       @work = true
       @mutex = Mutex.new
       @pause = false
@@ -55,7 +55,20 @@ module Termtter
 
     def add_task(args = {}, &block)
       @mutex.synchronize do
-        @tasks << Task.new(args, &block)
+        task = Task.new(args, &block)
+        @tasks[task.name || task.object_id] = task
+      end
+    end
+
+    def get_task(key)
+      @mutex.synchronize do
+        @tasks[key]
+      end
+    end
+
+    def delete_task(key)
+      @mutex.synchronize do
+        @tasks.delete(key)
       end
     end
 
@@ -64,7 +77,7 @@ module Termtter
     def pull_due_tasks()
       time_now = Time.now
       due_tasks = []
-      @tasks.delete_if do |task|
+      @tasks.delete_if do |key, task|
         if task.exec_at <= time_now
           due_tasks << task
           if task.interval

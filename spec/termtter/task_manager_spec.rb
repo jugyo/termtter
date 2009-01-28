@@ -65,5 +65,12 @@ module Termtter
       called_count.should == 2
       @task_manager.instance_eval('@tasks').size.should == 1
     end
+
+    it 'should add task with :name' do
+      @task_manager.add_task(:name => 'foo')
+      @task_manager.get_task('foo').name.should == 'foo'
+      @task_manager.delete_task('foo')
+      @task_manager.get_task('foo').should == nil
+    end
   end
 end
