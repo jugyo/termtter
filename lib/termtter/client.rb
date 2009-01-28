@@ -239,12 +239,6 @@ module Termtter
       end
 
       def setup_readline
-        begin
-          stty_save = `stty -g`.chomp
-          trap("INT") { system "stty", stty_save; exit }
-        rescue Errno::ENOENT
-        end
-
         Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
         Readline.completion_proc = proc {|input|
           begin
@@ -304,6 +298,12 @@ module Termtter
         @@task_manager.run
 
         until initialized; end
+
+        begin
+          stty_save = `stty -g`.chomp
+          trap("INT") { system "stty", stty_save; exit }
+        rescue Errno::ENOENT
+        end
 
         @@main_thread = Thread.new do
           loop do
