@@ -264,6 +264,14 @@ module Termtter
         Termtter::API.setup()
       end
 
+      def trap_setting()
+        begin
+          stty_save = `stty -g`.chomp
+          trap("INT") { system "stty", stty_save; exit }
+        rescue Errno::ENOENT
+        end
+      end
+
       def run
         puts 'initializing...'
         initialized = false
@@ -299,11 +307,7 @@ module Termtter
 
         until initialized; end
 
-        begin
-          stty_save = `stty -g`.chomp
-          trap("INT") { system "stty", stty_save; exit }
-        rescue Errno::ENOENT
-        end
+        trap_setting()
 
         @@main_thread = Thread.new do
           loop do
