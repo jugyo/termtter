@@ -277,12 +277,12 @@ module Termtter
 
       def run
         puts 'initializing...'
+        initialized = false
 
         load_default_plugins()
         load_config()
-        setup_api()
         setup_readline()
-        trap_setting()
+        setup_api()
 
         call_hooks([], :initialize)
         call_new_hooks(:initialize)
@@ -302,19 +302,23 @@ module Termtter
               puts 'plese check your account settings'
               exit!
             end
+          ensure
+            initialized = true
           end
         end
         @@task_manager.run
 
-        @@task_manager.invoke_later do
-          @@main_thread = Thread.new do
-            loop do
-              @@input_thread = create_input_thread()
-              @@input_thread.join
-            end
+        until initialized; end
+
+        trap_setting()
+
+        @@main_thread = Thread.new do
+          loop do
+            @@input_thread = create_input_thread()
+            @@input_thread.join
           end
-          @@main_thread.join
         end
+        @@main_thread.join
       end
 
       def create_input_thread()
