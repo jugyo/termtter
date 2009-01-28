@@ -61,15 +61,11 @@ module Termtter
     end
 
     def get_task(key)
-      @mutex.synchronize do
-        @tasks[key]
-      end
+      @tasks[key]
     end
 
     def delete_task(key)
-      @mutex.synchronize do
-        @tasks.delete(key)
-      end
+      @tasks.delete(key)
     end
 
     private
