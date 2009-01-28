@@ -160,10 +160,11 @@ module Termtter
             input_command, arg = *command_info
 
             modified_arg = call_new_hooks("modify_arg_for_#{command.name.to_s}", input_command, arg) || arg || ''
-            pre_exec_hook_result = call_new_hooks("pre_exec_#{command.name.to_s}", input_command, modified_arg)
-            next if pre_exec_hook_result == false
 
             @@task_manager.invoke_later do
+              pre_exec_hook_result = call_new_hooks("pre_exec_#{command.name.to_s}", input_command, modified_arg)
+              next if pre_exec_hook_result == false
+
               # exec command
               result = command.execute(modified_arg)
               if result
