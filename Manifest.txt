@@ -66,6 +66,8 @@ lib/termtter/command.rb
 lib/termtter/connection.rb
 lib/termtter/hook.rb
 lib/termtter/status.rb
+lib/termtter/task.rb
+lib/termtter/task_manager.rb
 lib/termtter/twitter.rb
 lib/termtter/user.rb
 lib/termtter/wassr.rb
