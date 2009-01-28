@@ -126,6 +126,12 @@ module Termtter
           result = hook.exec_proc.call(*args)
         }
         return result
+      rescue => e
+        if point.to_sym == :on_error
+          raise
+        else
+          handle_error(e)
+        end
       end
 
       # TODO: delete argument "tw" when unnecessary
@@ -135,42 +141,39 @@ module Termtter
       end
 
       def call_commands(text, tw = nil)
-        @@task_manager.invoke_later do
-          return if text.empty?
+        return if text.empty?
 
-          command_found = false
-          @@commands.each do |key, command|
-            if key =~ text
-              command_found = true
-              begin
-                command.call($~, Termtter::API.twitter)
-              rescue => e
-                handle_error(e)
-              end
+        command_found = false
+        @@commands.each do |key, command|
+          if key =~ text
+            command_found = true
+            @@task_manager.invoke_later do
+              command.call($~, Termtter::API.twitter)
             end
           end
-
-          @@new_commands.each do |key, command|
-            command_info = command.match?(text)
-            if command_info
-              command_found = true
-              input_command, arg = *command_info
-
-              modified_arg = call_new_hooks("modify_arg_for_#{command.name.to_s}", input_command, arg) || arg || ''
-              pre_exec_hook_result = call_new_hooks("pre_exec_#{command.name.to_s}", input_command, modified_arg)
-
-              unless pre_exec_hook_result == false
-                # exec command
-                result = command.execute(modified_arg)
-                if result
-                  call_new_hooks("post_exec_#{command.name.to_s}", input_command, modified_arg, result)
-                end
-              end
-            end
-          end
-
-          raise CommandNotFound unless command_found
         end
+
+        @@new_commands.each do |key, command|
+          command_info = command.match?(text)
+          if command_info
+            command_found = true
+            input_command, arg = *command_info
+
+            modified_arg = call_new_hooks("modify_arg_for_#{command.name.to_s}", input_command, arg) || arg || ''
+            pre_exec_hook_result = call_new_hooks("pre_exec_#{command.name.to_s}", input_command, modified_arg)
+            next if pre_exec_hook_result == false
+
+            @@task_manager.invoke_later do
+              # exec command
+              result = command.execute(modified_arg)
+              if result
+                call_new_hooks("post_exec_#{command.name.to_s}", input_command, modified_arg, result)
+              end
+            end
+          end
+        end
+
+        raise CommandNotFound unless command_found
       end
 
       def pause
@@ -331,6 +334,13 @@ module Termtter
           end
           exit # exit when press Control-D
         end
+      end
+
+      def handle_error(e)
+        call_new_hooks("on_error", e)
+      rescue => e
+        puts "Error: #{e}"
+        puts e.backtrace.join("\n")
       end
 
       def wrap_require
