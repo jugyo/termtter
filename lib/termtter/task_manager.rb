@@ -1,37 +1,13 @@
 module Termtter
   class TaskManager
 
-    Interval = 1
+    INTERVAL = 1
 
     def initialize()
       @tasks = []
       @work = true
-      @mutex_for_tasks_access = Mutex.new
-      @mutex_for_run_task = Mutex.new
+      @mutex = Mutex.new
       @pause = false
-    end
-
-    def add_task(args = {}, &block)
-      @mutex_for_tasks_access.synchronize do
-        @tasks << Task.new(args, &block)
-      end
-    end
-
-    def invoke_later
-      @mutex_for_run_task.synchronize do
-        yield
-      end
-    end
-
-    def run
-      Thread.new do
-        while @work
-          invoke_later do
-            step unless @pause
-          end
-          sleep Interval
-        end
-      end
     end
 
     def pause
@@ -42,47 +18,66 @@ module Termtter
       @pause = false
     end
 
-    def step
-      pull_due_tasks().each do |task|
-        begin
-          task.execute
-        rescue => e
-          handle_error(e)
+    def kill
+      @work = false
+    end
+
+    def run
+      Thread.new do
+        while @work
+          step unless @pause
+          sleep INTERVAL
         end
       end
     end
 
-    def kill
-      @work = false
+    def step
+      @mutex.synchronize do
+        pull_due_tasks().each do |task|
+          begin
+            task.execute
+          rescue => e
+            Termtter::Client.handle_error(e)
+          end
+        end
+      end
+    end
+
+    def invoke_later
+      @mutex.synchronize do
+        begin
+          yield
+        rescue => e
+          Termtter::Client.handle_error(e)
+        end
+      end
+    end
+
+    def add_task(args = {}, &block)
+      @mutex.synchronize do
+        @tasks << Task.new(args, &block)
+      end
     end
 
     private
 
     def pull_due_tasks()
-      @mutex_for_tasks_access.synchronize do
-        time_now = Time.now
-        due_tasks = []
-        @tasks.delete_if do |task|
-          if task.exec_at <= time_now
-            due_tasks << task
-            if task.interval
-              task.exec_at = time_now + task.interval
-              false
-            else
-              true
-            end
-          else
+      time_now = Time.now
+      due_tasks = []
+      @tasks.delete_if do |task|
+        if task.exec_at <= time_now
+          due_tasks << task
+          if task.interval
+            task.exec_at = time_now + task.interval
             false
+          else
+            true
           end
+        else
+          false
         end
-        return due_tasks
       end
-    end
-
-    def synchronize
-      @mutex.synchronize {
-        yield
-      }
+      return due_tasks
     end
 
   end
