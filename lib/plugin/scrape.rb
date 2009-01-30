@@ -1,12 +1,17 @@
 module Termtter::Client
-  def self.scrape_group(group)
-    members = configatron.plugins.group.groups[group] || []
+
+  def self.scrape_members(members)
     statuses = []
     members.each_with_index do |member, index|
       puts "member #{index+1}/#{members.size} #{member}"
       statuses += Termtter::API.twitter.get_user_timeline(member)
     end
     statuses
+  end    
+  
+  def self.scrape_group(group)
+    members = configatron.plugins.group.groups[group] || []
+    scrape_members(members)
   end
 
   register_command(
@@ -17,11 +22,11 @@ module Termtter::Client
                        groups = configatron.plugins.group.groups.keys
                        puts "get all groups..."
                      end
-                     statuses = []
-                     groups.each_with_index do |group, index|
-                       puts "group #{index+1}/#{groups.size} #{group}"
-                       statuses += scrape_group(group)
+                     members = []
+                     groups.each do |group|
+                       members += configatron.plugins.group.groups[group]
                      end
+                     statuses = scrape_members(members.uniq.compact.sort)
                      call_hooks(statuses, :pre_filter)
                    },
                    :completion_proc => proc {|cmd, args|
