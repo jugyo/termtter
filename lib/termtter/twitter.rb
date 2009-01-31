@@ -1,4 +1,5 @@
 require 'highline'
+require 'time'
 
 module Termtter
   class Twitter
@@ -59,7 +60,7 @@ module Termtter
         status = Status.new
         status.id = s['id']
         status.text = CGI.unescapeHTML(s['text']).gsub(/(\n|\r)/, '').gsub(/#{Regexp.escape(query)}/i, color(color('\0', 41), 37))
-        status.created_at = Time.utc(*ParseDate::parsedate(s["created_at"])).localtime
+        status.created_at = Time.parse(s["created_at"])
         status.user_screen_name = s['from_user']
         status
       end
@@ -82,7 +83,7 @@ module Termtter
       data = [data] unless data.instance_of? Array
       return data.map do |s|
         status = Status.new
-        status.created_at = Time.utc(*ParseDate::parsedate(s["created_at"])).localtime
+        status.created_at = Time.parse(s["created_at"])
         %w(id text truncated in_reply_to_status_id in_reply_to_user_id in_reply_to_screen_name).each do |key|
           status.__send__("#{key}=".to_sym, s[key])
         end

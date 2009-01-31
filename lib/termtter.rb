@@ -8,7 +8,6 @@ require 'open-uri'
 require 'cgi'
 require 'readline'
 require 'enumerator'
-require 'parsedate'
 require 'configatron'
 
 Thread.abort_on_exception = true
