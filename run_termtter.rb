@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
-$KCODE = 'u'
+$KCODE="u" unless Object.const_defined? :Encoding
 
 self_file =
   if File.ftype(__FILE__) == 'link'
