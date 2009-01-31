@@ -31,7 +31,7 @@ module Termtter
     def start(host, port, &block)
       http = @http_class.new(host, port)
       http.use_ssl = @enable_ssl
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE if http.use_ssl
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE if http.use_ssl?
       http.start(&block)
     end
   end
