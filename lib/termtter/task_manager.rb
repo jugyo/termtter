@@ -32,19 +32,15 @@ module Termtter
     end
 
     def step
-      @mutex.synchronize do
-        pull_due_tasks().each do |task|
-          begin
-            task.execute
-          rescue => e
-            Termtter::Client.handle_error(e)
-          end
+      pull_due_tasks().each do |task|
+        invoke_later do
+          task.execute
         end
       end
     end
 
     def invoke_later
-      @mutex.synchronize do
+      synchronize do
         begin
           yield
         rescue => e
@@ -54,39 +50,56 @@ module Termtter
     end
 
     def add_task(args = {}, &block)
-      @mutex.synchronize do
+      synchronize do
         task = Task.new(args, &block)
         @tasks[task.name || task.object_id] = task
       end
     end
 
     def get_task(key)
-      @tasks[key]
+      synchronize do
+        @tasks[key]
+      end
     end
 
     def delete_task(key)
-      @tasks.delete(key)
+      synchronize do
+        @tasks.delete(key)
+      end
     end
 
     private
 
-    def pull_due_tasks()
-      time_now = Time.now
-      due_tasks = []
-      @tasks.delete_if do |key, task|
-        if task.exec_at <= time_now
-          due_tasks << task
-          if task.interval
-            task.exec_at = time_now + task.interval
-            false
-          else
-            true
-          end
-        else
-          false
+    def synchronize
+      unless Thread.current == @thread_in_sync
+        @mutex.synchronize do
+          @thread_in_sync = Thread.current
+          yield
         end
+      else
+        yield
       end
-      return due_tasks
+    end
+
+    def pull_due_tasks()
+      synchronize do
+        time_now = Time.now
+        due_tasks = []
+        @tasks.delete_if do |key, task|
+          if task.exec_at <= time_now
+            due_tasks << task
+            if task.interval
+              task.exec_at = time_now + task.interval
+              false
+            else
+              true
+            end
+          else
+            false
+          end
+        end
+        return due_tasks
+      end
     end
 
   end
