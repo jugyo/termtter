@@ -8,7 +8,6 @@ module Termtter
       @work = true
       @mutex = Mutex.new
       @pause = false
-      @thread = nil
     end
 
     def pause
@@ -24,16 +23,12 @@ module Termtter
     end
 
     def run
-      @thread = Thread.new do
+      Thread.new do
         while @work
           step unless @pause
           sleep INTERVAL
         end
       end
-    end
-
-    def join
-      @thread.join if @thread
     end
 
     def step
