@@ -190,7 +190,6 @@ module Termtter
       end
 
       def exit
-        puts 'finalizing...'
         call_hooks([], :exit)
         call_new_hooks(:exit)
         @@task_manager.kill
@@ -277,10 +276,20 @@ module Termtter
         end
       end
 
-      def setup_update_timeline_task
-        register_command(
-          :name => :_update_timeline,
-          :exec_proc => proc {|arg|
+      def run
+        puts 'initializing...'
+        initialized = false
+
+        load_default_plugins()
+        load_config()
+        setup_readline()
+        setup_api()
+
+        call_hooks([], :initialize)
+        call_new_hooks(:initialize)
+
+        add_task(:name => :update_timeline, :interval => configatron.update_interval) do
+          @@task_manager.invoke_and_wait do
             begin
               statuses = Termtter::API.twitter.get_friends_timeline(@@since_id)
               unless statuses.empty?
@@ -295,47 +304,24 @@ module Termtter
                 puts 'plese check your account settings'
                 exit!
               end
-            end
-          }
-        )
-
-        add_task(:name => :update_timeline, :interval => configatron.update_interval) do
-          @@task_manager.invoke_and_wait do
-            call_commands('_update_timeline')
-          end
-        end
-      end
-
-      def setup_input_thread
-        add_task do
-          trap_setting()
-          @@main_thread = Thread.new do
-            loop do
-              @@input_thread = create_input_thread()
-              @@input_thread.join
+            ensure
+              initialized = true
             end
           end
-          @@main_thread.join
         end
-      end
-
-      def run
-        puts 'initializing...'
-
-        load_config()
-        load_default_plugins()
-        setup_api()
-
-        call_hooks([], :initialize)
-        call_new_hooks(:initialize)
-
-        setup_update_timeline_task()
-        setup_input_thread()
-
-        setup_readline()
-
         @@task_manager.run
-        @@task_manager.join
+
+        until initialized; end
+
+        trap_setting()
+
+        @@main_thread = Thread.new do
+          loop do
+            @@input_thread = create_input_thread()
+            @@input_thread.join
+          end
+        end
+        @@main_thread.join
       end
 
       def create_input_thread()
