@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-
 #!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
 
 $KCODE = 'u'
 
