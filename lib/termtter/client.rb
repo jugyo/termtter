@@ -190,6 +190,8 @@ module Termtter
       end
 
       def exit
+        puts 'finalizing...'
+
         call_hooks([], :exit)
         call_new_hooks(:exit)
         @@task_manager.kill
@@ -268,28 +270,10 @@ module Termtter
         Termtter::API.setup()
       end
 
-      def trap_setting()
-        begin
-          stty_save = `stty -g`.chomp
-          trap("INT") { system "stty", stty_save; exit }
-        rescue Errno::ENOENT
-        end
-      end
-
-      def run
-        puts 'initializing...'
-        initialized = false
-
-        load_default_plugins()
-        load_config()
-        setup_readline()
-        setup_api()
-
-        call_hooks([], :initialize)
-        call_new_hooks(:initialize)
-
-        add_task(:name => :update_timeline, :interval => configatron.update_interval) do
-          @@task_manager.invoke_and_wait do
+      def setup_update_timeline_task()
+        register_command(
+          :name => :_update_timeline,
+          :exec_proc => proc {|arg|
             begin
               statuses = Termtter::API.twitter.get_friends_timeline(@@since_id)
               unless statuses.empty?
@@ -304,24 +288,51 @@ module Termtter
                 puts 'plese check your account settings'
                 exit!
               end
-            ensure
-              initialized = true
             end
+          }
+        )
+
+        add_task(:name => :update_timeline, :interval => configatron.update_interval) do
+          @@task_manager.invoke_and_wait do
+            call_commands('_update_timeline')
           end
         end
-        @@task_manager.run
+      end
 
-        until initialized; end
+      def trap_setting()
+        begin
+          stty_save = `stty -g`.chomp
+          trap("INT") { system "stty", stty_save; exit }
+        rescue Errno::ENOENT
+        end
+      end
 
-        trap_setting()
-
+      def start_input_thread
         @@main_thread = Thread.new do
+          trap_setting()
           loop do
             @@input_thread = create_input_thread()
             @@input_thread.join
           end
         end
         @@main_thread.join
+      end
+
+      def run
+        puts 'initializing...'
+
+        load_default_plugins()
+        load_config()
+        setup_readline()
+        setup_api()
+        setup_update_timeline_task()
+
+        call_hooks([], :initialize)
+        call_new_hooks(:initialize)
+
+        call_commands('_update_timeline')
+
+        start_input_thread()
       end
 
       def create_input_thread()
