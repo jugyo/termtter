@@ -3,8 +3,7 @@ require File.dirname(__FILE__) + '/../../lib/termtter'
 module Termtter
   describe Client, 'when the plugin plugin is loaded' do
     it 'should add command plugin and plugins' do
-      Termtter::Client.should_receive(:add_command).with(/^plugin\s+(.*)/)
-      Termtter::Client.should_receive(:add_command).with(/^plugins$/)
+      Termtter::Client.should_receive(:register_command).twice
       plugin 'plugin'
     end
 
