@@ -266,10 +266,6 @@ module Termtter
         end
       end
 
-      def setup_api()
-        Termtter::API.setup()
-      end
-
       def setup_update_timeline_task()
         register_command(
           :name => :_update_timeline,
@@ -293,23 +289,28 @@ module Termtter
         )
 
         add_task(:name => :update_timeline, :interval => configatron.update_interval) do
-          @@task_manager.invoke_and_wait do
-            call_commands('_update_timeline')
-          end
+          call_commands('_update_timeline')
         end
       end
 
       def trap_setting()
         begin
           stty_save = `stty -g`.chomp
-          trap("INT") { system "stty", stty_save; exit }
+          trap("INT") do
+            begin
+              system "stty", stty_save
+            ensure
+              exit
+            end
+          end
         rescue Errno::ENOENT
         end
       end
 
       def start_input_thread
+        setup_readline()
+        trap_setting()
         @@main_thread = Thread.new do
-          trap_setting()
           loop do
             @@input_thread = create_input_thread()
             @@input_thread.join
@@ -323,15 +324,15 @@ module Termtter
 
         load_default_plugins()
         load_config()
-        setup_readline()
-        setup_api()
-        setup_update_timeline_task()
+        Termtter::API.setup()
 
         call_hooks([], :initialize)
         call_new_hooks(:initialize)
 
+        setup_update_timeline_task()
         call_commands('_update_timeline')
 
+        @@task_manager.run()
         start_input_thread()
       end
 
