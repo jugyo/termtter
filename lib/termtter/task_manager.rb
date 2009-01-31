@@ -33,13 +33,13 @@ module Termtter
 
     def step
       pull_due_tasks().each do |task|
-        invoke_later do
+        invoke_and_wait do
           task.execute
         end
       end
     end
 
-    def invoke_later
+    def invoke_and_wait
       synchronize do
         begin
           yield

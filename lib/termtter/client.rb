@@ -147,7 +147,7 @@ module Termtter
         @@commands.each do |key, command|
           if key =~ text
             command_found = true
-            @@task_manager.invoke_later do
+            @@task_manager.invoke_and_wait do
               command.call($~, Termtter::API.twitter)
             end
           end
@@ -161,7 +161,7 @@ module Termtter
 
             modified_arg = call_new_hooks("modify_arg_for_#{command.name.to_s}", input_command, arg) || arg || ''
 
-            @@task_manager.invoke_later do
+            @@task_manager.invoke_and_wait do
               pre_exec_hook_result = call_new_hooks("pre_exec_#{command.name.to_s}", input_command, modified_arg)
               next if pre_exec_hook_result == false
 
@@ -289,22 +289,24 @@ module Termtter
         call_new_hooks(:initialize)
 
         add_task(:name => :update_timeline, :interval => configatron.update_interval) do
-          begin
-            statuses = Termtter::API.twitter.get_friends_timeline(@@since_id)
-            unless statuses.empty?
-              @@since_id = statuses[0].id
+          @@task_manager.invoke_and_wait do
+            begin
+              statuses = Termtter::API.twitter.get_friends_timeline(@@since_id)
+              unless statuses.empty?
+                @@since_id = statuses[0].id
+              end
+              print "\e[1K\e[0G" if !statuses.empty? && !win?
+              call_hooks(statuses, :update_friends_timeline)
+              @@input_thread.kill if @@input_thread && !statuses.empty?
+            rescue OpenURI::HTTPError => e
+              if e.message == '401 Unauthorized'
+                puts 'Could not login'
+                puts 'plese check your account settings'
+                exit!
+              end
+            ensure
+              initialized = true
             end
-            print "\e[1K\e[0G" if !statuses.empty? && !win?
-            call_hooks(statuses, :update_friends_timeline)
-            @@input_thread.kill if @@input_thread && !statuses.empty?
-          rescue OpenURI::HTTPError => e
-            if e.message == '401 Unauthorized'
-              puts 'Could not login'
-              puts 'plese check your account settings'
-              exit!
-            end
-          ensure
-            initialized = true
           end
         end
         @@task_manager.run
