@@ -31,7 +31,7 @@ require 'termtter/client'
 require 'termtter/api'
 
 module Termtter
-  VERSION = '0.7.7'
+  VERSION = '0.8.0'
   APP_NAME = 'termtter'
   CONF_FILE = '~/.termtterrc' # still does not use
   CONF_DIR = '~/.termtter' # still does not use

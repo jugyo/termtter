@@ -70,7 +70,6 @@ lib/termtter/task.rb
 lib/termtter/task_manager.rb
 lib/termtter/twitter.rb
 lib/termtter/user.rb
-lib/termtter/wassr.rb
 run_termtter.rb
 test/friends_timeline.json
 test/search.json
