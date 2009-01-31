@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 module Termtter
   class Task
     attr_accessor :name, :exec_at, :exec_proc, :interval

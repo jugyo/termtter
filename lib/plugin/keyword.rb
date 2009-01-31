@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 configatron.set_default('plugins.keyword.keywords', [])
 
 module Termtter

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 module Termtter::Client
   add_help 'multi_reply, mp TEXT', 'reply to multi user'
   add_command /^(multi_reply|mr)\s+(.*)/ do |m, t|

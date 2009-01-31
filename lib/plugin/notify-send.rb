@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 Termtter::Client.add_hook do |statuses, event|
   if !statuses.empty? && event == :update_friends_timeline
     max = 10

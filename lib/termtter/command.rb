@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 module Termtter
   class Command
     attr_accessor :name, :aliases, :exec_proc, :completion_proc, :help

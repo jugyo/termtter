@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 def primes(n)
   table = []
   (2 .. n).each do |i|

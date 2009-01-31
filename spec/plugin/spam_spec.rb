@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Termtter::Client, 'when the plugin spam is loaded' do

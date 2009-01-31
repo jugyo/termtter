@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 require 'erb'
 
 Termtter::Client.register_hook(

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 module Termtter::Client
   public_storage[:uris] = []
 

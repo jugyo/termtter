@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 module Termtter
   class CommandNotFound < StandardError; end
 

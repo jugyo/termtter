@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 def fib(n)i=0;j=1;n.times{j=i+i=j};i end
 module Termtter::Client
   add_filter do |statuses|

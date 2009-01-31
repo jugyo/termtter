@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 module Termtter::Client
 
   def self.scrape_members(members)

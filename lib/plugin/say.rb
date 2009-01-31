@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 raise 'say.rb runs only in OSX Leopard' if /darwin9/ !~ RUBY_PLATFORM
 
 # say :: String -> String -> IO ()

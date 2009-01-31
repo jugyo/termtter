@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 twitter = Termtter::Twitter.new(configatron.user_name, configatron.password)
 Thread.start do
   100.times do |i|

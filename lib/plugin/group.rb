@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 module Termtter
   class Status
     def is_member?(group = nil)

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 Termtter::Client.register_hook(
   :name => :confirm,
   :points => [:pre_exec_update],

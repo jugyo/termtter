@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 module Termtter
   class Connection
     attr_reader :protocol, :port, :proxy_uri

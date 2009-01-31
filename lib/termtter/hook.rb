@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 module Termtter
   class Hook
     attr_accessor :name, :points, :exec_proc

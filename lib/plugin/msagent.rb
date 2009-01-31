@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 raise 'msagent.rb runs only in windows' if RUBY_PLATFORM.downcase !~ /mswin(?!ce)|mingw|bccwin/
 require 'win32ole'
 require 'kconv'

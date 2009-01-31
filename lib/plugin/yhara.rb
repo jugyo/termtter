@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 if RUBY_VERSION < "1.8.7"
   class Array
     def choice

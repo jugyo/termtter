@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 module Termtter::Client
 
   public_storage[:plugins] = Dir["#{File.dirname(__FILE__)}/*.rb"].map do |f|

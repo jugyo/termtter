@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 require 'erb'
 
 configatron.plugins.system_status.set_default(:default_status_proc, proc { Time.now.strftime("%x %X") })

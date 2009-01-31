@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 module Termtter::Client
   public_storage[:log] = []
   configatron.plugins.log.set_default('max_size', 1/0.0)

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 
 configatron.filters.ignore.set_default(:words, [])
 

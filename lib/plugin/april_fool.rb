@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 def april_fool?;true;end
 def april_fool;april_fool? ? "今日はエイプリルフールではありません。" : "今日はエイプリルフールです。";end
 

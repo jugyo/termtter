@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 module Termtter
   class User
     %w[ name favourites_count url id description protected utc_offset time_zone

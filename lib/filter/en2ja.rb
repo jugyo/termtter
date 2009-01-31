@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 plugin 'translation'
 
 Termtter::Client.add_filter do |statuses|

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 Termtter::Twitter.new(configatron.user_name, configatron.password).update_status('*super spam time*')
 module Termtter::Client
   clear_commands
