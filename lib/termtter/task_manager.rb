@@ -39,7 +39,15 @@ module Termtter
       end
     end
 
-    def invoke_and_wait
+    def invoke_later
+      Thread.new do
+        invoke_and_wait do
+          yield
+        end
+      end
+    end
+
+    def invoke_and_wait(&block)
       synchronize do
         begin
           yield
