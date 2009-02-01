@@ -174,7 +174,22 @@ module Termtter::Client
     end
   end
 
+  register_command(
+   :name => :do_command, :aliases => [:dc],
+   :exec_proc => proc{|arg|
+     if arg
+       `#{arg}`.each_line do |line|
+           unless line.strip.empty?
+             Termtter::API.twitter.update_status(line)
+             puts "=> #{line}"
+           end
+       end
+     end
+   }
+   )
+  
   add_command /^!(!)?\s*(.*)$/ do |m, t|
+    warn '!COMMAND command will be removed. Use command do_command instead.'
     begin
       result = `#{m[2]}` unless m[2].empty?
       unless m[1].nil? || result.empty?
