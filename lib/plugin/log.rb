@@ -45,8 +45,8 @@ module Termtter::Client
   register_command(
    :name => :search_log, :aliases => [:sl],
    :exec_proc => proc{|arg|
-    if arg
-      pat = arg
+    unless arg.strip.empty?
+      pat = Regexp.new arg
       statuses = public_storage[:log].select { |s| s.text =~ pat }
       call_hooks(statuses, :search)
      end
