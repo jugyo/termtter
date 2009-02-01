@@ -29,9 +29,9 @@ require 'termtter/task'
 require 'termtter/task_manager'
 require 'termtter/client'
 require 'termtter/api'
+require 'termtter/version'
 
 module Termtter
-  VERSION = '0.8.0'
   APP_NAME = 'termtter'
   CONF_FILE = '~/.termtterrc' # still does not use
   CONF_DIR = '~/.termtter' # still does not use
