@@ -10,7 +10,7 @@ $hoe = Hoe.new('termtter', Termtter::VERSION) do |p|
   p.post_install_message = 'PostInstall.txt' # TODO remove if post-install message not required
   p.rubyforge_name       = p.name # TODO this is default value
   p.extra_deps         = [
-    ['json'],
+    ['json_pure'],
     ['configatron'],
     ['highline'],
   ]
