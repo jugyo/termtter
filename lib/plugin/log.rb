@@ -42,12 +42,20 @@ module Termtter::Client
    :help => [ 'log (USER(S)) (MAX)', 'Show local log of the user(s)']
    )
 
-  # These are old code we must fix.
-  
-  add_help 'log', 'Show local log'
+  register_command(
+   :name => :search_log, :aliases => [:sl],
+   :exec_proc => proc{|arg|
+    if arg
+      pat = arg
+      statuses = public_storage[:log].select { |s| s.text =~ pat }
+      call_hooks(statuses, :search)
+     end
+   },
+   :help => [ 'search_log WORD', 'Search log for WORD' ]
+   )
 
-  add_help '/WORD', 'Search log for WORD'
   add_command %r'^/(.+)' do |m, t|
+    warn '/WORD command will be removed. Use search_log command instead.'
     pat = Regexp.new(m[1])
     statuses = public_storage[:log].select { |s| s.text =~ pat }
     call_hooks(statuses, :search, t)
