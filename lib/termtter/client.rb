@@ -213,8 +213,7 @@ module Termtter
             load conf_file
           end
         else
-          HighLine.track_eof = false
-          ui = HighLine.new
+          ui = create_highline
           username = ui.ask('your twitter username: ')
           password = ui.ask('your twitter password: ') { |q| q.echo = false }
 
@@ -351,6 +350,20 @@ module Termtter
           end
           exit # exit when press Control-D
         end
+      end
+
+      def create_highline
+        HighLine.track_eof = false
+        if $stdin.respond_to?(:getbyte) # for ruby1.9
+          require 'delegate'
+          stdin_for_highline = SimpleDelegator.new($stdin)
+          def stdin_for_highline.getc
+            getbyte
+          end
+        else
+          stdin_for_highline = $stdin
+        end
+        return HighLine.new(stdin_for_highline)
       end
 
       def handle_error(e)

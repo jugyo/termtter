@@ -115,16 +115,14 @@ module Termtter
 
     def user_name
       unless @user_name.instance_of? String
-        HighLine.track_eof = false
-        @user_name = HighLine.new.ask('your twitter username: ')
+        Termtter::Client.create_highline.ask('your twitter username: ')
       end
       @user_name
     end
 
     def password
       unless @password.instance_of? String
-        HighLine.track_eof = false
-        @password = HighLine.new.ask('your twitter password: ') { |q| q.echo = false }
+        @password = Termtter::Client.create_highline.ask('your twitter password: ') { |q| q.echo = false }
       end
       @password
     end
