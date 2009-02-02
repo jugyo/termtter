@@ -78,7 +78,7 @@ module Termtter::Client
 
   register_command(
     :name => :replies, :aliases => [:r],
-    :exec_proc => lambda {
+    :exec_proc => lambda {|arg|
       call_hooks(Termtter::API.twitter.replies(), :replies)
     }
   )
