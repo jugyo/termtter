@@ -25,7 +25,7 @@ module Termtter::Client
   register_command(
    :name => :group,
    :aliases => [:g],
-   :exec_proc => proc {|arg|
+   :exec_proc => lambda {|arg|
      unless arg.empty?
        group_name = arg.to_sym
        group = configatron.plugins.group.groups[group_name]
@@ -39,7 +39,7 @@ module Termtter::Client
        end
      end
    },
-   :completion_proc => proc {|cmd, arg|
+   :completion_proc => lambda {|cmd, arg|
      find_group_candidates arg, "#{cmd} %s"
                    },
    :help => ['group,g GROUPNAME', 'Filter by group members']

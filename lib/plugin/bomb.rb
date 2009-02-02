@@ -10,7 +10,7 @@ module Termtter
   module Client
     register_command(
       :name => :bomb, :aliases => [],
-      :exec_proc => proc {|arg|
+      :exec_proc => lambda {|arg|
         text = "#{arg.strip} 爆発しろ!"
         Termtter::API::twitter.update_status(text)
         puts "=> #{text}"

@@ -6,7 +6,7 @@ require 'net/http'
 Termtter::Client.register_hook(
   :name => :wassr_post,
   :points => [:modify_arg_for_update],
-  :exec_proc => proc {|cmd, arg|
+  :exec_proc => lambda {|cmd, arg|
     begin
       Net::HTTP.version_1_2
       req = Net::HTTP::Post.new("/statuses/update.json?")

@@ -2,7 +2,7 @@
 
 require 'erb'
 
-configatron.plugins.system_status.set_default(:default_status_proc, proc { Time.now.strftime("%x %X") })
+configatron.plugins.system_status.set_default(:default_status_proc, lambda { Time.now.strftime("%x %X") })
 configatron.plugins.system_status.set_default(:interval, 1)
 configatron.plugins.system_status.set_default(:default_color, :on_blue)
 configatron.plugins.system_status.set_default(:format, '<%= status %>')
@@ -27,7 +27,7 @@ end
 #   show system status on left side.
 #   output public_storage[:system_status] or Time.now.strftime("%x %X") if nil
 # example config
-#   configatron.plugins.system_status.default_status_proc = proc { Time.now.strftime("%x %X") }
+#   configatron.plugins.system_status.default_status_proc = lambda { Time.now.strftime("%x %X") }
 #   configatron.plugins.system_status.interval = 1
 #   configatron.plugins.system_status.default_color = :on_blue
 #   configatron.plugins.system_status.format = '<%= status %>'

@@ -8,7 +8,7 @@ module Termtter::Client
 
   register_command(
     :name      => :plugin, :aliases => [],
-    :exec_proc => proc {|arg|
+    :exec_proc => lambda {|arg|
       begin
         result = plugin arg.strip
       rescue LoadError
@@ -16,7 +16,7 @@ module Termtter::Client
         puts "=> #{result.inspect}"
       end
     },
-    :completion_proc => proc {|cmd, args|
+    :completion_proc => lambda {|cmd, args|
       find_user_candidates args, "#{cmd} %s"
       unless args.empty?
         find_plugin_candidates args, "#{cmd} %s"
@@ -29,7 +29,7 @@ module Termtter::Client
 
   register_command(
     :name      => :plugins, :aliases => [],
-    :exec_proc => proc {|arg|
+    :exec_proc => lambda {|arg|
       puts public_storage[:plugins].sort.join("\n")
     },
     :help      => ['plugins', 'Show list of plugins']

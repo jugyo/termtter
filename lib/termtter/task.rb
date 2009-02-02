@@ -7,7 +7,7 @@ module Termtter
       @name = args[:name]
       @exec_at = Time.now + (args[:after] || 0)
       @interval = args[:interval]
-      @exec_proc = block || proc {}
+      @exec_proc = block || lambda {}
     end
     def execute
       exec_proc.call

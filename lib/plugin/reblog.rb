@@ -6,7 +6,7 @@ require 'tumblr'
 module Termtter::Client
   register_command(
     :name => :reblog, :aliases => [],
-    :exec_proc => proc {|arg|
+    :exec_proc => lambda {|arg|
       if arg =~ /^reblog\s+(\d+)(.*)$/
         id = $1.strip
         comment = $2.strip
@@ -22,7 +22,7 @@ module Termtter::Client
         end
       end
     },
-    :completion_proc => proc {|cmd, args|
+    :completion_proc => lambda {|cmd, args|
       if args =~ /^(\d*)$/
         find_status_id_candidates $1, "#{cmd} %s"
       end

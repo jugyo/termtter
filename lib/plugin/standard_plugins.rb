@@ -8,12 +8,12 @@ module Termtter::Client
 
   register_command(
     :name => :update, :aliases => [:u],
-    :exec_proc => proc {|arg|
+    :exec_proc => lambda {|arg|
       text = ERB.new(arg).result(binding).gsub(/\n/, ' ')
       Termtter::API.twitter.update_status(text)
       puts "=> #{text}"
     },
-    :completion_proc => proc {|cmd, args|
+    :completion_proc => lambda {|cmd, args|
       if /(.*)@([^\s]*)$/ =~ args
         find_user_candidates $2, "#{cmd} #{$1}@%s"
       end
@@ -22,14 +22,14 @@ module Termtter::Client
 
   register_command(
     :name => :direct, :aliases => [:d],
-    :exec_proc => proc {|arg|
+    :exec_proc => lambda {|arg|
       if arg =~ /^([^\s]+)\s+(.*)\s*$/
         user, text = $1, $2
         Termtter::API.twitter.direct_message(user, text)
         puts "=> to:#{user} message:#{text}"
       end
     },
-    :completion_proc => proc {|cmd, args|
+    :completion_proc => lambda {|cmd, args|
       if args =~ /^([^\s]+)$/
         find_user_candidates $1, "#{cmd} %s"
       end
@@ -38,7 +38,7 @@ module Termtter::Client
 
   register_command(
     :name => :profile, :aliases => [:p],
-    :exec_proc => proc {|arg|
+    :exec_proc => lambda {|arg|
       user = Termtter::API.twitter.get_user_profile(arg)
       attrs = %w[ name screen_name url description profile_image_url location protected following
           friends_count followers_count statuses_count favourites_count
@@ -50,42 +50,42 @@ module Termtter::Client
         puts "#{attr.gsub('_', ' ').rjust(label_width)}: #{value}"
       end
     },
-    :completion_proc => proc {|cmd, arg|
+    :completion_proc => lambda {|cmd, arg|
       find_user_candidates arg, "#{cmd} %s"
     }
   )
 
   register_command(
     :name => :list, :aliases => [:l],
-    :exec_proc => proc {|arg|
+    :exec_proc => lambda {|arg|
       unless arg.empty?
         call_hooks(Termtter::API.twitter.get_user_timeline(arg), :list_user_timeline)
       else
         call_hooks(Termtter::API.twitter.get_friends_timeline(), :list_friends_timeline)
       end
     },
-    :completion_proc => proc {|cmd, arg|
+    :completion_proc => lambda {|cmd, arg|
       find_user_candidates arg, "#{cmd} %s"
     }
   )
 
   register_command(
     :name => :search, :aliases => [:s],
-    :exec_proc => proc {|arg|
+    :exec_proc => lambda {|arg|
       call_hooks(Termtter::API.twitter.search(arg), :search)
     }
   )
 
   register_command(
     :name => :replies, :aliases => [:r],
-    :exec_proc => proc {
+    :exec_proc => lambda {
       call_hooks(Termtter::API.twitter.replies(), :replies)
     }
   )
 
   register_command(
     :name => :show,
-    :exec_proc => proc {|arg|
+    :exec_proc => lambda {|arg|
       id = arg.gsub(/.*:/, '')
       call_hooks(Termtter::API.twitter.show(id), :show)
     }
@@ -93,7 +93,7 @@ module Termtter::Client
 
   register_command(
     :name => :shows,
-    :exec_proc => proc {|arg|
+    :exec_proc => lambda {|arg|
       id = arg.gsub(/.*:/, '')
       call_hooks(Termtter::API.twitter.show(id, true), :show)
     }
@@ -103,7 +103,7 @@ module Termtter::Client
   # TODO: Simmulate remaining_hits.
   register_command(
     :name => :limit, :aliases => [:lm],
-    :exec_proc => proc {|arg|
+    :exec_proc => lambda {|arg|
       limit = Termtter::API.twitter.get_rate_limit_status
       remaining_time = "%dmin %dsec" % (limit.reset_time - Time.now).divmod(60)
       remaining_color =
@@ -119,26 +119,26 @@ module Termtter::Client
 
   register_command( 
     :name => :pause,
-    :exec_proc => proc {|arg| pause},
+    :exec_proc => lambda {|arg| pause},
     :help => ["pause", "Pause updating"]
   )
 
   register_command(
     :name => :resume,
-    :exec_proc => proc {|arg| resume},
+    :exec_proc => lambda {|arg| resume},
     :help => ["resume", "Resume updating"]
   )
 
   register_command(
     :name => :exit, :aliases => [:e],
-    :exec_proc => proc {|arg| exit},
+    :exec_proc => lambda {|arg| exit},
     :help => ['exit,e', 'Exit']
   )
 
   register_hook(
     :name => :default_error_handler,
     :points => [:on_error],
-    :exec_proc => proc {|e|
+    :exec_proc => lambda {|e|
       puts "Error: #{e}"
       if configatron.debug == true
         puts e.backtrace.join("\n")
@@ -187,7 +187,7 @@ module Termtter::Client
      end
    }
    )
-  
+
   add_command /^!(!)?\s*(.*)$/ do |m, t|
     warn '!COMMAND command will be removed. Use command do_command instead.'
     begin

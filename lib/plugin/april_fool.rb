@@ -5,7 +5,7 @@ def april_fool;april_fool? ? "今日はエイプリルフールではありま�
 
 Termtter::Client.register_command(
   :name => :april_fool, :aliases => [:af],
-  :exec_proc => proc {|arg|
+  :exec_proc => lambda {|arg|
     if arg =~ /^\?you\s(\w+)/
       puts "=> #{Termtter::Client.update_status("@#{$1} #{april_fool}")}"
     else

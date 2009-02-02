@@ -31,7 +31,7 @@ module Termtter::Client
                      statuses = scrape_members(members.uniq.compact.sort)
                      call_hooks(statuses, :pre_filter)
                    },
-                   :completion_proc => proc {|cmd, args|
+                   :completion_proc => lambda {|cmd, args|
                      arg = args.split(' ').last
                      prefix = args.split(' ')[0..-2].join(' ')
                      find_group_candidates arg, "#{cmd} #{prefix} %s"

@@ -3,7 +3,7 @@
 module Termtter::Client
   register_command :name => :shell, :aliases => [:sh],
     :help => ['shell,sh', 'Start your shell'],
-    :exec_proc => proc {|args|
+    :exec_proc => lambda {|args|
       begin
         pause
         system ENV['SHELL'] || ENV['COMSPEC']

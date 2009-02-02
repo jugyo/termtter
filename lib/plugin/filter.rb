@@ -9,7 +9,7 @@ module Termtter::Client
 
   register_command(
     :name => :filter, :aliases => [],
-    :exec_proc => proc {|arg|
+    :exec_proc => lambda {|arg|
       begin
         result = filter arg.strip
       rescue LoadError
@@ -18,7 +18,7 @@ module Termtter::Client
         puts "=> #{result.inspect}"
       end
     },
-    :completion_proc => proc {|cmd, args|
+    :completion_proc => lambda {|cmd, args|
       find_filter_candidates args, "#{cmd} %s", filters
     },
     :help => ['filter FILE', 'Apply a filter']
@@ -26,7 +26,7 @@ module Termtter::Client
 
   register_command(
     :name => :unfilter, :aliases => [],
-    :exec_proc => proc {|arg|
+    :exec_proc => lambda {|arg|
       clear_filters
       public_storage[:filters].clear
       puts '=> filter cleared'
@@ -36,7 +36,7 @@ module Termtter::Client
 
   register_command(
     :name => :filters, :aliases => [],
-    :exec_proc => proc {|arg|
+    :exec_proc => lambda {|arg|
       unless public_storage[:filters].empty?
         puts public_storage[:filters].join(', ')
       else

@@ -36,7 +36,7 @@ module Termtter::Client
        call_hooks(statuses[-print_max..-1], :search)
      end
    },
-   :completion_proc => proc {|cmd, arg|
+   :completion_proc => lambda {|cmd, arg|
      find_user_candidates arg, "#{cmd} %s"
    },
    :help => [ 'log (USER(S)) (MAX)', 'Show local log of the user(s)']

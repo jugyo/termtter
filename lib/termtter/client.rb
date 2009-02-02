@@ -81,7 +81,7 @@ module Termtter
       def register_macro(name, macro, options = {})
         arg = {
           :name => name.to_sym,
-          :exec_proc => proc {|arg| call_commands(macro % arg)}
+          :exec_proc => lambda {|arg| call_commands(macro % arg)}
         }.merge(options)
         register_command(arg)
       end
@@ -248,7 +248,7 @@ module Termtter
 
       def setup_readline
         Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
-        Readline.completion_proc = proc {|input|
+        Readline.completion_proc = lambda {|input|
           begin
             # FIXME: when migrate to Termtter::Command
             completions = @@completions.map {|completion|
@@ -271,7 +271,7 @@ module Termtter
       def setup_update_timeline_task()
         register_command(
           :name => :_update_timeline,
-          :exec_proc => proc {|arg|
+          :exec_proc => lambda {|arg|
             begin
               statuses = Termtter::API.twitter.get_friends_timeline(@@since_id)
               unless statuses.empty?

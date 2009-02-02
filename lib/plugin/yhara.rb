@@ -132,7 +132,7 @@ module Termtter::Client
                      Termtter::API.twitter.update_status(text)
                      puts "=> #{text}"
                    },
-                   :completion_proc => proc {|cmd, args|
+                   :completion_proc => lambda {|cmd, args|
                      if /(.*)@([^\s]*)$/ =~ args
                        find_user_candidates $2, "#{cmd} #{$1}@%s"
                      end

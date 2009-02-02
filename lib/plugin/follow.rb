@@ -3,7 +3,7 @@
 module Termtter::Client
   register_command(
     :name => :follow, :aliases => [],
-    :exec_proc => proc {|arg|
+    :exec_proc => lambda {|arg|
       if arg =~ /^(\w+)/
         res = Termtter::API::twitter.social($1.strip, :follow)
         if res.code == '200'
@@ -13,7 +13,7 @@ module Termtter::Client
         end
       end
     },
-    :completion_proc => proc {|cmd, args|
+    :completion_proc => lambda {|cmd, args|
       find_user_candidates args, "#{cmd} %s"
     },
 	:help => ['follow USER', 'Follow user']
@@ -21,7 +21,7 @@ module Termtter::Client
 
   register_command(
     :name => :leave, :aliases => [],
-    :exec_proc => proc {|arg|
+    :exec_proc => lambda {|arg|
       if arg =~ /^(\w+)/
         res = t.social($1.strip, :leave)
         if res.code == '200'
@@ -31,7 +31,7 @@ module Termtter::Client
         end
       end
     },
-    :completion_proc => proc {|cmd, args|
+    :completion_proc => lambda {|cmd, args|
       find_user_candidates args, "#{cmd} %s"
     },
 	:help => ['leave USER', 'Leave user']

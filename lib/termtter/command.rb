@@ -14,8 +14,8 @@ module Termtter
       raise ArgumentError, ":name is not given." unless args.has_key?(:name)
       @name = args[:name].to_sym
       @aliases = args[:aliases] ? args[:aliases].map {|i| i.to_sym } : []
-      @exec_proc = args[:exec_proc] || proc {|arg|}
-      @completion_proc = args[:completion_proc] || proc {|command, arg| [] }
+      @exec_proc = args[:exec_proc] || lambda {|arg|}
+      @completion_proc = args[:completion_proc] || lambda {|command, arg| [] }
       @help = args[:help]
     end
 

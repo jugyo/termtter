@@ -47,7 +47,7 @@ module Termtter
 
     it 'should call new_hook' do
       hook_called = false
-      Client.register_hook(:name => :test1, :points => [:point1], :exec_proc => proc {hook_called = true})
+      Client.register_hook(:name => :test1, :points => [:point1], :exec_proc => lambda {hook_called = true})
       hook_called.should == false
       Client.call_new_hooks(:point1)
       hook_called.should == true
@@ -56,7 +56,7 @@ module Termtter
     it 'should call new_hook with args' do
       arg1 = nil
       arg2 = nil
-      Client.register_hook(:name => :test1, :points => [:point1], :exec_proc => proc {|a1, a2| arg1 = a1; arg2 = a2})
+      Client.register_hook(:name => :test1, :points => [:point1], :exec_proc => lambda {|a1, a2| arg1 = a1; arg2 = a2})
       arg1.should == nil
       arg2.should == nil
       Client.call_new_hooks(:point1, 'foo', 'bar')
@@ -82,10 +82,10 @@ module Termtter
       decided_arg = nil
       Client.register_hook( :name => :test1,
                             :points => [:modify_arg_for_update],
-                            :exec_proc => proc {|cmd, arg| input_command = cmd; input_arg = arg; arg.upcase})
+                            :exec_proc => lambda {|cmd, arg| input_command = cmd; input_arg = arg; arg.upcase})
       Client.register_hook( :name => :test2,
                             :points => [:pre_exec_update],
-                            :exec_proc => proc {|cmd, arg| decided_arg = arg})
+                            :exec_proc => lambda {|cmd, arg| decided_arg = arg})
       Client.register_command(:name => :update, :aliases => [:u])
 
       input_command.should == nil
@@ -101,7 +101,7 @@ module Termtter
       hook_called = false
       Client.register_hook( :name => :test,
                             :points => [:pre_exec_update],
-                            :exec_proc => proc {|cmd, arg| hook_called = true})
+                            :exec_proc => lambda {|cmd, arg| hook_called = true})
       Client.register_command(:name => :update)
 
       hook_called.should == false
@@ -113,8 +113,8 @@ module Termtter
       command_called = false
       Client.register_hook( :name => :test,
                             :points => [:pre_exec_update],
-                            :exec_proc => proc {|cmd, arg| false})
-      Client.register_command(:name => :update, :exec_proc => proc {|cmd, arg| command_called = true})
+                            :exec_proc => lambda {|cmd, arg| false})
+      Client.register_command(:name => :update, :exec_proc => lambda {|cmd, arg| command_called = true})
 
       command_called.should == false
       Client.call_commands('update foo')
@@ -125,8 +125,8 @@ module Termtter
       command_result = nil
       Client.register_hook( :name => :test,
                             :points => [:post_exec_update],
-                            :exec_proc => proc {|cmd, arg, result| command_result = result })
-      Client.register_command(:name => :update, :exec_proc => proc {|arg| 'foo'})
+                            :exec_proc => lambda {|cmd, arg, result| command_result = result })
+      Client.register_command(:name => :update, :exec_proc => lambda {|arg| 'foo'})
 
       command_result.should == nil
       Client.call_commands('update foo')
@@ -138,7 +138,7 @@ module Termtter
       Client.register_hook(
         :name => :test,
         :points => [:exit],
-        :exec_proc => proc { hook_called = true }
+        :exec_proc => lambda { hook_called = true }
       )
 
       hook_called.should == false
@@ -149,8 +149,8 @@ module Termtter
     it 'should call plural hooks' do
       hook1_called = false
       hook2_called = false
-      Client.register_hook(:name => :hook1, :points => [:exit], :exec_proc => proc {hook1_called = true})
-      Client.register_hook(:name => :hook2, :points => [:exit], :exec_proc => proc {hook2_called = true})
+      Client.register_hook(:name => :hook1, :points => [:exit], :exec_proc => lambda {hook1_called = true})
+      Client.register_hook(:name => :hook2, :points => [:exit], :exec_proc => lambda {hook2_called = true})
 
       hook1_called.should == false
       hook2_called.should == false
@@ -162,8 +162,8 @@ module Termtter
     it 'should able to override hooks' do
       hook1_called = false
       hook2_called = false
-      Client.register_hook(:name => :hook, :points => [:exit], :exec_proc => proc {hook1_called = true})
-      Client.register_hook(:name => :hook, :points => [:exit], :exec_proc => proc {hook2_called = true})
+      Client.register_hook(:name => :hook, :points => [:exit], :exec_proc => lambda {hook1_called = true})
+      Client.register_hook(:name => :hook, :points => [:exit], :exec_proc => lambda {hook2_called = true})
 
       hook1_called.should == false
       hook2_called.should == false
