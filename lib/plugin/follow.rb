@@ -23,7 +23,7 @@ module Termtter::Client
     :name => :leave, :aliases => [],
     :exec_proc => lambda {|arg|
       if arg =~ /^(\w+)/
-        res = t.social($1.strip, :leave)
+        res = Termtter::API::twitter.social($1.strip, :leave)
         if res.code == '200'
           puts "Leaved user @#{$1}"
         else
