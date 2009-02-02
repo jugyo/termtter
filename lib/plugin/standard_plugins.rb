@@ -175,7 +175,7 @@ module Termtter::Client
   end
 
   register_command(
-   :name => :do_command, :aliases => [:dc],
+   :name => :execute,
    :exec_proc => proc{|arg|
      if arg
        `#{arg}`.each_line do |line|
@@ -185,7 +185,8 @@ module Termtter::Client
            end
        end
      end
-   }
+   },
+   :help => ['execute COMMAND', 'execute the command']
    )
 
   add_command /^!(!)?\s*(.*)$/ do |m, t|
