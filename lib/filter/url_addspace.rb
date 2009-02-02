@@ -8,3 +8,9 @@ module Termtter::Client
     statuses
   end
 end
+
+# url_addspace
+#   add space before URL without space
+# example:
+#   before: ABCDEhttp://~~~
+#   after:  ABCDE http://~~~
