@@ -69,7 +69,7 @@ module Termtter::Client
 
   register_command(
    :name => :save,
-   :exec_proc => proc{|arg|
+   :exec_proc => lambda{|arg|
      save_history
    },
    :help => ['save', 'Save hisory']

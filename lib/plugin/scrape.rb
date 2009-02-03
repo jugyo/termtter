@@ -18,7 +18,7 @@ module Termtter::Client
 
   register_command(
                    :name => :scrape_group,
-                   :exec_proc => proc{ |args|
+                   :exec_proc => lambda{ |args|
                      groups = args.split(' ').map{|g| g.to_sym}
                      if groups.include? :all
                        groups = configatron.plugins.group.groups.keys

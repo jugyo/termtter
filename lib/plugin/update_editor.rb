@@ -26,7 +26,7 @@ module Termtter::Client
 
   register_command(
                    :name => :update_editor, :aliases => [:ue],
-                   :exec_proc => proc{|arg|
+                   :exec_proc => lambda{|arg|
                      pause
                      text = input_editor
                      unless text.empty?

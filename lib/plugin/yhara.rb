@@ -127,7 +127,7 @@ end
 module Termtter::Client
   register_command(
                    :name => :yhara,
-                   :exec_proc => proc{|arg|
+                   :exec_proc => lambda{|arg|
                      text = "#{'@' if arg[0..0] != '@'}#{arg} #{Yharian::text}"
                      Termtter::API.twitter.update_status(text)
                      puts "=> #{text}"

@@ -19,7 +19,7 @@ module Termtter::Client
 
   register_command(
    :name => :log,
-   :exec_proc => proc{|arg|
+   :exec_proc => lambda{|arg|
      if arg.empty?
        # log
        statuses = public_storage[:log]
@@ -44,7 +44,7 @@ module Termtter::Client
 
   register_command(
    :name => :search_log, :aliases => [:sl],
-   :exec_proc => proc{|arg|
+   :exec_proc => lambda{|arg|
     unless arg.strip.empty?
       pat = Regexp.new arg
       statuses = public_storage[:log].select { |s| s.text =~ pat }

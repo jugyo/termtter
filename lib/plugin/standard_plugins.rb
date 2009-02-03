@@ -176,7 +176,7 @@ module Termtter::Client
 
   register_command(
    :name => :execute,
-   :exec_proc => proc{|arg|
+   :exec_proc => lambda{|arg|
      if arg
        `#{arg}`.each_line do |line|
            unless line.strip.empty?
