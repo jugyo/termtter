@@ -12,11 +12,13 @@ lib/filter/fib.rb
 lib/filter/ignore.rb
 lib/filter/reply.rb
 lib/filter/reverse.rb
+lib/filter/url_addspace.rb
 lib/filter/yhara.rb
 lib/plugin/april_fool.rb
 lib/plugin/bomb.rb
 lib/plugin/confirm.rb
 lib/plugin/cool.rb
+lib/plugin/devel.rb
 lib/plugin/english.rb
 lib/plugin/erb.rb
 lib/plugin/favorite.rb
@@ -71,6 +73,7 @@ lib/termtter/task_manager.rb
 lib/termtter/twitter.rb
 lib/termtter/user.rb
 lib/termtter/version.rb
+lib/termtter/wassr.rb
 run_termtter.rb
 test/friends_timeline.json
 test/search.json
