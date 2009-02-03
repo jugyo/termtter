@@ -28,7 +28,11 @@ module Termtter::Client
    :exec_proc => lambda {|arg|
      unless arg.empty?
        group_name = arg.to_sym
-       group = configatron.plugins.group.groups[group_name]
+       if group_name == :all
+         group = configatron.plugins.group.groups.values.flatten.uniq
+       else
+         group = configatron.plugins.group.groups[group_name]
+       end
        statuses = group ? public_storage[:log].select { |s|
          group.include?(s.user_screen_name) 
        } : []
