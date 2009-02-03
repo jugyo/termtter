@@ -204,6 +204,10 @@ module Termtter
       def load_default_plugins
         plugin 'standard_plugins'
         plugin 'stdout'
+        configatron.set_default(:devel, false)
+        if configatron.devel
+          plugin 'devel'
+        end
       end
 
       def load_config

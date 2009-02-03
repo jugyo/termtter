@@ -12,6 +12,7 @@ self_file =
 $:.unshift(File.dirname(self_file) + "/lib")
 
 require 'termtter'
+configatron.devel = true
 Termtter::Client.run
 
 # Startup scripts for development
