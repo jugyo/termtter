@@ -81,7 +81,7 @@ module Termtter
     end
 
     def get_timeline(uri)
-      data = JSON.parse(open(uri, :http_basic_authentication => [user_name, password], :proxy => @connection.proxy_uri).read)
+      data = fetch_as_json(uri)
       data = [data] unless data.instance_of? Array
       return data.map do |s|
         status = Status.new
@@ -95,6 +95,14 @@ module Termtter
         status.text = CGI.unescapeHTML(status.text).gsub(/(\n|\r)/, '')
         status
       end
+    end
+
+    def fetch_as_json(uri)
+      JSON.parse(open_uri(uri).read)
+    end
+
+    def open_uri(uri)
+      return open(uri, :http_basic_authentication => [user_name, password], :proxy => @connection.proxy_uri)
     end
 
     # note: APILimit.reset_time_in_seconds == APILimit.reset_time.to_i
