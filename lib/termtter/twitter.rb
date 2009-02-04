@@ -29,8 +29,7 @@ module Termtter
     end
 
     def get_user_profile(screen_name)
-      uri = "#{@connection.protocol}://twitter.com/users/show/#{screen_name}.json"
-      result = JSON.parse(open(uri, :http_basic_authentication => [user_name, password], :proxy => @connection.proxy_uri).read)
+      result = fetch_as_json("#{@connection.protocol}://twitter.com/users/show/#{screen_name}.json")
       user = User.new
       %w[ name favourites_count url id description protected utc_offset time_zone
           screen_name notifications statuses_count followers_count friends_count
@@ -109,9 +108,7 @@ module Termtter
     # note: APILimit.reset_time_in_seconds == APILimit.reset_time.to_i
     APILIMIT = Struct.new("APILimit", :reset_time, :reset_time_in_seconds, :remaining_hits, :hourly_limit)
     def get_rate_limit_status
-      uri = 'http://twitter.com/account/rate_limit_status.json'
-      data = JSON.parse(open(uri, :http_basic_authentication => [user_name, password], :proxy => @connection.proxy_uri).read)
-
+      data = fetch_as_json('http://twitter.com/account/rate_limit_status.json')
       reset_time = Time.parse(data['reset_time'])
       reset_time_in_seconds = data['reset_time_in_seconds'].to_i
       
