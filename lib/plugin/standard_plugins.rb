@@ -192,7 +192,7 @@ module Termtter::Client
    )
 
   add_command /^!(!)?\s*(.*)$/ do |m, t|
-    warn '!COMMAND command will be removed. Use command do_command instead.'
+    warn '!COMMAND command will be removed. Use command execute instead.'
     begin
       result = `#{m[2]}` unless m[2].empty?
       unless m[1].nil? || result.empty?
