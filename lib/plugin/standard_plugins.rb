@@ -155,24 +155,26 @@ module Termtter::Client
     }
   )
 
-  add_command /^(help|h)\s*$/ do |m, t|
-    # TODO: migrate to use Termtter::Command#help
-    helps = [
-      ["help,h", "Print this help message"],
-      ["list,l", "List the posts in your friends timeline"],
-      ["list,l USERNAME", "List the posts in the the given user's timeline"],
-      ["update,u TEXT", "Post a new message"],
-      ["direct,d @USERNAME TEXT", "Send direct message"],
-      ["profile,p USERNAME", "Show user's profile"],
-      ["replies,r", "List the most recent @replies for the authenticating user"],
-      ["search,s TEXT", "Search for Twitter"],
-      ["show ID", "Show a single status"]
-    ]
-    helps += @@helps
-    helps += @@new_commands.map {|name, command| command.help}
-    helps.compact!
-    puts formatted_help(helps)
-  end
+  register_command(
+    :name => :help, :aliases => [:h],
+    :exec_proc => lambda {|arg|
+      helps = [
+        ["help,h", "Print this help message"],
+        ["list,l", "List the posts in your friends timeline"],
+        ["list,l USERNAME", "List the posts in the the given user's timeline"],
+        ["update,u TEXT", "Post a new message"],
+        ["direct,d @USERNAME TEXT", "Send direct message"],
+        ["profile,p USERNAME", "Show user's profile"],
+        ["replies,r", "List the most recent @replies for the authenticating user"],
+        ["search,s TEXT", "Search for Twitter"],
+        ["show ID", "Show a single status"]
+      ]
+      helps += @@helps
+      helps += @@new_commands.map {|name, command| command.help}
+      helps.compact!
+      puts formatted_help(helps)
+    }
+  )
 
   register_command(
    :name => :execute,
