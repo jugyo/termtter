@@ -30,12 +30,16 @@ module Termtter
 
     def get_user_profile(screen_name)
       result = fetch_as_json("#{@connection.protocol}://twitter.com/users/show/#{screen_name}.json")
+      return hash_to_user(result)
+    end
+
+    def hash_to_user(hash)
       user = User.new
       %w[ name favourites_count url id description protected utc_offset time_zone
           screen_name notifications statuses_count followers_count friends_count
           profile_image_url location following created_at
       ].each do |attr|
-        user.__send__("#{attr}=".to_sym, result[attr])
+        user.__send__("#{attr}=".to_sym, hash[attr])
       end
       return user
     end
@@ -78,6 +82,15 @@ module Termtter
 
     def replies
       return get_timeline("#{@connection.protocol}://twitter.com/statuses/replies.json")
+    end
+
+    def followers
+      users = []
+      page = 0
+      begin
+        users += tmp = fetch_as_json("#{@connection.protocol}://twitter.com/statuses/followers.json?page=#{page+=1}")
+      end until tmp.empty?
+      return users.map{|u| hash_to_user(u)}
     end
 
     def get_timeline(uri)

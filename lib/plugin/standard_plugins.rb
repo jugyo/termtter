@@ -56,6 +56,15 @@ module Termtter::Client
   )
 
   register_command(
+    :name => :followers,
+    :exec_proc => lambda {|arg|
+      followers = Termtter::API.twitter.followers
+      Termtter::Client.public_storage[:followers] = followers
+      p followers.map{|f|f.screen_name}
+    }
+  )
+
+  register_command(
     :name => :list, :aliases => [:l],
     :exec_proc => lambda {|arg|
       unless arg.empty?
