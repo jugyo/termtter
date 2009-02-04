@@ -57,7 +57,8 @@ module Termtter
     end
 
     def search(query)
-      results = JSON.parse(open("#{@connection.protocol}://search.twitter.com/search.json?q=" + CGI.escape(query)).read, :proxy => @connection.proxy_uri)['results']
+      uri = "#{@connection.protocol}://search.twitter.com/search.json?q=" + CGI.escape(query)
+      results = fetch_as_json(uri)['results']
       return results.map do |s|
         status = Status.new
         status.id = s['id']
