@@ -4,7 +4,7 @@ module Termtter
   class Status
     def is_member?(group = nil)
       if group
-        configatron.plugins.group.groups[:group].include? self.user_screen_name
+        configatron.plugins.group.groups[group].include? self.user_screen_name
       else
         configatron.plugins.group.groups.values.flatten.include? self.user_screen_name
       end
