@@ -3,12 +3,12 @@ module Termtter
   module Client
 
     configatron.plugins.grass.set_default(:rate, 0)
-    rate = configatron.plugins.grass.rate
 
     register_command(
       :name => :w, :aliases => [:grass],
       :exec_proc => lambda {|arg|
         count = arg =~ /^[0-9]+$/ ? arg.to_i : 3
+        rate  = configatron.plugins.grass.rate
         grasses = (1..count).map { rand(rate) == 1 ? 'W' : 'w' }
         call_commands("update #{grasses}")
       },
