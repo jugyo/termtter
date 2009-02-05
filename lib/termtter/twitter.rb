@@ -6,14 +6,15 @@ require 'time'
 module Termtter
   class Twitter
 
-    def initialize(user_name, password, connection)
+    def initialize(user_name, password, connection, host = "twitter.com")
       @user_name = user_name
       @password = password
       @connection = connection
+      @host = host
     end
 
     def update_status(status)
-      @connection.start("twitter.com", @connection.port) do |http|
+      @connection.start(@host, @connection.port) do |http|
         uri = '/statuses/update.xml'
         http.request(post_request(uri), "status=#{CGI.escape(status)}&source=#{APP_NAME}")
       end
@@ -21,7 +22,7 @@ module Termtter
     end
 
     def direct_message(user, status)
-      @connection.start("twitter.com", @connection.port) do |http|
+      @connection.start(@host, @connection.port) do |http|
         uri = '/direct_messages/new.xml'
         http.request(post_request(uri), "user=#{CGI.escape(user)}&text=#{CGI.escape(status)}&source=#{APP_NAME}")
       end
@@ -29,7 +30,7 @@ module Termtter
     end
 
     def get_user_profile(screen_name)
-      result = fetch_as_json("#{@connection.protocol}://twitter.com/users/show/#{screen_name}.json")
+      result = fetch_as_json("#{@connection.protocol}://#{@host}/users/show/#{screen_name}.json")
       return hash_to_user(result)
     end
 
@@ -45,13 +46,13 @@ module Termtter
     end
 
     def get_friends_timeline(since_id = nil)
-      uri =  "#{@connection.protocol}://twitter.com/statuses/friends_timeline.json"
+      uri =  "#{@connection.protocol}://#{@host}/statuses/friends_timeline.json"
       uri << "?since_id=#{since_id}" if since_id
       return get_timeline(uri)
     end
 
     def get_user_timeline(screen_name)
-      return get_timeline("#{@connection.protocol}://twitter.com/statuses/user_timeline/#{screen_name}.json")
+      return get_timeline("#{@connection.protocol}://#{@host}/statuses/user_timeline/#{screen_name}.json")
     rescue OpenURI::HTTPError => e
       puts "No such user: #{screen_name}"
       nears = near_users(screen_name)
@@ -60,7 +61,7 @@ module Termtter
     end
 
     def search(query)
-      uri = "#{@connection.protocol}://search.twitter.com/search.json?q=" + CGI.escape(query)
+      uri = "#{@connection.protocol}://search.#{@host}/search.json?q=" + CGI.escape(query)
       results = fetch_as_json(uri)['results']
       return results.map do |s|
         status = Status.new
@@ -73,7 +74,7 @@ module Termtter
     end
 
     def show(id, rth = false)
-      get_status = lambda { get_timeline("#{@connection.protocol}://twitter.com/statuses/show/#{id}.json")[0] }
+      get_status = lambda { get_timeline("#{@connection.protocol}://#{@host}/statuses/show/#{id}.json")[0] }
       statuses = []
       statuses << status = Array(Client.public_storage[:log]).detect(get_status) {|s| s.id == id.to_i }
       statuses << show(id, true) if rth && id = status.in_reply_to_status_id
@@ -81,14 +82,14 @@ module Termtter
     end
 
     def replies
-      return get_timeline("#{@connection.protocol}://twitter.com/statuses/replies.json")
+      return get_timeline("#{@connection.protocol}://#{@host}/statuses/replies.json")
     end
 
     def followers
       users = []
       page = 0
       begin
-        users += tmp = fetch_as_json("#{@connection.protocol}://twitter.com/statuses/followers.json?page=#{page+=1}")
+        users += tmp = fetch_as_json("#{@connection.protocol}://#{@host}/statuses/followers.json?page=#{page+=1}")
       end until tmp.empty?
       return users.map{|u| hash_to_user(u)}
     end
@@ -121,7 +122,7 @@ module Termtter
     # note: APILimit.reset_time_in_seconds == APILimit.reset_time.to_i
     APILIMIT = Struct.new("APILimit", :reset_time, :reset_time_in_seconds, :remaining_hits, :hourly_limit)
     def get_rate_limit_status
-      data = fetch_as_json('http://twitter.com/account/rate_limit_status.json')
+      data = fetch_as_json("#{@connection.protocol}://#{@host}/account/rate_limit_status.json")
       reset_time = Time.parse(data['reset_time'])
       reset_time_in_seconds = data['reset_time_in_seconds'].to_i
       
