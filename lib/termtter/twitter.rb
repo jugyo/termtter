@@ -30,7 +30,7 @@ module Termtter
     end
 
     def get_user_profile(screen_name)
-      result = fetch_as_json("#{@connection.protocol}://#{@host}/users/show/#{screen_name}.json")
+      result = fetch_as_json(url_for("/users/show/#{screen_name}.json"))
       return hash_to_user(result)
     end
 
@@ -46,13 +46,13 @@ module Termtter
     end
 
     def get_friends_timeline(since_id = nil)
-      uri =  "#{@connection.protocol}://#{@host}/statuses/friends_timeline.json"
+      uri =  url_for("/statuses/friends_timeline.json")
       uri << "?since_id=#{since_id}" if since_id
       return get_timeline(uri)
     end
 
     def get_user_timeline(screen_name)
-      return get_timeline("#{@connection.protocol}://#{@host}/statuses/user_timeline/#{screen_name}.json")
+      return get_timeline(url_for("/statuses/user_timeline/#{screen_name}.json"))
     rescue OpenURI::HTTPError => e
       puts "No such user: #{screen_name}"
       nears = near_users(screen_name)
@@ -61,8 +61,7 @@ module Termtter
     end
 
     def search(query)
-      uri = "#{@connection.protocol}://search.#{@host}/search.json?q=" + CGI.escape(query)
-      results = fetch_as_json(uri)['results']
+      results = fetch_as_json(search_url_for("/search.json?q=#{CGI.escape(query)}"))['results']
       return results.map do |s|
         status = Status.new
         status.id = s['id']
@@ -74,7 +73,7 @@ module Termtter
     end
 
     def show(id, rth = false)
-      get_status = lambda { get_timeline("#{@connection.protocol}://#{@host}/statuses/show/#{id}.json")[0] }
+      get_status = lambda { get_timeline(url_for("/statuses/show/#{id}.json"))[0] }
       statuses = []
       statuses << status = Array(Client.public_storage[:log]).detect(get_status) {|s| s.id == id.to_i }
       statuses << show(id, true) if rth && id = status.in_reply_to_status_id
@@ -82,14 +81,14 @@ module Termtter
     end
 
     def replies
-      return get_timeline("#{@connection.protocol}://#{@host}/statuses/replies.json")
+      return get_timeline(url_for("/statuses/replies.json"))
     end
 
     def followers
       users = []
       page = 0
       begin
-        users += tmp = fetch_as_json("#{@connection.protocol}://#{@host}/statuses/followers.json?page=#{page+=1}")
+        users += tmp = fetch_as_json(url_for("/statuses/followers.json?page=#{page+=1}"))
       end until tmp.empty?
       return users.map{|u| hash_to_user(u)}
     end
@@ -111,18 +110,10 @@ module Termtter
       end
     end
 
-    def fetch_as_json(uri)
-      JSON.parse(open_uri(uri).read)
-    end
-
-    def open_uri(uri)
-      return open(uri, :http_basic_authentication => [user_name, password], :proxy => @connection.proxy_uri)
-    end
-
     # note: APILimit.reset_time_in_seconds == APILimit.reset_time.to_i
     APILIMIT = Struct.new("APILimit", :reset_time, :reset_time_in_seconds, :remaining_hits, :hourly_limit)
     def get_rate_limit_status
-      data = fetch_as_json("#{@connection.protocol}://#{@host}/account/rate_limit_status.json")
+      data = fetch_as_json(url_for("/account/rate_limit_status.json"))
       reset_time = Time.parse(data['reset_time'])
       reset_time_in_seconds = data['reset_time_in_seconds'].to_i
       
@@ -132,6 +123,22 @@ module Termtter
     alias :api_limit :get_rate_limit_status
 
     private
+
+    def fetch_as_json(uri)
+      JSON.parse(open_uri(uri).read)
+    end
+
+    def open_uri(uri)
+      return open(uri, :http_basic_authentication => [user_name, password], :proxy => @connection.proxy_uri)
+    end
+
+    def url_for(path)
+      return "#{@connection.protocol}://#{@host}/#{path.sub(/^\//, '')}"
+    end
+
+    def search_url_for(path)
+      return "#{@connection.protocol}://search.#{@host}/#{path.sub(/^\//, '')}"
+    end
 
     def user_name
       unless @user_name.instance_of? String
@@ -164,4 +171,3 @@ module Termtter
     end
   end
 end
-
