@@ -9,7 +9,7 @@ module Termtter
       :exec_proc => lambda {|arg|
         count = arg =~ /^[0-9]+$/ ? arg.to_i : 3
         rate  = configatron.plugins.grass.rate
-        grasses = (1..count).map { rand(rate) == 1 ? 'W' : 'w' }
+        grasses = (1..count).map { rand(rate) == 1 ? 'W' : 'w' }.join
         call_commands("update #{grasses}")
       },
       :help => ['grass, w', 'Grass it!']
