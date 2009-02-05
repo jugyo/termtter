@@ -79,11 +79,11 @@ module Termtter
       end
 
       def register_macro(name, macro, options = {})
-        arg = {
+        command = {
           :name => name.to_sym,
           :exec_proc => lambda {|arg| call_commands(macro % arg)}
         }.merge(options)
-        register_command(arg)
+        register_command(command)
       end
 
       def add_help(name, desc)
