@@ -16,7 +16,6 @@ module Termtter
         @@filters = []
         @@helps = []
         @@since_id = nil
-        @@main_thread = nil
         @@input_thread = nil
         @@task_manager = Termtter::TaskManager.new
       end
@@ -197,7 +196,6 @@ module Termtter
         call_hooks([], :exit)
         call_new_hooks(:exit)
         @@task_manager.kill
-        @@main_thread.kill if @@main_thread
         @@input_thread.kill if @@input_thread
       end
 
@@ -291,32 +289,7 @@ module Termtter
       end
 
       def start_input_thread
-        trap_setting()
-        @@main_thread = Thread.new do
-          loop do
-            @@input_thread = create_input_thread()
-            @@input_thread.join
-          end
-        end
-        @@main_thread.join
-      end
-
-      def run
-        puts 'initializing...'
-
-        load_default_plugins()
-        load_config()
-        Termtter::API.setup()
-
-        call_hooks([], :initialize)
-        call_new_hooks(:initialize)
-
-        setup_update_timeline_task()
-        call_commands('_update_timeline')
-
-        @@task_manager.run()
-
-        @input_thread = Thread.new do
+        @@input_thread = Thread.new do
           editor = RawLine::Editor.new
           editor.bind(:ctrl_l) { editor.clear_line }
           editor.completion_proc = lambda {|input|
@@ -344,8 +317,26 @@ module Termtter
             end
           end
         end
-        @input_thread.join
-        #start_input_thread()
+
+        @@input_thread.join
+      end
+
+      def run
+        puts 'initializing...'
+
+        load_default_plugins()
+        load_config()
+        Termtter::API.setup()
+
+        call_hooks([], :initialize)
+        call_new_hooks(:initialize)
+
+        setup_update_timeline_task()
+        call_commands('_update_timeline')
+
+        @@task_manager.run()
+
+        start_input_thread()
       end
 
       def create_highline
