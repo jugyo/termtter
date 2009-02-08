@@ -34,17 +34,6 @@ module Termtter
       return hash_to_user(result)
     end
 
-    def hash_to_user(hash)
-      user = User.new
-      %w[ name favourites_count url id description protected utc_offset time_zone
-          screen_name notifications statuses_count followers_count friends_count
-          profile_image_url location following created_at
-      ].each do |attr|
-        user.__send__("#{attr}=".to_sym, hash[attr])
-      end
-      return user
-    end
-
     def get_friends_timeline(since_id = nil)
       uri =  url_for("/statuses/friends_timeline.json")
       uri << "?since_id=#{since_id}" if since_id
@@ -123,6 +112,17 @@ module Termtter
     alias :api_limit :get_rate_limit_status
 
     private
+
+    def hash_to_user(hash)
+      user = User.new
+      %w[ name favourites_count url id description protected utc_offset time_zone
+          screen_name notifications statuses_count followers_count friends_count
+          profile_image_url location following created_at
+      ].each do |attr|
+        user.__send__("#{attr}=".to_sym, hash[attr])
+      end
+      return user
+    end
 
     def fetch_as_json(uri)
       JSON.parse(open_uri(uri).read)
