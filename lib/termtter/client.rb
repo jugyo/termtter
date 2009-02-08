@@ -249,28 +249,6 @@ module Termtter
         end
       end
 
-      def setup_readline
-        Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
-        Readline.completion_proc = lambda {|input|
-          begin
-            # FIXME: when migrate to Termtter::Command
-            completions = @@completions.map {|completion|
-              completion.call(input)
-            }
-            completions += @@new_commands.map {|name, command|
-              command.complement(input)
-            }
-            completions.flatten.compact
-          rescue => e
-            handle_error(e)
-          end
-        }
-        vi_or_emacs = configatron.editing_mode
-        unless vi_or_emacs.empty?
-          Readline.__send__("#{vi_or_emacs}_editing_mode")
-        end
-      end
-
       def setup_update_timeline_task()
         register_command(
           :name => :_update_timeline,
@@ -313,7 +291,6 @@ module Termtter
       end
 
       def start_input_thread
-        setup_readline()
         trap_setting()
         @@main_thread = Thread.new do
           loop do
@@ -338,22 +315,37 @@ module Termtter
         call_commands('_update_timeline')
 
         @@task_manager.run()
-        start_input_thread()
-      end
 
-      def create_input_thread()
-        Thread.new do
-          while buf = Readline.readline(ERB.new(configatron.prompt).result(API.twitter.__send__(:binding)), true)
-            Readline::HISTORY.pop if /^(u|update)\s+(.+)$/ =~ buf
+        @input_thread = Thread.new do
+          editor = RawLine::Editor.new
+          editor.bind(:ctrl_l) { editor.clear_line }
+          editor.completion_proc = lambda {|input|
             begin
-              call_commands(buf)
+              # FIXME: when migrate to Termtter::Command
+              completions = @@completions.map {|completion|
+                completion.call(input)
+              }
+              completions += @@new_commands.map {|name, command|
+                command.complement(input)
+              }
+              completions.flatten.compact
+            rescue => e
+              handle_error(e)
+            end
+          }
+
+          while line = editor.read("> ")
+            begin
+              line.chomp!
+              call_commands(line)
             rescue CommandNotFound => e
-              puts "Unknown command \"#{buf}\""
+              puts "Unknown command \"#{line}\""
               puts 'Enter "help" for instructions'
             end
           end
-          exit # exit when press Control-D
         end
+        @input_thread.join
+        #start_input_thread()
       end
 
       def create_highline
