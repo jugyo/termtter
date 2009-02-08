@@ -26,6 +26,7 @@ lib/plugin/fib.rb
 lib/plugin/filter.rb
 lib/plugin/follow.rb
 lib/plugin/graduatter.rb
+lib/plugin/grass.rb
 lib/plugin/group.rb
 lib/plugin/growl.rb
 lib/plugin/hatebu.rb
@@ -58,7 +59,6 @@ lib/plugin/system_status.rb
 lib/plugin/translation.rb
 lib/plugin/update_editor.rb
 lib/plugin/uri-open.rb
-lib/plugin/w.rb
 lib/plugin/wassr_post.rb
 lib/plugin/yhara.rb
 lib/plugin/yonda.rb
