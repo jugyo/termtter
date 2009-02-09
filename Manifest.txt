@@ -16,6 +16,7 @@ lib/filter/url_addspace.rb
 lib/filter/yhara.rb
 lib/plugin/april_fool.rb
 lib/plugin/bomb.rb
+lib/plugin/clear.rb
 lib/plugin/confirm.rb
 lib/plugin/cool.rb
 lib/plugin/devel.rb

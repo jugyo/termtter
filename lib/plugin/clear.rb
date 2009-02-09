@@ -7,3 +7,8 @@ module Termtter::Client
       system 'clear'
     }
 end
+
+# todo:
+#   support windows.
+#   i don't have windows machine and cannot test:P
+#   cls command?
