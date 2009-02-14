@@ -56,4 +56,4 @@ end
 # configatron.plugins.hatebu.username = 'your-username-on-hatena'
 # configatron.plugins.hatebu.password = 'your-password-on-hatena'
 #
-#   hatebu 1114860346 [termtter][‚±‚ê‚Í‚·‚²‚¢]mattn++
+#   hatebu 1114860346 [termtter][<82>Â±<82>Ãª<82>Ã<82>Â·<82>Â²<82>Â¢]mattn++
