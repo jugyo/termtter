@@ -28,9 +28,7 @@ Run:
 
   git clone git://github.com/jugyo/termtter.git
   cd termtter
-  rake manifest
-  rake gemspec
-  gem build termtter.gemspec
+  rake gem
   gem install *.gem
 
 Just run a new command termtter.
