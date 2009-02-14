@@ -1,34 +1,5 @@
-%w[rubygems rake rake/clean fileutils newgem rubigen].each { |f| require f }
-require File.dirname(__FILE__) + '/lib/termtter'
-
-# Generate all the Rake tasks
-# Run 'rake -T' to see list of generated tasks (from gem root directory)
-$hoe = Hoe.new('termtter', Termtter::VERSION) do |p|
-  p.author = %w[jugyo hakobe motemen koichiro Sixeight mattn ujihisa yanbe hitode909 bubblegum].sort_by{|i|i.downcase}
-  p.email = ['jugyo.org@gmail.com']
-  p.changes              = p.paragraphs_of("History.txt", 0..1).join("\n\n")
-  p.post_install_message = 'PostInstall.txt' # TODO remove if post-install message not required
-  p.rubyforge_name       = p.name # TODO this is default value
-  p.extra_deps         = [
-    ['json_pure'],
-    ['configatron'],
-    ['highline'],
-  ]
-  #p.extra_dev_deps = [
-  #  ['newgem', ">= #{::Newgem::VERSION}"]
-  #]
-  
-  p.clean_globs |= %w[**/.DS_Store tmp *.log]
-  path = (p.rubyforge_name == p.name) ? p.rubyforge_name : "\#{p.rubyforge_name}/\#{p.name}"
-  p.remote_rdoc_dir = File.join(path.gsub(/^#{p.rubyforge_name}\/?/,''), 'rdoc')
-  p.rsync_args = '-av --delete --ignore-errors'
-end
-
-require 'newgem/tasks' # load /tasks/*.rake
-Dir['tasks/**/*.rake'].each { |t| load t }
-
-# TODO - want other tests/tasks run by default? Add them to the list
-# task :default => [:spec, :features]
+$:.unshift File.dirname(__FILE__) + '/lib'
+require 'termtter'
 
 require 'spec/rake/spectask'
 desc 'run all specs'
@@ -37,28 +8,39 @@ Spec::Rake::SpecTask.new do |t|
   t.spec_opts = ['-c']
 end
 
-def egrep(pattern)
-  res = []
-  Dir['**/*.rb'].each do |fn|
-    count = 0
-    open(fn) do |f|
-      while line = f.gets
-        count += 1
-        if line =~ pattern
-          res << [fn, count.to_s, line.gsub(/\A\s+/, '')]
-        end
-      end
-    end
+desc 'Generate gemspec'
+task :gemspec do |t|
+  open('termtter.gemspec', "wb" ) do |file|
+    file << <<-EOS
+Gem::Specification.new do |s|
+  s.name = 'termtter'
+  s.version = '#{Termtter::VERSION}'
+  s.summary = "Terminal based Twitter client"
+  s.description = "Termtter is a terminal based Twitter client"
+  s.files = %w( #{Dir['lib/**/*.rb'].join(' ')}
+                #{Dir['spec/**/*.rb'].join(' ')}
+                #{Dir['test/**/*.rb', 'test/**/*.json'].join(' ')}
+                README.rdoc
+                History.txt
+                Rakefile )
+  s.executables = ["kill_termtter", "termtter"]
+  s.add_dependency("json_pure", ">= 1.1.3")
+  s.add_dependency("configatron", ">= 2.2.2")
+  s.add_dependency("highline", ">= 1.5.0")
+  s.authors = %w(jugyo ujihisa)
+  s.email = 'jugyo.org@gmail.com'
+  s.homepage = 'http://wiki.github.com/jugyo/termtter'
+  s.rubyforge_project = 'termtter'
+  s.has_rdoc = true
+  s.rdoc_options = ["--main", "README.rdoc", "--exclude", "spec"]
+  s.extra_rdoc_files = ["README.rdoc", "History.txt"]
+end
+    EOS
   end
-  fmax = res.map {|i| i[0] }.map(&:size).max
-  cmax = res.map {|i| i[1] }.map(&:size).max
-  res.each do |fn, count, line|
-    puts "%s :%s:%s" % [fn.ljust(fmax), count.rjust(cmax), line]
-  end
+  puts "Generate gemspec"
 end
 
-desc "Look for TODO and FIXME tags in the code"
-task :todo do
-  egrep /(FIXME|TODO)/
+desc 'Generate gem'
+task :gem => :gemspec do |t|
+  system 'gem', 'build', 'termtter.gemspec'
 end
-
