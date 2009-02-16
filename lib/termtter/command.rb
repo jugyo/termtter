@@ -70,7 +70,7 @@ module Termtter
     end
 
     def commands
-      aliases.unshift(name)
+      aliases.clone.unshift(name)
     end
   end
 end
