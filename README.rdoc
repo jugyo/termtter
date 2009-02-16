@@ -16,7 +16,7 @@ Run:
 
 == REQUIREMENTS:
 
-* json
+* json_pure
 * configatron
 
 == INSTALL:
@@ -62,7 +62,6 @@ http://wiki.github.com/jugyo/termtter/home (in Japanese)
 
 == TODO:
 
-- newgem を使わないようにする
 - rubytter を使うようにする
 - filter と plugin を統一する
 - plugin => plugins （ディレクトリ名変更）
