@@ -14,13 +14,6 @@ require 'readline'
 require 'enumerator'
 require 'configatron'
 
-Thread.abort_on_exception = true
-
-configatron.set_default(:update_interval, 300)
-configatron.set_default(:prompt, '> ')
-configatron.set_default(:enable_ssl, false)
-configatron.proxy.set_default(:port, '8080')
-
 require 'termtter/twitter'
 require 'termtter/connection'
 require 'termtter/status'
