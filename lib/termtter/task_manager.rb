@@ -34,7 +34,7 @@ module Termtter
     end
 
     def step
-      pull_due_tasks().each do |task|
+      pull_due_tasks.each do |task|
         invoke_and_wait do
           task.execute
         end
@@ -96,7 +96,7 @@ module Termtter
         time_now = Time.now
         due_tasks = []
         @tasks.delete_if do |key, task|
-          if task.exec_at <= time_now
+          if task.work && task.exec_at <= time_now
             due_tasks << task
             if task.interval
               task.exec_at = time_now + task.interval
