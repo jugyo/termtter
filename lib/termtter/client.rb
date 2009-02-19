@@ -255,7 +255,9 @@ module Termtter
       end
 
       def setup_readline
-        Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
+        if Readline.respond_to?(:basic_word_break_characters=)
+          Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
+        end
         Readline.completion_proc = lambda {|input|
           begin
             # FIXME: when migrate to Termtter::Command
