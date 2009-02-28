@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-require 'highline'
+require 'termcolor'
 require 'erb'
 
 configatron.plugins.stdout.set_default(
@@ -8,7 +8,7 @@ configatron.plugins.stdout.set_default(
   [:none, :red, :green, :yellow, :blue, :magenta, :cyan])
 configatron.plugins.stdout.set_default(
   :timeline_format,
-  '<%= color(time, 90) %> <%= color(status, status_color) %> <%= color(id, 90) %>')
+  '<90><%=time%></90> <<%=status_color%>><%=status%></<%=status_color%>> <90><%=id%></90>')
 
 $highline = HighLine.new
 
@@ -32,20 +32,21 @@ module Termtter::Client
       if s.in_reply_to_status_id
         status += " (reply to #{s.in_reply_to_status_id})"
       end
-      
+
       time = "(#{s.created_at.strftime(time_format)})"
       id = s.id
-      puts ERB.new(configatron.plugins.stdout.timeline_format).result(binding)
+      erbed_text = ERB.new(configatron.plugins.stdout.timeline_format).result(binding)
+      puts TermColor.parse(erbed_text)
     end
   end
 
   def self.print_statuses_with_date(statuses, sort = true)
     print_statuses(statuses, sort, '%m-%d %H:%M')
   end
-  
+
   add_hook do |statuses, event|
     next if statuses.empty?
-    
+
     case event
     when :update_friends_timeline, :list_friends_timeline
       print_statuses(statuses)
@@ -53,7 +54,7 @@ module Termtter::Client
       print_statuses_with_date(statuses)
     end
   end
-  
+
 end
 # stdout.rb
 #   output statuses to stdout

@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
   s.add_dependency("json_pure", ">= 1.1.3")
   s.add_dependency("configatron", ">= 2.2.2")
   s.add_dependency("highline", ">= 1.5.0")
+  s.add_dependency("termcolor", ">= 0.2.4")
   s.authors = %w(jugyo ujihisa)
   s.email = 'jugyo.org@gmail.com'
   s.homepage = 'http://wiki.github.com/jugyo/termtter'
