@@ -60,4 +60,4 @@ end
 #   output statuses to stdout
 # example config
 #   configatron.plugins.stdout.colors = [:none, :red, :green, :yellow, :blue, :magenta, :cyan]
-#   configatron.plugins.stdout.timeline_format = '<%= color(time, 90) %> <%= color(status, status_color) %> <%= color(id, 90) %>'
+#   configatron.plugins.stdout.timeline_format = '<90><%=time%></90> <<%=status_color%>><%=status%></<%=status_color%>> <90><%=id%></90>'
