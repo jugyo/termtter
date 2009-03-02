@@ -25,5 +25,5 @@ end
 #
 # See http://gyazo.com/4b33517380673d92f51a52e675ecdb02.png .
 # configatron.plugins.stdout.timeline_format =
-#  '<%= color(time, 90) %> <%= s.bomb? ? color(color(status, 41), 37) : color(status, status_color) %> <%= color(id, 90) %>'
+#   %q[<90><%=time%></90> <%= s.bomb? ? "<37><41>#{status}</41></37>" : "<#{status_color}>#{status}</#{status_color}>" %> <90><%=id%></90>]
 # vim: fenc=utf8
