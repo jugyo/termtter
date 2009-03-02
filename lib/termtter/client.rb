@@ -227,6 +227,8 @@ module Termtter
           password = ui.ask('your twitter password: ') { |q| q.echo = false }
 
           File.open(File.expand_path('~/.termtter'), 'w') {|io|
+            io.puts '# -*- coding: utf-8 -*-'
+
             plugins = Dir.glob(File.dirname(__FILE__) + "/../lib/plugin/*.rb").map  {|f|
               f.match(%r|lib/plugin/(.*?).rb$|)[1]
             }
