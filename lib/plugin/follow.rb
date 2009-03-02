@@ -3,13 +3,15 @@
 module Termtter::Client
   register_command(
     :name => :follow, :aliases => [],
-    :exec_proc => lambda {|arg|
-      if arg =~ /^(\w+)/
-        res = Termtter::API::twitter.social($1.strip, :follow)
-        if res.code == '200'
-          puts "Followed user @#{$1}"
-        else
-          puts "Failed: #{res}"
+    :exec_proc => lambda {|args|
+      args.split(' ').each do |arg|
+        if arg =~ /^(\w+)/
+          res = Termtter::API::twitter.social($1.strip, :follow)
+          if res.code == '200'
+            puts "Followed user @#{$1}"
+          else
+            puts "Failed: #{res}"
+          end
         end
       end
     },
@@ -21,13 +23,15 @@ module Termtter::Client
 
   register_command(
     :name => :leave, :aliases => [],
-    :exec_proc => lambda {|arg|
-      if arg =~ /^(\w+)/
-        res = Termtter::API::twitter.social($1.strip, :leave)
-        if res.code == '200'
-          puts "Leaved user @#{$1}"
-        else
-          puts "Failed: #{res}"
+    :exec_proc => lambda {|args|
+      args.split(' ').each do |arg|
+        if arg =~ /^(\w+)/
+          res = Termtter::API::twitter.social($1.strip, :leave)
+          if res.code == '200'
+            puts "Leaved user @#{$1}"
+          else
+            puts "Failed: #{res}"
+          end
         end
       end
     },
