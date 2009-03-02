@@ -50,15 +50,12 @@ module Termtter
       return []
     end
 
-    configatron.search.set_default(:highlihgt_text_format, '<on_magenta><white>\1</white></on_magenta>')
     def search(query)
       results = fetch_as_json(search_url_for("/search.json?q=#{CGI.escape(query)}"))['results']
       return results.map do |s|
         status = Status.new
         status.id = s['id']
-        status.text = CGI.unescapeHTML(s['text']).
-                        gsub(/(\n|\r)/, '').
-                        gsub(/(#{Regexp.escape(query)})/i, configatron.search.highlihgt_text_format)
+        status.text = CGI.unescapeHTML(s['text']).gsub(/(\n|\r)/, '')
         status.created_at = Time.parse(s["created_at"])
         status.user_screen_name = s['from_user']
         status

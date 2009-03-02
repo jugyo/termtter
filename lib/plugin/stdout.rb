@@ -8,7 +8,7 @@ configatron.plugins.stdout.set_default(
   [:none, :red, :green, :yellow, :blue, :magenta, :cyan])
 configatron.plugins.stdout.set_default(
   :timeline_format,
-  '<90><%=time%></90> <<%=status_color%>><%=status%></<%=status_color%>> <90><%=id%></90>')
+  '<90><%=time%></90> <<%=status_color%>><%=TermColor.escape(status)%></<%=status_color%>> <90><%=id%></90>')
 
 $highline = HighLine.new
 
