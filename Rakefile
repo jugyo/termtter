@@ -45,3 +45,13 @@ desc 'Generate gem'
 task :gem => :gemspec do |t|
   system 'gem', 'build', 'termtter.gemspec'
 end
+
+namespace :gem do
+  desc 'Install needed gems'
+  task :install do
+    %w[ json_pure configatron highline termcolor ].each do |gem|
+      sh "sudo gem install #{gem} -r"
+    end
+  end
+end
+
