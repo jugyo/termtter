@@ -44,10 +44,14 @@ module Termtter
     def get_user_timeline(screen_name)
       return get_timeline(url_for("/statuses/user_timeline/#{screen_name}.json"))
     rescue OpenURI::HTTPError => e
-      puts "No such user: #{screen_name}"
-      nears = near_users(screen_name)
-      puts "near users: #{nears}" unless nears.empty?
-      return []
+      case e.message
+      when /404/
+        warn "No such user: #{screen_name}"
+        nears = near_users(screen_name)
+        puts "near users: #{nears}" unless nears.empty?
+        return []
+      end
+      raise
     end
 
     configatron.search.set_default(:highlihgt_text_format, '<on_magenta><white>\1</white></on_magenta>')
@@ -69,8 +73,8 @@ module Termtter
       get_status = lambda { get_timeline(url_for("/statuses/show/#{id}.json"))[0] }
       statuses = []
       statuses << status = Array(Client.public_storage[:log]).detect(get_status) {|s| s.id == id.to_i }
-      statuses << show(id, true) if rth && id = status.in_reply_to_status_id
-      statuses.flatten
+      statuses << show(id, true) if rth && status && id = status.in_reply_to_status_id
+      statuses.flatten.compact
     end
 
     def replies
@@ -130,6 +134,13 @@ module Termtter
 
     def fetch_as_json(uri)
       JSON.parse(open_uri(uri).read)
+    rescue OpenURI::HTTPError => e
+      case e.message
+      when /403/, /401/
+        warn '[PROTECTED USER] You must add to show his/her tweet.'
+        return []
+      end
+      raise
     end
 
     def open_uri(uri)
