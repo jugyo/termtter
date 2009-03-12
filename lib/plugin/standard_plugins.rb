@@ -172,6 +172,7 @@ module Termtter::Client
   register_command(
     :name => :help, :aliases => [:h],
     :exec_proc => lambda {|arg|
+      # TODO: move to each commands
       helps = [
         ["help,h", "Print this help message"],
         ["list,l", "List the posts in your friends timeline"],
