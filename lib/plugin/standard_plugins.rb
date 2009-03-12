@@ -60,7 +60,7 @@ module Termtter::Client
     :exec_proc => lambda {|arg|
       followers = Termtter::API.twitter.followers
       Termtter::Client.public_storage[:followers] = followers
-      p followers.map{|f|f.screen_name}
+      puts followers.map{|f|f.screen_name}.join(' ')
     }
   )
 
