@@ -238,7 +238,6 @@ module Termtter::Client
   end
 
   add_completion do |input|
-    standard_commands = %w[exit help list pause profile update direct resume replies search show limit]
     case input
     when /^show(s)?\s+(([\w\d]+):)?\s*(.*)/
       if $2
@@ -248,8 +247,6 @@ module Termtter::Client
         result = find_status_id_candidates $4, "show#{$1} %s"  if result.empty?
         result
       end
-    else
-      standard_commands.grep(/^#{Regexp.quote input}/)
     end
   end
 
