@@ -177,32 +177,19 @@ module Termtter::Client
   )
 
   register_command(
-   :name => :execute,
-   :exec_proc => lambda{|arg|
-     if arg
-       `#{arg}`.each_line do |line|
-           unless line.strip.empty?
-             Termtter::API.twitter.update_status(line)
-             puts "=> #{line}"
-           end
-       end
-     end
-   },
-   :help => ['execute COMMAND', 'execute the command']
-   )
-
-  add_command /^!(!)?\s*(.*)$/ do |m, t|
-    warn '!COMMAND command will be removed. Use command execute instead.'
-    begin
-      result = `#{m[2]}` unless m[2].empty?
-      unless m[1].nil? || result.empty?
-        t.update_status(result.gsub("\n", " "))
+    :name => :execute,
+    :exec_proc => lambda{|arg|
+    if arg
+      `#{arg}`.each_line do |line|
+        unless line.strip.empty?
+          Termtter::API.twitter.update_status(line)
+          puts "=> #{line}"
+        end
       end
-      puts "=> #{result}"
-    rescue => e
-      puts e
     end
-  end
+    },
+    :help => ['execute COMMAND', 'execute the command']
+  )
 
   def self.formatted_help(helps)
     helps = helps.sort_by{|help| help[0]}
