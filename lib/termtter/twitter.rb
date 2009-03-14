@@ -32,17 +32,17 @@ module Termtter
 
     def get_user_profile(screen_name)
       result = fetch_as_json(url_for("/users/show/#{screen_name}.json"))
-      return hash_to_user(result)
+      hash_to_user(result)
     end
 
     def get_friends_timeline(since_id = nil)
       uri =  url_for("/statuses/friends_timeline.json")
       uri << "?since_id=#{since_id}" if since_id
-      return get_timeline(uri)
+      get_timeline(uri)
     end
 
     def user_timeline(screen_name)
-      return get_timeline(url_for("/statuses/user_timeline/#{screen_name}.json"))
+      get_timeline(url_for("/statuses/user_timeline/#{screen_name}.json"))
     rescue OpenURI::HTTPError => e
       case e.message
       when /404/
@@ -78,7 +78,7 @@ module Termtter
     end
 
     def replies
-      return get_timeline(url_for("/statuses/replies.json"))
+      get_timeline(url_for("/statuses/replies.json"))
     end
 
     def followers
@@ -87,7 +87,7 @@ module Termtter
       begin
         users += tmp = fetch_as_json(url_for("/statuses/followers.json?page=#{page+=1}"))
       end until tmp.empty?
-      return users.map{|u| hash_to_user(u)}
+      users.map{|u| hash_to_user(u)}
     end
 
     def get_timeline(uri)
@@ -129,7 +129,7 @@ module Termtter
       ].each do |attr|
         user.__send__("#{attr}=".to_sym, hash[attr])
       end
-      return user
+      user
     end
 
     def fetch_as_json(uri)
@@ -147,15 +147,15 @@ module Termtter
     end
 
     def open_uri(uri)
-      return open(uri, :http_basic_authentication => [user_name, password], :proxy => @connection.proxy_uri)
+      open(uri, :http_basic_authentication => [user_name, password], :proxy => @connection.proxy_uri)
     end
 
     def url_for(path)
-      return "#{@connection.protocol}://#{@host}/#{path.sub(/^\//, '')}"
+      "#{@connection.protocol}://#{@host}/#{path.sub(/^\//, '')}"
     end
 
     def search_url_for(path)
-      return "#{@connection.protocol}://search.#{@host}/#{path.sub(/^\//, '')}"
+      "#{@connection.protocol}://search.#{@host}/#{path.sub(/^\//, '')}"
     end
 
     def user_name

@@ -6,7 +6,7 @@ module Termtter
         screen_name notifications statuses_count followers_count friends_count
         profile_image_url location following created_at
     ].each do |attr|
-      attr_accessor attr.to_sym
+      attr_accessor attr
     end
   end  
 end
