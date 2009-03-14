@@ -7,7 +7,7 @@ module Termtter
     end
 
     def initialize
-      @store = {}
+      @store = Hash.new(:undefined)
     end
 
     # set_default :: (Symbol | String) -> a -> IO ()
@@ -18,6 +18,11 @@ module Termtter
       else
         __assign__(name, value)
       end
+    end
+
+    # empty? :: Boolean
+    def empty?
+      @store.empty?
     end
 
     def method_missing(name, *args)
@@ -38,7 +43,7 @@ module Termtter
 
     # __refer__ :: Symbol -> IO a
     def __refer__(name)
-      @store[name] ||= Termtter::Config.new
+      @store[name] == :undefined ? Termtter::Config.new : @store[name]
     end
 
     def self.instance

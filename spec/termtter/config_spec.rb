@@ -63,6 +63,29 @@ module Termtter
 
       @storage.subb.set_default 'more', 'value'
     end
+
+    it 'should have :undefined value in un-assigned key' do
+      @storage.aaaa.should == :undefined
+    end
+
+    it 'should be empty when something is assigned' do
+      @storage.empty?.should be_true
+
+      @storage.aaa = 1
+      @storage.empty?.should be_false
+
+      @storage.bbb.empty?.should be_true
+    end
+
+    it 'should be empty when assigned nil' do
+      @storage.bbb = nil
+      @storage.empty?.should be_false
+    end
+
+    it 'should be empty when set_defaulted' do
+      @storage.set_default('aaa', 1)
+      @storage.empty?.should be_false
+    end
   end
 end
 
