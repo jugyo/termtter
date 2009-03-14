@@ -12,7 +12,6 @@ require 'open-uri'
 require 'cgi'
 require 'readline'
 require 'enumerator'
-require 'configatron'
 require 'optparse'
 
 require 'termtter/config'
