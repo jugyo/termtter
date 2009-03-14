@@ -16,7 +16,7 @@ module Termtter
       if match_p
         eval(init).__assign__(last.intern, value)
       else
-        __assign__(name, value)
+        __assign__(name.to_sym, value)
       end
     end
 

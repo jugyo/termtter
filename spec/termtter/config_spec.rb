@@ -63,6 +63,11 @@ module Termtter
 
       @storage.subb.set_default 'more', 'value'
     end
+
+    it 'should ' do
+      @storage.subb.more.set_default :moremore, 'value'
+      @storage.subb.more.moremore.should == 'value'
+    end
   end
 end
 
