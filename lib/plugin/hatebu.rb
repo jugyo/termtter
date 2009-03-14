@@ -17,8 +17,8 @@ module Termtter::Client
           status = t.show(id).first
         end
         auth = auth = Atompub::Auth::Wsse.new({
-            :username => configatron.plugins.hatebu.username,
-            :password => configatron.plugins.hatebu.password,
+            :username => config.plugins.hatebu.username,
+            :password => config.plugins.hatebu.password,
         })
         link = Atom::Link.new({
            :href => "http://twitter.com/#{status.user_screen_name}/status/#{status.id}",
@@ -53,7 +53,7 @@ end
 # hatebu.rb
 # hatena bookmark it!
 #
-# configatron.plugins.hatebu.username = 'your-username-on-hatena'
-# configatron.plugins.hatebu.password = 'your-password-on-hatena'
+# config.plugins.hatebu.username = 'your-username-on-hatena'
+# config.plugins.hatebu.password = 'your-password-on-hatena'
 #
 #   hatebu 1114860346 [termtter][<82>±<82>ê<82>Í<82>·<82>²<82>¢]mattn++

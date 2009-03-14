@@ -2,21 +2,21 @@
 
 require 'zlib'
 
-configatron.plugins.history.
+config.plugins.history.
   set_default(:filename, '~/.termtter_history')
-configatron.plugins.history.
+config.plugins.history.
   set_default(:keys, [:log, :users, :status_ids])
-configatron.plugins.history.
+config.plugins.history.
   set_default(:max_of_history, 100)
-configatron.plugins.history.
+config.plugins.history.
   set_default(:enable_autosave, true)
-configatron.plugins.history.
+config.plugins.history.
   set_default(:autosave_interval, 3600)
 
 module Termtter::Client
   def self.load_history
-    filename = File.expand_path(configatron.plugins.history.filename)
-    keys = configatron.plugins.history.keys
+    filename = File.expand_path(config.plugins.history.filename)
+    keys = config.plugins.history.keys
 
     if File.exist?(filename)
       begin
@@ -33,13 +33,13 @@ module Termtter::Client
   end
 
   def self.save_history
-    filename = File.expand_path(configatron.plugins.history.filename)
-    keys = configatron.plugins.history.keys
+    filename = File.expand_path(config.plugins.history.filename)
+    keys = config.plugins.history.keys
     history = { }
     keys.each do |key|
       history[key] = public_storage[key]
     end
-    max_of_history = configatron.plugins.history.max_of_history
+    max_of_history = config.plugins.history.max_of_history
     history[:history] = Readline::HISTORY.to_a.reverse.uniq.reverse
     if history[:history].size > max_of_history
       history[:history] = history[:history][-max_of_history..-1]
@@ -60,9 +60,9 @@ module Termtter::Client
     end
   end
 
-  if configatron.plugins.history.enable_autosave
-    Termtter::Client.add_task(:interval => configatron.plugins.history.autosave_interval,
-                              :after => configatron.plugins.history.autosave_interval) do
+  if config.plugins.history.enable_autosave
+    Termtter::Client.add_task(:interval => config.plugins.history.autosave_interval,
+                              :after => config.plugins.history.autosave_interval) do
       save_history
     end
   end

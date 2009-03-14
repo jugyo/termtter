@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 require 'rubygems'
-require 'configatron'
 require 'test/unit'
 require 'kagemusha'
 require File.dirname(__FILE__) + '/../lib/termtter'

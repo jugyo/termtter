@@ -13,11 +13,11 @@ end
 
 def expand_tinyurl(path)
   http_class = Net::HTTP
-  unless configatron.proxy.host.empty?
-    http_class = Net::HTTP::Proxy(configatron.proxy.host,
-                                  configatron.proxy.port,
-                                  configatron.proxy.user_name,
-                                  configatron.proxy.password)
+  unless config.proxy.host.empty?
+    http_class = Net::HTTP::Proxy(config.proxy.host,
+                                  config.proxy.port,
+                                  config.proxy.user_name,
+                                  config.proxy.password)
   end
   res = http_class.new('tinyurl.com').head(path)
   res['Location']

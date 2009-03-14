@@ -15,6 +15,7 @@ require 'enumerator'
 require 'configatron'
 require 'optparse'
 
+require 'termtter/config'
 require 'termtter/version'
 require 'termtter/twitter'
 require 'termtter/connection'
@@ -43,7 +44,7 @@ end
 def plugin(s, init = {})
   unless init.empty?
     init.each do |key, value|
-      eval("configatron.plugins.#{s}").__send__("#{key}=", value)
+      eval("config.plugins.#{s}").__send__("#{key}=", value)
     end
   end
   require "plugin/#{s}"

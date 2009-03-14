@@ -10,7 +10,7 @@ Termtter::Client.register_hook(
     begin
       Net::HTTP.version_1_2
       req = Net::HTTP::Post.new("/statuses/update.json?")
-      req.basic_auth configatron.plugins.wassr_post.username, configatron.plugins.wassr_post.password
+      req.basic_auth config.plugins.wassr_post.username, config.plugins.wassr_post.password
       Net::HTTP.start('api.wassr.jp', 80) do |http|
         res = http.request(req, "status=#{URI.escape(arg.strip)}&source=Termtter")
       end

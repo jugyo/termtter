@@ -17,7 +17,7 @@ module Termtter::Client
           status = t.show(id).first
         end
     
-        Tumblr::API.write(configatron.plugins.reblog.email, configatron.plugins.reblog.password) do
+        Tumblr::API.write(config.plugins.reblog.email, config.plugins.reblog.password) do
           quote("#{status.text}", "<a href=\"http://twitter.com/#{status.user_screen_name}/status/#{status.id}\">Twitter / #{status.user_name}</a>")
         end
       end
@@ -34,7 +34,7 @@ end
 # reblog.rb
 # tumblr reblog it!
 #
-# configatron.plugins.reblog.email = 'your-email-on-tumblr'
-# configatron.plugins.reblog.password = 'your-password-on-tumblr'
+# config.plugins.reblog.email = 'your-email-on-tumblr'
+# config.plugins.reblog.password = 'your-password-on-tumblr'
 #
 #   reblog 1114860346

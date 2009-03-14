@@ -24,6 +24,6 @@ end
 # Bomb it!
 #
 # See http://gyazo.com/4b33517380673d92f51a52e675ecdb02.png .
-# configatron.plugins.stdout.timeline_format =
+# config.plugins.stdout.timeline_format =
 #   %q[<90><%=time%></90> <%= s.bomb? ? "<37><41>#{status}</41></37>" : "<#{status_color}>#{status}</#{status_color}>" %> <90><%=id%></90>]
 # vim: fenc=utf8

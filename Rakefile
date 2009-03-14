@@ -25,7 +25,6 @@ Gem::Specification.new do |s|
                 Rakefile )
   s.executables = ["kill_termtter", "termtter"]
   s.add_dependency("json_pure", ">= 1.1.3")
-  s.add_dependency("configatron", ">= 2.2.2")
   s.add_dependency("highline", ">= 1.5.0")
   s.add_dependency("termcolor", ">= 0.3.1")
   s.authors = %w(jugyo ujihisa)
@@ -49,7 +48,7 @@ end
 namespace :gem do
   desc 'Install needed gems'
   task :install do
-    %w[ json_pure configatron highline termcolor ].each do |gem|
+    %w[ json_pure highline termcolor ].each do |gem|
       sh "sudo gem install #{gem} -r"
     end
   end

@@ -5,12 +5,12 @@ require 'open-uri'
 require 'pathname'
 require 'tmpdir'
 
-configatron.plugins.quicklook.set_default(:quicklook_tmpdir, "#{Dir.tmpdir}/termtter-quicklook-tmpdir")
-tmpdir = Pathname.new(configatron.plugins.quicklook.quicklook_tmpdir)
+config.plugins.quicklook.set_default(:quicklook_tmpdir, "#{Dir.tmpdir}/termtter-quicklook-tmpdir")
+tmpdir = Pathname.new(config.plugins.quicklook.quicklook_tmpdir)
 tmpdir.mkdir unless tmpdir.exist?
 
 def quicklook(url)
-  tmpdir = Pathname.new(configatron.plugins.quicklook.quicklook_tmpdir)
+  tmpdir = Pathname.new(config.plugins.quicklook.quicklook_tmpdir)
   path   = tmpdir + Pathname.new(url).basename
 
   Thread.new do

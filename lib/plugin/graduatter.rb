@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-twitter = Termtter::Twitter.new(configatron.user_name, configatron.password)
+twitter = Termtter::Twitter.new(config.user_name, config.password)
 Thread.start do
   100.times do |i|
     twitter.update_status(

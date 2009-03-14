@@ -163,7 +163,7 @@ module Termtter::Client
     :points => [:on_error],
     :exec_proc => lambda {|e|
       puts "Error: #{e}"
-      if configatron.devel == true
+      if config.devel == true
         puts e.backtrace.join("\n")
       end
     }

@@ -4,17 +4,17 @@ require 'tempfile'
 
 module Termtter::Client
   if ENV['EDITOR']
-    configatron.plugins.update_editor.set_default('editor', ENV['EDITOR'])
+    config.plugins.update_editor.set_default('editor', ENV['EDITOR'])
   else
-    configatron.plugins.update_editor.set_default('editor', 'vi')
+    config.plugins.update_editor.set_default('editor', 'vi')
   end
-  configatron.plugins.update_editor.set_default('add_completion', false)
+  config.plugins.update_editor.set_default('add_completion', false)
 
   
   def self.input_editor
     file = Tempfile.new('termtter')
-    editor = configatron.plugins.update_editor.editor
-    if configatron.plugins.update_editor.add_completion
+    editor = config.plugins.update_editor.editor
+    if config.plugins.update_editor.add_completion
       file.puts "\n"*100 + "__END__\n" + public_storage[:users].to_a.join(' ')
     end
     file.close
