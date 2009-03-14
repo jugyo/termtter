@@ -13,7 +13,9 @@ require 'cgi'
 require 'readline'
 require 'enumerator'
 require 'configatron'
+require 'optparse'
 
+require 'termtter/version'
 require 'termtter/twitter'
 require 'termtter/connection'
 require 'termtter/status'
@@ -25,7 +27,7 @@ require 'termtter/task_manager'
 require 'termtter/client'
 require 'termtter/api'
 require 'termtter/system_extensions'
-require 'termtter/version'
+require 'termtter/optparse'
 
 module Termtter
   APP_NAME = 'termtter'
