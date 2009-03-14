@@ -28,10 +28,10 @@ module Termtter::Client
   def self.print_statuses(statuses, sort = true, time_format = '%H:%M:%S')
     (sort ? statuses.sort_by{ |s| s.id} : statuses).each do |s|
       text = s.text
-      status_color = config.plugins.stdout.colors[s.user_screen_name.hash % config.plugins.stdout.colors.size]
-      status = "#{s.user_screen_name}: #{text}"
+      status_color = config.plugins.stdout.colors[s.user.screen_name.hash % config.plugins.stdout.colors.size]
+      status = "#{s.user.screen_name}: #{text}"
       if s.in_reply_to_status_id
-        status += " (reply to #{s.in_reply_to_status_id})"
+        status += " (repl. to #{s.in_reply_to_status_id})"
       end
 
       time = "(#{Time.parse(s.created_at).strftime(time_format)})"
