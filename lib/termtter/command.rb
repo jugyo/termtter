@@ -14,21 +14,21 @@ module Termtter
     #   help:            help text for the command (Optional)
     def initialize(args)
       raise ArgumentError, ":name is not given." unless args.has_key?(:name)
-      config = {
+      cfg = {
         :aliases        => [],
         :exec_proc      => lambda {|arg| },
         :comletion_proc => lambda {|command, arg| [] }
       }.merge(args)
 
-      set config
+      set cfg
     end
 
-    def set(config)
-      @name            = config[:name].to_sym
-      @aliases         = config[:aliases].map {|e| e.to_sym }
-      @exec_proc       = config[:exec_proc]
-      @completion_proc = config[:completion_proc]
-      @help            = config[:help]
+    def set(cfg)
+      @name            = cfg[:name].to_sym
+      @aliases         = cfg[:aliases].map {|e| e.to_sym }
+      @exec_proc       = cfg[:exec_proc]
+      @completion_proc = cfg[:completion_proc]
+      @help            = cfg[:help]
     end
 
     def complement(input)
