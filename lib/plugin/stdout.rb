@@ -9,6 +9,7 @@ configatron.plugins.stdout.set_default(
 configatron.plugins.stdout.set_default(
   :timeline_format,
   '<90><%=time%></90> <<%=status_color%>><%=status%></<%=status_color%>> <90><%=id%></90>')
+configatron.plugins.stdout.set_default(:search_highlihgt_format, '<on_magenta><white>\1</white></on_magenta>')
 
 $highline = HighLine.new
 
@@ -44,9 +45,11 @@ module Termtter::Client
     print_statuses(statuses, sort, '%m-%d %H:%M')
   end
 
-  def self.print_search_results(results, time_format = '%H:%M:%S')
-    results.sort_by{|r| r.created_at}.each do |r|
-      text = r.text
+  def self.print_search_results(result, time_format = '%H:%M:%S')
+    result.results.sort_by{|r| r.created_at}.each do |r|
+      text = r.text.
+                gsub(/(\n|\r)/, '').
+                gsub(/(#{Regexp.escape(result.query)})/i, configatron.search.highlihgt_text_format)
       status_color = configatron.plugins.stdout.colors[r.from_user_id.to_i.hash % configatron.plugins.stdout.colors.size]
       status = "#{r.from_user}: #{text}"
       time = "(#{Time.parse(r.created_at).strftime(time_format)})"
@@ -63,7 +66,7 @@ module Termtter::Client
     when :list_user_timeline, :show, :replies
       print_statuses_with_date(result) unless result.empty?
     when :search
-      print_search_results(result.results)
+      print_search_results(result)
     end
   end
 
