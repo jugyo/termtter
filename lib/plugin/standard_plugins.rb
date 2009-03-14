@@ -68,7 +68,7 @@ module Termtter::Client
     :name => :list, :aliases => [:l],
     :exec_proc => lambda {|arg|
       unless arg.empty?
-        call_hooks(Termtter::API.twitter.get_user_timeline(arg), :list_user_timeline)
+        call_hooks(Termtter::API.twitter.user_timeline(arg), :list_user_timeline)
       else
         call_hooks(Termtter::API.twitter.friends_timeline(), :list_friends_timeline)
       end

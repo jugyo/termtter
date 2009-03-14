@@ -41,7 +41,7 @@ module Termtter
       return get_timeline(uri)
     end
 
-    def get_user_timeline(screen_name)
+    def user_timeline(screen_name)
       return get_timeline(url_for("/statuses/user_timeline/#{screen_name}.json"))
     rescue OpenURI::HTTPError => e
       case e.message
