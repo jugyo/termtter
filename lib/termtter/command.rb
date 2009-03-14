@@ -33,30 +33,14 @@ module Termtter
 
     def complement(input)
       command_str, command_arg = match?(input)
-      if command_arg
+      if command_str
         if completion_proc
-          [completion_proc.call(command_info[0], command_info[1] || '')].flatten.compact
+          [completion_proc.call(command_str, command_arg || '')].flatten.compact
         else
           []
         end
       else
         [name.to_s, aliases.to_s].grep(/^#{Regexp.quote(input)}/)
-      end
-    end
-
-    # MEMO: Termtter:Client からはこのメソッドを呼び出すことになると思う。
-    # TODO: 廃止する
-    def exec_if_match(input)
-      command_str, command_arg = match?(input)
-      if command_str
-        result = execute(command_info[1])
-        unless result.nil?
-          return result
-        else
-          return true
-        end
-      else
-        return nil
       end
     end
 
