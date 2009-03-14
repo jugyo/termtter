@@ -20,8 +20,6 @@ module Termtter
         @@task_manager = Termtter::TaskManager.new
         configatron.set_default(:update_interval, 300)
         configatron.set_default(:prompt, '> ')
-        configatron.set_default(:enable_ssl, false)
-        configatron.proxy.set_default(:port, '8080')
         configatron.set_default(:devel, false)
         Thread.abort_on_exception = true
       end

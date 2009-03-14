@@ -14,7 +14,7 @@ module Termtter
       @protocol = "http"
       @port = 80
 
-      unless @proxy_host.empty?
+      if @proxy_host
         @http_class = Net::HTTP::Proxy(@proxy_host, @proxy_port,
                                        @proxy_user, @proxy_password)
         @proxy_uri =  "http://" + @proxy_host + ":" + @proxy_port + "/"
