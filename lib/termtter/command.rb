@@ -33,7 +33,7 @@ module Termtter
 
     def complement(input)
       command_str, command_arg = match?(input)
-      if command_str
+      if command_arg
         if completion_proc
           [completion_proc.call(command_str, command_arg || '')].flatten.compact
         else
