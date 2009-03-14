@@ -326,7 +326,7 @@ module Termtter
         setup_readline()
         trap_setting()
         @@input_thread = Thread.new do
-          while buf = Readline.readline(ERB.new(configatron.prompt).result(API.twitter.__send__(:binding)), true)
+          while buf = Readline.readline(ERB.new(config.prompt).result(API.twitter.__send__(:binding)), true)
             Readline::HISTORY.pop if /^(u|update)\s+(.+)$/ =~ buf
             begin
               call_commands(buf)
