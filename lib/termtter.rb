@@ -43,7 +43,7 @@ def plugin(s, init = {})
       eval("config.plugins.#{s}").__send__("#{key}=", value)
     end
   end
-  require "plugin/#{s}"
+  require "plugins/#{s}"
 rescue => e
   Termtter::Client.handle_error(e)
 end
