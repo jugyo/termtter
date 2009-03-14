@@ -11,6 +11,10 @@ module Termtter
       @store = Hash.new(:undefined)
     end
 
+    def inspect
+      @store.inspect
+    end
+
     # set_default :: (Symbol | String) -> a -> IO ()
     def set_default(name, value)
       match_p, init, last = *name.to_s.match(/^(.+)\.([^\.]+)$/)
