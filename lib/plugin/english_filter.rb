@@ -4,5 +4,5 @@ Termtter::Client.add_filter do |statuses|
   statuses.select{|s| s.english? }
 end
 
-# filter-english.rb
+# english_filter.rb
 #   select English post only

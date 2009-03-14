@@ -12,4 +12,3 @@ module Termtter::Client
     statuses
   end
 end
-

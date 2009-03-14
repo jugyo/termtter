@@ -15,6 +15,5 @@ module Termtter
   end
 end
 
-# filter-yhara.rb
+# yhara_filter.rb
 #   select Yharian post only
-
