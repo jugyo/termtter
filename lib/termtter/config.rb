@@ -29,8 +29,12 @@ module Termtter
       def set_default(name, value)
         method(name)
       rescue
-        instance_variable_set("@#{name.to_s}", value)
-        metaclass.__send__(:attr_reader, name.to_sym)
+        key, *storages = name.to_s.split('.').reverse
+        unless storages.empty?
+          eval("self.#{storages.reverse.join}").__send__("#{key}=", value)
+        else
+          self.__send__("#{key}=", value)
+        end
       ensure
         nil
       end
