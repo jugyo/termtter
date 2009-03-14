@@ -81,7 +81,7 @@ module Termtter::Client
   register_command(
     :name => :search, :aliases => [:s],
     :exec_proc => lambda {|arg|
-      call_hooks(Termtter::API.twitter.search(arg).results, :search)
+      call_hooks(Termtter::API.twitter.search(arg), :search)
     }
   )
 

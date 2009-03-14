@@ -44,16 +44,26 @@ module Termtter::Client
     print_statuses(statuses, sort, '%m-%d %H:%M')
   end
 
-  add_hook do |statuses, event|
-    next if statuses.empty?
+  def self.print_search_results(results, time_format = '%H:%M:%S')
+    results.sort_by{|r| r.created_at}.each do |r|
+      text = r.text
+      status_color = configatron.plugins.stdout.colors[r.from_user_id.to_i.hash % configatron.plugins.stdout.colors.size]
+      status = "#{r.from_user}: #{text}"
+      time = "(#{Time.parse(r.created_at).strftime(time_format)})"
+      id = r.id
+      erbed_text = ERB.new(configatron.plugins.stdout.timeline_format).result(binding)
+      puts TermColor.parse(erbed_text)
+    end
+  end
 
+  add_hook do |result, event|
     case event
     when :update_friends_timeline, :list_friends_timeline
-      print_statuses(statuses)
+      print_statuses(result) unless result.empty?
     when :list_user_timeline, :show, :replies
-      print_statuses_with_date(statuses)
+      print_statuses_with_date(result) unless result.empty?
     when :search
-      
+      print_search_results(result.results)
     end
   end
 
