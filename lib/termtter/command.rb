@@ -34,7 +34,11 @@ module Termtter
     def complement(input)
       command_info = match?(input)
       if command_info
-        [completion_proc.call(command_info[0], command_info[1] || '')].flatten.compact
+        if completion_proc
+          [completion_proc.call(command_info[0], command_info[1] || '')].flatten.compact
+        else
+          []
+        end
       else
         [name.to_s, aliases.to_s].grep(/^#{Regexp.quote(input)}/)
       end
