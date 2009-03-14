@@ -20,6 +20,11 @@ module Termtter::Config
       @storage.sub.key.should == :value
     end
 
+    it 'should be able to make multiple storage' do
+      @storage.sub.more.for.test = 'value'
+      @storage.sub.more.for.test.should == 'value'
+    end
+
     it 'should be able to change value in storage' do
       @storage.storage = :value1
       @storage.storage = :value2
@@ -49,6 +54,14 @@ module Termtter::Config
         NoMethodError,
         %r[undefined method `key=' for "original value":String]
       )
+    end
+
+    it 'should set intermediate defult configs' do
+      @storage.set_default 'sub.more', 'value'
+      @storage.sub.class.should == Storage
+      @storage.sub.more.should == 'value'
+
+      @storage.sub.set_default 'more', 'value'
     end
   end
 end
