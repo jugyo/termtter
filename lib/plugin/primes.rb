@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 def primes(n)
+  return "" if n < 3
   table = []
   (2 .. n).each do |i|
     table << i
@@ -18,6 +19,12 @@ def primes(n)
 end
 
 module Termtter::Client
-  add_command /^primes\s(\d+)/ do|m,t|t.update_status x="primes(#{n=m[1].to_i}) = {#{primes n}}"
-  puts "=> #{x}" end
+  register_command(
+    :name => :primes,
+    :exec_proc => lambda {|arg|
+      n = arg.to_i
+      text = "primes(#{n}) = {#{primes n}}}"
+      puts "=> " << text
+    }
+  )
 end
