@@ -1,6 +1,18 @@
 # -*- coding: utf-8 -*-
 #
+
+def config
+  Termtter::Config.instance
+end
+
+def configatron
+  # remove this method until Termtter-1.2.0
+  warn "configatron method will be removed. Use config instead. (#{caller.first})"
+  Termtter::Config.instance
+end
+
 module Termtter
+
   class Config
     instance_methods.reject {|i| /__/ =~ i }.each do |f|
       undef_method f
@@ -47,6 +59,3 @@ module Termtter
   end
 end
 
-def config
-  Termtter::Config.instance
-end
