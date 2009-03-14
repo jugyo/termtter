@@ -139,6 +139,9 @@ module Termtter
       when /403/, /401/
         warn '[PROTECTED USER] You must add to show his/her tweet.'
         return []
+      when /500/
+        warn 'Twitter Birds say: Something wrong!'
+        return []
       end
       raise
     end
