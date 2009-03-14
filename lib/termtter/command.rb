@@ -25,7 +25,7 @@ module Termtter
 
     def set(config)
       @name            = config[:name].to_sym
-      @aliases         = config[:aliases]
+      @aliases         = config[:aliases].map {|e| e.to_sym }
       @exec_proc       = config[:exec_proc]
       @completion_proc = config[:completion_proc]
       @help            = config[:help]
