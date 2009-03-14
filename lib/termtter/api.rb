@@ -33,7 +33,6 @@ module Termtter
                       :proxy_password => config.proxy.password
                     }
                   )
-        @twitter_old = Termtter::Twitter.new(config.user_name, config.password, @connection)
       end
     end
   end

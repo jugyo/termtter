@@ -16,7 +16,6 @@ require 'optparse'
 
 require 'termtter/config'
 require 'termtter/version'
-require 'termtter/twitter'
 require 'termtter/connection'
 require 'termtter/status'
 require 'termtter/user'
