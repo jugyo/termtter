@@ -161,22 +161,25 @@ module Termtter
         end
 
         @@new_commands.each do |key, command|
-          command_info = command.match?(text)
-          if command_info
+          command_str, command_arg = command.match?(text)
+          if command_str
             command_found = true
-            input_command, arg = *command_info
 
-            modified_arg = call_new_hooks("modify_arg_for_#{command.name.to_s}", input_command, arg) || arg || ''
+            modified_arg = call_new_hooks(
+                              "modify_arg_for_#{command.name.to_s}",
+                              command_str,
+                              command_arg) || command_arg || ''
 
             @@task_manager.invoke_and_wait do
-              pre_exec_hook_result = call_new_hooks("pre_exec_#{command.name.to_s}", input_command, modified_arg)
-              next if pre_exec_hook_result == false
 
+              pre_exec_hook_result = call_new_hooks("pre_exec_#{command.name.to_s}", command_str, modified_arg)
+              next if pre_exec_hook_result == false
               # exec command
               result = command.execute(modified_arg)
               if result
-                call_new_hooks("post_exec_#{command.name.to_s}", input_command, modified_arg, result)
+                call_new_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
               end
+
             end
           end
         end

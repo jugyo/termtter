@@ -32,8 +32,8 @@ module Termtter
     end
 
     def complement(input)
-      command_info = match?(input)
-      if command_info
+      command_str, command_arg = match?(input)
+      if command_arg
         if completion_proc
           [completion_proc.call(command_info[0], command_info[1] || '')].flatten.compact
         else
@@ -45,9 +45,10 @@ module Termtter
     end
 
     # MEMO: Termtter:Client からはこのメソッドを呼び出すことになると思う。
+    # TODO: 廃止する
     def exec_if_match(input)
-      command_info = match?(input)
-      if command_info
+      command_str, command_arg = match?(input)
+      if command_str
         result = execute(command_info[1])
         unless result.nil?
           return result
@@ -76,7 +77,7 @@ module Termtter
       if pattern =~ input
         [$2 || $3, $4]  # $2 or $3 => command, $4 => argument
       else
-        nil
+        [nil, nil]
       end
     end
 
