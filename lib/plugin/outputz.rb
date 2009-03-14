@@ -5,7 +5,7 @@ module Termtter::Client
   config.plugins.outputz.set_default(:uri, 'termtter://twitter.com/status/update')
 
   key = config.plugins.outputz.secret_key
-  if key.instance_of? Configatron::Store
+  if key.instance_of? ::Termtter::Config::Storage
     puts 'Need your secret key'
     puts 'please set config.plugins.outputz.secret_key'
   else
