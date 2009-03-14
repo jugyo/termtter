@@ -16,7 +16,6 @@ module Termtter
         @@filters = []
         @@helps = []
         @@since_id = nil
-        @@main_thread = nil
         @@input_thread = nil
         @@task_manager = Termtter::TaskManager.new
         configatron.set_default(:update_interval, 300)
@@ -203,7 +202,6 @@ module Termtter
         call_hooks([], :exit)
         call_new_hooks(:exit)
         @@task_manager.kill
-        @@main_thread.kill if @@main_thread
         @@input_thread.kill if @@input_thread
       end
 
@@ -292,9 +290,7 @@ module Termtter
               unless statuses.empty?
                 @@since_id = statuses[0].id
               end
-              print "\e[1K\e[0G" if !statuses.empty? && !win?
               call_hooks(statuses, :update_friends_timeline)
-              @@input_thread.kill if @@input_thread && !statuses.empty?
             rescue OpenURI::HTTPError => e
               if e.message == '401 Unauthorized'
                 puts 'Could not login'
@@ -327,13 +323,18 @@ module Termtter
       def start_input_thread
         setup_readline()
         trap_setting()
-        @@main_thread = Thread.new do
-          loop do
-            @@input_thread = create_input_thread()
-            @@input_thread.join
+        @@input_thread = Thread.new do
+          while buf = Readline.readline(ERB.new(configatron.prompt).result(API.twitter.__send__(:binding)), true)
+            Readline::HISTORY.pop if /^(u|update)\s+(.+)$/ =~ buf
+            begin
+              call_commands(buf)
+            rescue CommandNotFound => e
+              puts "Unknown command \"#{buf}\""
+              puts 'Enter "help" for instructions'
+            end
           end
         end
-        @@main_thread.join
+        @@input_thread.join
       end
 
       def run
@@ -352,21 +353,6 @@ module Termtter
 
         @@task_manager.run()
         start_input_thread()
-      end
-
-      def create_input_thread()
-        Thread.new do
-          while buf = Readline.readline(ERB.new(configatron.prompt).result(API.twitter.__send__(:binding)), true)
-            Readline::HISTORY.pop if /^(u|update)\s+(.+)$/ =~ buf
-            begin
-              call_commands(buf)
-            rescue CommandNotFound => e
-              puts "Unknown command \"#{buf}\""
-              puts 'Enter "help" for instructions'
-            end
-          end
-          exit # exit when press Control-D
-        end
       end
 
       def create_highline
