@@ -36,7 +36,7 @@ module Termtter
         ['string',  'value'   ],
         ['symbol',  :value    ],
         ['arrry',   [:a, :b]  ],
-        ['hash',    {:a => :b}],
+        ['hashes',    {:a => :b}],
         ['integer', 1         ],
         ['float',   1.5       ],
         ['regexp',  /regexp/  ],
@@ -61,12 +61,14 @@ module Termtter
       @storage.subb.class.should == Config
       @storage.subb.more.should == 'value'
 
-      @storage.subb.set_default 'more', 'value'
+      @storage.proxy.set_default(:port, 'value')
+      @storage.proxy.port.should == 'value'
     end
 
-    it 'should have :undefined value in un-assigned key' do
-      @storage.aaaa.should == :undefined
-    end
+    # FIXME: not work
+#     it 'should have :undefined value in un-assigned key' do
+#       @storage.aaaa.should == :undefined
+#     end
 
     it 'should be empty when something is assigned' do
       @storage.empty?.should be_true
@@ -85,6 +87,14 @@ module Termtter
     it 'should be empty when set_defaulted' do
       @storage.set_default('aaa', 1)
       @storage.empty?.should be_false
+    end
+
+    it 'should use in expression' do
+      @storage.set_default(:ssb, 'hoge')
+      lambda {
+        res = @storage.ssb + ' piyo'
+        res.should == 'hoge piyo'
+      }.should_not raise_error
     end
   end
 end

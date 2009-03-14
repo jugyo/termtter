@@ -2,9 +2,10 @@
 #
 module Termtter
   class Config
-    instance_methods.reject {|i| /__/ =~ i }.each do |f|
-      undef_method f
-    end
+# buggy!!!!!!
+#     instance_methods.reject {|i| /__/ =~ i }.each do |f|
+#       undef_method f
+#     end
 
     def initialize
       @store = Hash.new(:undefined)
@@ -12,7 +13,7 @@ module Termtter
 
     # set_default :: (Symbol | String) -> a -> IO ()
     def set_default(name, value)
-      match_p, init, last = *name.to_s.match(/^(.*?)\.([^\.]+)$/)
+      match_p, init, last = *name.to_s.match(/^(.+)\.([^\.]+)$/)
       if match_p
         eval(init).__assign__(last.intern, value)
       else
@@ -28,10 +29,8 @@ module Termtter
     def method_missing(name, *args)
       case name.to_s
       when /(.*?)=$/
-        raise NoMethodError if args.size != 1
         __assign__($1.intern, args.first)
       else
-        raise NoMethodError unless args.empty?
         __refer__(name)
       end
     end
@@ -43,12 +42,12 @@ module Termtter
 
     # __refer__ :: Symbol -> IO a
     def __refer__(name)
-      @store[name] == :undefined ? Termtter::Config.new : @store[name]
+      @store[name] == :undefined ? @store[name] = Termtter::Config.new : @store[name]
     end
 
-    def self.instance
-      @@instance ||= new
-    end
+    __instance = self.new
+    (class << self; self end).
+      __send__(:define_method, :instance) { __instance }
   end
 end
 
