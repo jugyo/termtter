@@ -4,8 +4,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Termtter::Client, 'when the plugin fib is loaded' do
   it 'should add command fib' do
-    Termtter::Client.should_receive(:add_command).with(/^fib\s+(\d+)/)
-    Termtter::Client.should_receive(:add_command).with(/^fibyou\s(\w+)\s(\d+)/)
+    Termtter::Client.should_receive(:register_command)
     plugin 'fib'
   end
 
