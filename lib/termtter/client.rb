@@ -130,7 +130,7 @@ module Termtter
           break if result == false # interrupt if hook return false
           result = hook.exec_proc.call(*args)
         }
-        return result
+        result
       rescue => e
         if point.to_sym == :on_error
           raise
@@ -369,7 +369,7 @@ module Termtter
         else
           stdin_for_highline = $stdin
         end
-        return HighLine.new(stdin_for_highline)
+        HighLine.new(stdin_for_highline)
       end
 
       def handle_error(e)

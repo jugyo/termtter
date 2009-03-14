@@ -1,18 +1,7 @@
 # -*- coding: utf-8 -*-
 
-module Termtter
-
-  class Status
-    def yharian?
-      self.text =~ /^(?:\s|(y\s)|(?:hara\s))+\s*(?:y|(?:hara))(?:\?|!|\.)?\s*$/
-    end
-  end
-
-  module Client
-    add_filter do |statuses|
-      statuses.select{|s| s.yharian? }
-    end
-  end
+Termtter::Client.add_filter do |statuses|
+  statuses.select{|s| s.text =~ /^(?:\s|(y\s)|(?:hara\s))+\s*(?:y|(?:hara))(?:\?|!|\.)?\s*$/ }
 end
 
 # yhara_filter.rb
