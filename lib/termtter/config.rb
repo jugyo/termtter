@@ -19,9 +19,9 @@ module Termtter
     def set_default(name, value)
       match_p, init, last = *name.to_s.match(/^(.+)\.([^\.]+)$/)
       if match_p
-        eval(init).__assign__(last.intern, value)
+        eval(init).__assign__(last.to_sym, value)
       else
-        __assign__(name, value)
+        __assign__(name.to_sym, value)
       end
     end
 
@@ -32,10 +32,10 @@ module Termtter
 
     def method_missing(name, *args)
       case name.to_s
-      when /(.*?)=$/
-        __assign__($1.intern, args.first)
+      when /(.*)=$/
+        __assign__($1.to_sym, args.first)
       else
-        __refer__(name)
+        __refer__(name.to_sym)
       end
     end
 
