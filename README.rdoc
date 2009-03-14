@@ -17,7 +17,8 @@ Run:
 == REQUIREMENTS:
 
 * json_pure
-* configatron
+* termcolor
+* rubytter
 
 == INSTALL:
 
@@ -40,15 +41,15 @@ You can edit the file anytime.
 
   vim ~/.termtter
 
-  configatron.user_name = 'USERNAME'
-  configatron.password = 'PASSWORD'
+  config.user_name = 'USERNAME'
+  config.password = 'PASSWORD'
 
 If you would like to use proxy server, add configurations like this:
 
-  configatron.proxy.host = 'PROXYHOST'
-  configatron.proxy.port = 'PROXYPORT'
-  configatron.proxy.user_name = 'USERNAME'
-  configatron.proxy.password = 'PASSWORD'
+  config.proxy.host = 'PROXYHOST'
+  config.proxy.port = 'PROXYPORT'
+  config.proxy.user_name = 'USERNAME'
+  config.proxy.password = 'PASSWORD'
 
 To update the config, just restart your termtter proccess.
 
@@ -62,7 +63,6 @@ http://wiki.github.com/jugyo/termtter/home (in Japanese)
 
 == TODO:
 
-- rubytter を使うようにする
 - filter と plugin を統一する
 - plugin => plugins （ディレクトリ名変更）
 - $HOME 以下に plugin 用のディレクトリを置けるようにする
