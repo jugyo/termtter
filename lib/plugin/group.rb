@@ -4,9 +4,9 @@ module Termtter
   class Status
     def is_member?(group = nil)
       if group
-        configatron.plugins.group.groups[group].include? self.user_screen_name
+        configatron.plugins.group.groups[group].include? self.user.screen_name
       else
-        configatron.plugins.group.groups.values.flatten.include? self.user_screen_name
+        configatron.plugins.group.groups.values.flatten.include? self.user.screen_name
       end
     end
   end
@@ -34,7 +34,7 @@ module Termtter::Client
          group = configatron.plugins.group.groups[group_name]
        end
        statuses = group ? public_storage[:log].select { |s|
-         group.include?(s.user_screen_name) 
+         group.include?(s.user.screen_name) 
        } : []
        call_hooks(statuses, :search)
      else

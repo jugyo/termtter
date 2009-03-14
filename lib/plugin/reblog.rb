@@ -18,7 +18,7 @@ module Termtter::Client
         end
     
         Tumblr::API.write(configatron.plugins.reblog.email, configatron.plugins.reblog.password) do
-          quote("#{status.text}", "<a href=\"http://twitter.com/#{status.user_screen_name}/status/#{status.id}\">Twitter / #{status.user_name}</a>")
+          quote("#{status.text}", "<a href=\"http://twitter.com/#{status.user.screen_name}/status/#{status.id}\">Twitter / #{status.user_name}</a>")
         end
       end
     },

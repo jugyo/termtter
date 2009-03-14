@@ -21,7 +21,7 @@ module Termtter::Client
             :password => configatron.plugins.hatebu.password,
         })
         link = Atom::Link.new({
-           :href => "http://twitter.com/#{status.user_screen_name}/status/#{status.id}",
+           :href => "http://twitter.com/#{status.user.screen_name}/status/#{status.id}",
            :rel => 'related',
            :type => 'text/html',
         })

@@ -17,7 +17,7 @@ Termtter::Client.add_hook do |statuses, event, t|
     GC.start
   elsif !statuses.empty? && event == :update_friends_timeline
     statuses.reverse.each do |s|
-      req = achar.speak("#{s.user_screen_name}: #{s.text}".tosjis)
+      req = achar.speak("#{s.user.screen_name}: #{s.text}".tosjis)
       sleep 3
       WIN32OLE_EVENT.message_loop
       achar.stop(req)

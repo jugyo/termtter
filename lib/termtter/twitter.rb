@@ -64,7 +64,7 @@ module Termtter
                         gsub(/(\n|\r)/, '').
                         gsub(/(#{Regexp.escape(query)})/i, configatron.search.highlihgt_text_format)
         status.created_at = Time.parse(s["created_at"])
-        status.user_screen_name = s['from_user']
+        status.user.screen_name = s['from_user']
         status
       end
     end
@@ -96,7 +96,7 @@ module Termtter
       return data.map do |s|
         status = Status.new
         status.created_at = Time.parse(s["created_at"])
-        %w(id text truncated in_reply_to_status_id in_reply_to_user_id in_reply_to_screen_name).each do |key|
+        %w(id text truncated in_reply_to_status_id in_reply_to_user.id in_reply_to_screen_name).each do |key|
           status.__send__("#{key}=".to_sym, s[key])
         end
         %w(id name screen_name url profile_image_url).each do |key|

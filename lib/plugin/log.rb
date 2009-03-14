@@ -31,7 +31,7 @@ module Termtter::Client
        vars = arg.split(' ')
        print_max = vars.last =~ /^\d+$/ ? vars.pop.to_i : configatron.plugins.log.print_max_size
        id = vars
-       statuses = id.first ? public_storage[:log].select{ |s| id.include? s.user_screen_name} : public_storage[:log]
+       statuses = id.first ? public_storage[:log].select{ |s| id.include? s.user.screen_name} : public_storage[:log]
        print_max = 0 if statuses.size < print_max
        call_hooks(statuses[-print_max..-1], :search)
      end

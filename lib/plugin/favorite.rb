@@ -40,7 +40,7 @@ module Termtter::Client
         status = statuses.first
         res = t.favorite(status.id)
         if res.code == '200'
-          puts %Q(Favorited "#{status.user_screen_name}: #{status.text}")
+          puts %Q(Favorited "#{status.user.screen_name}: #{status.text}")
         else
           puts "Failed: #{res}"
         end

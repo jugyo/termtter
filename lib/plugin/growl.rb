@@ -17,7 +17,7 @@ FileUtils.mkdir_p(configatron.plugins.growl.icon_cache_dir) unless File.exist?(c
 
 def get_icon_path(s)
   cache_file = "%s/%s%s" % [  configatron.plugins.growl.icon_cache_dir, 
-                              s.user_screen_name, 
+                              s.user.screen_name, 
                               File.extname(s.user_profile_image_url)  ]
   if File.exist?(cache_file) && (File.atime(cache_file) + 24*60*60) > Time.now
     return cache_file
@@ -37,12 +37,12 @@ Thread.new do
     begin
       if s = queue.pop
         unless growl
-          arg = ['growlnotify', s.user_screen_name, '-m', s.text.gsub("\n",''), '-n', 'termtter']
+          arg = ['growlnotify', s.user.screen_name, '-m', s.text.gsub("\n",''), '-n', 'termtter']
           #icon_path = get_icon_path(s)
           #arg += ['--image', icon_path] if icon_path
           system *arg
         else
-          growl.notify "termtter status notification", s.text, s.user_screen_name
+          growl.notify "termtter status notification", s.text, s.user.screen_name
         end
       end
     rescue => e

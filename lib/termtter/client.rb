@@ -287,7 +287,8 @@ module Termtter
           :name => :_update_timeline,
           :exec_proc => lambda {|arg|
             begin
-              statuses = Termtter::API.twitter.get_friends_timeline(@@since_id)
+              args = @@since_id ? [{:since_id => @@since_id}] : []
+              statuses = Termtter::API.twitter.friends_timeline(*args)
               unless statuses.empty?
                 @@since_id = statuses[0].id
               end

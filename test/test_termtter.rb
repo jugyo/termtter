@@ -21,10 +21,10 @@ class TestTermtter < Test::Unit::TestCase
   def test_search
     statuses = swap_open('search.json') { @twitter.search('') }
     assert_equal 3, statuses.size
-    assert_equal 'test2', statuses[0].user_screen_name
+    assert_equal 'test2', statuses[0].user.screen_name
     assert_equal 'texttext 2', statuses[0].text
     assert_equal 'Sat Jan 03 21:49:09 +0900 2009', statuses[0].created_at.to_s
-    assert_equal 'test0', statuses[2].user_screen_name
+    assert_equal 'test0', statuses[2].user.screen_name
     assert_equal 'texttext 0', statuses[2].text
     assert_equal 'Sat Jan 03 21:49:09 +0900 2009', statuses[2].created_at.to_s
   end

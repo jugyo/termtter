@@ -70,7 +70,7 @@ module Termtter::Client
       unless arg.empty?
         call_hooks(Termtter::API.twitter.get_user_timeline(arg), :list_user_timeline)
       else
-        call_hooks(Termtter::API.twitter.get_friends_timeline(), :list_friends_timeline)
+        call_hooks(Termtter::API.twitter.friends_timeline(), :list_friends_timeline)
       end
     },
     :completion_proc => lambda {|cmd, arg|
@@ -81,7 +81,7 @@ module Termtter::Client
   register_command(
     :name => :search, :aliases => [:s],
     :exec_proc => lambda {|arg|
-      call_hooks(Termtter::API.twitter.search(arg), :search)
+      call_hooks(Termtter::API.twitter.search(arg).results, :search)
     }
   )
 
@@ -223,7 +223,7 @@ module Termtter::Client
 
   add_hook do |statuses, event, t|
     statuses.each do |s|
-      public_storage[:users].add(s.user_screen_name)
+      public_storage[:users].add(s.user.screen_name)
       public_storage[:users] += s.text.scan(/@([a-zA-Z_0-9]*)/).flatten
       public_storage[:status_ids].add(s.id.to_s)
       public_storage[:status_ids].add(s.in_reply_to_status_id.to_s) if s.in_reply_to_status_id

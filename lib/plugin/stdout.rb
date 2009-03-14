@@ -27,13 +27,13 @@ module Termtter::Client
   def self.print_statuses(statuses, sort = true, time_format = '%H:%M:%S')
     (sort ? statuses.sort_by{ |s| s.id} : statuses).each do |s|
       text = s.text
-      status_color = configatron.plugins.stdout.colors[s.user_id.to_i.hash % configatron.plugins.stdout.colors.size]
-      status = "#{s.user_screen_name}: #{text}"
+      status_color = configatron.plugins.stdout.colors[s.user.id.to_i.hash % configatron.plugins.stdout.colors.size]
+      status = "#{s.user.screen_name}: #{text}"
       if s.in_reply_to_status_id
         status += " (reply to #{s.in_reply_to_status_id})"
       end
 
-      time = "(#{s.created_at.strftime(time_format)})"
+      time = "(#{Time.parse(s.created_at).strftime(time_format)})"
       id = s.id
       erbed_text = ERB.new(configatron.plugins.stdout.timeline_format).result(binding)
       puts TermColor.parse(erbed_text)
@@ -50,8 +50,10 @@ module Termtter::Client
     case event
     when :update_friends_timeline, :list_friends_timeline
       print_statuses(statuses)
-    when :search, :list_user_timeline, :show, :replies
+    when :list_user_timeline, :show, :replies
       print_statuses_with_date(statuses)
+    when :search
+      
     end
   end
 
