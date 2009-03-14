@@ -48,15 +48,4 @@ rescue => e
   Termtter::Client.handle_error(e)
 end
 
-def filter(s)
-  load "filter/#{s}.rb"
-rescue => e
-  Termtter::Client.handle_error(e)
-else
-  Termtter::Client.public_storage[:filters] ||= []
-  Termtter::Client.public_storage[:filters] << s
-  true
-end
-
 $:.unshift(Termtter::CONF_DIR) # still does not use
-
