@@ -10,7 +10,7 @@ module Termtter::Client
     :name => :update, :aliases => [:u],
     :exec_proc => lambda {|arg|
       text = ERB.new(arg).result(binding).gsub(/\n/, ' ')
-      Termtter::API.twitter.update_status(text)
+      Termtter::API.twitter.update(text)
       puts "=> #{text}"
     },
     :completion_proc => lambda {|cmd, args|
@@ -197,7 +197,7 @@ module Termtter::Client
     if arg
       `#{arg}`.each_line do |line|
         unless line.strip.empty?
-          Termtter::API.twitter.update_status(line)
+          Termtter::API.twitter.update(line)
           puts "=> #{line}"
         end
       end
