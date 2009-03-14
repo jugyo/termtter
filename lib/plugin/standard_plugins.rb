@@ -60,7 +60,7 @@ module Termtter::Client
     :exec_proc => lambda {|arg|
       followers = Termtter::API.twitter.followers
       Termtter::Client.public_storage[:followers] = followers
-      p followers.map{|f|f.screen_name}
+      puts followers.map{|f|f.screen_name}.join(' ')
     }
   )
 
@@ -95,17 +95,31 @@ module Termtter::Client
   register_command(
     :name => :show,
     :exec_proc => lambda {|arg|
-      id = arg.gsub(/.*:/, '')
+      id = arg.gsub(/.*:\s*/, '')
       call_hooks(Termtter::API.twitter.show(id), :show)
+    },
+    :completion_proc => lambda {|cmd, arg|
+      case arg
+      when /(\w+):\s*(\d+)\s*$/
+        find_status_ids($2).map{|id| "#{cmd} #{$1}: #{id}"}
+      else
+        users = find_users(arg)
+        unless users.empty?
+          users.map{|user| "#{cmd} #{user}:"}
+        else
+          find_status_ids(arg).map{|id| "#{cmd} #{id}"}
+        end
+      end
     }
   )
 
   register_command(
     :name => :shows,
     :exec_proc => lambda {|arg|
-      id = arg.gsub(/.*:/, '')
+      id = arg.gsub(/.*:\s*/, '')
       call_hooks(Termtter::API.twitter.show(id, true), :show)
-    }
+    },
+    :completion_proc => get_command(:show).completion_proc
   )
 
   # TODO: Change colors when remaining_hits is low.
@@ -158,6 +172,7 @@ module Termtter::Client
   register_command(
     :name => :help, :aliases => [:h],
     :exec_proc => lambda {|arg|
+      # TODO: move to each commands
       helps = [
         ["help,h", "Print this help message"],
         ["list,l", "List the posts in your friends timeline"],
@@ -177,32 +192,19 @@ module Termtter::Client
   )
 
   register_command(
-   :name => :execute,
-   :exec_proc => lambda{|arg|
-     if arg
-       `#{arg}`.each_line do |line|
-           unless line.strip.empty?
-             Termtter::API.twitter.update_status(line)
-             puts "=> #{line}"
-           end
-       end
-     end
-   },
-   :help => ['execute COMMAND', 'execute the command']
-   )
-
-  add_command /^!(!)?\s*(.*)$/ do |m, t|
-    warn '!COMMAND command will be removed. Use command execute instead.'
-    begin
-      result = `#{m[2]}` unless m[2].empty?
-      unless m[1].nil? || result.empty?
-        t.update_status(result.gsub("\n", " "))
+    :name => :execute,
+    :exec_proc => lambda{|arg|
+    if arg
+      `#{arg}`.each_line do |line|
+        unless line.strip.empty?
+          Termtter::API.twitter.update_status(line)
+          puts "=> #{line}"
+        end
       end
-      puts "=> #{result}"
-    rescue => e
-      puts e
     end
-  end
+    },
+    :help => ['execute COMMAND', 'execute the command']
+  )
 
   def self.formatted_help(helps)
     helps = helps.sort_by{|help| help[0]}
@@ -228,17 +230,12 @@ module Termtter::Client
     end
   end
 
-  def self.find_status_id_candidates(a, b, u = nil)
-    candidates = public_storage[:status_ids].to_a
-    if u && c = public_storage[:log].select {|s| s.user_screen_name == u }.map {|s| s.id.to_s }
-      candidates = c unless c.empty?
-    end
-    if a.empty?
-      candidates
-    else
-      candidates.grep(/#{Regexp.quote a}/)
-    end.
-    map {|u| b % u }
+  def self.find_status_ids(text)
+    public_storage[:status_ids].select{|id| id =~ /#{Regexp.quote(text)}/}
+  end
+
+  def self.find_users(text)
+    public_storage[:users].select{|user| user =~ /#{Regexp.quote(text)}/}
   end
 
   def self.find_user_candidates(a, b)
@@ -248,22 +245,6 @@ module Termtter::Client
       public_storage[:users].grep(/^#{Regexp.quote a}/i)
     end.
     map {|u| b % u }
-  end
-
-  add_completion do |input|
-    standard_commands = %w[exit help list pause profile update direct resume replies search show limit]
-    case input
-    when /^show(s)?\s+(([\w\d]+):)?\s*(.*)/
-      if $2
-        find_status_id_candidates $4, "show#{$1} #{$2}%s", $3
-      else
-        result = find_user_candidates $4, "show#{$1} %s:"
-        result = find_status_id_candidates $4, "show#{$1} %s"  if result.empty?
-        result
-      end
-    else
-      standard_commands.grep(/^#{Regexp.quote input}/)
-    end
   end
 
 end

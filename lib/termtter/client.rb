@@ -23,6 +23,7 @@ module Termtter
         configatron.set_default(:prompt, '> ')
         configatron.set_default(:enable_ssl, false)
         configatron.proxy.set_default(:port, '8080')
+        configatron.set_default(:devel, false)
         Thread.abort_on_exception = true
       end
 
@@ -209,10 +210,6 @@ module Termtter
       def load_default_plugins
         plugin 'standard_plugins'
         plugin 'stdout'
-        configatron.set_default(:devel, false)
-        if configatron.devel
-          plugin 'devel'
-        end
       end
 
       def load_config
@@ -253,6 +250,12 @@ module Termtter
           wrap_require do
             load conf_file
           end
+        end
+      end
+
+      def pre_config_load()
+        if configatron.devel
+          plugin 'devel'
         end
       end
 
@@ -339,6 +342,7 @@ module Termtter
         load_default_plugins()
         load_config()
         Termtter::API.setup()
+        pre_config_load()
 
         call_hooks([], :initialize)
         call_new_hooks(:initialize)
