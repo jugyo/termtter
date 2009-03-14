@@ -142,6 +142,7 @@ module Termtter
       )
 
       hook_called.should == false
+      Client.should_receive(:puts)
       Client.exit
       hook_called.should == true
     end
@@ -154,6 +155,7 @@ module Termtter
 
       hook1_called.should == false
       hook2_called.should == false
+      Client.should_receive(:puts)
       Client.exit
       hook1_called.should == true
       hook2_called.should == true
@@ -167,6 +169,7 @@ module Termtter
 
       hook1_called.should == false
       hook2_called.should == false
+      Client.should_receive(:puts)
       Client.exit
       hook1_called.should == false
       hook2_called.should == true
