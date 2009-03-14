@@ -1,6 +1,14 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
+require 'optparse'
 require 'rubygems'
 require 'termtter'
+
+OptionParser.new { |opt|
+  Version = Termtter::VERSION
+
+  opt.parse!(ARGV)
+}
+
 Termtter::Client.run
