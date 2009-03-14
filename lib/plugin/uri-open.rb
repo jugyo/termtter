@@ -12,8 +12,8 @@ module Termtter::Client
   end
 
   def self.open_uri(uri)
-    unless configatron.plugins.uri_open.browser.nil?
-      system configatron.plugins.uri_open.browser, uri
+    unless config.plugins.uri_open.browser.nil?
+      system config.plugins.uri_open.browser, uri
     else
       case RUBY_PLATFORM
       when /linux/

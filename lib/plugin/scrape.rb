@@ -12,7 +12,7 @@ module Termtter::Client
   end    
   
   def self.scrape_group(group)
-    members = configatron.plugins.group.groups[group] || []
+    members = config.plugins.group.groups[group] || []
     scrape_members(members)
   end
 
@@ -21,12 +21,12 @@ module Termtter::Client
                    :exec_proc => lambda{ |args|
                      groups = args.split(' ').map{|g| g.to_sym}
                      if groups.include? :all
-                       groups = configatron.plugins.group.groups.keys
+                       groups = config.plugins.group.groups.keys
                        puts "get all groups..."
                      end
                      members = []
                      groups.each do |group|
-                       members += configatron.plugins.group.groups[group]
+                       members += config.plugins.group.groups[group]
                      end
                      statuses = scrape_members(members.uniq.compact.sort)
                      call_hooks(statuses, :pre_filter)

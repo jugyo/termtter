@@ -5,7 +5,7 @@ require 'erb'
 module Termtter
   Client.clear_hooks # FIXME: not to clear all but to clear just stdout.rb
 
-  configatron.set_default(
+  config.set_default(
     :timeline_format,
     '<%= color(time, 90) %> <%= color(status, status_color) %> <%= color(id, 90) %>')
 
@@ -41,7 +41,7 @@ module Termtter
 
           id = s.id
 
-          puts ERB.new(configatron.timeline_format).result(binding)
+          puts ERB.new(config.timeline_format).result(binding)
         end
       end
     when :search
@@ -52,7 +52,7 @@ module Termtter
         status = "#{s.user_screen_name}: #{text}"
         time = "(#{s.created_at.strftime('%m-%d %H:%M')})"
         id = s.id
-        puts ERB.new(configatron.timeline_format).result(binding)
+        puts ERB.new(config.timeline_format).result(binding)
       end
     end
   end

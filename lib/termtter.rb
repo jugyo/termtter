@@ -42,7 +42,7 @@ end
 def plugin(s, init = {})
   unless init.empty?
     init.each do |key, value|
-      eval("configatron.plugins.#{s}").__send__("#{key}=", value)
+      eval("config.plugins.#{s}").__send__("#{key}=", value)
     end
   end
   require "plugin/#{s}"

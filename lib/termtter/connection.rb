@@ -5,12 +5,12 @@ module Termtter
     attr_reader :protocol, :port, :proxy_uri
 
     def initialize
-      @proxy_host = configatron.proxy.host
-      @proxy_port = configatron.proxy.port
-      @proxy_user = configatron.proxy.user_name
-      @proxy_password = configatron.proxy.password
+      @proxy_host = config.proxy.host
+      @proxy_port = config.proxy.port
+      @proxy_user = config.proxy.user_name
+      @proxy_password = config.proxy.password
       @proxy_uri = nil
-      @enable_ssl = configatron.enable_ssl
+      @enable_ssl = config.enable_ssl
       @protocol = "http"
       @port = 80
 

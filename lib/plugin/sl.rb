@@ -5,8 +5,8 @@ module Termtter
   module Client
 
     public_storage[:current] = ''
-    public_storage[:orig_prompt] = configatron.prompt
-    configatron.prompt = "~/ #{public_storage[:orig_prompt]}"
+    public_storage[:orig_prompt] = config.prompt
+    config.prompt = "~/ #{public_storage[:orig_prompt]}"
 
     register_command(
       :name      => :sl, :aliases => [],
@@ -36,7 +36,7 @@ module Termtter
       :exec_proc => lambda {|arg|
         public_storage[:current] =
           (arg.nil? || /\~/ =~ arg) ? '' : arg
-        configatron.prompt = "~/#{public_storage[:current]} #{public_storage[:orig_prompt]}"
+        config.prompt = "~/#{public_storage[:current]} #{public_storage[:orig_prompt]}"
       },
       :completion_proc => lambda {|cmd, args|
         find_user_candidates args, "#{cmd} %s"

@@ -19,11 +19,11 @@ module Termtter
         @@main_thread = nil
         @@input_thread = nil
         @@task_manager = Termtter::TaskManager.new
-        configatron.set_default(:update_interval, 300)
-        configatron.set_default(:prompt, '> ')
-        configatron.set_default(:enable_ssl, false)
-        configatron.proxy.set_default(:port, '8080')
-        configatron.set_default(:devel, false)
+        config.set_default(:update_interval, 300)
+        config.set_default(:prompt, '> ')
+        config.set_default(:enable_ssl, false)
+        config.proxy.set_default(:port, '8080')
+        config.set_default(:devel, false)
         Thread.abort_on_exception = true
       end
 
@@ -235,13 +235,13 @@ module Termtter
             end
 
             io.puts
-            io.puts "configatron.user_name = '#{username}'"
-            io.puts "configatron.password = '#{password}'"
-            io.puts "#configatron.update_interval = 120"
-            io.puts "#configatron.proxy.host = 'proxy host'"
-            io.puts "#configatron.proxy.port = '8080'"
-            io.puts "#configatron.proxy.user_name = 'proxy user'"
-            io.puts "#configatron.proxy.password = 'proxy password'"
+            io.puts "config.user_name = '#{username}'"
+            io.puts "config.password = '#{password}'"
+            io.puts "#config.update_interval = 120"
+            io.puts "#config.proxy.host = 'proxy host'"
+            io.puts "#config.proxy.port = '8080'"
+            io.puts "#config.proxy.user_name = 'proxy user'"
+            io.puts "#config.proxy.password = 'proxy password'"
             io.puts
             io.puts "# vim: set filetype=ruby"
           }
@@ -254,7 +254,7 @@ module Termtter
       end
 
       def pre_config_load()
-        if configatron.devel
+        if config.devel
           plugin 'devel'
         end
       end
@@ -277,7 +277,7 @@ module Termtter
             handle_error(e)
           end
         }
-        vi_or_emacs = configatron.editing_mode
+        vi_or_emacs = config.editing_mode
         unless vi_or_emacs.empty?
           Readline.__send__("#{vi_or_emacs}_editing_mode")
         end
@@ -305,7 +305,7 @@ module Termtter
           }
         )
 
-        add_task(:name => :update_timeline, :interval => configatron.update_interval) do
+        add_task(:name => :update_timeline, :interval => config.update_interval) do
           call_commands('_update_timeline')
         end
       end
@@ -356,7 +356,7 @@ module Termtter
 
       def create_input_thread()
         Thread.new do
-          while buf = Readline.readline(ERB.new(configatron.prompt).result(API.twitter.__send__(:binding)), true)
+          while buf = Readline.readline(ERB.new(config.prompt).result(API.twitter.__send__(:binding)), true)
             Readline::HISTORY.pop if /^(u|update)\s+(.+)$/ =~ buf
             begin
               call_commands(buf)

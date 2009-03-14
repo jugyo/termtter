@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-def configatron; Termtter::Config.instance end
+def config; Termtter::Config.instance end
 
 module Termtter
   module Config

@@ -12,11 +12,11 @@ rescue LoadError
   growl = nil
 end
 
-configatron.plugins.growl.set_default(:icon_cache_dir, "#{Dir.tmpdir}/termtter-icon-cache-dir")
-FileUtils.mkdir_p(configatron.plugins.growl.icon_cache_dir) unless File.exist?(configatron.plugins.growl.icon_cache_dir)
+config.plugins.growl.set_default(:icon_cache_dir, "#{Dir.tmpdir}/termtter-icon-cache-dir")
+FileUtils.mkdir_p(config.plugins.growl.icon_cache_dir) unless File.exist?(config.plugins.growl.icon_cache_dir)
 
 def get_icon_path(s)
-  cache_file = "%s/%s%s" % [  configatron.plugins.growl.icon_cache_dir, 
+  cache_file = "%s/%s%s" % [  config.plugins.growl.icon_cache_dir, 
                               s.user_screen_name, 
                               File.extname(s.user_profile_image_url)  ]
   if File.exist?(cache_file) && (File.atime(cache_file) + 24*60*60) > Time.now
