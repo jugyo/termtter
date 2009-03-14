@@ -86,6 +86,12 @@ module Termtter
       @storage.set_default('aaa', 1)
       @storage.empty?.should be_false
     end
+
+    it 'should inspect' do
+      @storage.inspect.should == '{}'
+      @storage.jjj = 'eee'
+      @storage.inspect.should == '{:jjj=>"eee"}'
+    end
   end
 end
 
