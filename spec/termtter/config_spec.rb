@@ -2,12 +2,12 @@
 
 require File.dirname(__FILE__) + '/../spec_helper'
 
-module Termtter::Config
+module Termtter
 
-  describe Storage do
+  describe Config do
 
     before do
-      @storage = Storage.new('config')
+      @storage = Config.new
     end
 
     it 'should be able to store value to new storage' do
@@ -15,14 +15,14 @@ module Termtter::Config
       @storage.new_storage.should == :value
     end
 
-    it 'should be able to make sub.key and store value' do
-      @storage.sub.key = :value
-      @storage.sub.key.should == :value
+    it 'should be able to make subb.key and store value' do
+      @storage.subb.key = :value
+      @storage.subb.key.should == :value
     end
 
     it 'should be able to make multiple storage' do
-      @storage.sub.more.for.test = 'value'
-      @storage.sub.more.for.test.should == 'value'
+      @storage.subb.more.for.test = 'value'
+      @storage.subb.more.for.test.should == 'value'
     end
 
     it 'should be able to change value in storage' do
@@ -46,10 +46,10 @@ module Termtter::Config
       end
     end
 
-    it 'should raise error when add sub-storage to existed key' do
-      @storage.sub = 'original value'
+    it 'should raise error when add subb-storage to existed key' do
+      @storage.subb = 'original value'
       lambda {
-        @storage.sub.key = 'invalid substitution'
+        @storage.subb.key = 'invalid subbstitution'
       }.should raise_error(
         NoMethodError,
         %r[undefined method `key=' for "original value":String]
@@ -57,11 +57,11 @@ module Termtter::Config
     end
 
     it 'should set intermediate defult configs' do
-      @storage.set_default 'sub.more', 'value'
-      @storage.sub.class.should == Storage
-      @storage.sub.more.should == 'value'
+      @storage.set_default 'subb.more', 'value'
+      @storage.subb.class.should == Config
+      @storage.subb.more.should == 'value'
 
-      @storage.sub.set_default 'more', 'value'
+      @storage.subb.set_default 'more', 'value'
     end
   end
 end
