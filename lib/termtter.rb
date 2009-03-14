@@ -27,7 +27,6 @@ require 'termtter/task_manager'
 require 'termtter/client'
 require 'termtter/api'
 require 'termtter/system_extensions'
-require 'termtter/optparse'
 
 module Termtter
   APP_NAME = 'termtter'

@@ -339,6 +339,7 @@ module Termtter
       end
 
       def run
+        require 'termtter/optparse'
         puts 'initializing...'
 
         load_default_plugins()
