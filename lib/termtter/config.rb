@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+def configatron; Termtter::Config.instance end
+
 module Termtter
   module Config
     class Storage
