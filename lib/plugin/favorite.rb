@@ -17,7 +17,7 @@ module Termtter::Client
 
   add_command %r'^(?:favorite|fav)\s+@(.+)\s*$' do |m, t|
     user = m[1].strip
-    statuses = t.get_user_timeline(user)
+    statuses = t.user_timeline(user)
     unless statuses.empty?
       id = statuses[0].id
       text = statuses[0].text
@@ -40,7 +40,7 @@ module Termtter::Client
         status = statuses.first
         res = t.favorite(status.id)
         if res.code == '200'
-          puts %Q(Favorited "#{status.user_screen_name}: #{status.text}")
+          puts %Q(Favorited "#{status.user.screen_name}: #{status.text}")
         else
           puts "Failed: #{res}"
         end

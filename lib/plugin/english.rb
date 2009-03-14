@@ -25,8 +25,8 @@ module Termtter
         statuses.each do |s|
           text = s.text.gsub("\n", '')
           next unless Status.english?(text) # if you substitute "if" for "unless", this script will be "japanese.rb"
-          status_color = colors[s.user_screen_name.hash % colors.size]
-          status = "#{s.user_screen_name}: #{text}"
+          status_color = colors[s.user.screen_name.hash % colors.size]
+          status = "#{s.user.screen_name}: #{text}"
           if s.in_reply_to_status_id
             status += " (reply to #{s.in_reply_to_status_id})"
           end
@@ -47,9 +47,9 @@ module Termtter
     when :search
       statuses.each do |s|
         text = s.text.gsub("\n", '')
-        status_color = colors[s.user_screen_name.hash % colors.size]
+        status_color = colors[s.user.screen_name.hash % colors.size]
 
-        status = "#{s.user_screen_name}: #{text}"
+        status = "#{s.user.screen_name}: #{text}"
         time = "(#{s.created_at.strftime('%m-%d %H:%M')})"
         id = s.id
         puts ERB.new(config.timeline_format).result(binding)

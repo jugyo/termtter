@@ -20,8 +20,6 @@ module Termtter
         @@task_manager = Termtter::TaskManager.new
         config.set_default(:update_interval, 300)
         config.set_default(:prompt, '> ')
-        config.set_default(:enable_ssl, false)
-        config.proxy.set_default(:port, '8080')
         config.set_default(:devel, false)
         Thread.abort_on_exception = true
       end
@@ -289,7 +287,8 @@ module Termtter
           :name => :_update_timeline,
           :exec_proc => lambda {|arg|
             begin
-              statuses = Termtter::API.twitter.get_friends_timeline(@@since_id)
+              args = @@since_id ? [{:since_id => @@since_id}] : []
+              statuses = Termtter::API.twitter.friends_timeline(*args)
               unless statuses.empty?
                 @@since_id = statuses[0].id
               end

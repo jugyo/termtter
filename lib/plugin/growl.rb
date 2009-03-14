@@ -37,12 +37,12 @@ Thread.new do
     begin
       if s = queue.pop
         unless growl
-          arg = ['growlnotify', s.user_screen_name, '-m', s.text.gsub("\n",''), '-n', 'termtter']
+          arg = ['growlnotify', s.user.screen_name, '-m', s.text.gsub("\n",''), '-n', 'termtter']
           #icon_path = get_icon_path(s)
           #arg += ['--image', icon_path] if icon_path
           system *arg
         else
-          growl.notify "termtter status notification", s.text, s.user_screen_name
+          growl.notify "termtter status notification", s.text, s.user.screen_name
         end
       end
     rescue => e

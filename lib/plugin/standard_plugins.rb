@@ -10,7 +10,7 @@ module Termtter::Client
     :name => :update, :aliases => [:u],
     :exec_proc => lambda {|arg|
       text = ERB.new(arg).result(binding).gsub(/\n/, ' ')
-      Termtter::API.twitter.update_status(text)
+      Termtter::API.twitter.update(text)
       puts "=> #{text}"
     },
     :completion_proc => lambda {|cmd, args|
@@ -68,9 +68,9 @@ module Termtter::Client
     :name => :list, :aliases => [:l],
     :exec_proc => lambda {|arg|
       unless arg.empty?
-        call_hooks(Termtter::API.twitter.get_user_timeline(arg), :list_user_timeline)
+        call_hooks(Termtter::API.twitter.user_timeline(arg), :list_user_timeline)
       else
-        call_hooks(Termtter::API.twitter.get_friends_timeline(), :list_friends_timeline)
+        call_hooks(Termtter::API.twitter.friends_timeline(), :list_friends_timeline)
       end
     },
     :completion_proc => lambda {|cmd, arg|
@@ -197,7 +197,7 @@ module Termtter::Client
     if arg
       `#{arg}`.each_line do |line|
         unless line.strip.empty?
-          Termtter::API.twitter.update_status(line)
+          Termtter::API.twitter.update(line)
           puts "=> #{line}"
         end
       end
@@ -223,7 +223,7 @@ module Termtter::Client
 
   add_hook do |statuses, event, t|
     statuses.each do |s|
-      public_storage[:users].add(s.user_screen_name)
+      public_storage[:users].add(s.user.screen_name)
       public_storage[:users] += s.text.scan(/@([a-zA-Z_0-9]*)/).flatten
       public_storage[:status_ids].add(s.id.to_s)
       public_storage[:status_ids].add(s.in_reply_to_status_id.to_s) if s.in_reply_to_status_id
