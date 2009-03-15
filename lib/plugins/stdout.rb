@@ -49,12 +49,12 @@ module Termtter::Client
     result.results.sort_by{|r| r.created_at}.each do |r|
       text = r.text.
                 gsub(/(\n|\r)/, '').
-                gsub(/(#{Regexp.escape(result.query)})/i, configatron.search.highlihgt_text_format)
-      status_color = configatron.plugins.stdout.colors[r.from_user_id.to_i.hash % configatron.plugins.stdout.colors.size]
+                gsub(/(#{Regexp.escape(result.query)})/i, config.search.highlihgt_text_format)
+      status_color = config.plugins.stdout.colors[r.from_user_id.to_i.hash % config.plugins.stdout.colors.size]
       status = "#{r.from_user}: #{text}"
       time = "(#{Time.parse(r.created_at).strftime(time_format)})"
       id = r.id
-      erbed_text = ERB.new(configatron.plugins.stdout.timeline_format).result(binding)
+      erbed_text = ERB.new(config.plugins.stdout.timeline_format).result(binding)
       puts TermColor.parse(erbed_text)
     end
   end

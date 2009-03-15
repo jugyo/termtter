@@ -3,9 +3,7 @@
 require 'sqlite3'
 
 module Termtter::Storage
-
   class Status
-
     def initialize
     end
 
@@ -20,15 +18,13 @@ module Termtter::Storage
     end
 
     private
+      def db
+        @db ||= connect
+      end
 
-    def db 
-      @db || @db = connect
-    end
-
-    def connect
-      @db = SQLite3::Database.new(File.expand_path('~/test.db'))
-      @db.type_translation = true
-    end
-
+      def connect
+        @db = SQLite3::Database.new(File.expand_path('~/test.db'))
+        @db.type_translation = true
+      end
   end
 end

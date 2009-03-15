@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/../../../lib/plugin/storage/status'
+require File.dirname(__FILE__) + '/../../../lib/plugins/storage/status'
 
 module Termtter::Storage
   describe Status do
@@ -9,11 +9,12 @@ module Termtter::Storage
       @status = Status.new
     end
   end
-  
+
   describe Status, "when empty" do
     before do
       @status = Status.new
     end
+
     it "should all return empty array" do
       @status.all.should == []
     end
@@ -23,11 +24,9 @@ module Termtter::Storage
     before do
       @status = Status.new
     end
+
     it "should all return empty array" do
       @status.all.should == []
     end
   end
-
-  
-
 end
