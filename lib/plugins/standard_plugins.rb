@@ -216,7 +216,7 @@ module Termtter::Client
       else
         warn "[ERROR] Something wrong: #{e.message}"
       end
-      raise e if config.devel == true
+      raise e if config.system.devel == true
     }
   )
 
