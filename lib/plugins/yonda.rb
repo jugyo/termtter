@@ -1,20 +1,28 @@
 # -*- coding: utf-8 -*-
 
 module Termtter::Client
-  register_command(
-   :name => :yonda, :aliases => [:y],
-   :exec_proc => proc{|arg|
-     public_storage[:unread_count] = 0
-     print "\033[2J\033[H" # FIXME
-     call_hooks [], :plugin_yonda_yonda
-   },
-   :help => ['yonda,y', 'Mark as read']
-   )
+  register_command(:name => :yonda,
+                   :aliases => [:y],
+                   :exec_proc => lambda { |arg|
+                     public_storage[:unread_count] = 0
+                     print "\033[2J\033[H" # FIXME
+                     true
+                   },
+                   :help => ['yonda,y', 'Mark as read']
+  )
+
+  #register_hook(:name => :yonda,
+  #              :points => [:_post_exec__update_timeline],
+  #              :exec_proc => lambda { |cmd, arg, result|
+  #                #public_storage[:unread_count] += result.size
+  #              }
+  #)
 
   add_hook do |statuses, event|
     case event
     when :update_friends_timeline
-      public_storage[:unread_count] += statuses.size
+      public_storage[:unread_count] ||= 0
+      public_storage[:unread_count]  += statuses.size
     end
   end
 end

@@ -4,7 +4,7 @@ module Termtter
   module Plugin
     module Screen
       def self.set_title(title)
-        print "\033k#{title}\033\\"
+        print "\033k#{title}\033\\\n"
       end
     end
   end
@@ -12,13 +12,13 @@ end
 
 # Add below to your ~/.termtter
 #
-# require 'plugin/yonda'
-# require 'plugin/screen'
+# require 'plugins/yonda'
+# require 'plugins/screen'
 # module Termtter::Client
-#   add_hook do |statuses, event|
-#     case event
-#     when :update_friends_timeline, :plugin_yonda_yonda
-#       Termtter::Plugin::Screen::set_title("termtter(#{public_storage[:unread_count]})")
-#     end
-#   end
+#   register_hook(:name => :screen,
+#                 :points => [:post_exec__update_timeline, :plugin_yonda_yonda, :post_exec_yonda],
+#                 :exec_proc => lambda { |cmd, arg, result|
+#                   Termtter::Plugin::Screen::set_title("termtter(#{public_storage[:unread_count]})")
+#                 }
+#   )
 # end
