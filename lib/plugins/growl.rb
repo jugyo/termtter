@@ -53,10 +53,9 @@ Thread.new do
   end
 end
 
-Termtter::Client.add_hook do |statuses, event|
-  if !statuses.empty? && event == :update_friends_timeline
-    statuses.reverse.each do |s|
-      queue << s
-    end
-  end
-end
+Termtter::Client.register_hook(:name => :growl,
+                               :points => [:post_exec__update_timeline],
+                               :exec_proc => lambda { |cmd, arg, result|
+                                 result.reverse.each { |s| queue << s }
+                               }
+)
