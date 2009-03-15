@@ -237,7 +237,7 @@ module Termtter
           File.open(Termtter::CONF_FILE, 'w') {|io|
             io.puts '# -*- coding: utf-8 -*-'
 
-            plugins = Dir.glob(File.dirname(__FILE__) + "/../lib/plugin/*.rb").map  {|f|
+            plugins = Dir.glob(File.dirname(__FILE__) + "/../lib/plugins/*.rb").map  {|f|
               f.match(%r|lib/plugin/(.*?).rb$|)[1]
             }
             plugins -= %w[stdout standard_plugins]
