@@ -13,7 +13,7 @@ end
 
 def expand_tinyurl(path)
   http_class = Net::HTTP
-  unless config.proxy.host.empty?
+  unless config.proxy.host.nil? or config.proxy.host.empty?
     http_class = Net::HTTP::Proxy(config.proxy.host,
                                   config.proxy.port,
                                   config.proxy.user_name,

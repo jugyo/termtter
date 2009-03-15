@@ -3,32 +3,30 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 module Termtter
-
   describe Config do
-
     before do
-      @storage = Config.new
+      @config = Config.new
     end
 
     it 'should be able to store value to new storage' do
-      @storage.new_storage = :value
-      @storage.new_storage.should == :value
+      @config.new_storage = :value
+      @config.new_storage.should == :value
     end
 
     it 'should be able to make subb.key and store value' do
-      @storage.subb.key = :value
-      @storage.subb.key.should == :value
+      @config.subb.key = :value
+      @config.subb.key.should == :value
     end
 
     it 'should be able to make multiple storage' do
-      @storage.subb.more.for.test = 'value'
-      @storage.subb.more.for.test.should == 'value'
+      @config.subb.more.for.test = 'value'
+      @config.subb.more.for.test.should == 'value'
     end
 
     it 'should be able to change value in storage' do
-      @storage.storage = :value1
-      @storage.storage = :value2
-      @storage.storage.should == :value2
+      @config.storage = :value1
+      @config.storage = :value2
+      @config.storage.should == :value2
     end
 
     it 'should be able to store any data' do
@@ -41,15 +39,22 @@ module Termtter
         ['float',   1.5       ],
         ['regexp',  /regexp/  ],
       ].each do |type, value|
-        @storage.__send__("#{type}=", value)
-        @storage.__send__(type).should == value
+        @config.__send__("#{type}=", value)
+        @config.__send__(type).should == value
       end
     end
 
-    it 'should raise error when add subb-storage to existed key' do
-      @storage.subb = 'original value'
+    it 'should raise error when add by prohibited name' do
       lambda {
-        @storage.subb.key = 'invalid subbstitution'
+        @config.set_default('sub.aaa', :value)
+        @config.sub.aaa
+      }.should raise_error
+    end
+
+    it 'should raise error when add subb-storage to existed key' do
+      @config.subb = 'original value'
+      lambda {
+        @config.subb.key = 'invalid subbstitution'
       }.should raise_error(
         NoMethodError,
         %r[undefined method `key=' for "original value":String]
@@ -57,45 +62,44 @@ module Termtter
     end
 
     it 'should set intermediate defult configs' do
-      @storage.set_default 'subb.more', 'value'
-      @storage.subb.class.should == Config
-      @storage.subb.more.should == 'value'
+      @config.set_default 'subb.more', 'value'
+      @config.subb.class.should == Config
+      @config.subb.more.should == 'value'
 
-      @storage.proxy.set_default(:port, 'value')
-      @storage.proxy.port.should == 'value'
+      @config.proxy.set_default(:port, 'value')
+      @config.proxy.port.should == 'value'
     end
 
     # FIXME: not work
 #     it 'should have :undefined value in un-assigned key' do
-#       @storage.aaaa.should == :undefined
+#       @config.aaaa.should == :undefined
 #     end
 
     it 'should be empty when something is assigned' do
-      @storage.empty?.should be_true
+      @config.empty?.should be_true
 
-      @storage.aaa = 1
-      @storage.empty?.should be_false
+      @config.aaa = 1
+      @config.empty?.should be_false
 
-      @storage.bbb.empty?.should be_true
+      @config.bbb.empty?.should be_true
     end
 
     it 'should be empty when assigned nil' do
-      @storage.bbb = nil
-      @storage.empty?.should be_false
+      @config.bbb = nil
+      @config.empty?.should be_false
     end
 
     it 'should be empty when set_defaulted' do
-      @storage.set_default('aaa', 1)
-      @storage.empty?.should be_false
+      @config.set_default('aaa', 1)
+      @config.empty?.should be_false
     end
 
     it 'should use in expression' do
-      @storage.set_default(:ssb, 'hoge')
+      @config.set_default(:ssb, 'hoge')
       lambda {
-        res = @storage.ssb + ' piyo'
+        res = @config.ssb + ' piyo'
         res.should == 'hoge piyo'
       }.should_not raise_error
     end
   end
 end
-
