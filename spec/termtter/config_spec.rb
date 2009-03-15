@@ -44,6 +44,13 @@ module Termtter
       end
     end
 
+    it 'should raise error when add by prohibited name' do
+      lambda {
+        @config.set_default('sub.aaa', :value)
+        @config.sub.aaa
+      }.should raise_error
+    end
+
     it 'should raise error when add subb-storage to existed key' do
       @config.subb = 'original value'
       lambda {
