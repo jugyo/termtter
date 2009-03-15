@@ -85,7 +85,7 @@ module Termtter
         @@helps << [name, desc]
       end
 
-      %w[hooks commands completions helps filters].each do |n|
+      %w[hooks completions helps filters].each do |n|
         eval <<-EOF
           def clear_#{n}
             @@#{n}.clear
