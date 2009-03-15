@@ -61,10 +61,18 @@ module Termtter::Client
   register_command(
     :name => :followers,
     :exec_proc => lambda {|arg|
-      followers = Termtter::API.twitter.followers
+      user_name = arg.strip
+      user_name = config.user_name if user_name.empty?
+
+      followers = [] 
+      page = 0
+      begin
+        followers += tmp = Termtter::API.twitter.followers(user_name, :page => page+=1)
+      end until tmp.empty?
       Termtter::Client.public_storage[:followers] = followers
       puts followers.map{|f|f.screen_name}.join(' ')
     }
+    # TODO :completion_proc
   )
 
   register_command(
