@@ -23,7 +23,7 @@ module Termtter
       :name => :bomb, :aliases => [],
       :exec_proc => lambda {|arg|
         text = "#{arg.strip} 爆発しろ!"
-        Termtter::API::twitter.update_status(text)
+        Termtter::API::twitter.update(text)
         puts "=> #{text}"
       },
       :help => ['bomb WORD', 'Bomb it']
