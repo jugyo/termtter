@@ -102,15 +102,27 @@ module Termtter
       end
 
       # memo: each filter must return Array of Status
-      def apply_filters(statuses)
-        filtered = statuses.map{|s| s.dup }
-        @@filters.each do |f|
-          filtered = f.call(filtered)
+      def apply_filters(result, event = nil)
+        if event == :search
+          statuses = result.results
+          filtered = statuses.map{|s| s.dup }
+          @@filters.each do |f|
+            filtered = f.call(filtered)
+          end
+          result.results = filtered
+          result
+        else
+          unless event == :show
+            filtered = result.map{|s| s.dup }
+            @@filters.each do |f|
+              filtered = f.call(filtered)
+            end
+            filtered
+          end
         end
-        filtered
       rescue => e
         handle_error(e)
-        statuses
+        result
       end
 
       def do_hooks(statuses, event)
@@ -142,7 +154,7 @@ module Termtter
       # TODO: delete argument "tw" when unnecessary
       def call_hooks(statuses, event, tw = nil)
         do_hooks(statuses, :pre_filter)
-        filtered = apply_filters(statuses)
+        filtered = apply_filters(statuses, event)
         do_hooks(filtered, :post_filter)
         do_hooks(filtered, event)
       end

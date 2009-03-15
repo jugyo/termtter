@@ -222,11 +222,14 @@ module Termtter::Client
   public_storage[:status_ids] ||= Set.new
 
   add_hook do |statuses, event, t|
-    statuses.each do |s|
-      public_storage[:users].add(s.user.screen_name)
-      public_storage[:users] += s.text.scan(/@([a-zA-Z_0-9]*)/).flatten
-      public_storage[:status_ids].add(s.id.to_s)
-      public_storage[:status_ids].add(s.in_reply_to_status_id.to_s) if s.in_reply_to_status_id
+    case event
+    when :update_friends_timeline, :list_friends_timeline, :list_user_timeline, :replies
+      statuses.each do |s|
+        public_storage[:users].add(s.user.screen_name)
+        public_storage[:users] += s.text.scan(/@([a-zA-Z_0-9]*)/).flatten
+        public_storage[:status_ids].add(s.id.to_s)
+        public_storage[:status_ids].add(s.in_reply_to_status_id.to_s) if s.in_reply_to_status_id
+      end
     end
   end
 

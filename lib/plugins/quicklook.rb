@@ -25,7 +25,6 @@ module Termtter::Client
   add_command %r'^(?:quicklook|ql)\s+(\w+)$' do |m,t|
     id = m[1]
     status = t.show(id).first
-
     if (status)
       uris = URI.regexp.match(status.text).to_a
       quicklook(uris.first) unless uris.empty?

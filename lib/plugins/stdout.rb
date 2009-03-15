@@ -49,7 +49,7 @@ module Termtter::Client
     result.results.sort_by{|r| r.created_at}.each do |r|
       text = r.text.
                 gsub(/(\n|\r)/, '').
-                gsub(/(#{Regexp.escape(result.query)})/i, config.search.highlihgt_text_format)
+                gsub(/(#{Regexp.escape(result.query)})/i, config.plugins.stdout.search_highlihgt_format)
       status_color = config.plugins.stdout.colors[r.from_user_id.to_i.hash % config.plugins.stdout.colors.size]
       status = "#{r.from_user}: #{text}"
       time = "(#{Time.parse(r.created_at).strftime(time_format)})"
@@ -63,8 +63,10 @@ module Termtter::Client
     case event
     when :update_friends_timeline, :list_friends_timeline
       print_statuses(result) unless result.empty?
-    when :list_user_timeline, :show, :replies
+    when :list_user_timeline, :replies
       print_statuses_with_date(result) unless result.empty?
+    when :show
+      print_statuses_with_date([result])
     when :search
       print_search_results(result)
     end
