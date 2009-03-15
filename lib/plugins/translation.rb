@@ -17,11 +17,21 @@ def translate(text, langpair)
   }
 end
 
-Termtter::Client.add_command /^(en2ja|ja2en)\s+(.*)$/ do |m, t|
-  langpair = m[1].gsub('2', '|')
-  puts "translating..."
-  puts "=> #{translate(m[2], langpair)}"
-end
+Termtter::Client.register_command(
+  :name => :en2ja,
+  :exec_proc => lambda{|arg|
+    puts "translating..."
+    puts "=> #{translate(arg, 'en|ja')}"
+  }
+)
+
+Termtter::Client.register_command(
+  :name => :ja2en,
+  :exec_proc => lambda{|arg|
+    puts "translating..."
+    puts "=> #{translate(arg, 'ja|en')}"
+  }
+)
 
 # This plugin does not work yet.
 # requirements
