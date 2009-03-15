@@ -66,10 +66,4 @@ module Termtter::Client
    :help => [ 'search_log WORD', 'Search log for WORD' ]
    )
 
-  add_command %r'^/(.+)' do |m, t|
-    warn '/WORD command will be removed. Use search_log command instead.'
-    pat = Regexp.new(m[1])
-    statuses = public_storage[:log].select { |s| s.text =~ pat }
-    call_hooks(statuses, :search, t)
-  end
 end
