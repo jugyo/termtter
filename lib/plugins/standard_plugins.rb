@@ -162,7 +162,19 @@ module Termtter::Client
     :name => :default_error_handler,
     :points => [:on_error],
     :exec_proc => lambda {|e|
-      warn "[ERROR] Something wrong: #{e.message}"
+      case e
+      when Rubytter::APIError
+        case e.response.code
+        when /401/
+          warn '[ERROR] Unauthorized: maybe you tried to show protected user status'
+        when /403/
+          warn '[ERROR] Access denied: maybe that user is protected'
+        when /404/
+          warn '[ERROR] Not found: maybe there is no such user'
+        end
+      else
+        warn "[ERROR] Something wrong: #{e.message}"
+      end
       raise e if config.devel == true
     }
   )

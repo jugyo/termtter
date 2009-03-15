@@ -209,5 +209,30 @@ module Termtter
       Dir.should_receive(:mkdir)
       Client.move_legacy_config_file
     end
+
+    it 'should handle error' do
+      $stderr, old = StringIO.new, $stderr
+      Client.handle_error StandardError.new('error')
+      $stderr.string.should == "[ERROR] Something wrong: error\n"
+      $stderr = old
+    end
+
+    it 'should handle Rubytte::APIError' do
+      $stderr, old = StringIO.new, $stderr
+      class Rubytter::APIError < StandardError; end
+      [
+        ['401', "[ERROR] Unauthorized: maybe you tried to show protected user status\n"],
+        ['403', "[ERROR] Access denied: maybe that user is protected\n"],
+        ['404', "[ERROR] Not found: maybe there is no such user\n"],
+      ].each do |code, message|
+        res = mock('res', :code => code)
+        excep = Rubytter::APIError.new('error')
+        excep.should_receive(:response).and_return(res)
+        Client.handle_error excep
+        $stderr.string.should == message
+        $stderr.string = ''
+      end
+      $stderr = old
+    end
   end
 end

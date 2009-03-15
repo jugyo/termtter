@@ -12,7 +12,7 @@ module Termtter::Client
   end
 
   def self.open_uri(uri)
-    unless config.plugins.uri_open.browser.nil?
+    unless config.plugins.uri_open.browser.empty?
       system config.plugins.uri_open.browser, uri
     else
       case RUBY_PLATFORM
@@ -26,39 +26,34 @@ module Termtter::Client
     end
   end
 
-  add_command /^uri-open\s*$/ do |m, t|
-    public_storage[:uris].each do |uri|
-      open_uri(uri)
-    end
-    public_storage[:uris].clear
-  end
-
-  add_command /^uri-open\s+(\d+)$/ do |m, t|
-    if m[1]
-      index = m[1].to_i
-      open_uri(public_storage[:uris][index])
-      public_storage[:uris].delete_at(index)
-    end
-  end
-
-  add_command /^uri-open\s+list\s*$/ do |m, t|
-    public_storage[:uris].each_with_index do |uri, index|
-      puts "#{index}: #{uri}"
-    end
-  end
-
-  add_command /^uri-open\s+delete\s+(\d+)$/ do |m, t|
-    public_storage[:uris].delete_at(m[1].to_i) if m[1]
-  end
-
-  add_command /^uri-open\s+clear\s*$/ do |m, t|
-    public_storage[:uris].clear
-    puts "clear uris"
-  end
-
-  add_completion do |input|
-    ['uri-open ', 'uri-open list', 'uri-open delete', 'uri-open clear'].grep(/^#{Regexp.quote input}/)
-  end
+  register_command(
+    :name => :'uri-open', :aliases => [:uo],
+    :exec_proc => lambda{|arg|
+      case arg
+      when /^\s+$/
+        public_storage[:uris].each do |uri|
+          open_uri(uri)
+        end
+        public_storage[:uris].clear
+      when /^\s*list\s*$/
+        public_storage[:uris].each_with_index do |uri, index|
+          puts "#{index}: #{uri}"
+        end
+      when /^\s*delete\s+(\d+)\s*$/
+        puts 'delete'
+        public_storage[:uris].delete_at($1.to_i)
+      when /^\s*clear\s*$/
+        public_storage[:uris].clear
+        puts "clear uris"
+      when /^\s*(\d+)\s*$/
+        open_uri(public_storage[:uris][$1.to_i])
+        public_storage[:uris].delete_at($1.to_i)
+      end
+    },
+    :completion_proc => lambda{|cmd, arg|
+      %w(list delete clear).grep(/^#{Regexp.quote arg}/).map{|a| "#{cmd} #{a}"}
+    }
+  )
 end
 # ~/.termtter
 # plugin 'uri-open'

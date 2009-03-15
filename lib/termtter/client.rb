@@ -10,7 +10,6 @@ module Termtter
       def init
         @@hooks = []
         @@new_hooks = {}
-        @@commands = {}
         @@new_commands = {}
         @@completions = []
         @@filters = []
@@ -34,13 +33,6 @@ module Termtter
             @@#{n}s << b
           end
         EOF
-      end
-
-      # Deprecated
-      # FIXME: delete when become unnecessary
-      def add_command(regex, &block)
-        warn "Termtter:Client.add_command method will be removed. Use Termtter::Client.register_command() instead. (#{caller.first})"
-        @@commands[regex] = block
       end
 
       def register_hook(arg)
@@ -163,15 +155,6 @@ module Termtter
         return if text.empty?
 
         command_found = false
-        @@commands.each do |key, command|
-          if key =~ text
-            command_found = true
-            @@task_manager.invoke_and_wait do
-              command.call($~, Termtter::API.twitter)
-            end
-          end
-        end
-
         @@new_commands.each do |key, command|
           command_str, command_arg = command.match?(text)
           if command_str
