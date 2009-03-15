@@ -174,5 +174,23 @@ module Termtter
       hook1_called.should == false
       hook2_called.should == true
     end
+
+    it 'should do nothing when ~/.termtter is directory' do
+      File.should_receive(:ftype).and_return('directory')
+      Client.should_not_receive(:move_legacy_config_file)
+      Client.legacy_config_support
+    end
+
+    it 'should do "move_legacy_config_file" when ~/.termtter is file' do
+      File.should_receive(:ftype).and_return('file')
+      Client.should_receive(:move_legacy_config_file)
+      Client.legacy_config_support
+    end
+
+    it 'should move legacy config file' do
+      File.should_receive(:mv).twice
+      Dir.should_receive(:mkdir)
+      Client.move_legacy_config_file
+    end
   end
 end

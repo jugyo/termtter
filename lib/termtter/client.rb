@@ -266,6 +266,26 @@ module Termtter
         end
       end
 
+      def legacy_config_support
+        case File.ftype(File.expand_path('~/.termtter'))
+        when 'directory'
+          # nop
+        when 'file'
+          move_legacy_config_file
+        end
+      end
+
+      def move_legacy_config_file
+        File.mv(
+          File.expand_path('~/.termtter'),
+          File.expand_path('~/.termtter___'))
+        Dir.mkdir(
+          File.expand_path('~/.termtter'))
+        File.mv(
+          File.expand_path('~/.termtter___'),
+          File.expand_path('~/.termtter/config'))
+      end
+
       def pre_config_load()
         if config.devel
           plugin 'devel'
