@@ -36,9 +36,12 @@ module Termtter::Client
                        statuses.each do |s|
                          p s
                        end
-                       call_hooks(statuses, :search)
-=end
-      end
-    },
-    :help => [ 'search_storage WORD', 'Search storage for WORD' ])
+                         call_hooks(statuses, :search)
+=end                       
+                     end
+
+                   },
+                   
+                   :help => [ 'search_storage WORD', 'Search storage for WORD' ]
+                   )
 end
