@@ -272,12 +272,12 @@ module Termtter
       end
 
       def move_legacy_config_file
-        File.mv(
+        FileUtils.mv(
           File.expand_path('~/.termtter'),
           File.expand_path('~/.termtter___'))
         Dir.mkdir(
           File.expand_path('~/.termtter'))
-        File.mv(
+        FileUtils.mv(
           File.expand_path('~/.termtter___'),
           File.expand_path('~/.termtter/config'))
       end

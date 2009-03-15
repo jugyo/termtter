@@ -204,7 +204,7 @@ module Termtter
     end
 
     it 'should move legacy config file' do
-      File.should_receive(:mv).twice
+      FileUtils.should_receive(:mv).twice
       Dir.should_receive(:mkdir)
       Client.move_legacy_config_file
     end
