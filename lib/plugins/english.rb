@@ -8,7 +8,7 @@ module Termtter::English
   end
 end
 
-Termtter::Client.add_filter do |statuses|
+Termtter::Client.add_filter do |statuses, event|
   statuses.select {|i| Termtter::English.english?(i.text) }
 end
 

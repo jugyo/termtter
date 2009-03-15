@@ -2,7 +2,7 @@
 
 def fib(n)i=0;j=1;n.times{j=i+i=j};i end
 module Termtter::Client
-  add_filter do |statuses|
+  add_filter do |statuses, _|
     statuses.each do |s|
       s.text.gsub!(/(\d+)/) do |m|
         n = $1.to_i

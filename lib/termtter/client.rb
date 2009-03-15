@@ -109,14 +109,14 @@ module Termtter
         when :search
           filtered = result.results.map(&:dup)
           @@filters.each do |f|
-            filtered = f.call(filtered)
+            filtered = f.call(filtered, event)
           end
           result.results = filtered
           result
         else
           filtered = result.map(&:dup)
           @@filters.each do |f|
-            filtered = f.call(filtered)
+            filtered = f.call(filtered, event)
           end
           filtered
         end

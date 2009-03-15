@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 module Termtter::Client
-  add_filter do |statuses|
+  add_filter do |statuses, _|
     statuses.map do |s|
       s.text = s.text.split(//).reverse.to_s
       s

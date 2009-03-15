@@ -2,7 +2,7 @@
 
 plugin 'translation'
 
-Termtter::Client.add_filter do |statuses|
+Termtter::Client.add_filter do |statuses, event|
   statuses.each do |s|
     if s.english?
       s.text = translate(s.text, 'en|ja')
