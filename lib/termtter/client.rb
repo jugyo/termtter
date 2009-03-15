@@ -97,7 +97,7 @@ module Termtter
       def apply_filters(result, event = nil)
         case event
         when :show
-          # nop
+          result
         when :search
           filtered = result.results.map(&:dup)
           @@filters.each do |f|
