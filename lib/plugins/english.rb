@@ -9,8 +9,9 @@ module Termtter::English
 end
 
 Termtter::Client.add_filter do |statuses, event|
+  config.plugins.english.set_default(:only, [])
   statuses.select {|i|
-    event != config.plugins.english.only ||
+    !config.plugins.english.only.include?(event) ||
       Termtter::English.english?(i.text)
   }
 end
@@ -21,4 +22,4 @@ end
 # config sample:
 #   plugin 'english'
 # or,
-#   plugin 'english', :only => :update_friends_timeline
+#   plugin 'english', :only => [:list_friends_timeline, :update_friends_timeline]
