@@ -7,7 +7,7 @@ module Termtter::Client
     :exec_proc => lambda {|arg|
       n = arg.to_i
       text = "fib(#{n}) = #{fib n}"
-      Termtter::API.twitter.update_status(text)
+      Termtter::API.twitter.update(text)
       puts "=> " << text
     }
   )
@@ -18,7 +18,7 @@ module Termtter::Client
       name = $1
       n = $2.to_i
       text = "@#{name} fib(#{n}) = #{fib n}"
-      Termtter::API.twitter.update_status(text)
+      Termtter::API.twitter.update(text)
       puts "=> " << text
     }
   )
