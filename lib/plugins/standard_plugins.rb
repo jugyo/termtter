@@ -9,9 +9,12 @@ module Termtter::Client
   register_command(
     :name => :update, :aliases => [:u],
     :exec_proc => lambda {|arg|
-      text = ERB.new(arg).result(binding).gsub(/\n/, ' ')
-      Termtter::API.twitter.update(text)
-      puts "=> #{text}"
+      unless arg =~ /^\s*$/
+        text = ERB.new(arg).result(binding).gsub(/\n/, ' ')
+        result = Termtter::API.twitter.update(text)
+        puts "=> #{text}"
+        result
+      end
     },
     :completion_proc => lambda {|cmd, args|
       if /(.*)@([^\s]*)$/ =~ args
