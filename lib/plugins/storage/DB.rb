@@ -9,7 +9,7 @@ module Termtter::Storage
     attr_reader :db
 
     def initialize
-      @db = SQLite3::Database.new(File.expand_path('~/test.db'))
+      @db = SQLite3::Database.new(Termtter::CONF_DIR + '/storage.db')
       @db.type_translation = true
       create_table
     end
