@@ -226,16 +226,15 @@ module Termtter
       end
 
       def load_config
-        conf_file = File.expand_path('~/.termtter/config')
-        if File.exist? conf_file
-          load conf_file
+        if File.exist? Termtter::CONF_FILE
+          load Termtter::CONF_FILE
         else
           ui = create_highline
           username = ui.ask('your twitter username: ')
           password = ui.ask('your twitter password: ') { |q| q.echo = false }
 
-          Dir.mkdir(File.expand_path('~/.termtter'))
-          File.open(File.expand_path('~/.termtter/config'), 'w') {|io|
+          Dir.mkdir(Termtter::CONF_DIR)
+          File.open(Termtter::CONF_FILE, 'w') {|io|
             io.puts '# -*- coding: utf-8 -*-'
 
             plugins = Dir.glob(File.dirname(__FILE__) + "/../lib/plugin/*.rb").map  {|f|
@@ -259,7 +258,7 @@ module Termtter
           }
           puts "generated: ~/.termtter/config"
           puts "enjoy!"
-          load conf_file
+          load Termtter::CONF_FILE
         end
       end
 
@@ -274,13 +273,12 @@ module Termtter
 
       def move_legacy_config_file
         FileUtils.mv(
-          File.expand_path('~/.termtter'),
+          Termtter::CONF_DIR,
           File.expand_path('~/.termtter___'))
-        Dir.mkdir(
-          File.expand_path('~/.termtter'))
+        Dir.mkdir(Termtter::CONF_DIR)
         FileUtils.mv(
           File.expand_path('~/.termtter___'),
-          File.expand_path('~/.termtter/config'))
+          Termtter::CONF_FILE)
       end
 
       def pre_config_load()
