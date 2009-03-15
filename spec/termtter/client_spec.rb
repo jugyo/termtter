@@ -176,7 +176,6 @@ module Termtter
     end
 
     it 'run' do
-      Client.should_receive(:require)
       Client.should_receive(:puts)
       Client.should_receive(:load_default_plugins)
       Client.should_receive(:load_config)
