@@ -103,18 +103,18 @@ module Termtter
 
       # memo: each filter must return Array of Status
       def apply_filters(result, event = nil)
-        if event == :search
-          statuses = result.results
-          filtered = statuses.map{|s| s.dup }
+        case event
+        when :show
+          # nop
+        when :search
+          filtered = result.results.map(&:dup)
           @@filters.each do |f|
             filtered = f.call(filtered)
           end
           result.results = filtered
           result
-        elsif event == :show
-          # nop
         else
-          filtered = result.map{|s| s.dup }
+          filtered = result.map(&:dup)
           @@filters.each do |f|
             filtered = f.call(filtered)
           end
