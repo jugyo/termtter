@@ -31,7 +31,7 @@ module Termtter::Client
    :name => :search_storage, :aliases => [:ss],
    :exec_proc => lambda{|arg|
     unless arg.strip.empty?
-      key = arg.strip.empty?
+      key = arg.strip
 
       statuses = public_storage[:storage].search({ :text => key })
       call_hooks(statuses, :search)
