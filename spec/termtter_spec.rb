@@ -23,6 +23,8 @@ end
 
 describe Termtter, 'when plugin is called (with init option)' do
   it 'init option will become config' do
+    should_receive(:require)
+
     plugin 'aaa', :bbb => :ccc
     config.plugins.aaa.bbb.should == :ccc
   end
