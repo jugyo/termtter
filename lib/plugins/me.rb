@@ -3,8 +3,7 @@ module Termtter::Client
   register_command(
     :name => :me, :aliases => [],
     :exec_proc => lambda {|arg|
-      myname = config.user_name
-      call_hooks(Termtter::API.twitter.get_user_timeline(myname), :list_user_timeline)
+      call_commands('list ' + config.user_name)
     },
     :help => ['me', 'show my timeline']
   )
