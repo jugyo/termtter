@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 module Termtter::Client
   config.plugins.outputz.set_default(:uri, 'termtter://twitter.com/status/update')
 
