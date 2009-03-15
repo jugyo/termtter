@@ -28,16 +28,21 @@ module Termtter::Client
   end
 
   register_command(
-   :name => :search_storage, :aliases => [:ss],
-   :exec_proc => lambda{|arg|
-    unless arg.strip.empty?
-      key = arg.strip
-
-      statuses = public_storage[:storage].search({ :text => key })
-      call_hooks(statuses, :search)
-     end
-   },
-
-   :help => [ 'search_storage WORD', 'Search storage for WORD' ]
-   )
+                   :name => :search_storage, :aliases => [:ss],
+                   :exec_proc => lambda{|arg|
+                     unless arg.strip.empty?
+                       key = arg.strip
+                       
+                       statuses = public_storage[:storage].search({ :post_text => key})
+                       
+                       statuses.each do |s|
+                         p s
+                       end
+                       call_hooks(statuses, :search)
+                       
+                     end
+                   },
+                   
+                   :help => [ 'search_storage WORD', 'Search storage for WORD' ]
+                   )
 end
