@@ -191,6 +191,8 @@ module Termtter
       Client.run
     end
 
+    it 'load_config'
+
     it 'should do nothing when ~/.termtter is directory' do
       File.should_receive(:ftype).and_return('directory')
       Client.should_not_receive(:move_legacy_config_file)
