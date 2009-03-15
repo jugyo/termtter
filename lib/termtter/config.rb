@@ -2,11 +2,6 @@
 #
 module Termtter
   class Config
-# buggy!!!!!!
-#     instance_methods.reject {|i| /__/ =~ i }.each do |f|
-#       undef_method f
-#     end
-
     def initialize
       @store = Hash.new(:undefined)
     end
