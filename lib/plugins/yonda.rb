@@ -11,18 +11,11 @@ module Termtter::Client
                    :help => ['yonda,y', 'Mark as read']
   )
 
-  #register_hook(:name => :yonda,
-  #              :points => [:_post_exec__update_timeline],
-  #              :exec_proc => lambda { |cmd, arg, result|
-  #                #public_storage[:unread_count] += result.size
-  #              }
-  #)
-
-  add_hook do |statuses, event|
-    case event
-    when :update_friends_timeline
-      public_storage[:unread_count] ||= 0
-      public_storage[:unread_count]  += statuses.size
-    end
-  end
+  register_hook(:name => :yonda,
+                :points => [:post_exec__update_timeline],
+                :exec_proc => lambda { |cmd, arg, result|
+                  public_storage[:unread_count] ||= 0
+                  public_storage[:unread_count]  += result.size
+                }
+  )
 end
