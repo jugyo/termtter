@@ -111,14 +111,12 @@ module Termtter
           end
           result.results = filtered
           result
-        else
-          if event != :show
-            filtered = result.map{|s| s.dup }
-            @@filters.each do |f|
-              filtered = f.call(filtered)
-            end
-            filtered
+        elsif event != :show
+          filtered = result.map{|s| s.dup }
+          @@filters.each do |f|
+            filtered = f.call(filtered)
           end
+          filtered
         end
       rescue => e
         handle_error(e)
