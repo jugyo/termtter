@@ -9,11 +9,12 @@ module Termtter::Storage
       @status = Status.new
     end
   end
-  
+
   describe Status, "when empty" do
     before do
       @status = Status.new
     end
+
     it "should all return empty array" do
       @status.all.should == []
     end
@@ -23,11 +24,9 @@ module Termtter::Storage
     before do
       @status = Status.new
     end
+
     it "should all return empty array" do
       @status.all.should == []
     end
   end
-
-  
-
 end
