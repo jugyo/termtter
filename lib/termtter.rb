@@ -43,7 +43,12 @@ def plugin(s, init = {})
       eval("config.plugins.#{s}").__send__("#{key}=", value)
     end
   end
-  require "plugins/#{s}"
+  # FIXME: below path should be replaced by optparsed path
+  if File.exist?(path = File.expand_path("~/.termtter/plugins/#{s}"))
+    require path
+  else
+    require "plugins/#{s}"
+  end
 rescue => e
   Termtter::Client.handle_error(e)
 end
