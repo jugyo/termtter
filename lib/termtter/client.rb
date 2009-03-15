@@ -226,7 +226,7 @@ module Termtter
       end
 
       def load_config
-        conf_file = File.expand_path('~/.termtter')
+        conf_file = File.expand_path('~/.termtter/config')
         if File.exist? conf_file
           load conf_file
         else
@@ -234,7 +234,8 @@ module Termtter
           username = ui.ask('your twitter username: ')
           password = ui.ask('your twitter password: ') { |q| q.echo = false }
 
-          File.open(File.expand_path('~/.termtter'), 'w') {|io|
+          Dir.mkdir(File.expand_path('~/.termtter'))
+          File.open(File.expand_path('~/.termtter/config'), 'w') {|io|
             io.puts '# -*- coding: utf-8 -*-'
 
             plugins = Dir.glob(File.dirname(__FILE__) + "/../lib/plugin/*.rb").map  {|f|
@@ -256,7 +257,7 @@ module Termtter
             io.puts
             io.puts "# vim: set filetype=ruby"
           }
-          puts "generated: ~/.termtter"
+          puts "generated: ~/.termtter/config"
           puts "enjoy!"
           load conf_file
         end
