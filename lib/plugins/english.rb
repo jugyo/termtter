@@ -9,8 +9,16 @@ module Termtter::English
 end
 
 Termtter::Client.add_filter do |statuses, event|
-  statuses.select {|i| Termtter::English.english?(i.text) }
+  statuses.select {|i|
+    event != config.plugins.english.only ||
+      Termtter::English.english?(i.text)
+  }
 end
 
 # english_filter.rb
 #   select English posts only
+#
+# config sample:
+#   plugin 'english'
+# or,
+#   plugin 'english', :only => :update_friends_timeline
