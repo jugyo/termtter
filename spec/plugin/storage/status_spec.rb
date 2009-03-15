@@ -10,23 +10,17 @@ module Termtter::Storage
     end
   end
 
-  describe Status, "when empty" do
-    before do
-      @status = Status.new
+  describe Status do
+
+    it 'self.insert should not return false' do
+      Status.insert({ :post_id => 1,
+                       :created_at => 12345,
+                       :in_reply_to_status_id => -1,
+                       :in_reply_to_user_id => -1,
+                       :post_text => 'bomb',
+                       :user_id => 1
+                     }).should_not == false
     end
 
-    it "should all return empty array" do
-      @status.all.should == []
-    end
-  end
-
-  describe Status, "when empty" do
-    before do
-      @status = Status.new
-    end
-
-    it "should all return empty array" do
-      @status.all.should == []
-    end
   end
 end
