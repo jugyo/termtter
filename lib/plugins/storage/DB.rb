@@ -4,10 +4,9 @@ require 'sqlite3'
 require 'singleton'
 
 module Termtter::Storage
-
   class DB
-
     include Singleton
+    attr_reader :db
 
     def initialize
       @db = SQLite3::Database.new(File.expand_path('~/test.db'))
@@ -15,12 +14,8 @@ module Termtter::Storage
       create_table
     end
 
-    def db
-      @db
-    end
-
     def create_table
-      sql =<<SQL
+      sql =<<-SQL
 CREATE TABLE IF NOT EXISTS user (
     id          int NOT NULL,
     screen_name text,
@@ -31,15 +26,12 @@ CREATE TABLE IF NOT EXISTS post (
     created_at	     int,    	    -- 日付(RubyでUNIX時間に変換)
     in_reply_to_status_id int, 	    -- あったほうがよいらしい
     in_reply_to_user_id int,  	    -- あったほうがよいらしい
-    post_text text,                 
-    user_id int NOT NULL,	    
+    post_text text,
+    user_id int NOT NULL,
     PRIMARY KEY (post_id)
 );
-SQL
+      SQL
       @db.execute_batch(sql)
     end
   end
-
 end
-
-
