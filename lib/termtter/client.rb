@@ -142,7 +142,9 @@ module Termtter
       # TODO: delete argument "tw" when unnecessary
       def call_hooks(statuses, event, tw = nil)
         do_hooks(statuses, :pre_filter)
-        do_hooks(apply_filters(statuses), event)
+        filtered = apply_filters(statuses)
+        do_hooks(filtered, :post_filter)
+        do_hooks(filtered, event)
       end
 
       def call_commands(text, tw = nil)
