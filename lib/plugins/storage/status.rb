@@ -25,21 +25,23 @@ module Termtter::Storage
       raise "data must be Hash(#{data}, #{data.class})" unless data.kind_of? Hash
       # 条件しぼりたいけどやりかたがうまくわからない
       #      raise "unko" unless data.keys.all?{|c| KEYS.include? c}
-
-      DB.instance.db.execute(
-        "insert into post values(?,?,?,?,?,?)",
-        data[:post_id],
-        data[:created_at],
-        data[:in_reply_to_status_id],
-        data[:in_reply_to_user_id],
-        data[:post_text],
-        data[:user_id])
       begin
-        DB.instance.db.execute(
-          "insert into user values(?,?)",
-          data[:user_id],
-          data[:screen_name])
-      rescue # FIXME: specify exceptions here
+      DB.instance.db.execute(
+                             "insert into post values(?,?,?,?,?,?)",
+                             data[:post_id],
+                             data[:created_at],
+                             data[:in_reply_to_status_id],
+                             data[:in_reply_to_user_id],
+                             data[:post_text],
+                             data[:user_id])
+        begin
+          DB.instance.db.execute(
+                                 "insert into user values(?,?)",
+                                 data[:user_id],
+                                 data[:screen_name])
+        rescue # FIXME: specify exceptions here
+        end
+        rescue # FIXME: specify exceptions here
       end
     end
   end
