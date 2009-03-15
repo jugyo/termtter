@@ -266,7 +266,7 @@ module Termtter
       end
 
       def pre_config_load()
-        if config.devel
+        if config.system.devel
           plugin 'devel'
         end
       end
@@ -356,7 +356,6 @@ module Termtter
       end
 
       def run
-        require 'termtter/optparse'
         puts 'initializing...'
 
         load_default_plugins()

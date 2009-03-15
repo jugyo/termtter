@@ -16,6 +16,7 @@ require 'optparse'
 
 require 'termtter/config'
 require 'termtter/version'
+require 'termtter/optparse'
 require 'termtter/connection'
 require 'termtter/command'
 require 'termtter/hook'
@@ -27,8 +28,12 @@ require 'termtter/system_extensions'
 
 module Termtter
   APP_NAME = 'termtter'
-  CONF_DIR = File.expand_path '~/.termtter'
-  CONF_FILE = CONF_DIR + '/config'
+
+  config.system.set_default :conf_dir, File.expand_path('~/.termtter')
+  CONF_DIR = config.system.conf_dir
+
+  config.system.set_default :conf_file, CONF_DIR + '/config'
+  CONF_FILE = config.system.conf_file
 end
 
 if RUBY_VERSION < '1.8.7'
