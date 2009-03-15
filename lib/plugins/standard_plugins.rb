@@ -130,8 +130,8 @@ module Termtter::Client
   register_command(
     :name => :limit, :aliases => [:lm],
     :exec_proc => lambda {|arg|
-      limit = Termtter::API.twitter.get_rate_limit_status
-      remaining_time = "%dmin %dsec" % (limit.reset_time - Time.now).divmod(60)
+      limit = Termtter::API.twitter.limit_status
+      remaining_time = "%dmin %dsec" % (Time.parse(limit.reset_time) - Time.now).divmod(60)
       remaining_color =
         case limit.remaining_hits / limit.hourly_limit.to_f
         when 0.2..0.4 then :yellow
