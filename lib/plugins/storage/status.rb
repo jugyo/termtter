@@ -5,7 +5,7 @@ require 'sqlite3'
 
 module Termtter::Storage
   class Status
-    KEYS = %w[post_id created_at in_reply_to_status_id in_reply_to_user_id post_text user_id]
+    KEYS = %w[post_id created_at in_reply_to_status_id in_reply_to_user_id post_text user_id screen_name]
 
     def size
       DB.instance.db.get_first_value("select count(*) from post").to_i
@@ -20,15 +20,21 @@ module Termtter::Storage
       # 条件しぼりたいけどやりかたがうまくわからない
 #      raise "unko" unless data.keys.all?{|c| KEYS.include? c}
 
-      sql = "insert into post values(?,?,?,?,?,?)"
       DB.instance.db.execute(
-        sql,
+        "insert into post values(?,?,?,?,?,?)",
         data[:post_id],
         data[:created_at],
         data[:in_reply_to_status_id],
         data[:in_reply_to_user_id],
         data[:post_text],
         data[:user_id])
+      begin
+        DB.instance.db.execute(
+                               "insert into user values(?,?)",
+                               data[:user_id],
+                               data[:screen_name])
+      rescue
+      end
     end
   end
 end

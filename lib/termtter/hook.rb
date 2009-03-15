@@ -7,12 +7,21 @@ module Termtter
     def initialize(args)
       raise ArgumentError, ":name is not given." unless args.has_key?(:name)
       @name = args[:name].to_sym
-      @points = args[:points] ? args[:points].map {|i| i.to_sym } : []
+      @points = args[:points] ? args[:points].map {|i| i } : []
       @exec_proc = args[:exec_proc] || lambda {}
     end
 
     def match?(point)
-      points.include?(point.to_sym)
+      !points.select{|pt|
+        case pt
+        when String, Symbol
+          pt.to_s == point.to_s
+        when Regexp
+          (pt =~ point.to_s) ? true : false
+        else
+          false
+        end
+      }.empty?
     end
   end
 end

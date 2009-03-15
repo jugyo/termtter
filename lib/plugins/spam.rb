@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 
-Termtter::Twitter.new(config.user_name, config.password).update_status('*super spam time*')
-module Termtter::Client
-  clear_commands
-  add_command /.+/ do |m, t|
-    Thread.new { t.update_status(m[0]) }
-  end
-end
+Termtter::API.twitter.update('*super spam time*')
+Termtter::Client.register_hook(
+  :name => :span,
+  :points => [/^pre_exec/],
+  :exec_proc => lambda{|*arg|
+    text = arg.join(' ')
+    Termtter::API.twitter.update(text)
+    puts "=> #{text}"
+    false
+  }
+)

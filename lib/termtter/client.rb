@@ -323,6 +323,7 @@ module Termtter
                 @@since_id = statuses[0].id
               end
               call_hooks(statuses, :update_friends_timeline)
+              statuses
             rescue OpenURI::HTTPError => e
               if e.message == '401 Unauthorized'
                 puts 'Could not login'
