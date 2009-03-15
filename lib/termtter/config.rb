@@ -14,9 +14,12 @@ module Termtter
     def set_default(name, value)
       match_p, init, last = *name.to_s.match(/^(.+)\.([^\.]+)$/)
       if match_p
-        eval(init).__assign__(last.to_sym, value)
+        tmp = eval(init)
+        if tmp.instance_variable_get(:@store)[last.to_sym] == :undefined
+          tmp.__assign__(last.to_sym, value)
+        end
       else
-        __assign__(name.to_sym, value)
+        __assign__(name.to_sym, value) if @store[name.to_sym] == :undefined
       end
     end
 

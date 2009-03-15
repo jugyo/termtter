@@ -101,5 +101,11 @@ module Termtter
         res.should == 'hoge piyo'
       }.should_not raise_error
     end
+
+    it 'should not change value when call set_default twice' do
+      @config.plugins.set_default :only, 'before_value'
+      @config.plugins.set_default :only, 'after_value'
+      @config.plugins.only.should == 'before_value'
+    end
   end
 end
