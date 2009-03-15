@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+require 'fileutils'
 
 module Termtter
   class CommandNotFound < StandardError; end
