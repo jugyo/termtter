@@ -1,13 +1,24 @@
 # -*- coding: utf-8 -*-
 
 module Termtter
-  class Status
-    def bomb?
-      /爆発|bomb/ =~ self.text
-    end
-  end
 
   module Client
+    config.plugins.bomb.color.set_default :foreground, 'white'
+    config.plugins.bomb.color.set_default :background, 'red'
+
+    add_hook do |statuses, event|
+      case event
+      when :post_filter
+        fg = config.plugins.bomb.color.foreground
+        bg = config.plugins.bomb.color.background
+        statuses.each do |status|
+          if /爆発|bomb/ =~ status.text
+            status.text = "<on_#{bg}><#{fg}>#{status.text}</#{fg}></on_#{bg}>"
+          end
+        end
+      end
+    end
+
     register_command(
       :name => :bomb, :aliases => [],
       :exec_proc => lambda {|arg|
@@ -24,6 +35,7 @@ end
 # Bomb it!
 #
 # See http://gyazo.com/4b33517380673d92f51a52e675ecdb02.png .
-# config.plugins.stdout.timeline_format =
-#   %q[<90><%=time%></90> <%= s.bomb? ? "<37><41>#{status}</41></37>" : "<#{status_color}>#{status}</#{status_color}>" %> <90><%=id%></90>]
+# config.plugins.bomb.color.foreground = 'white'
+# config.plugins.bomb.color.background = 'red'
+#
 # vim: fenc=utf8

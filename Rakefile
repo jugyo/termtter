@@ -1,6 +1,4 @@
 $:.unshift File.dirname(__FILE__) + '/lib'
-require 'termtter'
-
 require 'spec/rake/spectask'
 desc 'run all specs'
 Spec::Rake::SpecTask.new do |t|
@@ -54,4 +52,3 @@ namespace :gem do
     end
   end
 end
-
