@@ -48,7 +48,7 @@ end
 namespace :gem do
   desc 'Install needed gems'
   task :install do
-    %w[ json_pure highline termcolor ].each do |gem|
+    %w[ json_pure highline termcolor rubytter ].each do |gem|
       sh "sudo gem install #{gem} -r"
     end
   end
