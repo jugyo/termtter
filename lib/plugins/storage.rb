@@ -27,43 +27,17 @@ module Termtter::Client
     end
   end
 
+  register_command(
+   :name => :search_storage, :aliases => [:ss],
+   :exec_proc => lambda{|arg|
+    unless arg.strip.empty?
+      key = arg.strip
 
-=begin
-        register_command(
-                         :name => :log,
-                         :exec_proc => lambda{|arg|
-                           if arg.empty?
-                             # log
-                             statuses = public_storage[:log]
-                             print_max = config.plugins.log.print_max_size
-                             print_max = 0 if statuses.size < print_max
-                             call_hooks(statuses[-print_max..-1], :search)
-                           else
-                             # log (user) (max)
-                             vars = arg.split(' ')
-                             print_max = vars.last =~ /^\d+$/ ? vars.pop.to_i : config.plugins.log.print_max_size
-                             id = vars
-                             statuses = id.first ? public_storage[:log].select{ |s| id.include? s.user.screen_name} : public_storage[:log]
-                             print_max = 0 if statuses.size < print_max
-                             call_hooks(statuses[-print_max..-1], :search)
-                           end
-                         },
-                         :completion_proc => lambda {|cmd, arg|
-                           find_user_candidates arg, "#{cmd} %s"
-                         },
-                         :help => [ 'log (USER(S)) (MAX)', 'Show local log of the user(s)']
-                         )
+      statuses = public_storage[:storage].search({ :text => key })
+      call_hooks(statuses, :search)
+     end
+   },
 
-        register_command(
-                         :name => :search_log, :aliases => [:sl],
-                         :exec_proc => lambda{|arg|
-                           unless arg.strip.empty?
-                             pat = Regexp.new arg
-                             statuses = public_storage[:log].select { |s| s.text =~ pat }
-                             call_hooks(statuses, :search)
-                           end
-                         },
-                         :help => [ 'search_log WORD', 'Search log for WORD' ]
-                         )
-=end
+   :help => [ 'search_storage WORD', 'Search storage for WORD' ]
+   )
 end
