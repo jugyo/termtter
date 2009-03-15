@@ -373,6 +373,7 @@ module Termtter
         require 'termtter/optparse'
         puts 'initializing...'
 
+        legacy_config_support()
         load_default_plugins()
         load_config()
         Termtter::API.setup()
