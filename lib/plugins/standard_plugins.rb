@@ -162,10 +162,8 @@ module Termtter::Client
     :name => :default_error_handler,
     :points => [:on_error],
     :exec_proc => lambda {|e|
-      puts "Error: #{e}"
-      if config.devel == true
-        puts e.backtrace.join("\n")
-      end
+      warn "[ERROR] Something wrong: #{e.message}"
+      raise e if config.devel == true
     }
   )
 

@@ -196,7 +196,7 @@ module Termtter
           end
         end
 
-        raise CommandNotFound unless command_found
+        raise CommandNotFound, text unless command_found
       end
 
       def pause
@@ -360,8 +360,10 @@ module Termtter
             begin
               call_commands(buf)
             rescue CommandNotFound => e
-              puts "Unknown command \"#{buf}\""
-              puts 'Enter "help" for instructions'
+              warn "Unknown command \"#{e}\""
+              warn 'Enter "help" for instructions'
+            rescue => e
+              handle_error e
             end
           end
         end
