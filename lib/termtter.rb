@@ -27,8 +27,8 @@ require 'termtter/system_extensions'
 
 module Termtter
   APP_NAME = 'termtter'
-  CONF_FILE = '~/.termtterrc' # still does not use
-  CONF_DIR = '~/.termtter' # still does not use
+  CONF_DIR = File.expand_path '~/.termtter'
+  CONF_FILE = CONF_DIR + '/config'
 end
 
 if RUBY_VERSION < '1.8.7'
