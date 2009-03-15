@@ -1,4 +1,4 @@
 # -*- coding: utf-8 -*-
 module Termtter
-  VERSION = '0.8.14'
+  VERSION = '1.0.0'
 end

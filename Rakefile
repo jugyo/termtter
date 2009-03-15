@@ -8,6 +8,7 @@ end
 
 desc 'Generate gemspec'
 task :gemspec do |t|
+  require 'termtter'
   open('termtter.gemspec', "wb" ) do |file|
     file << <<-EOS
 Gem::Specification.new do |s|
