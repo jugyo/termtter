@@ -178,7 +178,6 @@ module Termtter
     it 'run' do
       Client.should_receive(:require)
       Client.should_receive(:puts)
-      Client.should_receive(:legacy_config_support)
       Client.should_receive(:load_default_plugins)
       Client.should_receive(:load_config)
       Termtter::API.should_receive(:setup)
