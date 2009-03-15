@@ -15,11 +15,11 @@ module Termtter
       match_p, init, last = *name.to_s.match(/^(.+)\.([^\.]+)$/)
       if match_p
         tmp = eval(init)
-        if tmp.instance_variable_get(:@store)[last.to_sym] == :undefined
+        if tmp.__refer__(last.to_sym).empty?
           tmp.__assign__(last.to_sym, value)
         end
       else
-        __assign__(name.to_sym, value) if @store[name.to_sym] == :undefined
+        __assign__(name.to_sym, value) if __refer__(name.to_sym).empty?
       end
     end
 
