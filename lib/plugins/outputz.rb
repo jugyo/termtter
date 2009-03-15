@@ -12,7 +12,7 @@ module Termtter::Client
       :name => :outputz,
       :points => [:pre_exec_update],
       :exec_proc => lambda {|cmd, arg|
-        Thead.new do
+        Thread.new do
           Termtter::API.connection.start('outputz.com', 80) do |http|
               key  = CGI.escape key
               uri  = CGI.escape config.plugins.outputz.uri
