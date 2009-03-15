@@ -112,7 +112,7 @@ module Termtter
           result.results = filtered
           result
         else
-          unless event == :show
+          if event != :show
             filtered = result.map{|s| s.dup }
             @@filters.each do |f|
               filtered = f.call(filtered)
