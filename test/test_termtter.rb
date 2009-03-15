@@ -53,27 +53,6 @@ class TestTermtter < Test::Unit::TestCase
     assert_equal nil, event
   end
 
-  def test_add_command
-    command_text = nil
-    matche_text = nil
-    twitter = nil
-    Termtter::Client.add_command /foo\s+(.*)/ do |m, t|
-      command_text = m[0]
-      matche_text = m[1]
-      twitter = t
-    end
-    
-    Termtter::Client.call_commands('foo xxxxxxxxxxxxxx', @twitter)
-    assert_equal 'foo xxxxxxxxxxxxxx', command_text
-    assert_equal 'xxxxxxxxxxxxxx', matche_text
-    assert_equal @twitter, twitter
-    
-    Termtter::Client.clear_commands()
-    assert_raise Termtter::CommandNotFound do
-      Termtter::Client.call_commands('foo xxxxxxxxxxxxxx', @twitter)
-    end
-  end
-
   def swap_open(name)
     Kagemusha.new(Termtter::Twitter).def(:open) {
       File.open(File.dirname(__FILE__) + "/../test/#{name}")
