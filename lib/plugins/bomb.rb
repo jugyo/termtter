@@ -11,6 +11,7 @@ module Termtter
       when :post_filter
         fg = config.plugins.bomb.color.foreground
         bg = config.plugins.bomb.color.background
+        statuses = [statuses] unless statuses.instance_of? Array
         statuses.each do |status|
           if /爆発|bomb/ =~ status.text
             status.text = "<on_#{bg}><#{fg}>#{status.text}</#{fg}></on_#{bg}>"
