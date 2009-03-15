@@ -37,19 +37,20 @@ if RUBY_VERSION < '1.8.7'
   end
 end
 
-def plugin(s, init = {})
+def plugin(name, init = {})
   unless init.empty?
     init.each do |key, value|
-      eval("config.plugins.#{s}").__send__("#{key}=", value)
+      #eval("config.plugins.#{name}").__send__("#{key}=", value)
+      config.plugins.__refer__(name).__assign__(key, value)
     end
   end
   # FIXME: below path should be replaced by optparsed path
-  if File.exist?(path = File.expand_path("~/.termtter/plugins/#{s}"))
+  if File.exist?(path = File.expand_path("~/.termtter/plugins/#{name}"))
     require path
   else
-    require "plugins/#{s}"
+    require "plugins/#{name}"
   end
-rescue => e
+rescue LoadError => e
   Termtter::Client.handle_error(e)
 end
 
