@@ -6,12 +6,7 @@ module Termtter::Client
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         if arg =~ /^(\w+)/
-          res = Termtter::API::twitter.social($1.strip, :follow)
-          if res.code == '200'
-            puts "Followed user @#{$1}"
-          else
-            puts "Failed: #{res}"
-          end
+          res = Termtter::API::twitter.follow($1.strip)
         end
       end
     },
@@ -26,12 +21,7 @@ module Termtter::Client
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         if arg =~ /^(\w+)/
-          res = Termtter::API::twitter.social($1.strip, :leave)
-          if res.code == '200'
-            puts "Leaved user @#{$1}"
-          else
-            puts "Failed: #{res}"
-          end
+          res = Termtter::API::twitter.leave($1.strip)
         end
       end
     },
@@ -40,21 +30,4 @@ module Termtter::Client
     },
 	:help => ['leave USER', 'Leave user']
   )
-end
-
-module Termtter
-  class Twitter
-    def social(user, type)
-      type =
-        case type.to_sym
-        when :follow then 'create'
-        when :leave  then 'destroy'
-        end
-      uri = "#{@connection.protocol}://twitter.com/friendships/#{type}/#{user}.json"
-
-      @connection.start('twitter.com', @connection.port) do |http|
-        http.request(post_request(uri))
-      end
-    end
-  end
 end

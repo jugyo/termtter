@@ -42,7 +42,7 @@ module Termtter::Client
   register_command(
     :name => :profile, :aliases => [:p],
     :exec_proc => lambda {|arg|
-      user = Termtter::API.twitter.get_user_profile(arg)
+      user = Termtter::API.twitter.user(arg.strip)
       attrs = %w[ name screen_name url description profile_image_url location protected following
           friends_count followers_count statuses_count favourites_count
           id time_zone created_at utc_offset notifications
