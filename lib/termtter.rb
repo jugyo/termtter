@@ -40,8 +40,7 @@ end
 def plugin(name, init = {})
   unless init.empty?
     init.each do |key, value|
-      #eval("config.plugins.#{name}").__send__("#{key}=", value)
-      config.plugins.__refer__(name).__assign__(key, value)
+      config.plugins.__refer__(name.to_sym).__assign__(key.to_sym, value)
     end
   end
   # FIXME: below path should be replaced by optparsed path
