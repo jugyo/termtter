@@ -23,7 +23,7 @@ module Termtter
     register_command(
       :name => :ls, :aliases => [],
       :exec_proc => lambda {|arg|
-        call_commands("list #{arg.empty? ? public_storage[:current] : arg}", API.twitter)
+        call_commands("list #{arg.empty? ? public_storage[:current] : arg}")
       },
       :completion_proc => lambda {|cmd, args|
         find_user_candidates args, "#{cmd} %s"
