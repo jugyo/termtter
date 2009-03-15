@@ -13,7 +13,7 @@ describe Termtter do
 
   it 'apply filter english only update_friends_timeline'
   # NOTE: when below code is evaluated,
-  #     plugin 'english', :only => :update_friends_timeline
+  #     plugin 'english', :only => [:update_friends_timeline]
   #   in update_friends_timeline there are English posts only but in replies there are both Japanese posts and English posts.
   #   It's too difficult for me to write that spec, so this spec is pending now. Please write this spec, hey, you, a cool hacker!
 end
