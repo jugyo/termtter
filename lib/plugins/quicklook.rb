@@ -22,16 +22,20 @@ def quicklook(url)
 end
 
 module Termtter::Client
-  add_command %r'^(?:quicklook|ql)\s+(\w+)$' do |m,t|
-    id = m[1]
-    status = t.show(id).first
-    if (status)
-      uris = URI.regexp.match(status.text).to_a
-      quicklook(uris.first) unless uris.empty?
-    end
-  end
+  register_command(
+    :name => :quicklook, :aliases => [:ql],
+    :exec_proc => proc{|arg|
+      status = Termtter::API.twitter.show(arg)
+      if (status)
+        uris = URI.regexp.match(status.text).to_a
+        quicklook(uris.first) unless uris.empty?
+      end
+    }
+  )
 end
 
 # quicklook.rb
+# REQUIREMENTS:
+#   plugin 'expand-tinyurl'
 # TODO:
 #   Close quicklook window automatically.
