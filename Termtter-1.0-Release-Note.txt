@@ -30,5 +30,8 @@ Termtter 1.0 のリリース作業はTermtter合宿で行われました。こ�
 参加者: hitode909, jugyo, ujihisa, Sixeight, koichiroo, nay, udonchan, repeatedly
 
 == 参考リンク
+開発中のTermtter
+http://github.com/jugyo/termcolor/tree/master
+
 2009年1月時点の Termtter リリースノート (当時のバージョンは不明)
 http://jugyo.org/blog/2931
