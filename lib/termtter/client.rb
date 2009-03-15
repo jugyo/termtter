@@ -226,6 +226,7 @@ module Termtter
       end
 
       def load_config
+        legacy_config_support() if File.exist? Termtter::CONF_DIR
         if File.exist? Termtter::CONF_FILE
           load Termtter::CONF_FILE
         else
@@ -374,7 +375,6 @@ module Termtter
         require 'termtter/optparse'
         puts 'initializing...'
 
-        legacy_config_support()
         load_default_plugins()
         load_config()
         Termtter::API.setup()
