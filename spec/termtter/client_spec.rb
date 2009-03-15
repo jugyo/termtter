@@ -161,7 +161,7 @@ module Termtter
       hook2_called.should == true
     end
 
-    it 'should able to override hooks' do
+    it 'should be able to override hooks' do
       hook1_called = false
       hook2_called = false
       Client.register_hook(:name => :hook, :points => [:exit], :exec_proc => lambda {hook1_called = true})
