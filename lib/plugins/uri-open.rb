@@ -4,7 +4,7 @@ module Termtter::Client
   public_storage[:uris] = []
 
   add_hook do |statuses, event, t|
-    if !statuses.empty? && event == :update_friends_timeline
+    if event == :update_friends_timeline
       statuses.each do |s|
         public_storage[:uris] += s.text.scan(%r|https?://[^\s]+|)
       end
