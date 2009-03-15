@@ -11,16 +11,14 @@ module Termtter::Storage
   end
 
   describe Status do
-
     it 'self.insert should not return false' do
-      Status.insert({ :post_id => 1,
-                       :created_at => 12345,
-                       :in_reply_to_status_id => -1,
-                       :in_reply_to_user_id => -1,
-                       :post_text => 'bomb',
-                       :user_id => 1
-                     }).should_not == false
+      Status.insert(
+        :post_id => 1,
+        :created_at => 12345,
+        :in_reply_to_status_id => -1,
+        :in_reply_to_user_id => -1,
+        :post_text => 'bomb',
+        :user_id => 1).should_not be_false
     end
-
   end
 end
