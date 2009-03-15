@@ -18,7 +18,7 @@ module Termtter::Storage
     def self.insert(data)
       raise "data must be Hash(#{data}, #{data.class})" unless data.kind_of? Hash
       # 条件しぼりたいけどやりかたがうまくわからない
-#      raise "unko" unless data.keys.all?{|c| KEYS.include? c}
+      #      raise "unko" unless data.keys.all?{|c| KEYS.include? c}
 
       DB.instance.db.execute(
         "insert into post values(?,?,?,?,?,?)",
@@ -30,9 +30,9 @@ module Termtter::Storage
         data[:user_id])
       begin
         DB.instance.db.execute(
-                               "insert into user values(?,?)",
-                               data[:user_id],
-                               data[:screen_name])
+          "insert into user values(?,?)",
+          data[:user_id],
+          data[:screen_name])
       rescue
       end
     end
