@@ -228,9 +228,7 @@ module Termtter
       def load_config
         conf_file = File.expand_path('~/.termtter')
         if File.exist? conf_file
-          wrap_require do
-            load conf_file
-          end
+          load conf_file
         else
           ui = create_highline
           username = ui.ask('your twitter username: ')
@@ -260,10 +258,28 @@ module Termtter
           }
           puts "generated: ~/.termtter"
           puts "enjoy!"
-          wrap_require do
-            load conf_file
-          end
+          load conf_file
         end
+      end
+
+      def legacy_config_support
+        case File.ftype(File.expand_path('~/.termtter'))
+        when 'directory'
+          # nop
+        when 'file'
+          move_legacy_config_file
+        end
+      end
+
+      def move_legacy_config_file
+        File.mv(
+          File.expand_path('~/.termtter'),
+          File.expand_path('~/.termtter___'))
+        Dir.mkdir(
+          File.expand_path('~/.termtter'))
+        File.mv(
+          File.expand_path('~/.termtter___'),
+          File.expand_path('~/.termtter/config'))
       end
 
       def pre_config_load()
@@ -392,22 +408,6 @@ module Termtter
         puts "Error: #{e}"
         puts e.backtrace.join("\n")
       end
-
-      def wrap_require
-        # FIXME: delete this method after the major version up
-        alias original_require require
-        def require(s)
-          if %r|^termtter/(.*)| =~ s
-            puts "[WARNING] use plugin '#{$1}' instead of require"
-            puts "  Such a legacy .termtter file will not be supported until version 1.0.0"
-            s = "plugin/#{$1}"
-          end
-          original_require s
-        end
-        yield
-        alias require original_require
-      end
-      private :wrap_require
     end
   end
 end
