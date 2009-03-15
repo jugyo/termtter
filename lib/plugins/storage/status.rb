@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-require File.dirname(__FILE__) + '/DB.rb'
+require File.dirname(__FILE__) + '/DB'
 require 'sqlite3'
 
 module Termtter::Storage
@@ -33,7 +33,7 @@ module Termtter::Storage
           "insert into user values(?,?)",
           data[:user_id],
           data[:screen_name])
-      rescue
+      rescue # FIXME: specify exceptions here
       end
     end
   end
