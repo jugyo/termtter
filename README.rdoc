@@ -64,10 +64,10 @@ http://wiki.github.com/jugyo/termtter/home (in Japanese)
 
 == TODO:
 
-- ドキュメント・スペックの充実
-- Hook仕様の決定・統合
-- ステータス表示などUIの改善
-- ログ機能の整備
+- Enhance the document and spec
+- Finalize the Hook specification and integration
+- Improve the UI(a status view, etc...)
+- Build a logging function
 
 == LICENSE:
 
