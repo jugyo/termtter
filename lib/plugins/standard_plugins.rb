@@ -11,7 +11,7 @@ module Termtter::Client
     :exec_proc => lambda {|arg|
       unless arg =~ /^\s*$/
         text = ERB.new(arg).result(binding).gsub(/\n/, ' ')
-        result = Termtter::API.twitter.update(text)
+        result = Termtter::API.twitter.update(text, :source=>Termtter::APP_NAME)
         puts "=> #{text}"
         result
       end
