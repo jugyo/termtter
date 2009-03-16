@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 = termtter
 
 http://github.com/jugyo/termtter
@@ -63,10 +64,10 @@ http://wiki.github.com/jugyo/termtter/home (in Japanese)
 
 == TODO:
 
-- filter と plugin を統一する
-- plugin => plugins （ディレクトリ名変更）
-- $HOME 以下に plugin 用のディレクトリを置けるようにする
-- コマンドラインオプションでいろいろ指定できるようにする
+- ドキュメント・スペックの充実
+- Hook仕様の決定・統合
+- ステータス表示などUIの改善
+- ログ機能の整備
 
 == LICENSE:
 
