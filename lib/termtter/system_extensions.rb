@@ -1,3 +1,21 @@
+# -*- coding: utf-8 -*-
+
+require 'dl/import'
+module Readline
+  begin
+    module LIBREADLINE
+      extend DL::Importable
+      dlload '/opt/local/lib/libreadline.dylib' # TODO: 環境によってパスを変える必要あり。どうやったらいいかはこれから調べる。
+      extern 'int rl_refresh_line(int, int)'
+    end
+    def self.refresh_line
+      LIBREADLINE.rl_refresh_line(0, 0)
+    end
+  rescue RuntimeError
+    def self.refresh_line;end
+  end
+end
+
 def win?
   RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
 end
