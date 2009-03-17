@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
   s.add_dependency("highline", ">= 1.5.0")
   s.add_dependency("termcolor", ">= 0.3.1")
   s.add_dependency("rubytter", ">= 0.4.8")
+  s.add_dependency("sqlite3-ruby", ">= 1.2.4")
   s.authors = %w(jugyo ujihisa)
   s.email = 'jugyo.org@gmail.com'
   s.homepage = 'http://wiki.github.com/jugyo/termtter'
