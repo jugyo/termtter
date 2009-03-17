@@ -58,4 +58,9 @@ rescue LoadError => e
   Termtter::Client.handle_error(e)
 end
 
+def filter(name, init = {})
+  warn "filter method will be removed. Use plugin instead."
+  plugin(name, init)
+end
+
 $:.unshift(Termtter::CONF_DIR) # still does not use
