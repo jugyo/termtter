@@ -104,3 +104,11 @@ if win?
     STDOUT.puts
   end
 end
+
+unless Symbol.instance_methods.include?('to_proc')
+  class Symbol
+    def to_proc
+      Proc.new { |*args| args.shift.__send__(self, *args) }
+    end
+  end
+end
