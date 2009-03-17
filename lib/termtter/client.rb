@@ -2,6 +2,15 @@
 require 'fileutils'
 
 module Termtter
+  APP_NAME = 'termtter'
+
+  config.system.set_default :conf_dir, File.expand_path('~/.termtter')
+  CONF_DIR = config.system.conf_dir
+
+  config.system.set_default :conf_file, CONF_DIR + '/config'
+  CONF_FILE = config.system.conf_file
+  $:.unshift(Termtter::CONF_DIR)
+
   class CommandNotFound < StandardError; end
 
   module Client

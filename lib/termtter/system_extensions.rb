@@ -1,5 +1,26 @@
 # -*- coding: utf-8 -*-
 
+def plugin(name, init = {})
+  unless init.empty?
+    init.each do |key, value|
+      config.plugins.__refer__(name.to_sym).__assign__(key.to_sym, value)
+    end
+  end
+  # FIXME: below path should be replaced by optparsed path
+  if File.exist?(path = File.expand_path("~/.termtter/plugins/#{name}"))
+    require path
+  else
+    require "plugins/#{name}"
+  end
+rescue LoadError => e
+  Termtter::Client.handle_error(e)
+end
+
+def filter(name, init = {})
+  warn "filter method will be removed. Use plugin instead."
+  plugin(name, init)
+end
+
 require 'dl/import'
 module Readline
   begin
@@ -102,6 +123,12 @@ if win?
   def puts(str)
     print str
     STDOUT.puts
+  end
+end
+
+unless Array.instance_methods.include?('take')
+  class Array
+    def take(n) self[0...n] end
   end
 end
 
