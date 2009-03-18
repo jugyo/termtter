@@ -25,23 +25,15 @@ module Termtter::Client
   end
 
   register_command(
-    :name => :search_storage, :aliases => [:ss],
+    :name => :search_storage,
+    :aliases => [:ss],
     :exec_proc => lambda {|arg|
       unless arg.strip.empty?
         key = arg.strip
-        Termtter::Storage::Status.search({ :post_text => key})
-=begin
-                       statuses = public_storage[:storage].search({ :post_text => key})
-
-                       statuses.each do |s|
-                         p s
-                       end
-                         call_hooks(statuses, :search)
-=end                       
-                     end
-
-                   },
-                   
-                   :help => [ 'search_storage WORD', 'Search storage for WORD' ]
-                   )
+        statuses = Termtter::Storage::Status.search({ :post_text => key})
+        output(statuses, :search)
+      end
+    },
+    :help => [ 'search_storage WORD', 'Search storage for WORD' ]
+  )
 end

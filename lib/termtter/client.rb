@@ -130,7 +130,6 @@ module Termtter
           filtered
         rescue => e
           handle_error(e)
-          result
       end
 
       def do_hooks(statuses, event)
