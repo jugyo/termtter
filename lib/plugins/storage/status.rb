@@ -21,8 +21,6 @@ module Termtter::Storage
     end
 
     def self.insert(data)
-      raise "data must be Hash(#{data}, #{data.class})" unless data.kind_of? Hash
-      begin
       DB.instance.db.execute(
                              "insert into post values(?,?,?,?,?,?)",
                              data[:post_id],
@@ -31,15 +29,11 @@ module Termtter::Storage
                              data[:in_reply_to_user_id],
                              data[:post_text],
                              data[:user_id])
-        begin
-          DB.instance.db.execute(
-                                 "insert into user values(?,?)",
-                                 data[:user_id],
-                                 data[:screen_name])
-        rescue # FIXME: specify exceptions here
-        end
-        rescue # FIXME: specify exceptions here
-      end
+      DB.instance.db.execute(
+                             "insert into user values(?,?)",
+                             data[:user_id],
+                             data[:screen_name])
+    rescue SQLite3::SQLException
     end
   end
 end
