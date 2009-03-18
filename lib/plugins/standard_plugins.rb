@@ -104,7 +104,8 @@ module Termtter::Client
           :screen_name => s.from_user,
           :source => CGI.unescapeHTML(s.source),
           :reply_to => nil,
-          :text => s.text,
+          :in_reply_to_user_id => s.to_user_id,
+          :post_text => s.text,
           :original_data => s
         }
       end

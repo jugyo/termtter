@@ -323,8 +323,9 @@ module Termtter
             :name => s.user.name,
             :screen_name => s.user.screen_name,
             :source => s.source,
-            :reply_to => s.in_reply_to_status_id,
-            :text => s.text,
+            :in_reply_to_status_id => s.in_reply_to_status_id,
+            :in_reply_to_user_id => s.in_reply_to_user_id,
+            :post_text => s.text,
             :original_data => s
           }
         end
