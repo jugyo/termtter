@@ -78,11 +78,14 @@ module Termtter::Client
   register_command(
     :name => :list, :aliases => [:l],
     :exec_proc => lambda {|arg|
-      unless arg.empty?
-        call_hooks(Termtter::API.twitter.user_timeline(arg), :list_user_timeline)
+      if arg.empty?
+        event = :list_friends_timeline
+        statuses = Termtter::API.twitter.friends_timeline()
       else
-        call_hooks(Termtter::API.twitter.friends_timeline(), :list_friends_timeline)
+        event = :list_user_timeline
+        statuses = Termtter::API.twitter.user_timeline(arg)
       end
+      output(statuses_to_hash(statuses), event)
     },
     :completion_proc => lambda {|cmd, arg|
       find_user_candidates arg, "#{cmd} %s"
@@ -92,14 +95,27 @@ module Termtter::Client
   register_command(
     :name => :search, :aliases => [:s],
     :exec_proc => lambda {|arg|
-      call_hooks(Termtter::API.twitter.search(arg), :search)
+      statuses = Termtter::API.twitter.search(arg).results.map do |s|
+        {
+          :id => s.id,
+          :created_at => s.created_at,
+          :user_id => s.from_user_id,
+          :name => nil,
+          :screen_name => s.from_user,
+          :source => CGI.unescapeHTML(s.source),
+          :reply_to => nil,
+          :text => s.text,
+          :original_data => s
+        }
+      end
+      output(statuses, :search)
     }
   )
 
   register_command(
     :name => :replies, :aliases => [:r],
     :exec_proc => lambda {|arg|
-      call_hooks(Termtter::API.twitter.replies(), :replies)
+      output(statuses_to_hash(Termtter::API.twitter.replies()), :replies)
     }
   )
 
@@ -107,7 +123,7 @@ module Termtter::Client
     :name => :show,
     :exec_proc => lambda {|arg|
       id = arg.gsub(/.*:\s*/, '')
-      call_hooks(Termtter::API.twitter.show(id), :show)
+      output(statuses_to_hash([Termtter::API.twitter.show(id)]), :show)
     },
     :completion_proc => lambda {|cmd, arg|
       case arg
@@ -128,7 +144,8 @@ module Termtter::Client
     :name => :shows,
     :exec_proc => lambda {|arg|
       id = arg.gsub(/.*:\s*/, '')
-      call_hooks(Termtter::API.twitter.show(id, true), :show)
+      # TODO: Implement
+      output(statuses_to_hash([Termtter::API.twitter.show(id)]), :show)
     },
     :completion_proc => get_command(:show).completion_proc
   )
@@ -273,14 +290,11 @@ module Termtter::Client
   public_storage[:status_ids] ||= Set.new
 
   add_hook do |statuses, event, t|
-    case event
-    when :update_friends_timeline, :list_friends_timeline, :list_user_timeline, :replies
-      statuses.each do |s|
-        public_storage[:users].add(s.user.screen_name)
-        public_storage[:users] += s.text.scan(/@([a-zA-Z_0-9]*)/).flatten
-        public_storage[:status_ids].add(s.id.to_s)
-        public_storage[:status_ids].add(s.in_reply_to_status_id.to_s) if s.in_reply_to_status_id
-      end
+    statuses.each do |s|
+      public_storage[:users].add(s[:screen_name])
+      public_storage[:users] += s[:text].scan(/@([a-zA-Z_0-9]*)/).flatten
+      public_storage[:status_ids].add(s[:id])
+      public_storage[:status_ids].add(s[:reply_to]) if s[:reply_to]
     end
   end
 

@@ -103,28 +103,34 @@ module Termtter
         EOF
       end
 
-      # memo: each filter must return Array of Status
-      def apply_filters(result, event = nil)
-        case event
-        when :show
-          result
-        when :search
-          filtered = result.results.map(&:dup)
-          @@filters.each do |f|
-            filtered = f.call(filtered, event)
-          end
-          result.results = filtered
-          result
-        else
-          filtered = result.map(&:dup)
+      # statuses => [status, status, ...]
+      # status => {
+      #             :id => status id,
+      #             :created_at => created time,
+      #             :user_id => user id,
+      #             :name => user name,
+      #             :screen_name => user screen_name,
+      #             :source => source,
+      #             :reply_to => reply_to status id,
+      #             :text => status,
+      #             :original_data => original data,
+      #           }
+      def output(statuses, event)
+        call_new_hooks(:pre_filter, statuses, event)
+        filtered = apply_filters(statuses, event)
+        call_new_hooks(:post_filter, statuses, event)
+        call_new_hooks(:output, filtered, event)
+      end
+
+      def apply_filters(statuses, event)
+          filtered = statuses.map(&:dup)
           @@filters.each do |f|
             filtered = f.call(filtered, event)
           end
           filtered
-        end
-      rescue => e
-        handle_error(e)
-        result
+        rescue => e
+          handle_error(e)
+          result
       end
 
       def do_hooks(statuses, event)
@@ -142,7 +148,7 @@ module Termtter
         result = nil
         get_hooks(point).each {|hook|
           break if result == false # interrupt if hook return false
-          result = hook.exec_proc.call(*args)
+          result = hook.execute(*args)
         }
         result
       rescue => e
@@ -277,6 +283,7 @@ module Termtter
         end
       end
 
+      # TODO: Make pluggable
       def setup_update_timeline_task()
         register_command(
           :name => :_update_timeline,
@@ -285,11 +292,11 @@ module Termtter
               args = @@since_id ? [{:since_id => @@since_id}] : []
               statuses = Termtter::API.twitter.friends_timeline(*args)
               unless statuses.empty?
+                puts if @@since_id
                 @@since_id = statuses[0].id
+                output(statuses_to_hash(statuses), :update_friends_timeline)
+                Readline.refresh_line
               end
-              call_hooks(statuses, :update_friends_timeline)
-              Readline.refresh_line
-              statuses
             rescue OpenURI::HTTPError => e
               if e.message == '401 Unauthorized'
                 puts 'Could not login'
@@ -300,8 +307,26 @@ module Termtter
           }
         )
 
-        add_task(:name => :update_timeline, :interval => config.update_interval) do
+        add_task(:name => :update_timeline, :interval => config.update_interval, :after => config.update_interval) do
           call_commands('_update_timeline')
+        end
+
+        call_commands('_update_timeline')
+      end
+
+      def statuses_to_hash(statuses)
+        statuses.map do |s|
+          {
+            :id => s.id,
+            :created_at => s.created_at,
+            :user_id => s.user.id,
+            :name => s.user.name,
+            :screen_name => s.user.screen_name,
+            :source => s.source,
+            :reply_to => s.in_reply_to_status_id,
+            :text => s.text,
+            :original_data => s
+          }
         end
       end
 
@@ -339,8 +364,6 @@ module Termtter
       end
 
       def run
-        puts 'initializing...'
-
         load_default_plugins()
         load_config()
         Termtter::API.setup()
@@ -350,7 +373,6 @@ module Termtter
         call_new_hooks(:initialize)
 
         setup_update_timeline_task()
-        call_commands('_update_timeline')
 
         @@task_manager.run()
         start_input_thread()
