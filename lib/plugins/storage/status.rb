@@ -7,7 +7,7 @@ module Termtter::Storage
   class Status
     KEYS = %w[post_id created_at in_reply_to_status_id in_reply_to_user_id post_text user_id screen_name]
 
-    def size
+    def self.size
       DB.instance.db.get_first_value("select count(*) from post").to_i
     end
 
