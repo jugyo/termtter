@@ -16,7 +16,8 @@ module Termtter::Storage
 
       DB.instance.db.execute("select created_at, screen_name, post_text, in_reply_to_status_id, post_id from post inner join user on post.user_id = user.id where post_text like '%' || ? || '%' ",
                              query[:post_text]) do |created_at, screen_name, post_text, in_reply_to_status_id, post_id|
-        p [created_at, screen_name, post_text, in_reply_to_status_id, post_id]
+        created_at = Time.at(created_at)
+        p [created_at, screen_name, post_text ]
       end
     end
 
