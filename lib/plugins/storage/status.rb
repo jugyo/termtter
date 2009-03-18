@@ -14,17 +14,14 @@ module Termtter::Storage
     def self.search(query)
       raise "query must be Hash(#{query}, #{query.class})" unless query.kind_of? Hash
 
-      DB.instance.db.execute("select created_at, screen_name, post_text, in_reply_to_status_id, post_id from post inner join user on post.user_id = user.id where post_text like '%' || ? || '%' ", query[:post_text]) do |created_at, screen_name, post_text, in_reply_to_status_id, post_id|
-
-#      DB.instance.db.execute("select created_at, screen_name, post_text, in_reply_to_status_id, post_id from post inner join user on post.user_id = user.id where post_text like '%of%' ", query[:post_text]) do |created_at, screen_name, post_text, in_reply_to_status_id, post_id|
+      DB.instance.db.execute("select created_at, screen_name, post_text, in_reply_to_status_id, post_id from post inner join user on post.user_id = user.id where post_text like '%' || ? || '%' ",
+                             query[:post_text]) do |created_at, screen_name, post_text, in_reply_to_status_id, post_id|
         p [created_at, screen_name, post_text, in_reply_to_status_id, post_id]
       end
     end
 
     def self.insert(data)
       raise "data must be Hash(#{data}, #{data.class})" unless data.kind_of? Hash
-      # 条件しぼりたいけどやりかたがうまくわからない
-      #      raise "unko" unless data.keys.all?{|c| KEYS.include? c}
       begin
       DB.instance.db.execute(
                              "insert into post values(?,?,?,?,?,?)",
