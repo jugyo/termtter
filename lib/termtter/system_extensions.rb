@@ -25,8 +25,18 @@ require 'dl/import'
 module Readline
   begin
     module LIBREADLINE
-      extend DL::Importable
-      dlload '/opt/local/lib/libreadline.dylib' # TODO: 環境によってパスを変える必要あり。どうやったらいいかはこれから調べる。
+      if DL.const_defined? :Importable
+        extend DL::Importable
+      else
+        extend DL::Importer
+      end
+      pathes = Array(ENV['TERMTTER_EXT_LIB'] || [
+        '/opt/local/lib/libreadline.dylib',
+        '/usr/lib/libreadline.so',
+        '/usr/local/lib/libreadline.so',
+        File.join(Gem.bindir, 'readline.dll')
+      ])
+      dlload(pathes.find { |path| File.exist?(path)})
       extern 'int rl_refresh_line(int, int)'
     end
     def self.refresh_line
