@@ -42,7 +42,7 @@ module Readline
     def self.refresh_line
       LIBREADLINE.rl_refresh_line(0, 0)
     end
-  rescue RuntimeError, NameError
+  rescue Exception
     def self.refresh_line;end
   end
 end
