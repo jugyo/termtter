@@ -57,6 +57,7 @@ module Termtter
     end
 
     # return array like [command, arg]
+    # match? メソッドがなんかきもちわるいので変える予定
     def match?(input)
       if pattern =~ input
         [$2 || $3, $4]  # $2 or $3 => command, $4 => argument

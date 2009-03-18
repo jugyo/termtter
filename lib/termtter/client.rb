@@ -166,6 +166,7 @@ module Termtter
 
         command_found = false
         @@new_commands.each do |key, command|
+          # match? メソッドがなんかきもちわるいので変える予定
           command_str, command_arg = command.match?(text)
           if command_str
             command_found = true
