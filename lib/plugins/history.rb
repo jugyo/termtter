@@ -3,9 +3,9 @@
 require 'zlib'
 
 config.plugins.history.
-  set_default(:filename, '~/.termtter_history')
+  set_default(:filename, Termtter::CONF_DIR + '/history')
 config.plugins.history.
-  set_default(:keys, [:log, :users, :status_ids])
+  set_default(:keys, [:users, :status_ids])
 config.plugins.history.
   set_default(:max_of_history, 100)
 config.plugins.history.
@@ -51,14 +51,17 @@ module Termtter::Client
     puts "history saved(#{File.size(filename)/1000}kb)"
   end
 
-  add_hook do |statuses, event|
-    case event
-    when :initialize
-      load_history
-    when :exit
-      save_history
-    end
-  end
+  register_hook(
+    :name => :history_initialize,
+    :points => [:initialize],
+    :exec_proc => lambda { load_history; logger.debug('load_history') }
+  )
+
+  register_hook(
+    :name => :history_exit,
+    :points => [:exit],
+    :exec_proc => lambda { save_history; logger.debug('save_history') }
+  )
 
   if config.plugins.history.enable_autosave
     Termtter::Client.add_task(:interval => config.plugins.history.autosave_interval,
