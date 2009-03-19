@@ -119,6 +119,7 @@ module Termtter
       #             :original_data => original data,
       #           }
       def output(statuses, event)
+        # MEMO: event をいちいち渡さなくてもいいかもしれないなぁ
         call_new_hooks(:pre_filter, statuses, event)
         filtered = apply_filters(statuses, event)
         call_new_hooks(:post_filter, statuses, event)
