@@ -34,7 +34,7 @@ module Termtter::Client
          group = config.plugins.group.groups[group_name]
        end
        statuses = group ? public_storage[:log].select { |s|
-         group.include?(s.user.screen_name) 
+         group.include?(s[:screen_name]) 
        } : []
        output(statuses, :search)
      else
