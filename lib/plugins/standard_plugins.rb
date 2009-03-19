@@ -290,14 +290,18 @@ module Termtter::Client
   public_storage[:users] ||= Set.new
   public_storage[:status_ids] ||= Set.new
 
-  add_hook do |statuses, event, t|
-    statuses.each do |s|
-      public_storage[:users].add(s[:screen_name])
-      public_storage[:users] += s[:text].scan(/@([a-zA-Z_0-9]*)/).flatten
-      public_storage[:status_ids].add(s[:id])
-      public_storage[:status_ids].add(s[:reply_to]) if s[:reply_to]
-    end
-  end
+  register_hook(
+    :name => :for_completion,
+    :points => [:pre_filter],
+    :exec_proc => lambda {|statuses, event|
+      statuses.each do |s|
+        public_storage[:users].add(s[:screen_name])
+        public_storage[:users] += s[:post_text].scan(/@([a-zA-Z_0-9]*)/).flatten
+        public_storage[:status_ids].add(s[:id])
+        public_storage[:status_ids].add(s[:reply_to]) if s[:reply_to]
+      end
+    }
+  )
 
   def self.find_status_ids(text)
     public_storage[:status_ids].select{|id| id =~ /#{Regexp.quote(text)}/}
