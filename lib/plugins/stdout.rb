@@ -26,8 +26,8 @@ module Termtter
         text = s[:post_text]
         status_color = config.plugins.stdout.colors[s[:user_id].hash % config.plugins.stdout.colors.size]
         status = "#{s[:screen_name]}: #{text}"
-        if s[:in_reply_to_user_id]
-          status += " (repl. to #{s[:reply_to]})"
+        if s[:in_reply_to_status_id]
+          status += " (repl. to #{s[:in_reply_to_status_id]})"
         end
 
         time = "(#{Time.parse(s[:created_at]).strftime(time_format)})"
