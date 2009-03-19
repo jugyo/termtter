@@ -25,7 +25,7 @@ module Termtter
                         'User-Agent' => 'Termtter http://github.com/jugyo/termtter',
                         'X-Twitter-Client' => 'Termtter',
                         'X-Twitter-Client-URL' => 'http://github.com/jugyo/termtter',
-                        'X-Twitter-Client-Version' => '0.1'
+                        'X-Twitter-Client-Version' => Termtter::VERSION
                       },
                       :enable_ssl => config.enable_ssl,
                       :proxy_host => config.proxy.host,
