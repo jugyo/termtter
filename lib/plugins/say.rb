@@ -10,14 +10,16 @@ def say(who, what)
 end
 
 module Termtter::Client
-  add_hook do |statuses, event, t|
-    if !statuses.empty? && event == :update_friends_timeline
+  register_hook(
+    :name => :say,
+    :points => [:post_filter],
+    :exec_proc => lambda {|statuses, event|
       statuses.reverse.each do |s|
-        text_without_uri = s.text.gsub(%r|https?://[^\s]+|, 'U.R.I.')
-        say s.user.screen_name, text_without_uri
+        text_without_uri = s[:post_text].gsub(%r|https?://[^\s]+|, 'U.R.I.')
+        say s[:screen_name], text_without_uri
       end
-    end
-  end
+    }
+  )
 end
 
 # KNOWN BUG:
