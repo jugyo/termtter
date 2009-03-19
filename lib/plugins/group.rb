@@ -36,7 +36,7 @@ module Termtter::Client
        statuses = group ? public_storage[:log].select { |s|
          group.include?(s.user.screen_name) 
        } : []
-       call_hooks(statuses, :search)
+       output(statuses, :search)
      else
        config.plugins.group.groups.each_pair do |key, value|
          puts "#{key}: #{value.join(',')}"
