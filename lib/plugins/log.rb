@@ -6,28 +6,28 @@ module Termtter::Client
   config.plugins.log.set_default('max_size', 1/0.0)
   config.plugins.log.set_default('print_max_size', 30)
 
-  add_hook do |statuses, event|
-    case event
-    when :pre_filter
+  register_hook(
+    :name => :log,
+    :points => [:pre_filter],
+    :exec_proc => lambda {|statuses, event|
       # log(sequential storage)
       public_storage[:log] += statuses
       max_size = config.plugins.log.max_size
       if public_storage[:log].size > max_size
         public_storage[:log] = public_storage[:log][-max_size..-1]
       end
-      public_storage[:log] = public_storage[:log].uniq.sort_by{|a| a.created_at} if statuses.first
+      public_storage[:log] = public_storage[:log].uniq.sort_by{|s| s[:created_at]} if statuses.first
 
       # tweet(storage for each user)
-
       statuses.each do |s|
-        public_storage[:tweet][s.user.screen_name] = [] unless public_storage[:tweet][s.user.screen_name]
-        public_storage[:tweet][s.user.screen_name] << s
+        public_storage[:tweet][s[:screen_name]] = [] unless public_storage[:tweet][s[:screen_name]]
+        public_storage[:tweet][s[:screen_name]] << s
         if public_storage[:tweet].size > max_size
           public_storage[:tweet] = public_storage[:tweet][-max_size..-1]
         end
       end
-    end
-  end
+    }
+  )
 
   register_command(
    :name => :log,
