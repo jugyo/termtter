@@ -1,24 +1,21 @@
 # -*- coding: utf-8 -*-
+require 'enumerator'
 
 module Termtter
-
   module Client
-    config.plugins.bomb.color.set_default :foreground, 'white'
-    config.plugins.bomb.color.set_default :background, 'red'
+    config.plugins.bomb.set_default :format, "<on_red><white>%s</white></on_red>"
 
-    add_hook do |statuses, event|
-      case event
-      when :post_filter
-        fg = config.plugins.bomb.color.foreground
-        bg = config.plugins.bomb.color.background
-        statuses = [statuses] unless statuses.instance_of? Array
+    register_hook(
+      :name => :bomb,
+      :points => [:post_filter],
+      :exec_proc => lambda{|statuses, event|
         statuses.each do |status|
-          if /爆発|bomb/ =~ status.text
-            status.text = "<on_#{bg}><#{fg}>#{status.text}</#{fg}></on_#{bg}>"
+          if /爆発|bomb/ =~ status[:post_text]
+            status[:post_text] = config.plugins.bomb.format % status[:post_text]
           end
         end
-      end
-    end
+      }
+    )
 
     register_command(
       :name => :bomb, :aliases => [],
