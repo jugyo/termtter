@@ -248,7 +248,7 @@ module Termtter::Client
         ["list,l", "List the posts in your friends timeline"],
         ["list,l USERNAME", "List the posts in the the given user's timeline"],
         ["update,u TEXT", "Post a new message"],
-        ["direct,d @USERNAME TEXT", "Send direct message"],
+        ["direct,d USERNAME TEXT", "Send direct message"],
         ["profile,p USERNAME", "Show user's profile"],
         ["replies,r", "List the most recent @replies for the authenticating user"],
         ["search,s TEXT", "Search for Twitter"],
