@@ -19,15 +19,15 @@ module Termtter
     class << self
 
       def init
-        @@hooks = []
-        @@new_hooks = {}
-        @@new_commands = {}
-        @@completions = []
-        @@filters = []
-        @@helps = []
-        @@since_id = nil
-        @@input_thread = nil
-        @@task_manager = Termtter::TaskManager.new
+        @hooks = []
+        @new_hooks = {}
+        @new_commands = {}
+        @completions = []
+        @filters = []
+        @helps = []
+        @since_id = nil
+        @input_thread = nil
+        @task_manager = Termtter::TaskManager.new
         config.log.set_default(:logger, nil)
         config.log.set_default(:level, nil)
         config.set_default(:update_interval, 300)
@@ -37,13 +37,13 @@ module Termtter
       end
 
       def public_storage
-        @@public_storage ||= {}
+        @public_storage ||= {}
       end
 
       %w[hook completion filter].each do |n|
         eval <<-EOF
           def add_#{n}(&b)
-            @@#{n}s << b
+            @#{n}s << b
           end
         EOF
       end
@@ -57,15 +57,15 @@ module Termtter
           else
             raise ArgumentError, 'must be given Termtter::Hook or Hash'
           end
-        @@new_hooks[hook.name] = hook
+        @new_hooks[hook.name] = hook
       end
 
       def get_hook(name)
-        @@new_hooks[name]
+        @new_hooks[name]
       end
 
       def get_hooks(point)
-        @@new_hooks.values.select do |hook|
+        @new_hooks.values.select do |hook|
           hook.match?(point)
         end
       end
@@ -79,11 +79,11 @@ module Termtter
           else
             raise ArgumentError, 'must be given Termtter::Command or Hash'
           end
-        @@new_commands[command.name] = command
+        @new_commands[command.name] = command
       end
 
       def get_command(name)
-        @@new_commands[name]
+        @new_commands[name]
       end
 
       def register_macro(name, macro, options = {})
@@ -95,13 +95,13 @@ module Termtter
       end
 
       def add_help(name, desc)
-        @@helps << [name, desc]
+        @helps << [name, desc]
       end
 
       %w[hooks completions helps filters].each do |n|
         eval <<-EOF
           def clear_#{n}
-            @@#{n}.clear
+            @#{n}.clear
           end
         EOF
       end
@@ -127,7 +127,7 @@ module Termtter
 
       def apply_filters(statuses, event)
           filtered = statuses.map(&:dup)
-          @@filters.each do |f|
+          @filters.each do |f|
             filtered = f.call(filtered, event)
           end
           filtered
@@ -136,7 +136,7 @@ module Termtter
       end
 
       def do_hooks(statuses, event)
-        @@hooks.each do |h|
+        @hooks.each do |h|
           begin
             h.call(statuses.dup, event, Termtter::API.twitter)
           rescue => e
@@ -173,7 +173,7 @@ module Termtter
         return if text.empty?
 
         command_found = false
-        @@new_commands.each do |key, command|
+        @new_commands.each do |key, command|
           # match? メソッドがなんかきもちわるいので変える予定
           command_str, command_arg = command.match?(text)
           if command_str
@@ -184,7 +184,7 @@ module Termtter
                               command_str,
                               command_arg) || command_arg || ''
 
-            @@task_manager.invoke_and_wait do
+            @task_manager.invoke_and_wait do
 
               pre_exec_hook_result = call_new_hooks("pre_exec_#{command.name.to_s}", command_str, modified_arg)
               next if pre_exec_hook_result == false
@@ -202,15 +202,15 @@ module Termtter
       end
 
       def pause
-        @@task_manager.pause
+        @task_manager.pause
       end
 
       def resume
-        @@task_manager.resume
+        @task_manager.resume
       end
 
       def add_task(*arg, &block)
-        @@task_manager.add_task(*arg, &block)
+        @task_manager.add_task(*arg, &block)
       end
 
       def exit
@@ -218,8 +218,8 @@ module Termtter
 
         call_hooks([], :exit)
         call_new_hooks(:exit)
-        @@task_manager.kill
-        @@input_thread.kill if @@input_thread
+        @task_manager.kill
+        @input_thread.kill if @input_thread
       end
 
       def load_default_plugins
@@ -268,10 +268,10 @@ module Termtter
         Readline.completion_proc = lambda {|input|
           begin
             # FIXME: when migrate to Termtter::Command
-            completions = @@completions.map {|completion|
+            completions = @completions.map {|completion|
               completion.call(input)
             }
-            completions += @@new_commands.map {|name, command|
+            completions += @new_commands.map {|name, command|
               command.complement(input)
             }
             completions.flatten.compact
@@ -291,11 +291,11 @@ module Termtter
           :name => :_update_timeline,
           :exec_proc => lambda {|arg|
             begin
-              args = @@since_id ? [{:since_id => @@since_id}] : []
+              args = @since_id ? [{:since_id => @since_id}] : []
               statuses = Termtter::API.twitter.friends_timeline(*args)
               unless statuses.empty?
-                puts if @@since_id
-                @@since_id = statuses[0].id
+                puts if @since_id
+                @since_id = statuses[0].id
                 output(statuses_to_hash(statuses), :update_friends_timeline)
                 Readline.refresh_line
               end
@@ -350,7 +350,7 @@ module Termtter
       def start_input_thread
         setup_readline()
         trap_setting()
-        @@input_thread = Thread.new do
+        @input_thread = Thread.new do
           while buf = Readline.readline(ERB.new(config.prompt).result(API.twitter.__send__(:binding)), true)
             Readline::HISTORY.pop if buf.empty?
             begin
@@ -363,16 +363,16 @@ module Termtter
             end
           end
         end
-        @@input_thread.join
+        @input_thread.join
       end
 
       def logger
-        @@logger
+        @logger
       end
 
       def setup_logger
-        @@logger = config.log.logger || Logger.new(STDOUT)
-        @@logger.level = config.log.level || Logger::WARN
+        @logger = config.log.logger || Logger.new(STDOUT)
+        @logger.level = config.log.level || Logger::WARN
       end
 
       def run
@@ -387,7 +387,7 @@ module Termtter
 
         setup_update_timeline_task()
 
-        @@task_manager.run()
+        @task_manager.run()
         start_input_thread()
       end
 
