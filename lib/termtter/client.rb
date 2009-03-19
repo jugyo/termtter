@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require 'fileutils'
+require 'logger'
 
 module Termtter
   APP_NAME = 'termtter'
@@ -27,6 +28,8 @@ module Termtter
         @@since_id = nil
         @@input_thread = nil
         @@task_manager = Termtter::TaskManager.new
+        config.log.set_default(:logger, nil)
+        config.log.set_default(:level, nil)
         config.set_default(:update_interval, 300)
         config.set_default(:prompt, '> ')
         config.set_default(:devel, false)
@@ -252,7 +255,7 @@ module Termtter
           Termtter::CONF_FILE)
       end
 
-      def pre_config_load()
+      def post_config_load()
         if config.system.devel
           plugin 'devel'
         end
@@ -363,11 +366,21 @@ module Termtter
         @@input_thread.join
       end
 
+      def logger
+        @@logger
+      end
+
+      def setup_logger
+        @@logger = config.log.logger || Logger.new(STDOUT)
+        @@logger.level = config.log.level || Logger::WARN
+      end
+
       def run
         load_default_plugins()
         load_config()
         Termtter::API.setup()
-        pre_config_load()
+        setup_logger()
+        post_config_load()
 
         call_hooks([], :initialize)
         call_new_hooks(:initialize)
