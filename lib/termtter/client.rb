@@ -352,7 +352,7 @@ module Termtter
         trap_setting()
         @@input_thread = Thread.new do
           while buf = Readline.readline(ERB.new(config.prompt).result(API.twitter.__send__(:binding)), true)
-            Readline::HISTORY.pop if /^(u|update)\s+(.+)$/ =~ buf
+            Readline::HISTORY.pop if buf.empty?
             begin
               call_commands(buf)
             rescue CommandNotFound => e
