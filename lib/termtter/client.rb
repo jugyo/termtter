@@ -122,7 +122,7 @@ module Termtter
         # MEMO: event をいちいち渡さなくてもいいかもしれないなぁ
         call_new_hooks(:pre_filter, statuses, event)
         filtered = apply_filters(statuses, event)
-        call_new_hooks(:post_filter, statuses, event)
+        call_new_hooks(:post_filter, filtered, event)
         call_new_hooks(:output, filtered, event)
       end
 
