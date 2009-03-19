@@ -12,7 +12,7 @@ module Termtter::Client
       unless arg =~ /^\s*$/
         # TODO: Change to able to disable erb.
         text = ERB.new(arg).result(binding).gsub(/\n/, ' ')
-        result = Termtter::API.twitter.update(text, :source=>Termtter::APP_NAME)
+        result = Termtter::API.twitter.update(text)
         puts "=> #{text}"
         result
       end
