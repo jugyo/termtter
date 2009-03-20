@@ -29,7 +29,7 @@ module Termtter::Client
                        members += config.plugins.group.groups[group]
                      end
                      statuses = scrape_members(members.uniq.compact.sort)
-                     call_hooks(statuses, :pre_filter)
+                     output(statuses_to_hash(statuses), :pre_filter)
                    },
                    :completion_proc => lambda {|cmd, args|
                      arg = args.split(' ').last
