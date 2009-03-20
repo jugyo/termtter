@@ -22,6 +22,10 @@ module Termtter::Client
       map {|u| b % u }
   end
 
+  def self.get_group_of(screen_name)
+    config.plugins.group.groups.select{ |k, v| v.include? screen_name}.map{|a| a.first}
+  end    
+
   register_command(
    :name => :group,
    :aliases => [:g],
