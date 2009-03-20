@@ -3,13 +3,15 @@
 module Termtter::Client
   public_storage[:uris] = []
 
-  add_hook do |statuses, event, t|
-    if event == :update_friends_timeline
+  register_hook(
+    :name => :uri_open,
+    :points => [:post_filter],
+    :exec_proc => lambda {|statuses, event|
       statuses.each do |s|
-        public_storage[:uris] += s.text.scan(%r|https?://[^\s]+|)
+        public_storage[:uris] += s[:post_text].scan(%r|https?://[^\s]+|)
       end
-    end
-  end
+    }
+  )
 
   def self.open_uri(uri)
     unless config.plugins.uri_open.browser.empty?
