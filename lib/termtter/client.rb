@@ -119,6 +119,7 @@ module Termtter
       #             :original_data => original data,
       #           }
       def output(statuses, event)
+        statuses = statuses.sort_by{|s|s[:id]}
         # MEMO: event をいちいち渡さなくてもいいかもしれないなぁ
         call_new_hooks(:pre_filter, statuses, event)
         filtered = apply_filters(statuses, event)

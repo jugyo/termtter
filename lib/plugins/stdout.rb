@@ -22,7 +22,7 @@ module Termtter
     end
 
     def print_statuses(statuses, sort = true, time_format = '%H:%M:%S')
-      (sort ? statuses.sort_by{ |s| s[:id]} : statuses).each do |s|
+      statuses.each do |s|
         text = s[:post_text]
         status_color = config.plugins.stdout.colors[s[:user_id].hash % config.plugins.stdout.colors.size]
         status = "#{s[:screen_name]}: #{text}"
