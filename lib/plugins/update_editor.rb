@@ -8,7 +8,7 @@ module Termtter::Client
   else
     config.plugins.update_editor.set_default('editor', 'vi')
   end
-  config.plugins.update_editor.set_default('add_completion', false)
+  config.plugins.update_editor.set_default('add_completion', true)
 
   
   def self.input_editor
