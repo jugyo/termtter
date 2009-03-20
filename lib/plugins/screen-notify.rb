@@ -1,13 +1,20 @@
+# -*- coding: utf-8 -*-
 
-if config.screen_notify.format.nil? or config.screen_notify.format.empty?
-  config.screen_notify.format = "[termtter] @%s"
-end
+config.screen_notify.set_default(:format, "[termtter] %s")
 
-Termtter::Client.add_hook do |statuses, event|
-  if !statuses.empty? && event == :update_friends_timeline
-    statuses.reverse.each do |s|
-      msg = config.screen_notify.format % [s.user.screen_name, s.text]
-      system 'screen', '-X', 'eval', "bell_msg '#{msg}'", 'bell'
-    end
-  end
+module Termtter::Client
+  register_hook(
+    :name => :screen_notify,
+    :points => [:post_filter],
+    :exec_proc => lambda{|statuses, event|
+      return unless event = :update_friends_timeline
+      Thread.new(statuses) do |ss|
+        ss.each do |s|
+          msg = config.screen_notify.format % s[:screen_name]
+          system 'screen', '-X', 'eval', "bell_msg '#{msg}'", 'bell'
+          sleep 1
+        end
+      end
+    }
+  )
 end
