@@ -38,11 +38,11 @@ module Termtter
       end
 
       def add_filter(&b)
-        filters << b
+        @filters << b
       end
 
       def clear_filter
-        filters.clear
+        @filters.clear
       end
 
       def register_hook(arg)
