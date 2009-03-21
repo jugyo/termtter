@@ -2,7 +2,7 @@
 
 module Termtter::Client
 
-  public_storage[:plugins] = Dir["#{File.dirname(__FILE__)}/*.rb"].map do |f|
+  public_storage[:plugins] = (Dir["#{File.dirname(__FILE__)}/*.rb"] + Dir["#{Termtter::CONF_DIR}/plugins/*.rb"]).map do |f|
     f.match(%r|([^/]+).rb$|)[1]
   end
 
