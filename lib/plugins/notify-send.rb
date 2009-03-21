@@ -8,7 +8,7 @@ Termtter::Client.register_hook(
       max = 10
 
       text = statuses.take(max).map {|s|
-        status_text = CGI.escapeHTML(s[:post_text])
+        status_text = CGI.escapeHTML(s[:text])
         status_text.gsub!(%r{https?://[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+},'<a href="\0">\0</a>')
         "<b>#{s[:screen_name]}:</b> <span font=\"9.0\">#{status_text}</span>"
       }.join("\n")

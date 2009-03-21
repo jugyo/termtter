@@ -15,7 +15,7 @@ module Termtter::Client
     :points => [:post_filter],
     :exec_proc => lambda {|statuses, event|
       statuses.reverse.each do |s|
-        text_without_uri = s[:post_text].gsub(%r|https?://[^\s]+|, 'U.R.I.')
+        text_without_uri = s[:text].gsub(%r|https?://[^\s]+|, 'U.R.I.')
         say s[:screen_name], text_without_uri
       end
     }
