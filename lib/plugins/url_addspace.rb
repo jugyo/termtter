@@ -3,7 +3,7 @@
 module Termtter::Client
   add_filter do |statuses, event|
     statuses.each do |s|
-      s[:post_text].gsub!(/(\S)(https?:\/\/)/, '\1 \2')
+      s.text.gsub!(/(\S)(https?:\/\/)/, '\1 \2')
     end
     statuses
   end

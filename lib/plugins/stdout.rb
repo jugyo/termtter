@@ -22,7 +22,7 @@ module Termtter
     end
 
     def print_statuses(statuses, sort = true, time_format = nil)
-      return unless statuses
+      return unless statuses and statuses.first
       unless time_format
         # 最初と最後の日付がちがうとき日付も出す
         t1 = Time.parse(statuses.first[:created_at])
