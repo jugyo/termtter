@@ -37,7 +37,7 @@ module Termtter::Client
        statuses = public_storage[:log]
        print_max = config.plugins.log.print_max_size
        print_max = 0 if statuses.size < print_max
-       call_hooks(statuses[-print_max..-1], :search)
+       output(statuses[-print_max..-1], :search)
      else
        # log (user) (max)
        vars = arg.split(' ')
@@ -45,7 +45,7 @@ module Termtter::Client
        id = vars
        statuses = id.first ? public_storage[:log].select{ |s| id.include? s.user.screen_name} : public_storage[:log]
        print_max = 0 if statuses.size < print_max
-       call_hooks(statuses[-print_max..-1], :search)
+       output(statuses[-print_max..-1], :search)
      end
    },
    :completion_proc => lambda {|cmd, arg|
@@ -60,7 +60,7 @@ module Termtter::Client
     unless arg.strip.empty?
       pat = Regexp.new arg
       statuses = public_storage[:log].select { |s| s.text =~ pat }
-      call_hooks(statuses, :search)
+      output(statuses, :search)
      end
    },
    :help => [ 'search_log WORD', 'Search log for WORD' ]
