@@ -19,12 +19,9 @@ module Termtter
     class << self
 
       def init
-        @hooks = []
-        @new_hooks = {}
-        @new_commands = {}
-        @completions = []
+        @hooks = {}
+        @commands = {}
         @filters = []
-        @helps = []
         @since_id = nil
         @input_thread = nil
         @task_manager = Termtter::TaskManager.new
@@ -40,12 +37,12 @@ module Termtter
         @public_storage ||= {}
       end
 
-      %w[hook completion filter].each do |n|
-        eval <<-EOF
-          def add_#{n}(&b)
-            @#{n}s << b
-          end
-        EOF
+      def add_filter(&b)
+        filters << b
+      end
+
+      def clear_filter
+        filters.clear
       end
 
       def register_hook(arg)
@@ -57,15 +54,15 @@ module Termtter
           else
             raise ArgumentError, 'must be given Termtter::Hook or Hash'
           end
-        @new_hooks[hook.name] = hook
+        @hooks[hook.name] = hook
       end
 
       def get_hook(name)
-        @new_hooks[name]
+        @hooks[name]
       end
 
       def get_hooks(point)
-        @new_hooks.values.select do |hook|
+        @hooks.values.select do |hook|
           hook.match?(point)
         end
       end
@@ -79,11 +76,11 @@ module Termtter
           else
             raise ArgumentError, 'must be given Termtter::Command or Hash'
           end
-        @new_commands[command.name] = command
+        @commands[command.name] = command
       end
 
       def get_command(name)
-        @new_commands[name]
+        @commands[name]
       end
 
       def register_macro(name, macro, options = {})
@@ -92,18 +89,6 @@ module Termtter
           :exec_proc => lambda {|arg| call_commands(macro % arg)}
         }.merge(options)
         register_command(command)
-      end
-
-      def add_help(name, desc)
-        @helps << [name, desc]
-      end
-
-      %w[hooks completions helps filters].each do |n|
-        eval <<-EOF
-          def clear_#{n}
-            @#{n}.clear
-          end
-        EOF
       end
 
       # statuses => [status, status, ...]
@@ -119,12 +104,13 @@ module Termtter
       #             :original_data => original data,
       #           }
       def output(statuses, event)
+        return if statuses.nil? || statuses.empty?
+
         statuses = statuses.sort_by{|s|s.id}
-        # MEMO: event をいちいち渡さなくてもいいかもしれないなぁ
-        call_new_hooks(:pre_filter, statuses, event)
+        call_hooks(:pre_filter, statuses, event)
         filtered = apply_filters(statuses, event)
-        call_new_hooks(:post_filter, filtered, event)
-        call_new_hooks(:output, filtered, event)
+        call_hooks(:post_filter, filtered, event)
+        call_hooks(:output, filtered, event)
       end
 
       def apply_filters(statuses, event)
@@ -137,18 +123,8 @@ module Termtter
           handle_error(e)
       end
 
-      def do_hooks(statuses, event)
-        @hooks.each do |h|
-          begin
-            h.call(statuses.dup, event, Termtter::API.twitter)
-          rescue => e
-            handle_error(e)
-          end
-        end
-      end
-
       # return last hook return value
-      def call_new_hooks(point, *args)
+      def call_hooks(point, *args)
         result = nil
         get_hooks(point).each {|hook|
           break if result == false # interrupt if hook return false
@@ -163,37 +139,29 @@ module Termtter
         end
       end
 
-      # TODO: delete argument "tw" when unnecessary
-      def call_hooks(statuses, event, tw = nil)
-        do_hooks(statuses, :pre_filter)
-        filtered = apply_filters(statuses, event)
-        do_hooks(filtered, :post_filter)
-        do_hooks(filtered, event)
-      end
-
       def call_commands(text, tw = nil)
         return if text.empty?
 
         command_found = false
-        @new_commands.each do |key, command|
+        @commands.each do |key, command|
           # match? メソッドがなんかきもちわるいので変える予定
           command_str, command_arg = command.match?(text)
           if command_str
             command_found = true
 
-            modified_arg = call_new_hooks(
+            modified_arg = call_hooks(
                               "modify_arg_for_#{command.name.to_s}",
                               command_str,
                               command_arg) || command_arg || ''
 
             @task_manager.invoke_and_wait do
 
-              pre_exec_hook_result = call_new_hooks("pre_exec_#{command.name.to_s}", command_str, modified_arg)
+              pre_exec_hook_result = call_hooks("pre_exec_#{command.name.to_s}", command_str, modified_arg)
               next if pre_exec_hook_result == false
               # exec command
               result = command.execute(modified_arg)
               if result
-                call_new_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
+                call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
               end
 
             end
@@ -218,8 +186,7 @@ module Termtter
       def exit
         puts 'finalizing...'
 
-        call_hooks([], :exit)
-        call_new_hooks(:exit)
+        call_hooks(:exit)
         @task_manager.kill
         @input_thread.kill if @input_thread
       end
@@ -269,14 +236,7 @@ module Termtter
         end
         Readline.completion_proc = lambda {|input|
           begin
-            # FIXME: when migrate to Termtter::Command
-            completions = @completions.map {|completion|
-              completion.call(input)
-            }
-            completions += @new_commands.map {|name, command|
-              command.complement(input)
-            }
-            completions.flatten.compact
+            @commands.map {|name, command| command.complement(input) }.flatten.compact
           rescue => e
             handle_error(e)
           end
@@ -367,8 +327,7 @@ module Termtter
         setup_logger()
         post_config_load()
 
-        call_hooks([], :initialize)
-        call_new_hooks(:initialize)
+        call_hooks(:initialize)
 
         setup_update_timeline_task()
 
@@ -377,7 +336,7 @@ module Termtter
       end
 
       def handle_error(e)
-        call_new_hooks("on_error", e)
+        call_hooks("on_error", e)
       rescue => e
         puts "Error: #{e}"
         puts e.backtrace.join("\n")
