@@ -328,8 +328,9 @@ module Termtter
       end
 
       def handle_error(e)
+        puts 'xxxxxxxxxxxxxx'
         call_hooks("on_error", e)
-      rescue => e
+      rescue Exception => e
         puts "Error: #{e}"
         puts e.backtrace.join("\n")
       end

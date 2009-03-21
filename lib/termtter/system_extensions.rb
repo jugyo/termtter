@@ -6,13 +6,8 @@ def plugin(name, init = {})
       config.plugins.__refer__(name.to_sym).__assign__(key.to_sym, value)
     end
   end
-  # FIXME: below path should be replaced by optparsed path
-  if File.exist?(path = File.expand_path("~/.termtter/plugins/#{name}"))
-    require path
-  else
-    require "plugins/#{name}"
-  end
-rescue LoadError => e
+  load "plugins/#{name}.rb"
+rescue Exception => e
   Termtter::Client.handle_error(e)
 end
 
