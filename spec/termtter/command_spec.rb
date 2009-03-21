@@ -81,18 +81,18 @@ module Termtter
       lambda { Command.new(:aliases => ['u']) }.should raise_error(ArgumentError)
     end
 
-    it 'should call exec_proc when call method "execute"' do
-      @command.execute('test').should == 'test'
-      @command.execute(' test').should == ' test'
-      @command.execute(' test ').should == ' test '
-      @command.execute('test test').should == 'test test'
+    it 'should call exec_proc when call method "call"' do
+      @command.call('test').should == 'test'
+      @command.call(' test').should == ' test'
+      @command.call(' test ').should == ' test '
+      @command.call('test test').should == 'test test'
     end
 
-    it 'should raise ArgumentError at execute' do
-      lambda { @command.execute(nil) }.should_not raise_error(ArgumentError)
-      lambda { @command.execute('foo') }.should_not raise_error(ArgumentError)
-      lambda { @command.execute(false) }.should raise_error(ArgumentError)
-      lambda { @command.execute(Array.new) }.should raise_error(ArgumentError)
+    it 'should raise ArgumentError at call' do
+      lambda { @command.call(nil) }.should_not raise_error(ArgumentError)
+      lambda { @command.call('foo') }.should_not raise_error(ArgumentError)
+      lambda { @command.call(false) }.should raise_error(ArgumentError)
+      lambda { @command.call(Array.new) }.should raise_error(ArgumentError)
     end
   end
 end

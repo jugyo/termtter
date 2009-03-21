@@ -6,7 +6,7 @@ module Termtter
 
   describe Client do
 
-    it 'should take new_command' do
+    it 'should take command' do
       command = Command.new(:name => :test)
       Client.register_command(command)
       Client.get_command(:test).should == command
@@ -17,7 +17,7 @@ module Termtter
       Client.get_command(:test).name.should == :test
     end
 
-    it 'should call new_command' do
+    it 'should call command' do
       command_arg = nil
       command = Command.new(:name => :test, :exec_proc => lambda {|arg| command_arg = arg})
       Client.register_command(command)
@@ -49,7 +49,7 @@ module Termtter
       hook_called = false
       Client.register_hook(:name => :test1, :points => [:point1], :exec_proc => lambda {hook_called = true})
       hook_called.should == false
-      Client.call_new_hooks(:point1)
+      Client.call_hooks(:point1)
       hook_called.should == true
     end
 
@@ -59,7 +59,7 @@ module Termtter
       Client.register_hook(:name => :test1, :points => [:point1], :exec_proc => lambda {|a1, a2| arg1 = a1; arg2 = a2})
       arg1.should == nil
       arg2.should == nil
-      Client.call_new_hooks(:point1, 'foo', 'bar')
+      Client.call_hooks(:point1, 'foo', 'bar')
       arg1.should == 'foo'
       arg2.should == 'bar'
     end
@@ -180,7 +180,7 @@ module Termtter
       Client.should_receive(:load_config)
       Termtter::API.should_receive(:setup)
       Client.should_receive(:post_config_load)
-      Client.should_receive(:call_new_hooks)
+      Client.should_receive(:call_hooks)
       Client.should_receive(:setup_update_timeline_task)
       Client.should_receive(:start_input_thread)
       Client.run

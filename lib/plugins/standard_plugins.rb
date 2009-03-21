@@ -247,7 +247,7 @@ module Termtter::Client
         ["show ID", "Show a single status"]
       ]
       helps += @@helps
-      helps += @@new_commands.map {|name, command| command.help}
+      helps += @@commands.map {|name, command| command.help}
       helps.compact!
       puts formatted_help(helps)
     }

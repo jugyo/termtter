@@ -44,7 +44,7 @@ module Termtter
       end
     end
 
-    def execute(arg)
+    def call(arg)
       arg = case arg
         when nil
           ''

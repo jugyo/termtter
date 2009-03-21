@@ -128,7 +128,7 @@ module Termtter
         result = nil
         get_hooks(point).each {|hook|
           break if result == false # interrupt if hook return false
-          result = hook.execute(*args)
+          result = hook.call(*args)
         }
         result
       rescue => e
@@ -159,7 +159,7 @@ module Termtter
               pre_exec_hook_result = call_hooks("pre_exec_#{command.name.to_s}", command_str, modified_arg)
               next if pre_exec_hook_result == false
               # exec command
-              result = command.execute(modified_arg)
+              result = command.call(modified_arg)
               if result
                 call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
               end

@@ -25,7 +25,7 @@ module Termtter
     end
 
     # TODO: need spec
-    def execute(*args)
+    def call(*args)
       self.exec_proc.call(*args)
     end
   end
