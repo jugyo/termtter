@@ -246,8 +246,7 @@ module Termtter::Client
         ["search,s TEXT", "Search for Twitter"],
         ["show ID", "Show a single status"]
       ]
-      helps += @@helps
-      helps += @@commands.map {|name, command| command.help}
+      helps += @commands.map {|name, command| command.help}
       helps.compact!
       puts formatted_help(helps)
     }
