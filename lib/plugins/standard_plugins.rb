@@ -2,6 +2,10 @@
 
 require 'erb'
 
+config.plugins.standard.set_default(
+ :limit_format,
+ '<<%=remaining_color%>><%=limit.remaining_hits%></<%=remaining_color%>>/<%=limit.hourly_limit%> until <%=limit.reset_time%> (<%=remaining_time%> remaining)')
+
 module Termtter::Client
 
   # standard commands
@@ -195,7 +199,8 @@ module Termtter::Client
         when 0..0.2   then :red
         else               :green
         end
-      puts "=> #{color(limit.remaining_hits, remaining_color)}/#{limit.hourly_limit} until #{limit.reset_time} (#{remaining_time} remaining)"
+      erbed_text = ERB.new(config.plugins.standard.limit_format).result(binding)
+      puts TermColor.parse(erbed_text)
     },
     :help => ["limit,lm", "Show the API limit status"]
   )
