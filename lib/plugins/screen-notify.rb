@@ -10,7 +10,7 @@ module Termtter::Client
       return unless event = :update_friends_timeline
       Thread.new(statuses) do |ss|
         ss.each do |s|
-          msg = config.screen_notify.format % s[:screen_name]
+          msg = config.screen_notify.format % s.user.screen_name
           system 'screen', '-X', 'eval', "bell_msg '#{msg}'", 'bell'
           sleep 1
         end
