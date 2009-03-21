@@ -17,7 +17,7 @@ module Termtter
       super(:name => :stdout, :points => [:output])
     end
 
-    def execute(statuses, event)
+    def call(statuses, event)
       print_statuses(statuses)
     end
 
