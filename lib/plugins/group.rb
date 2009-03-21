@@ -33,13 +33,13 @@ module Termtter::Client
      unless arg.empty?
        group_name = arg.to_sym
        if group_name == :all
-         group = config.plugins.group.groups.values.flatten.uniq
+         targets = config.plugins.group.groups.values.flatten.uniq
        else
-         group = config.plugins.group.groups[group_name]
+         targets = config.plugins.group.groups[group_name]
        end
-       statuses = group ? public_storage[:log].select { |s|
-         group.include?(s[:screen_name]) 
-       } : []
+       statuses = targets ? targets.map { |target|
+          public_storage[:tweet][target]
+        }.flatten.uniq.compact.sort_by{ |s| s[:id]} : []
        output(statuses, :search)
      else
        config.plugins.group.groups.each_pair do |key, value|
