@@ -54,8 +54,8 @@ Thread.new do
 end
 
 Termtter::Client.register_hook(:name => :growl,
-                               :points => [:post_exec__update_timeline],
-                               :exec_proc => lambda { |cmd, arg, result|
-                                 result.reverse.each { |s| queue << s }
+                               :points => [:post_filter],
+                               :exec_proc => lambda {|statuses, event|
+                                 statuses.each {|s| queue << s} if event == :update_friends_timeline
                                }
 )
