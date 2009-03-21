@@ -7,12 +7,12 @@ module Termtter::Client
   add_filter do |statuses, event|
     statuses.each do |s|
       config.plugins.addspace.before.each do |c|
-        s.text.gsub!(/(#{c})/, ' \1' )
+        s.text.gsub!(/\S(#{c})/, ' \1' )
       end
     end
     statuses.each do |s|
       config.plugins.addspace.after.each do |c|
-        s.text.gsub!(/(#{c})/, '\1 ' )
+        s.text.gsub!(/(#{c})\S/, '\1 ' )
       end
       statuses
     end
