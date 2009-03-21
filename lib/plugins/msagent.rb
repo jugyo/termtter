@@ -11,16 +11,28 @@ achar = agent.characters.character("Merlin")
 achar.languageID = 0x411
 achar.show
 
-Termtter::Client.add_hook do |statuses, event, t|
-  if event == :exit
+Termtter::Client.register_hook(
+  :name => :msagent,
+  :points => [:post_filter],
+  :exec_proc => lambda {|statuses, event|
+    if !statuses.empty? && event == :update_friends_timeline
+      Thread.start do
+        statuses.reverse.each do |s|
+          req = achar.speak("#{s[:screen_name]}: #{s[:post_text]}".tosjis)
+          sleep 1
+          WIN32OLE_EVENT.message_loop
+          achar.stop(req)
+        end
+      end
+    end
+  }
+)
+
+Termtter::Client.register_hook(
+  :name => :msagent_exit,
+  :points => [:exit],
+  :exec_proc => lambda {
     achar.hide   
     GC.start
-  elsif !statuses.empty? && event == :update_friends_timeline
-    statuses.reverse.each do |s|
-      req = achar.speak("#{s.user.screen_name}: #{s.text}".tosjis)
-      sleep 3
-      WIN32OLE_EVENT.message_loop
-      achar.stop(req)
-    end
-  end
-end
+  }
+)

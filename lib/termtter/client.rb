@@ -296,7 +296,6 @@ module Termtter
               args = @since_id ? [{:since_id => @since_id}] : []
               statuses = Termtter::API.twitter.friends_timeline(*args)
               unless statuses.empty?
-                puts if @since_id
                 @since_id = statuses[0].id
                 output(statuses_to_hash(statuses), :update_friends_timeline)
                 Readline.refresh_line
