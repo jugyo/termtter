@@ -21,7 +21,19 @@ module Termtter
       print_statuses(statuses)
     end
 
-    def print_statuses(statuses, sort = true, time_format = '%H:%M:%S')
+    def print_statuses(statuses, sort = true, time_format = nil)
+      unless time_format
+        # 最初と最後の日付がちがうとき日付も出す
+        t1 = Time.parse(statuses.first[:created_at])
+        t2 = Time.parse(statuses.last[:created_at])
+        time_format = 
+          if [t1.year, t1.month, t1.day] == [t2.year, t2.month, t2.day]
+            '%H:%M:%S'
+          else
+            '%y/%m/%d %H:%M'
+          end
+      end
+      
       statuses.each do |s|
         text = s.text
         status_color = config.plugins.stdout.colors[s.user.id.hash % config.plugins.stdout.colors.size]
