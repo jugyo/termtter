@@ -17,7 +17,7 @@ module Termtter::Storage
         :created_at => 12345,
         :in_reply_to_status_id => -1,
         :in_reply_to_user_id => -1,
-        :post_text => 'bomb',
+        :text => 'bomb',
         :user_id => 1).should_not be_false
     end
   end

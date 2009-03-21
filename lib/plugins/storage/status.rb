@@ -14,18 +14,22 @@ module Termtter::Storage
     def self.search(query)
       raise "query must be Hash(#{query}, #{query.class})" unless query.kind_of? Hash
       result = []
-      DB.instance.db.execute("select created_at, screen_name, post_text, in_reply_to_status_id, post_id from post inner join user on post.user_id = user.id where post_text like '%' || ? || '%' ",
-                             query[:post_text]) do |created_at, screen_name, post_text, in_reply_to_status_id, post_id|
+      DB.instance.db.execute("select created_at, screen_name, post_text, in_reply_to_status_id, post_id, user_id from post inner join user on post.user_id = user.id where post_text like '%' || ? || '%' ",
+                             query[:text]) do |created_at, screen_name, post_text, in_reply_to_status_id, post_id, user_id|
         created_at = Time.at(created_at).to_s
         result << {
           :id => post_id,
           :created_at => created_at,
-          :screen_name => screen_name,
-          :post_text => post_text,
+          :text => post_text,
           :in_reply_to_status_id => in_reply_to_status_id,
+          :in_reply_to_user_id => nil,
+          :user => {
+            :id => user_id,
+            :screen_name => screen_name
+          }
         }
       end
-      result
+      Rubytter.json_to_struct(result)
     end
 
     def self.insert(data)
@@ -35,7 +39,7 @@ module Termtter::Storage
                              data[:created_at],
                              data[:in_reply_to_status_id],
                              data[:in_reply_to_user_id],
-                             data[:post_text],
+                             data[:text],
                              data[:user_id])
       DB.instance.db.execute(
                              "insert into user values(?,?)",

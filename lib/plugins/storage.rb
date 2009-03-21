@@ -18,7 +18,7 @@ module Termtter::Client
           :created_at => Time.parse(s.created_at).to_i,
           :in_reply_to_status_id => s.in_reply_to_status_id,
           :in_reply_to_user_id => s.in_reply_to_user_id,
-          :post_text => s.text,
+          :post => s.text,
           :user_id => s.user.id,
           :screen_name => s.user.screen_name
         )
@@ -32,7 +32,7 @@ module Termtter::Client
     :exec_proc => lambda {|arg|
       unless arg.strip.empty?
         key = arg.strip
-        statuses = Termtter::Storage::Status.search({ :post_text => key})
+        statuses = Termtter::Storage::Status.search({:text => key})
         output(statuses, :search)
       end
     },
