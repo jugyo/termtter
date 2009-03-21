@@ -78,6 +78,14 @@ module Termtter::Client
    :help => ['save', 'Save hisory']
    )
 
+  register_command(
+   :name => :load,
+   :exec_proc => lambda{|arg|
+     load_history
+   },
+   :help => ['load', 'Load hisory']
+   )
+
   
 end
 
