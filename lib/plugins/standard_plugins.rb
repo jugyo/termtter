@@ -90,7 +90,7 @@ module Termtter::Client
         event = :list_user_timeline
         statuses = Termtter::API.twitter.user_timeline(arg)
       end
-      output(statuses_to_hash(statuses), event)
+      output(statuses, event)
     },
     :completion_proc => lambda {|cmd, arg|
       find_user_candidates arg, "#{cmd} %s"
@@ -100,20 +100,7 @@ module Termtter::Client
   register_command(
     :name => :search, :aliases => [:s],
     :exec_proc => lambda {|arg|
-      statuses = Termtter::API.twitter.search(arg).results.map do |s|
-        {
-          :id => s.id,
-          :created_at => s.created_at,
-          :user_id => s.from_user_id,
-          :name => nil,
-          :screen_name => s.from_user,
-          :source => CGI.unescapeHTML(s.source),
-          :reply_to => nil,
-          :in_reply_to_user_id => s.to_user_id,
-          :post_text => s.text,
-          :original_data => s
-        }
-      end
+      statuses = Termtter::API.twitter.search(arg)
       output(statuses, :search)
     }
   )
@@ -121,7 +108,7 @@ module Termtter::Client
   register_command(
     :name => :replies, :aliases => [:r],
     :exec_proc => lambda {|arg|
-      output(statuses_to_hash(Termtter::API.twitter.replies()), :replies)
+      output(Termtter::API.twitter.replies(), :replies)
     }
   )
 
@@ -129,7 +116,7 @@ module Termtter::Client
     :name => :show,
     :exec_proc => lambda {|arg|
       id = arg.gsub(/.*:\s*/, '')
-      output(statuses_to_hash([Termtter::API.twitter.show(id)]), :show)
+      output([Termtter::API.twitter.show(id)], :show)
     },
     :completion_proc => lambda {|cmd, arg|
       case arg
@@ -151,7 +138,7 @@ module Termtter::Client
     :exec_proc => lambda {|arg|
       id = arg.gsub(/.*:\s*/, '')
       # TODO: Implement
-      output(statuses_to_hash([Termtter::API.twitter.show(id)]), :show)
+      output([Termtter::API.twitter.show(id)], :show)
     },
     :completion_proc => get_command(:show).completion_proc
   )
@@ -301,10 +288,10 @@ module Termtter::Client
     :points => [:pre_filter],
     :exec_proc => lambda {|statuses, event|
       statuses.each do |s|
-        public_storage[:users].add(s[:screen_name])
-        public_storage[:users] += s[:post_text].scan(/@([a-zA-Z_0-9]*)/).flatten
-        public_storage[:status_ids].add(s[:id])
-        public_storage[:status_ids].add(s[:reply_to]) if s[:reply_to]
+        public_storage[:users].add(s.user.screen_name)
+        public_storage[:users] += s.text.scan(/@([a-zA-Z_0-9]*)/).flatten
+        public_storage[:status_ids].add(s.id)
+        public_storage[:status_ids].add(s.in_reply_to_status_id) if s.in_reply_to_status_id
       end
     }
   )
