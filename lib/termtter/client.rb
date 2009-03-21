@@ -119,7 +119,7 @@ module Termtter
       #             :original_data => original data,
       #           }
       def output(statuses, event)
-        statuses = statuses.sort_by{|s|s[:id]}
+        statuses = statuses.sort_by{|s|s.id}
         # MEMO: event をいちいち渡さなくてもいいかもしれないなぁ
         call_new_hooks(:pre_filter, statuses, event)
         filtered = apply_filters(statuses, event)
@@ -297,7 +297,7 @@ module Termtter
               statuses = Termtter::API.twitter.friends_timeline(*args)
               unless statuses.empty?
                 @since_id = statuses[0].id
-                output(statuses_to_hash(statuses), :update_friends_timeline)
+                output(statuses, :update_friends_timeline)
                 Readline.refresh_line
               end
             rescue OpenURI::HTTPError => e
@@ -315,23 +315,6 @@ module Termtter
         end
 
         call_commands('_update_timeline')
-      end
-
-      def statuses_to_hash(statuses)
-        statuses.map do |s|
-          {
-            :id => s.id,
-            :created_at => s.created_at,
-            :user_id => s.user.id,
-            :name => s.user.name,
-            :screen_name => s.user.screen_name,
-            :source => s.source,
-            :in_reply_to_status_id => s.in_reply_to_status_id,
-            :in_reply_to_user_id => s.in_reply_to_user_id,
-            :post_text => s.text,
-            :original_data => s
-          }
-        end
       end
 
       def trap_setting()

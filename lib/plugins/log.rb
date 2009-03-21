@@ -16,12 +16,12 @@ module Termtter::Client
       if public_storage[:log].size > max_size
         public_storage[:log] = public_storage[:log][-max_size..-1]
       end
-      public_storage[:log] = public_storage[:log].uniq.sort_by{|s| s[:created_at]} if statuses.first
+      public_storage[:log] = public_storage[:log].uniq.sort_by{|s| s.created_at} if statuses.first
 
       # tweet(storage for each user)
       statuses.each do |s|
-        public_storage[:tweet][s[:screen_name]] = [] unless public_storage[:tweet][s[:screen_name]]
-        public_storage[:tweet][s[:screen_name]] << s
+        public_storage[:tweet][s.user.screen_name] = [] unless public_storage[:tweet][s.user.screen_name]
+        public_storage[:tweet][s.user.screen_name] << s
         if public_storage[:tweet].size > max_size
           public_storage[:tweet] = public_storage[:tweet][-max_size..-1]
         end

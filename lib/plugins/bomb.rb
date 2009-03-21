@@ -10,8 +10,8 @@ module Termtter
       :points => [:post_filter],
       :exec_proc => lambda{|statuses, event|
         statuses.each do |status|
-          if /爆発|bomb/ =~ status[:post_text]
-            status[:post_text] = config.plugins.bomb.format % status[:post_text]
+          if /爆発|bomb/ =~ status.text
+            status.text = config.plugins.bomb.format % status.text
           end
         end
       }

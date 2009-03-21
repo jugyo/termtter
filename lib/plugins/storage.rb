@@ -14,13 +14,13 @@ module Termtter::Client
     :exec_proc => lambda {|statuses, event|
       statuses.each do |s|
         Termtter::Storage::Status.insert(
-          :post_id => s[:id],
-          :created_at => Time.parse(s[:created_at]).to_i,
-          :in_reply_to_status_id => s[:in_reply_to_status_id],
-          :in_reply_to_user_id => s[:in_reply_to_user_id],
-          :post_text => s[:post_text],
-          :user_id => s[:user_id],
-          :screen_name => s[:screen_name]
+          :post_id => s.id,
+          :created_at => Time.parse(s.created_at).to_i,
+          :in_reply_to_status_id => s.in_reply_to_status_id,
+          :in_reply_to_user_id => s.in_reply_to_user_id,
+          :post_text => s.text,
+          :user_id => s.user.id,
+          :screen_name => s.user.screen_name
         )
       end
     }

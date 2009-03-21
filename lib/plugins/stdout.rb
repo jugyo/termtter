@@ -23,15 +23,15 @@ module Termtter
 
     def print_statuses(statuses, sort = true, time_format = '%H:%M:%S')
       statuses.each do |s|
-        text = s[:post_text]
-        status_color = config.plugins.stdout.colors[s[:user_id].hash % config.plugins.stdout.colors.size]
-        status = "#{s[:screen_name]}: #{text}"
-        if s[:in_reply_to_status_id]
-          status += " (repl. to #{s[:in_reply_to_status_id]})"
+        text = s.text
+        status_color = config.plugins.stdout.colors[s.user.id.hash % config.plugins.stdout.colors.size]
+        status = "#{s.user.screen_name}: #{text}"
+        if s.in_reply_to_status_id
+          status += " (repl. to #{s.in_reply_to_status_id})"
         end
 
-        time = "(#{Time.parse(s[:created_at]).strftime(time_format)})"
-        id = s[:id]
+        time = "(#{Time.parse(s.created_at).strftime(time_format)})"
+        id = s.id
         erbed_text = ERB.new(config.plugins.stdout.timeline_format).result(binding)
         puts TermColor.parse(erbed_text)
       end
