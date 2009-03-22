@@ -48,7 +48,7 @@ module Termtter
       end
     end
 
-    def call(arg)
+    def call(cmd, arg, original_text)
       arg = case arg
         when nil
           ''

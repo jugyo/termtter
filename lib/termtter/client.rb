@@ -144,7 +144,7 @@ module Termtter
             begin
               call_hooks("pre_exec_#{command.name.to_s}", command_str, modified_arg)
               # exec command
-              result = command.call(modified_arg)
+              result = command.call(command_str, modified_arg, text)
               if result
                 call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
               end

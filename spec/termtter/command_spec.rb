@@ -82,17 +82,17 @@ module Termtter
     end
 
     it 'should call exec_proc when call method "call"' do
-      @command.call('test').should == 'test'
-      @command.call(' test').should == ' test'
-      @command.call(' test ').should == ' test '
-      @command.call('test test').should == 'test test'
+      @command.call('foo', 'test', 'foo test').should == 'test'
+      @command.call('foo', ' test', 'foo  test').should == ' test'
+      @command.call('foo', ' test ', 'foo  test ').should == ' test '
+      @command.call('foo', 'test test', 'foo test test').should == 'test test'
     end
 
     it 'should raise ArgumentError at call' do
-      lambda { @command.call(nil) }.should_not raise_error(ArgumentError)
-      lambda { @command.call('foo') }.should_not raise_error(ArgumentError)
-      lambda { @command.call(false) }.should raise_error(ArgumentError)
-      lambda { @command.call(Array.new) }.should raise_error(ArgumentError)
+      lambda { @command.call('foo', nil, 'foo') }.should_not raise_error(ArgumentError)
+      lambda { @command.call('foo', 'foo', 'foo') }.should_not raise_error(ArgumentError)
+      lambda { @command.call('foo', false, 'foo') }.should raise_error(ArgumentError)
+      lambda { @command.call('foo', Array.new, 'foo') }.should raise_error(ArgumentError)
     end
 
     it 'split command line' do
