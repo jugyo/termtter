@@ -4,14 +4,12 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe Termtter, 'when plugin is called (without init option)' do
   it 'should require global plugin if exist' do
-    File.should_receive(:exist?).and_return(false)
-    should_receive(:require).with('plugins/aaa')
+    should_receive(:load).with('plugins/aaa.rb')
     plugin 'aaa'
   end
 
   it 'should require user plugin if not exist' do
-    File.should_receive(:exist?).and_return(true)
-    should_receive(:require).with(File.expand_path('~/.termtter/plugins/aaa'))
+    should_receive(:load).with('plugins/aaa.rb')
     plugin 'aaa'
   end
 
@@ -23,7 +21,7 @@ end
 
 describe Termtter, 'when plugin is called (with init option)' do
   it 'init option will become config' do
-    should_receive(:require)
+    should_receive(:load)
 
     plugin 'aaa', :bbb => :ccc
     config.plugins.aaa.bbb.should == :ccc
