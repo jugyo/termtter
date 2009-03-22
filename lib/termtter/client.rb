@@ -5,6 +5,7 @@ require 'logger'
 module Termtter
 
   class CommandNotFound < StandardError; end
+  class CommandCanceled < StandardError; end
 
   module Client
 
@@ -123,12 +124,6 @@ module Termtter
           result = hook.call(*args)
         }
         result
-      rescue => e
-        if point.to_sym == :on_error
-          raise
-        else
-          handle_error(e)
-        end
       end
 
       def call_commands(text, tw = nil)
@@ -146,12 +141,14 @@ module Termtter
                             command_arg) || command_arg || ''
 
           @task_manager.invoke_and_wait do
-            pre_exec_hook_result = call_hooks("pre_exec_#{command.name.to_s}", command_str, modified_arg)
-            next if pre_exec_hook_result == false
-            # exec command
-            result = command.call(modified_arg)
-            if result
-              call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
+            begin
+              call_hooks("pre_exec_#{command.name.to_s}", command_str, modified_arg)
+              # exec command
+              result = command.call(modified_arg)
+              if result
+                call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
+              end
+            rescue CommandCanceled
             end
           end
         end
@@ -326,7 +323,7 @@ module Termtter
       end
 
       def handle_error(e)
-        call_hooks("on_error", e)
+        get_hooks(:on_error).each {|hook| hook.call(e) }
       rescue Exception => e
         puts "Error: #{e}"
         puts e.backtrace.join("\n")
