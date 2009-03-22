@@ -10,7 +10,7 @@ module Termtter::Client
   add_filter do |statuses, event|
     statuses.each do |s|
       URL_SHORTTERS.each do |site|
-        s[:text].gsub!(site[:pattern]) do |m|
+        s.text.gsub!(site[:pattern]) do |m|
           expand_url(site[:host], $2) || $1
         end
       end
