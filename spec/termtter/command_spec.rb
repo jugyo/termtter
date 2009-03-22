@@ -94,6 +94,14 @@ module Termtter
       lambda { @command.call(false) }.should raise_error(ArgumentError)
       lambda { @command.call(Array.new) }.should raise_error(ArgumentError)
     end
+
+    it 'split command line' do
+      Command.split_command_line('test foo bar').should == ['test', 'foo bar']
+      Command.split_command_line('test   foo bar').should == ['test', 'foo bar']
+      Command.split_command_line('test   foo  bar').should == ['test', 'foo  bar']
+      Command.split_command_line(' test   foo  bar').should == ['test', 'foo  bar']
+      Command.split_command_line(' test   foo  bar ').should == ['test', 'foo  bar']
+    end
   end
 end
 

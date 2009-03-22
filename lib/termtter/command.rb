@@ -78,6 +78,10 @@ module Termtter
     def commands
       [name] + aliases
     end
+
+    def self.split_command_line(line)
+      line.strip.split(/\s+/, 2)
+    end
   end
 end
 
