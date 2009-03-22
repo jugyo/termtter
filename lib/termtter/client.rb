@@ -259,6 +259,8 @@ module Termtter
                 puts 'plese check your account settings'
                 exit!
               end
+            rescue => e
+              handle_error(e)
             end
           }
         )
