@@ -22,8 +22,12 @@ module Termtter::Client
       statuses.each do |s|
         public_storage[:tweet][s.user.screen_name] = [] unless public_storage[:tweet][s.user.screen_name]
         public_storage[:tweet][s.user.screen_name] << s
-        if public_storage[:tweet].size > max_size
-          public_storage[:tweet] = public_storage[:tweet][-max_size..-1]
+      end
+
+      statuses.map{ |s| s.user.screen_name}.uniq.each do |name|
+        public_storage[:tweet][name]
+        if public_storage[:tweet][name].size > max_size
+          public_storage[:tweet][name] = public_storage[:tweet][name][-max_size..-1]
         end
       end
     }
