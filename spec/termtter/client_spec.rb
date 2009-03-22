@@ -230,5 +230,19 @@ module Termtter
       end
       $stderr = old
     end
+
+    it 'should cancel command by hook' do
+      command = Command.new(:name => :test)
+      Client.register_command(command)
+      Client.register_hook(
+        :name => :test,
+        :point => /^pre_exec/,
+        :exec => lambda{|*arg|
+            raise Termtter::CommandCanceled
+        }
+      )
+      command.should_not_receive(:call)
+      Client.call_commands('test')
+    end
   end
 end
