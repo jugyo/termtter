@@ -20,16 +20,12 @@ def get_icon_path(s)
   cache_file = "%s/%s%s" % [  config.plugins.growl.icon_cache_dir, 
                               s.user.screen_name, 
                               File.extname(s.user.profile_image_url)  ]
-  if File.exist?(cache_file) && (File.atime(cache_file) + 24*60*60) > Time.now
-    return cache_file
-  else
-    Thread.new do
-      File.open(cache_file, "wb") do |f|
-        f << open(URI.escape(s.user.profile_image_url)).read
-      end
+  if !File.exist?(cache_file) || (File.atime(cache_file) + 24*60*60) < Time.now
+    File.open(cache_file, "wb") do |f|
+      f << open(URI.escape(s.user.profile_image_url)).read
     end
-    return nil
   end
+  cache_file
 end
 
 Termtter::Client.register_hook(
@@ -47,6 +43,7 @@ Termtter::Client.register_hook(
         else
           growl.notify "termtter status notification", s.text, s.user.screen_name
         end
+        sleep 0.1
       end
     end
   }
