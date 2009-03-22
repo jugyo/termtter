@@ -38,4 +38,18 @@ module Termtter::Client
     },
     :help => [ 'search_storage WORD', 'Search storage for WORD' ]
   )
+
+  register_command(
+    :name => :search_storage_user,
+    :aliases => [:ssu],
+    :exec_proc => lambda {|arg|
+      unless arg.strip.empty?
+        key = arg.strip
+        statuses = Termtter::Storage::Status.search({:user => key})
+        output(statuses, :search)
+      end
+    },
+    :help => [ 'search_storage WORD', 'Search storage for WORD' ]
+  )
+
 end

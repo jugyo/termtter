@@ -13,9 +13,17 @@ module Termtter::Storage
 
     def self.search(query)
       raise "query must be Hash(#{query}, #{query.class})" unless query.kind_of? Hash
+      if query[:text] == nil then
+        query[:text] = '';
+      end
+      if query[:user] == nil then
+        query[:user] = '';
+      end
       result = []
-      DB.instance.db.execute("select created_at, screen_name, post_text, in_reply_to_status_id, post_id, user_id from post inner join user on post.user_id = user.id where post_text like '%' || ? || '%' ",
-                             query[:text]) do |created_at, screen_name, post_text, in_reply_to_status_id, post_id, user_id|
+      sql = "select created_at, screen_name, post_text, in_reply_to_status_id, post_id, user_id "
+      sql += "from post inner join user on post.user_id = user.id where post_text like '%' || ? || '%' and screen_name like '%' || ? || '%'"
+      DB.instance.db.execute(sql,
+                             query[:text], query[:user]) do |created_at, screen_name, post_text, in_reply_to_status_id, post_id, user_id|
         created_at = Time.at(created_at).to_s
         result << {
           :id => post_id,
