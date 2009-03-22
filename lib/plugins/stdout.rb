@@ -9,7 +9,7 @@ config.plugins.stdout.set_default(
 config.plugins.stdout.set_default(
   :timeline_format,
   '<90><%=time%></90> <<%=status_color%>><%=status%></<%=status_color%>> <90><%=id%></90>')
-config.plugins.stdout.set_default(:search_highlihgt_format, '<on_magenta><white>\1</white></on_magenta>')
+config.plugins.stdout.set_default(:search_highlight_format, '<on_magenta><white>\1</white></on_magenta>')
 
 config.plugins.stdout.set_default(:enable_pager, true)
 config.plugins.stdout.set_default(:pager, 'less -R +G')
