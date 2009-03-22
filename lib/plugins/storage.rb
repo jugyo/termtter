@@ -45,11 +45,11 @@ module Termtter::Client
     :exec_proc => lambda {|arg|
       unless arg.strip.empty?
         key = arg.strip
-        statuses = Termtter::Storage::Status.search({:user => key})
+        statuses = Termtter::Storage::Status.search_user({:user => key})
         output(statuses, :search)
       end
     },
-    :help => [ 'search_storage WORD', 'Search storage for WORD' ]
+    :help => [ 'search_storage_user SCREEN_NAME', 'Search storage for SCREE_NAME' ]
   )
 
 end

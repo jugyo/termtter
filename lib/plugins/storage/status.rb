@@ -21,9 +21,32 @@ module Termtter::Storage
       end
       result = []
       sql = "select created_at, screen_name, post_text, in_reply_to_status_id, post_id, user_id "
-      sql += "from post inner join user on post.user_id = user.id where post_text like '%' || ? || '%' and screen_name like '%' || ? || '%'"
+      sql += "from post inner join user on post.user_id = user.id where post_text like '%' || ? || '%'"
       DB.instance.db.execute(sql,
-                             query[:text], query[:user]) do |created_at, screen_name, post_text, in_reply_to_status_id, post_id, user_id|
+                             query[:text]) do |created_at, screen_name, post_text, in_reply_to_status_id, post_id, user_id|
+        created_at = Time.at(created_at).to_s
+        result << {
+          :id => post_id,
+          :created_at => created_at,
+          :text => post_text,
+          :in_reply_to_status_id => in_reply_to_status_id,
+          :in_reply_to_user_id => nil,
+          :user => {
+            :id => user_id,
+            :screen_name => screen_name
+          }
+        }
+      end
+      Rubytter.json_to_struct(result)
+    end
+
+    def self.search_user(query)
+      raise "query must be Hash(#{query}, #{query.class})" unless query.kind_of? Hash
+      result = []
+      sql = "select created_at, screen_name, post_text, in_reply_to_status_id, post_id, user_id "
+      sql += "from post inner join user on post.user_id = user.id where "
+      sql += query[:user].split(' ').map!{|que| que.gsub(/(\w+)/, 'screen_name like \'%\1%\'')}.join(' or ')
+      DB.instance.db.execute(sql) do |created_at, screen_name, post_text, in_reply_to_status_id, post_id, user_id|
         created_at = Time.at(created_at).to_s
         result << {
           :id => post_id,
