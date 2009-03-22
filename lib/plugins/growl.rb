@@ -12,50 +12,39 @@ rescue LoadError
   growl = nil
 end
 
-config.plugins.growl.set_default(:icon_cache_dir, "#{Dir.tmpdir}/termtter-icon-cache-dir")
+config.plugins.growl.set_default(:icon_cache_dir, "#{Termtter::CONF_DIR}/tmp/user_profile_images")
 FileUtils.mkdir_p(config.plugins.growl.icon_cache_dir) unless File.exist?(config.plugins.growl.icon_cache_dir)
 
 def get_icon_path(s)
+  Dir.mkdir_p(config.plugins.growl.icon_cache_dir) unless File.exists?(config.plugins.growl.icon_cache_dir)
   cache_file = "%s/%s%s" % [  config.plugins.growl.icon_cache_dir, 
-                              s.user_screen_name, 
-                              File.extname(s.user_profile_image_url)  ]
-  if File.exist?(cache_file) && (File.atime(cache_file) + 24*60*60) > Time.now
-    return cache_file
-  else
-    Thread.new do
-      File.open(cache_file, "wb") do |f|
-        f << open(URI.escape(s.user_profile_image_url)).read
-      end
+                              s.user.screen_name, 
+                              File.extname(s.user.profile_image_url)  ]
+  if !File.exist?(cache_file) || (File.atime(cache_file) + 24*60*60) < Time.now
+    File.open(cache_file, "wb") do |f|
+      f << open(URI.escape(s.user.profile_image_url)).read
     end
-    return nil
   end
+  cache_file
 end
 
-queue = []
-Thread.new do
-  loop do
-    begin
-      if s = queue.pop
+Termtter::Client.register_hook(
+  :name => :growl,
+  :points => [:post_filter],
+  :exec_proc => lambda {|statuses, event|
+    return unless event == :update_friends_timeline
+    Thread.start do
+      statuses.each do |s|
         unless growl
           arg = ['growlnotify', s.user.screen_name, '-m', s.text.gsub("\n",''), '-n', 'termtter']
-          #icon_path = get_icon_path(s)
-          #arg += ['--image', icon_path] if icon_path
+          icon_path = get_icon_path(s)
+          arg += ['--image', icon_path] if icon_path
           system *arg
         else
           growl.notify "termtter status notification", s.text, s.user.screen_name
         end
+        sleep 0.1
       end
-    rescue => e
-      puts e
-      puts e.backtrace.join("\n")
     end
-    sleep 0.1
-  end
-end
-
-Termtter::Client.register_hook(:name => :growl,
-                               :points => [:post_filter],
-                               :exec_proc => lambda {|statuses, event|
-                                 statuses.each {|s| queue << s} if event == :update_friends_timeline
-                               }
+  }
 )
