@@ -24,7 +24,6 @@ module Termtter
       }.empty?
     end
 
-    # TODO: need spec
     def call(*args)
       self.exec_proc.call(*args)
     end

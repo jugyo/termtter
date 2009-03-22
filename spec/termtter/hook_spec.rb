@@ -9,10 +9,9 @@ module Termtter
 
     it 'should match' do
       hook = Hook.new(
-        :name => :span,
+        :name => :spam,
         :points => ['foo'],
         :exec_proc => lambda{|cmd, arg|
-          puts 'a'
         }
       )
       hook.match?('foo').should == true
@@ -23,10 +22,9 @@ module Termtter
 
     it 'should match when multi points' do
       hook = Hook.new(
-        :name => :span,
+        :name => :spam,
         :points => ['foo', 'bar'],
         :exec_proc => lambda{|cmd, arg|
-          puts 'a'
         }
       )
       hook.match?('foo').should == true
@@ -37,10 +35,9 @@ module Termtter
 
     it 'should match when multi points' do
       hook = Hook.new(
-        :name => :span,
+        :name => :spam,
         :points => ['foo', /bar/],
         :exec_proc => lambda{|cmd, arg|
-          puts 'a'
         }
       )
       hook.match?('foo').should == true
@@ -52,10 +49,9 @@ module Termtter
 
     it 'should match when multi points' do
       hook = Hook.new(
-        :name => :span,
+        :name => :spam,
         :points => ['foo', /^bar/],
         :exec_proc => lambda{|cmd, arg|
-          puts 'a'
         }
       )
       hook.match?('bar').should == true
@@ -64,6 +60,19 @@ module Termtter
       hook.match?(:'bar').should == true
       hook.match?(:'bar_').should == true
       hook.match?(:'_bar_').should == false
+    end
+
+    it 'call hook proc' do
+      proc_args = nil
+      hook = Hook.new(
+        :name => :spam,
+        :points => ['foo'],
+        :exec_proc => lambda{|*args|
+          proc_args = args
+        }
+      )
+      hook.call('foo', 'bar')
+      proc_args.should == ['foo', 'bar']
     end
   end
 end
