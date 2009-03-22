@@ -11,7 +11,7 @@ config.plugins.stdout.set_default(
   '<90><%=time%></90> <<%=status_color%>><%=status%></<%=status_color%>> <90><%=id%></90>')
 config.plugins.stdout.set_default(:search_highlihgt_format, '<on_magenta><white>\1</white></on_magenta>')
 
-config.plugins.stdout.set_default(:enable_pager, false)
+config.plugins.stdout.set_default(:enable_pager, true)
 config.plugins.stdout.set_default(:pager, 'less -R +G')
 config.plugins.stdout.set_default(:window_height, 50)
 
