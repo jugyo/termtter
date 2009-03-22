@@ -11,6 +11,6 @@ Termtter::Client.register_hook(
     text = arg.join(' ')
     Termtter::API.twitter.update(text)
     puts "=> #{text}"
-    false
+    raise Termtter::CommandCanceled
   }
 )
