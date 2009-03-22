@@ -36,7 +36,7 @@ module Termtter
     end
 
     def complement(input)
-      command_str, command_arg = match?(input)
+      command_str, command_arg = Command.split_command_line(input)
       if command_arg
         if completion_proc
           [completion_proc.call(command_str, command_arg || '')].flatten.compact
@@ -60,14 +60,8 @@ module Termtter
       exec_proc.call(arg)
     end
 
-    # return array like [command, arg]
-    # match? メソッドがなんかきもちわるいので変える予定
     def match?(input)
-      if pattern =~ input
-        [$2 || $3, $4]  # $2 or $3 => command, $4 => argument
-      else
-        [nil, nil]
-      end
+      (pattern =~ input) != nil
     end
 
     def pattern

@@ -136,26 +136,22 @@ module Termtter
 
         command_found = false
         @commands.each do |key, command|
-          # match? メソッドがなんかきもちわるいので変える予定
-          command_str, command_arg = command.match?(text)
-          if command_str
-            command_found = true
+          next unless command.match?(text)
+          command_found = true
+          command_str, command_arg = Command.split_command_line(text)
 
-            modified_arg = call_hooks(
-                              "modify_arg_for_#{command.name.to_s}",
-                              command_str,
-                              command_arg) || command_arg || ''
+          modified_arg = call_hooks(
+                            "modify_arg_for_#{command.name.to_s}",
+                            command_str,
+                            command_arg) || command_arg || ''
 
-            @task_manager.invoke_and_wait do
-
-              pre_exec_hook_result = call_hooks("pre_exec_#{command.name.to_s}", command_str, modified_arg)
-              next if pre_exec_hook_result == false
-              # exec command
-              result = command.call(modified_arg)
-              if result
-                call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
-              end
-
+          @task_manager.invoke_and_wait do
+            pre_exec_hook_result = call_hooks("pre_exec_#{command.name.to_s}", command_str, modified_arg)
+            next if pre_exec_hook_result == false
+            # exec command
+            result = command.call(modified_arg)
+            if result
+              call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
             end
           end
         end

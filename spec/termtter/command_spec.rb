@@ -58,18 +58,18 @@ module Termtter
 
     it 'should return command_info when call method "match?"' do
       [
-        ['update',       ['update', nil]],
-        ['up',           ['up', nil]],
-        ['u',            ['u', nil]],
-        ['update ',      ['update', nil]],
-        [' update ',     [nil, nil]],
-        ['update foo',   ['update', 'foo']],
-        [' update foo',  [nil, nil]],
-        [' update foo ', [nil, nil]],
-        ['u foo',        ['u', 'foo']],
-        ['up foo',       ['up', 'foo']],
-        ['upd foo',      [nil, nil]],
-        ['upd foo',      [nil, nil]],
+        ['update',       true],
+        ['up',           true],
+        ['u',            true],
+        ['update ',      true],
+        [' update ',     false],
+        ['update foo',   true],
+        [' update foo',  false],
+        [' update foo ', false],
+        ['u foo',        true],
+        ['up foo',       true],
+        ['upd foo',      false],
+        ['upd foo',      false],
       ].each do |input, result|
         @command.match?(input).should == result
       end
