@@ -18,7 +18,7 @@ module Termtter::Client
           :created_at => Time.parse(s.created_at).to_i,
           :in_reply_to_status_id => s.in_reply_to_status_id,
           :in_reply_to_user_id => s.in_reply_to_user_id,
-          :post => s.text,
+          :text => s.text,
           :user_id => s.user.id,
           :screen_name => s.user.screen_name
         )
