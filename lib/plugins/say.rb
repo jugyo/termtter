@@ -12,7 +12,7 @@ end
 module Termtter::Client
   register_hook(
     :name => :say,
-    :points => [:post_filter],
+    :points => [:output],
     :exec_proc => lambda {|statuses, event|
       statuses.reverse.each do |s|
         text_without_uri = s[:text].gsub(%r|https?://[^\s]+|, 'U.R.I.')

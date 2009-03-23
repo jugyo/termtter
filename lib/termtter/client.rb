@@ -103,7 +103,10 @@ module Termtter
         call_hooks(:pre_filter, statuses, event)
         filtered = apply_filters(statuses, event)
         call_hooks(:post_filter, filtered, event)
-        call_hooks(:output, filtered, event)
+        get_hooks(:output).each do |hook|
+          filtered_for_hook = apply_filters_for_hook(filtered, hook.name)
+          hook.call(filtered_for_hook, event)
+        end
       end
 
       def apply_filters(statuses, event)
@@ -112,8 +115,12 @@ module Termtter
             filtered = f.call(filtered, event)
           end
           filtered
-        rescue => e
-          handle_error(e)
+      end
+
+      def apply_filters_for_hook(statuses, hook_name)
+        # TODO
+        filtered = statuses.map(&:dup)
+        filtered
       end
 
       # return last hook return value

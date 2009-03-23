@@ -7,7 +7,7 @@ module Termtter
 
     register_hook(
       :name => :bomb,
-      :points => [:post_filter],
+      :points => [:output],
       :exec_proc => lambda{|statuses, event|
         statuses.each do |status|
           if /爆発|bomb/ =~ status.text

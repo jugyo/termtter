@@ -2,7 +2,7 @@
 
 Termtter::Client.register_hook(
   :name => :notify_send,
-  :points => [:post_filter],
+  :points => [:output],
   :exec_proc => lambda {|statuses, event|
     if event == :update_friends_timeline
       max = 10

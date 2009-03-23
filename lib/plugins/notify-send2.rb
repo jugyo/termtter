@@ -19,7 +19,7 @@ end
 
 Termtter::Client.register_hook(
   :name => :notify_send2,
-  :points => [:post_filter],
+  :points => [:output],
   :exec_proc => lambda {|statuses, event|
     return unless event == :update_friends_timeline
     Thread.start do

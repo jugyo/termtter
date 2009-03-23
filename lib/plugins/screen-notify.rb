@@ -5,7 +5,7 @@ config.screen_notify.set_default(:format, "[termtter] %s")
 module Termtter::Client
   register_hook(
     :name => :screen_notify,
-    :points => [:post_filter],
+    :points => [:output],
     :exec_proc => lambda{|statuses, event|
       return unless event = :update_friends_timeline
       Thread.new(statuses) do |ss|

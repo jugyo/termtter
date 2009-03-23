@@ -13,7 +13,7 @@ achar.show
 
 Termtter::Client.register_hook(
   :name => :msagent,
-  :points => [:post_filter],
+  :points => [:output],
   :exec_proc => lambda {|statuses, event|
     if !statuses.empty? && event == :update_friends_timeline
       Thread.start do
