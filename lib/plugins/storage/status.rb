@@ -64,18 +64,19 @@ module Termtter::Storage
     end
 
     def self.insert(data)
+      return unless data[:text]
       DB.instance.db.execute(
-                             "insert into post values(?,?,?,?,?,?)",
-                             data[:post_id],
-                             data[:created_at],
-                             data[:in_reply_to_status_id],
-                             data[:in_reply_to_user_id],
-                             data[:text],
-                             data[:user_id])
+        "insert into post values(?,?,?,?,?,?)",
+        data[:post_id],
+        data[:created_at],
+        data[:in_reply_to_status_id],
+        data[:in_reply_to_user_id],
+        data[:text],
+        data[:user_id])
       DB.instance.db.execute(
-                             "insert into user values(?,?)",
-                             data[:user_id],
-                             data[:screen_name])
+        "insert into user values(?,?)",
+        data[:user_id],
+        data[:screen_name])
     rescue SQLite3::SQLException
     end
   end
