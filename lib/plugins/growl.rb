@@ -36,10 +36,7 @@ Termtter::Client.register_hook(
     Thread.start do
       statuses.each do |s|
         unless growl
-          arg = ['growlnotify', s.user.screen_name, '-m', s.text.gsub("\n",''), '-n', 'termtter']
-          icon_path = get_icon_path(s)
-          arg += ['--image', icon_path] if icon_path
-          system *arg
+          system 'growlnotify', s.user.screen_name, '-m', s.text.gsub("\n",''), '-n', 'termtter', '--image', get_icon_path(s)
         else
           growl.notify "termtter status notification", s.text, s.user.screen_name
         end
