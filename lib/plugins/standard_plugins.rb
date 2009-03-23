@@ -296,7 +296,7 @@ module Termtter::Client
   )
 
   def self.find_status_ids(text)
-    public_storage[:status_ids].select {|id| /#{Regexp.quote(text)}/ =~ id}
+    public_storage[:status_ids].select {|id| /#{Regexp.quote(text)}/ =~ id.to_s}
   end
 
   def self.find_users(text)
