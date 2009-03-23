@@ -63,6 +63,7 @@ module Termtter
       end
 
       if use_pager
+        file.close
         system "#{config.plugins.stdout.pager} #{file.path}"
         file.close(true)
       end
