@@ -17,8 +17,8 @@ Termtter::Client.register_hook(
   :exec_proc => lambda {|statuses, event|
     if !statuses.empty? && event == :update_friends_timeline
       Thread.start do
-        statuses.reverse.each do |s|
-          req = achar.speak("#{s[:screen_name]}: #{s[:text]}".tosjis)
+        statuses.each do |s|
+          req = achar.speak("#{s.user.screen_name}: #{s.text}".tosjis)
           sleep 1
           WIN32OLE_EVENT.message_loop
           achar.stop(req)
