@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 = termtter
 
 http://github.com/jugyo/termtter
@@ -12,8 +11,6 @@ Termtter is a terminal based Twitter client.
 == SYNOPSIS:
 
 === Run:
-
-Just run a command termtter.
 
   termtter
 
@@ -47,7 +44,7 @@ Search
 
 == CONFIGURATION:
 
-Termtter generates a configuration file named '.termtter/config' in your HOME directory.
+Termtter generates a configuration file named '~/.termtter/config'.
 You can edit the file anytime.
 
   vim ~/.termtter/config
