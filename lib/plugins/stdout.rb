@@ -12,14 +12,8 @@ config.plugins.stdout.set_default(
 config.plugins.stdout.set_default(:search_highlight_format, '<on_magenta><white>\1</white></on_magenta>')
 
 config.plugins.stdout.set_default(:enable_pager, true)
-config.plugins.stdout.set_default(:pager, 'less -R +G')
+config.plugins.stdout.set_default(:pager, 'less -R -f +G')
 config.plugins.stdout.set_default(:window_height, 50)
-
-if ENV['LINES']
-  config.plugins.update_editor.set_default('window_height', ENV['LINES'].to_i)
-else
-  config.plugins.update_editor.set_default('window_height', 50)
-end
 
 module Termtter
   class StdOut < Hook
@@ -45,9 +39,7 @@ module Termtter
           end
       end
 
-      use_pager = config.plugins.stdout.enable_pager && statuses.size > config.plugins.stdout.window_height
-      file = ( use_pager ? Tempfile.new('termtter') : STDOUT )
-      
+      output_text = ''
       statuses.each do |s|
         text = s.text
         status_color = config.plugins.stdout.colors[s.user.id.hash % config.plugins.stdout.colors.size]
@@ -59,15 +51,18 @@ module Termtter
         time = "(#{Time.parse(s.created_at).strftime(time_format)})"
         id = s.id
         erbed_text = ERB.new(config.plugins.stdout.timeline_format).result(binding)
-        file.puts TermColor.parse(erbed_text)
+        output_text << TermColor.parse(erbed_text) + "\n"
       end
 
-      if use_pager
+      if config.plugins.stdout.enable_pager && ENV['LINES'] && statuses.size > ENV['LINES'].to_i
+        file = Tempfile.new('termtter')
+        file << output_text
         file.close
         system "#{config.plugins.stdout.pager} #{file.path}"
         file.close(true)
+      else
+        puts output_text
       end
-
     end
   end
 
