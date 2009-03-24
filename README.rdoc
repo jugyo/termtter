@@ -12,7 +12,7 @@ Termtter is a terminal based Twitter client.
 
 === Run:
 
-  termtter
+  % termtter
 
 === Some Termtter Commands:
 
@@ -40,14 +40,14 @@ Search
 
 == INSTALL:
 
-  sudo gem install termtter
+  % sudo gem install termtter
 
 == CONFIGURATION:
 
 Termtter generates a configuration file named '~/.termtter/config'.
 You can edit the file anytime.
 
-  vim ~/.termtter/config
+  % vim ~/.termtter/config
 
   config.user_name = 'USERNAME'
   config.password = 'PASSWORD'
