@@ -5,15 +5,35 @@ http://github.com/jugyo/termtter
 
 == DESCRIPTION:
 
-Termtter is a terminal based Twitter client
+Termtter is a terminal based Twitter client.
 
 == FEATURES/PROBLEMS:
 
 == SYNOPSIS:
 
-Run:
+=== Run:
+
+Just run a command termtter.
 
   termtter
+
+=== Some Termtter Commands:
+
+Show help
+
+  > help
+
+Update status
+
+  > update hi!
+
+Show replies
+
+  > replies
+
+Search
+
+  > search termtter
 
 == REQUIREMENTS:
 
@@ -23,24 +43,14 @@ Run:
 
 == INSTALL:
 
-  sudo gem source -a http://gems.github.com (you only have to do this once)
-  sudo gem install jugyo-termtter
+  sudo gem install termtter
 
-  if you want to install gem package from source code, install like following.
+== CONFIGURATION:
 
-  git clone git://github.com/jugyo/termtter.git
-  cd termtter
-  rake gem
-  gem install *.gem
-
-Just run a new command termtter.
-
-  termtter
-
-Termtter generates a configuration file named '.termtter' in your HOME directory.
+Termtter generates a configuration file named '.termtter/config' in your HOME directory.
 You can edit the file anytime.
 
-  vim ~/.termtter
+  vim ~/.termtter/config
 
   config.user_name = 'USERNAME'
   config.password = 'PASSWORD'
@@ -65,9 +75,7 @@ http://wiki.github.com/jugyo/termtter/home (in Japanese)
 == TODO:
 
 - Enhance the document and spec
-- Finalize the Hook specification and integration
 - Improve the UI(a status view, etc...)
-- Build a logging function
 
 == LICENSE:
 
