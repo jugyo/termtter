@@ -56,12 +56,12 @@ module Termtter
 
       if config.plugins.stdout.enable_pager && ENV['LINES'] && statuses.size > ENV['LINES'].to_i
         file = Tempfile.new('termtter')
-        file << output_text
+        file.print output_text
         file.close
         system "#{config.plugins.stdout.pager} #{file.path}"
         file.close(true)
       else
-        puts output_text
+        print output_text
       end
     end
   end
