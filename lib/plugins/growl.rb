@@ -4,10 +4,11 @@ require 'tmpdir'
 require 'open-uri'
 require 'uri'
 require 'fileutils'
+require 'cgi'
 
 begin
   require 'ruby-growl'
-  growl = Growl.new "localhost", "termtter", "termtter status notification"
+  growl = Growl.new "localhost", "termtter", ["update_friends_timeline"]
 rescue LoadError
   growl = nil
 end
@@ -42,7 +43,7 @@ Termtter::Client.register_hook(
         unless growl
           system 'growlnotify', s.user.screen_name, '-m', s.text.gsub("\n",''), '-n', 'termtter', '--image', get_icon_path(s)
         else
-          growl.notify "termtter status notification", s.text, s.user.screen_name
+          growl.notify "update_friends_timeline", s.user.screen_name, CGI.unescapeHTML(s.text)
         end
         sleep 0.1
       end
