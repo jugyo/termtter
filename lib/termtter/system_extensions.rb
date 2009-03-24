@@ -103,37 +103,32 @@ if win?
     90 => 0x07|0x00|0x00|0x00, # erase/white
   }
   $iconv_u8_to_sj = Iconv.new("CP#{$wGetACP.call()}", 'UTF-8')
-
-  class << $stdout
-    def print(str)
-      str.to_s.gsub("\xef\xbd\x9e", "\xe3\x80\x9c").split(/(\e\[\d*[a-zA-Z])/).each do |token|
-        case token
-        when /\e\[(\d+)m/
-          $wSetConsoleTextAttribute.call $hStdOut, $colorMap[$1.to_i].to_i
-        when /\e\[\d*[a-zA-Z]/
-          # do nothing
-        else
-          loop do
-            begin
-              STDOUT.print $iconv_u8_to_sj.iconv(token)
-              break
-            rescue Iconv::Failure
-              STDOUT.print "#{$!.success}?"
-              token = $!.failed[1..-1]
-            end
+  def print(str)
+    str.to_s.gsub("\xef\xbd\x9e", "\xe3\x80\x9c").split(/(\e\[\d*[a-zA-Z])/).each do |token|
+      case token
+      when /\e\[(\d+)m/
+        $wSetConsoleTextAttribute.call $hStdOut, $colorMap[$1.to_i].to_i
+	  when /\e\[\d*[a-zA-Z]/
+        # do nothing
+      else
+        loop do
+          begin
+            STDOUT.print $iconv_u8_to_sj.iconv(token)
+            break
+          rescue Iconv::Failure
+            STDOUT.print "#{$!.success}?"
+            token = $!.failed[1..-1]
           end
         end
       end
-      $wSetConsoleTextAttribute.call $hStdOut, $oldColor
-      $iconv_u8_to_sj.iconv(nil)
     end
-
-    def puts(str)
-      print str
-      STDOUT.puts
-    end
+    $wSetConsoleTextAttribute.call $hStdOut, $oldColor
+    $iconv_u8_to_sj.iconv(nil)
   end
-
+  def puts(str)
+    print str
+    STDOUT.puts
+  end
 end
 
 unless Array.instance_methods.include?('take')
