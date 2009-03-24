@@ -28,11 +28,12 @@ module Termtter
     def print_statuses(statuses, sort = true, time_format = nil)
       return unless statuses and statuses.first
       unless time_format
-        # 最初と最後の日付がちがうとき日付も出す
+        t0 = Time.now
         t1 = Time.parse(statuses.first[:created_at])
         t2 = Time.parse(statuses.last[:created_at])
         time_format = 
-          if [t1.year, t1.month, t1.day] == [t2.year, t2.month, t2.day]
+          if [t0.year, t0.month, t0.day] == [t1.year, t1.month, t1.day] \
+            and [t1.year, t1.month, t1.day] == [t2.year, t2.month, t2.day]
             '%H:%M:%S'
           else
             '%y/%m/%d %H:%M'
