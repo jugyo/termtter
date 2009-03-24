@@ -11,7 +11,11 @@ def get_icon_path(s)
                               File.extname(s.user.profile_image_url)  ]
   if !File.exist?(cache_file) || (File.atime(cache_file) + 24*60*60) < Time.now
     File.open(cache_file, "wb") do |f|
-      f << open(URI.escape(s.user.profile_image_url)).read
+      begin
+        f << open(URI.escape(s.user.profile_image_url)).read
+      rescue OpenURI::HTTPError
+        return nil
+      end
     end
   end
   cache_file
