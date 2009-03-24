@@ -46,7 +46,7 @@ module Termtter
       end
 
       use_pager = config.plugins.stdout.enable_pager && statuses.size > config.plugins.stdout.window_height
-      file = ( use_pager ? Tempfile.new('termtter') : STDOUT )
+      file = ( use_pager ? Tempfile.new('termtter') : $stdout )
       
       statuses.each do |s|
         text = s.text
