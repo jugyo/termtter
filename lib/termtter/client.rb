@@ -18,8 +18,7 @@ module Termtter
         @since_id = nil
         @input_thread = nil
         @task_manager = Termtter::TaskManager.new
-        config.log.set_default(:logger, nil)
-        config.log.set_default(:level, nil)
+        config.set_default(:logger, nil)
         config.set_default(:update_interval, 300)
         config.set_default(:prompt, '> ')
         config.set_default(:devel, false)
@@ -310,8 +309,7 @@ module Termtter
       end
 
       def setup_logger
-        @logger = config.log.logger || Logger.new(STDOUT)
-        @logger.level = config.log.level || Logger::WARN
+        @logger = config.logger || Logger.new(STDOUT)
       end
 
       def run
