@@ -5,10 +5,8 @@ module Termtter::Client
     :name => :timer,
     :exec_proc => lambda{|arg|
       # argをparseする
-      p arg =~ /^\d+$/
       return unless arg =~ /^\d+$/
       after = arg.to_i
-      p after
       Termtter::Client.add_task(:after => after) do
         text = "@#{config.user_name} 時間ですよ！！"
         Termtter::API.twitter.update text
