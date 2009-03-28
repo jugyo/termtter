@@ -25,7 +25,8 @@ module Termtter::Client
       if /(.*)@([^\s]*)$/ =~ args
         find_user_candidates $2, "#{cmd} #{$1}@%s"
       end
-    }
+    },
+    :help => ["update,u TEXT", "Post a new message"]
   )
 
   register_command(
@@ -41,7 +42,8 @@ module Termtter::Client
       if /^([^\s]+)$/ =~ args
         find_user_candidates $1, "#{cmd} %s"
       end
-    }
+    },
+    :help => ["direct,d USERNAME TEXT", "Send direct message"]
   )
 
   register_command(
@@ -60,7 +62,8 @@ module Termtter::Client
     },
     :completion_proc => lambda {|cmd, arg|
       find_user_candidates arg, "#{cmd} %s"
-    }
+    },
+    :help => ["profile,p USERNAME", "Show user's profile"]
   )
 
   register_command(
@@ -75,9 +78,13 @@ module Termtter::Client
         followers += tmp = Termtter::API.twitter.followers(user_name, :page => page+=1)
       end until tmp.empty?
       Termtter::Client.public_storage[:followers] = followers
+      public_storage[:users] += followers.map(&:screen_name)
       puts followers.map(&:screen_name).join(' ')
-    }
-    # TODO :completion_proc
+    },
+    :completion_proc => lambda {|cmd, arg|
+      find_user_candidates arg, "#{cmd} %s"
+    },
+    :help => ["followers", "Show followers"]
   )
 
   register_command(
@@ -94,7 +101,8 @@ module Termtter::Client
     },
     :completion_proc => lambda {|cmd, arg|
       find_user_candidates arg, "#{cmd} %s"
-    }
+    },
+    :help => ["list,l [USERNAME]", "List the posts"]
   )
 
   register_command(
@@ -102,14 +110,16 @@ module Termtter::Client
     :exec_proc => lambda {|arg|
       statuses = Termtter::API.twitter.search(arg)
       output(statuses, :search)
-    }
+    },
+    :help => ["search,s TEXT", "Search for Twitter"]
   )
 
   register_command(
     :name => :replies, :aliases => [:r],
     :exec_proc => lambda {|arg|
       output(Termtter::API.twitter.replies, :replies)
-    }
+    },
+    :help => ["replies,r", "List the most recent @replies for the authenticating user"]
   )
 
   register_command(
@@ -130,7 +140,8 @@ module Termtter::Client
           find_status_ids(arg).map {|id| "#{cmd} #{id}"}
         end
       end
-    }
+    },
+    :help => ["show ID", "Show a single status"]
   )
 
   register_command(
@@ -234,22 +245,11 @@ module Termtter::Client
   register_command(
     :name => :help, :aliases => [:h],
     :exec_proc => lambda {|arg|
-      # TODO: move to each commands
-      helps = [
-        ["help,h", "Print this help message"],
-        ["list,l", "List the posts in your friends timeline"],
-        ["list,l USERNAME", "List the posts in the the given user's timeline"],
-        ["update,u TEXT", "Post a new message"],
-        ["direct,d USERNAME TEXT", "Send direct message"],
-        ["profile,p USERNAME", "Show user's profile"],
-        ["replies,r", "List the most recent @replies for the authenticating user"],
-        ["search,s TEXT", "Search for Twitter"],
-        ["show ID", "Show a single status"]
-      ]
-      helps += @commands.map {|name, command| command.help}
+      helps = @commands.map { |name, command| command.help }
       helps.compact!
       puts formatted_help(helps)
-    }
+    },
+    :help => ["help,h", "Print this help message"]
   )
 
   def self.formatted_help(helps)
@@ -289,11 +289,12 @@ module Termtter::Client
   end
 
   def self.find_user_candidates(a, b)
-    if a.nil? || a.empty?
-      public_storage[:users].to_a
-    else
-      public_storage[:users].grep(/^#{Regexp.quote a}/i)
-    end.
-    map {|u| b % u }
+    users = 
+      if a.nil? || a.empty?
+        public_storage[:users].to_a
+      else
+        public_storage[:users].grep(/^#{Regexp.quote a}/i)
+      end
+    users.map {|u| b % u }
   end
 end

@@ -225,9 +225,13 @@ module Termtter
         if Readline.respond_to?(:basic_word_break_characters=)
           Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
         end
-        Readline.completion_proc = lambda {|input|
+        Readline.completion_proc = lambda {|text|
           begin
-            @commands.map {|name, command| command.complement(input) }.flatten.compact
+            @commands.values.select{ |command|
+              command.match?(text) 
+            }.map{ |command|
+              command.complement(text)
+            }.flatten.compact
           rescue => e
             handle_error(e)
           end
