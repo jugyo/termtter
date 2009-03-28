@@ -252,21 +252,6 @@ module Termtter::Client
     }
   )
 
-  register_command(
-    :name => :execute,
-    :exec_proc => lambda{|arg|
-      if arg
-        `#{arg}`.each_line do |line|
-          unless line.strip.empty?
-            Termtter::API.twitter.update(line)
-            puts "=> #{line}"
-          end
-        end
-      end
-    },
-    :help => ['execute COMMAND', 'execute the command']
-  )
-
   def self.formatted_help(helps)
     helps = helps.sort_by {|help| help[0] }
     width = helps.map {|n, _| n.size }.max
