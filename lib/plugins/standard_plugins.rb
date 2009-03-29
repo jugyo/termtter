@@ -175,7 +175,8 @@ module Termtter::Client
     :exec_proc => lambda {|arg|
       id = arg.gsub(/.*:\s*/, '')
       # TODO: Implement
-      output([Termtter::API.twitter.show(id)], :show)
+      #output([Termtter::API.twitter.show(id)], :show)
+      puts "Not implemented yet."
     },
     :completion_proc => get_command(:show).completion_proc
   )
