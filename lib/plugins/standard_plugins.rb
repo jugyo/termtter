@@ -188,6 +188,41 @@ module Termtter::Client
     :help => ['leave USER', 'Leave user']
   )
 
+  register_command(
+    :name => :favorite, :aliases => [:fav],
+    :exec_proc => lambda {|arg|
+      id = 0
+      case arg
+      when /^\d+/
+        id = arg.to_i
+      when /^@([A-Za-z0-9_]+)/
+        user = $1
+        statuses = Termtter::API.twitter.user_timeline(user)
+        return if statuses.empty?
+        id = statuses[0].id
+      when /^\/(.*)$/
+        word = $1
+        raise "Not implemented yet."
+      else
+        return
+      end
+
+      r = Termtter::API.twitter.favorite id
+      puts "Favorited status ##{r.id} on user @#{r.user.screen_name} #{r.text}"
+    },
+    :completion_proc => lambda {|cmd, arg|
+      case arg
+      when /@(.*)/
+        find_user_candidates $1, "#{cmd} @%s"
+      when /(\d+)/
+        find_status_ids(arg).map{|id| "#{cmd} #{$1}"}
+      else
+        %w(favorite).grep(/^#{Regexp.quote arg}/)
+      end
+    },
+    :help => ['favorite,fav (ID|@USER|/WORD)', 'Favorite a status']
+  )
+
   # TODO: Change colors when remaining_hits is low.
   # TODO: Simmulate remaining_hits.
   register_command(
