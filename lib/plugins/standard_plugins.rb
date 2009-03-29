@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 require 'erb'
+require 'set'
 
 config.plugins.standard.set_default(
  :limit_format,
@@ -105,11 +106,16 @@ module Termtter::Client
     :help => ["list,l [USERNAME]", "List the posts"]
   )
 
+  public_storage[:search_keywords] = Set.new
   register_command(
     :name => :search, :aliases => [:s],
     :exec_proc => lambda {|arg|
       statuses = Termtter::API.twitter.search(arg)
+      public_storage[:search_keywords] << arg
       output(statuses, :search)
+    },
+    :completion_proc => lambda {|cmd, arg|
+      public_storage[:search_keywords].grep(/#{Regexp.quote(arg)}/).map { |i| "#{cmd} #{i}" }
     },
     :help => ["search,s TEXT", "Search for Twitter"]
   )
@@ -263,7 +269,6 @@ module Termtter::Client
 
   # completion for standard commands
 
-  require 'set'
   public_storage[:users] ||= Set.new
   public_storage[:status_ids] ||= Set.new
 
