@@ -48,6 +48,9 @@ module Termtter
     end
 
     __instance = self.new
+    def __instance.values
+      @store.dup.delete_if {|k, v| v.nil? }
+    end
     (class << self; self end).
       __send__(:define_method, :instance) { __instance }
   end
