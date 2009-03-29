@@ -40,9 +40,7 @@ module Termtter::Client
       end
     },
     :completion_proc => lambda {|cmd, args|
-      if /^([^\s]+)$/ =~ args
-        find_user_candidates $1, "#{cmd} %s"
-      end
+      find_user_candidates args, "#{cmd} %s"
     },
     :help => ["direct,d USERNAME TEXT", "Send direct message"]
   )
