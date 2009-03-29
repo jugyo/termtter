@@ -9,6 +9,28 @@ config.plugins.standard.set_default(
 
 module Termtter::Client
 
+  # TODO: move to client.rb
+  register_hook(
+    :name => :default_error_handler,
+    :points => [:on_error],
+    :exec_proc => lambda {|e|
+      case e
+      when Rubytter::APIError
+        case e.response.code
+        when /401/
+          warn '[ERROR] Unauthorized: maybe you tried to show protected user status'
+        when /403/
+          warn '[ERROR] Access denied: maybe that user is protected'
+        when /404/
+          warn '[ERROR] Not found: maybe there is no such user'
+        end
+      else
+        warn "[ERROR] Something wrong: #{e.message}"
+      end
+      raise e if config.system.devel == true
+    }
+  )
+
   # standard commands
 
   register_command(
@@ -260,27 +282,6 @@ module Termtter::Client
     :help => ['exit,e', 'Exit']
   )
 
-  register_hook(
-    :name => :default_error_handler,
-    :points => [:on_error],
-    :exec_proc => lambda {|e|
-      case e
-      when Rubytter::APIError
-        case e.response.code
-        when /401/
-          warn '[ERROR] Unauthorized: maybe you tried to show protected user status'
-        when /403/
-          warn '[ERROR] Access denied: maybe that user is protected'
-        when /404/
-          warn '[ERROR] Not found: maybe there is no such user'
-        end
-      else
-        warn "[ERROR] Something wrong: #{e.message}"
-      end
-      raise e if config.system.devel == true
-    }
-  )
-
   register_command(
     :name => :help, :aliases => [:h],
     :exec_proc => lambda {|arg|
@@ -317,6 +318,49 @@ module Termtter::Client
       end
     }
   )
+
+  public_storage[:plugins] = (Dir["#{File.dirname(__FILE__)}/*.rb"] + Dir["#{Termtter::CONF_DIR}/plugins/*.rb"]).map do |f|
+    f.match(%r|([^/]+).rb$|)[1]
+  end
+
+  register_command(
+    :name      => :plugin,
+    :exec_proc => lambda {|arg|
+      if arg.empty?
+        puts 'Should specify plugin name.'
+        return
+      end
+      begin
+        result = plugin arg
+      rescue LoadError
+      ensure
+        puts "=> #{result.inspect}"
+      end
+    },
+    :completion_proc => lambda {|cmd, args|
+      find_user_candidates args, "#{cmd} %s"
+      unless args.empty?
+        find_plugin_candidates args, "#{cmd} %s"
+      else
+        public_storage[:plugins].sort
+      end
+    },
+    :help      => ['plugin FILE', 'Load a plugin']
+  )
+
+  register_command(
+    :name      => :plugins,
+    :exec_proc => lambda {|arg|
+      puts public_storage[:plugins].sort.join("\n")
+    },
+    :help      => ['plugins', 'Show list of plugins']
+  )
+
+  def self.find_plugin_candidates(a, b)
+    public_storage[:plugins].
+      grep(/^#{Regexp.quote a}/i).
+      map {|u| b % u }
+  end
 
   def self.find_status_ids(text)
     public_storage[:status_ids].select {|id| /#{Regexp.quote(text)}/ =~ id.to_s}
