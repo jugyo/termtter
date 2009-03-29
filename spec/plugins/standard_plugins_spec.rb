@@ -21,4 +21,3 @@ module Termtter
     end
   end
 end
-
