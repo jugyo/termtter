@@ -36,6 +36,30 @@ module Termtter
                     }
                   )
       end
+      def switch_user(username = nil)
+        highline = create_highline
+        username = highline.ask('your twitter username: ') unless username
+        password = highline.ask('your twitter password: ') { |q| q.echo = false }
+        @twitter = Rubytter.new(
+                    username,
+                    password,
+                    {
+                      :app_name => Termtter::APP_NAME,
+                      :host => config.host,
+                      :header => {
+                        'User-Agent' => 'Termtter http://github.com/jugyo/termtter',
+                        'X-Twitter-Client' => 'Termtter',
+                        'X-Twitter-Client-URL' => 'http://github.com/jugyo/termtter',
+                        'X-Twitter-Client-Version' => Termtter::VERSION
+                      },
+                      :enable_ssl => config.enable_ssl,
+                      :proxy_host => config.proxy.host,
+                      :proxy_port => config.proxy.port,
+                      :proxy_user_name => config.proxy.user_name,
+                      :proxy_password => config.proxy.password
+                    }
+                  )
+      end
     end
   end
 end
