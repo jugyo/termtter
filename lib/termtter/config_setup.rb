@@ -2,6 +2,7 @@
 
 module Termtter
   module ConfigSetup
+    module_function
     def run
       ui = create_highline
       username = ui.ask('your twitter username: ')
@@ -32,22 +33,6 @@ module Termtter
       }
       puts "generated: ~/.termtter/config"
       puts "enjoy!"
-    end
-
-    module_function :run
-
-    def self.create_highline
-      HighLine.track_eof = false
-      if $stdin.respond_to?(:getbyte) # for ruby1.9
-        require 'delegate'
-        stdin_for_highline = SimpleDelegator.new($stdin)
-        def stdin_for_highline.getc
-          getbyte
-        end
-      else
-        stdin_for_highline = $stdin
-      end
-      HighLine.new(stdin_for_highline)
     end
   end
 end

@@ -144,3 +144,18 @@ unless Symbol.instance_methods.include?('to_proc')
     end
   end
 end
+
+require 'highline'
+def create_highline
+  HighLine.track_eof = false
+  if $stdin.respond_to?(:getbyte) # for ruby1.9
+    require 'delegate'
+    stdin_for_highline = SimpleDelegator.new($stdin)
+    def stdin_for_highline.getc
+      getbyte
+    end
+  else
+    stdin_for_highline = $stdin
+  end
+  HighLine.new(stdin_for_highline)
+end
