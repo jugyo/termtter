@@ -36,9 +36,9 @@ module Termtter
     end
 
     def complement(input)
-      command_str, command_arg = Command.split_command_line(input)
-      if command_arg
+      if match?(input) && input =~ /^[^\s]+\s/
         if completion_proc
+          command_str, command_arg = Command.split_command_line(input)
           [completion_proc.call(command_str, command_arg || '')].flatten.compact
         else
           []
@@ -78,4 +78,3 @@ module Termtter
     end
   end
 end
-
