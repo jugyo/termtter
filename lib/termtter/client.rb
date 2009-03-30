@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'fileutils'
 require 'logger'
+require 'termcolor'
 
 module Termtter
 
