@@ -402,6 +402,8 @@ module Termtter::Client
   * 英語で説明 => ヘルプを設定する
   * リファクタ
   * 補完
+  * 「reply @user_name メッセージ」 として直近のメッセージに reply できたらよいかも
+  * 確認画面を出したい
 =end
 
   def self.find_plugin_candidates(a, b)
