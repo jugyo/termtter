@@ -262,7 +262,16 @@ module Termtter::Client
   register_command(
     :name => :help, :aliases => [:h],
     :exec_proc => lambda {|arg|
-      helps = @commands.map { |name, command| command.help }
+      helps = []
+      @commands.map do |name, command|
+        next unless command.help
+        case command.help[0]
+        when String
+          helps << command.help
+        when Array
+          helps += command.help
+        end
+      end
       helps.compact!
       puts formatted_help(helps)
     },

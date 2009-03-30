@@ -226,5 +226,28 @@ module Termtter
       command.should_not_receive(:call)
       Client.call_commands('test')
     end
+
+    it 'should get help' do
+      $stdout, old_stdout = StringIO.new, $stdout
+      help_command = Client.get_command(:help)
+      help_command.call
+      $stdout.string.should_not == '' # 何がか出力されていること
+      $stdout = old_stdout
+    end
+
+    it 'should get help' do
+      Client.register_command(
+        :name => :foo,
+        :help => [
+          ['foo USER', 'foo to USER'],
+          ['foo list', 'list foo'],
+        ]
+      )
+      $stdout, old_stdout = StringIO.new, $stdout
+      help_command = Client.get_command(:help)
+      help_command.call
+      $stdout.string.should match(/foo USER/)
+      $stdout.string.should match(/foo list/)
+    end
   end
 end
