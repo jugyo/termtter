@@ -53,7 +53,7 @@ module Termtter
       synchronize do
         begin
           yield
-        rescue => e
+        rescue Exception => e
           Termtter::Client.handle_error(e)
         end
       end
