@@ -309,7 +309,30 @@ module Termtter
       end
 
       def setup_logger
-        @logger = config.logger || Logger.new(STDOUT)
+        @logger = config.logger || default_logger
+      end
+
+      def default_logger
+        logger = Logger.new(STDOUT)
+        logger.formatter = lambda { |severity, time, progname, message|
+          color =
+            case severity
+            when /^DEBUG/
+              'blue'
+            when /^INFO/
+              'cyan'
+            when /^WARN/
+              'magenta'
+            when /^ERROR/
+              'red'
+            when /^FATAL/
+              'on_red'
+            else
+              'white'
+            end
+          TermColor.parse("<#{color}>" + TermColor.escape("[#{severity}] #{message}\n") + "</#{color}>")
+        }
+        logger
       end
 
       def run
@@ -328,6 +351,7 @@ module Termtter
       end
 
       def handle_error(e)
+        logger.error("#{e.class.to_s}: #{e.message}")
         get_hooks(:on_error).each {|hook| hook.call(e) }
       rescue Exception => e
         puts "Error: #{e}"
