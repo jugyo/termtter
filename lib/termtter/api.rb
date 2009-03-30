@@ -13,7 +13,7 @@ config.set_default(:enable_ssl, false)
 module Termtter
   module API
     class << self
-      attr_reader :connection, :twitter, :twitter_old
+      attr_reader :connection, :twitter
       def setup
         @connection = Connection.new
         @twitter = create_twitter(config.user_name, config.password)
