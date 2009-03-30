@@ -3,24 +3,21 @@
 module Termtter::Client
   register_command(
     :name => :reply,
+    :aliases => [:re],
     :exec_proc => lambda {|arg|
       case arg
       when /^\s*(?:list)?\s*$/
-        public_storage[:log].each_with_index do |s, i|
+        public_storage[:log4re] = public_storage[:log].sort {|a,b| a.id <=> b.id}
+        public_storage[:log4re].each_with_index do |s, i|
           puts "#{i}: #{s.user.screen_name}: #{s.text}"
         end
-      when /^\s*u(?:pdate)?\s+(\d+)\s+(.+)$/
-        id   = public_storage[:log][$1.to_i].id
-        user = public_storage[:log][$1.to_i].user.screen_name
+      when /^\s*(\d+)\s+(.+)$/
+        id   = public_storage[:log4re][$1.to_i].id
+        user = public_storage[:log4re][$1.to_i].user.screen_name
         text = ERB.new("@#{user} #{$2}").result(binding).gsub(/\n/, ' ')
         result = Termtter::API.twitter.update(text, {'in_reply_to_status_id' => id})
         puts "=> #{text}"
-        result
-      when /^\s*(\d+)\s+(.+)$/
-        id   = $1
-        text = ERB.new($2).result(binding).gsub(/\n/, ' ')
-        result = Termtter::API.twitter.update(text, {'in_reply_to_status_id' => id})
-        puts "=> #{text}"
+        public_storage.delete :log4re
         result
       end
     },
@@ -46,10 +43,6 @@ end
 * メッセージ送信の際、@usernameが自動的に付与される。
  command: reply [u|update] status_no message
  > reply u 0 message4foo
-
-=== reply
-* 対象のstatus_idを自分で入力してメッセージを送信する。
- command: reply status_id message
 
 == Todo
 * 英語で説明
