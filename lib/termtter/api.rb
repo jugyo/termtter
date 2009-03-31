@@ -35,7 +35,7 @@ module Termtter
           user_name,
           password,
           {
-            :app_name => Termtter::APP_NAME,
+            :app_name => config.app_name.empty? ? Termtter::APP_NAME : config.app_name,
             :host => config.host,
             :header => {
               'User-Agent' => 'Termtter http://github.com/jugyo/termtter',
