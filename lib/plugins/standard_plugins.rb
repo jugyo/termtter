@@ -229,7 +229,7 @@ module Termtter::Client
         show_settings v, level + 1
       else
         print '  ' * level
-        puts "#{k} = #{v.nil? ? 'nil' : v}"
+        puts "#{k} = #{v.nil? ? 'nil' : v.inspect}"
       end
     end
   end
