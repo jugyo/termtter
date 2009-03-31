@@ -222,6 +222,26 @@ module Termtter::Client
     :help => ['favorite,fav (ID|@USER|/WORD)', 'Favorite a status']
   )
 
+  def self.show_settings(conf, level = 0)
+    conf.__values__.each do |k, v|
+      if v.instance_of? Termtter::Config
+        puts "#{k}:"
+        show_settings v, level + 1
+      else
+        print '  ' * level
+        puts "#{k} = #{v.nil? ? 'nil' : v}"
+      end
+    end
+  end
+
+  register_command(
+    :name => :settings, :aliases => [:set],
+    :exec_proc => lambda {|_|
+      show_settings config
+    },
+    :help => ['settings,set', 'Show your settings']
+  )
+
   # TODO: Change colors when remaining_hits is low.
   # TODO: Simmulate remaining_hits.
   register_command(

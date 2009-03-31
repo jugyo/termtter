@@ -47,10 +47,11 @@ module Termtter
       @store[name] == :undefined ? @store[name] = Termtter::Config.new : @store[name]
     end
 
-    __instance = self.new
-    def __instance.values
-      @store.dup.delete_if {|k, v| v.nil? }
+    def __values__
+      @store.dup
     end
+
+    __instance = self.new
     (class << self; self end).
       __send__(:define_method, :instance) { __instance }
   end
