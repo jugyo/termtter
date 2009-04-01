@@ -14,7 +14,7 @@ module Termtter::Client
                    },
                    :completion_proc => lambda {|cmd, arg|
                    },
-                   :help => ['direct_messages,ds', 'List direct messages for you'],
+                   :help => ['direct_messages,ds', 'List direct messages for you']
   )
 
   register_command(
@@ -31,6 +31,6 @@ module Termtter::Client
                    },
                    :completion_proc => lambda {|cmd, arg|
                    },
-                   :help => ['sent_direct_messages, sds', 'List direct messages from you'],
+                   :help => ['sent_direct_messages, sds', 'List direct messages from you']
                    )
 end
