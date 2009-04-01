@@ -44,6 +44,20 @@ module Termtter::Client
   )
 
   register_command(
+    :name => :direct_list, :aliases => [:dl],
+    :exec_proc => lambda {|arg|
+      dl = Termtter::API.twitter.direct_messages
+      statuses = dl.map do |d|
+        Struct.new(:id, :text, :user, :created_at, :in_reply_to_status_id).
+               new(d.id, "@#{d.recipient.screen_name} #{d.text}", d.sender,  d.created_at)
+      end
+      output statuses, :list_user_timeline
+    },
+    :completion_proc => lambda {|cmd, args| },
+    :help => ["direct_list,dl", "List direct message"]
+  )
+
+  register_command(
     :name => :profile, :aliases => [:p],
     :exec_proc => lambda {|arg|
       user = Termtter::API.twitter.user(arg.strip)
