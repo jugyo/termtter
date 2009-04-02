@@ -381,47 +381,81 @@ module Termtter::Client
     :aliases => [:re],
     :exec_proc => lambda {|arg|
       case arg
-      when /^\s*(?:list)?\s*$/
-        public_storage[:log4re] = public_storage[:log].sort {|a,b| a.id <=> b.id}
+      when /^\s*(?:list|ls)\s*(?:\s+(\w+))?\s*$/
+        public_storage[:log4re] = if $1
+                                    public_storage[:log].
+                                      select{|l| l.user.screen_name == $1}.
+                                      sort {|a,b| a.id <=> b.id}
+                                  else
+                                    public_storage[:log].sort {|a,b| a.id <=> b.id}
+                                  end
         public_storage[:log4re].each_with_index do |s, i|
           puts "#{i}: #{s.user.screen_name}: #{s.text}"
         end
-      when /^\s*(\d+)\s+(.+)$/
+      when /^\s*(?:up(?:date)?)\s+(\d+)\s+(.+)$/
         id   = public_storage[:log4re][$1.to_i].id
-        user = public_storage[:log4re][$1.to_i].user.screen_name
-        text = ERB.new("@#{user} #{$2}").result(binding).gsub(/\n/, ' ')
-        result = Termtter::API.twitter.update(text, {'in_reply_to_status_id' => id})
-        puts "=> #{text}"
+        text = $2
+        user = public_storage[:log4re][$1.to_i].user
+        update_with_user_and_id(text, user.screen_name, id) if user
         public_storage.delete :log4re
-        result
+      when /^\s*(\d+)\s+(.+)$/
+        id, text = $1, $2
+        user = public_storage[:log].select {|l| l.id == id.to_i }.first.user
+        update_with_user_and_id(text, user.screen_name, id) if user
+      when /^\s*@(\w+)\s+(.+)$/
+        username, text = $1, $2
+        id = public_storage[:log].
+          select {|l| l.user.screen_name = username}.
+          sort {|a,b| b.id <=> a.id}.first.id
+        update_with_user_and_id(text, username, id) if id
       end
     },
     :completion_proc => lambda {|cmd, args|
-      #todo
+      # todo
     }
   )
+
+  def self.update_with_user_and_id(text, username, id)
+    text = ERB.new("@#{username} #{text}").result(binding).gsub(/\n/, ' ')
+    result = Termtter::API.twitter.update(text, {'in_reply_to_status_id' => id})
+    puts "=> #{text}"
+    result
+  end
+
 =begin
   = Termtter reply command
   == Usage
   === list
-  * ステータスのリストを連番と一緒に出す。
-   command: reply [list]
-   > reply
-   0: foo: foo's message
-   1: bar: bar's message
-   ..
+  * ステータスリストを連番と一緒に出す。
+  > reply [list|ls]
+  0: foo: foo's message
+  1: bar: bar's message
+  ..
+
+  * ユーザ指定してリスト作成。
+  > reply [list|ls] foo
+  0: foo: foo's message0
+  1: foo: foo's message1
 
   === reply
-  * 上記listコマンドで出したステータスNOに対してメッセージを送る。
-  * メッセージ送信の際、@usernameが自動的に付与される。
-   command: reply [u|update] status_no message
-   > reply u 0 message4foo
+  メッセージ送信の際、@usernameが自動的に付与される。
+
+  * status_idを自分で入力してreply送信
+  > reply 1234567890 message to status_id
+  => @foo message to status_id (repl. to 1234567890)
+
+  * reply listコマンドで出したステータス番号に対してreply送信
+  > reply up 0 message to status no
+  => @foo message to status_no
+
+  * 対象ユーザの最後の発言に対してreply
+  > reply @foo message to foo
+  => @foo message to foo
 
   == Todo
   * 英語で説明 => ヘルプを設定する
   * リファクタ
   * 補完
-  * 「reply @user_name メッセージ」 として直近のメッセージに reply できたらよいかも
   * 確認画面を出したい
 =end
 
