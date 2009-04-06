@@ -415,6 +415,30 @@ module Termtter::Client
     }
   )
 
+  register_command(
+    :name => :redo,
+    :aliases => [:"."],
+    :exec_proc => lambda {|arg|
+      break if Readline::HISTORY.length < 2
+      i = Readline::HISTORY.length - 2
+      input = ""
+      begin
+        input = Readline::HISTORY[i]
+        i -= 1
+        return if i <= 0
+      end while input == "redo" or input == "."
+      begin
+        Termtter::Client.call_commands(input)
+      rescue CommandNotFound => e
+        warn "Unknown command \"#{e}\""
+        warn 'Enter "help" for instructions'
+      rescue => e
+        handle_error e
+      end
+    },
+    :help => ["redo,.", "Execute previous command"]
+  )
+
   def self.update_with_user_and_id(text, username, id)
     text = ERB.new("@#{username} #{text}").result(binding).gsub(/\n/, ' ')
     result = Termtter::API.twitter.update(text, {'in_reply_to_status_id' => id})
