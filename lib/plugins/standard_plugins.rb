@@ -15,7 +15,8 @@ module Termtter::Client
       unless /^\s*$/ =~ arg
         # TODO: Change to able to disable erb.
         text = ERB.new(arg).result(binding).gsub(/\n/, ' ')
-        result = Termtter::API.twitter.update(text)
+        reply_to_status_id = public_storage[:last_status_id][$1] if /^@([A-Za-z0-9_]+)/ =~ text
+        result = Termtter::API.twitter.update(text, {'in_reply_to_status_id' => reply_to_status_id})
         puts "=> #{text}"
         result
       end
@@ -325,6 +326,7 @@ module Termtter::Client
 
   public_storage[:users] ||= Set.new
   public_storage[:status_ids] ||= Set.new
+  public_storage[:last_status_id] ||= Hash.new
 
   register_hook(
     :name => :for_completion,
@@ -335,6 +337,7 @@ module Termtter::Client
         public_storage[:users] += s.text.scan(/@([a-zA-Z_0-9]*)/).flatten
         public_storage[:status_ids].add(s.id)
         public_storage[:status_ids].add(s.in_reply_to_status_id) if s.in_reply_to_status_id
+        public_storage[:last_status_id].store(s.user.screen_name, s.id)
       end
     }
   )
