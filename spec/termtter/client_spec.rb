@@ -228,8 +228,9 @@ module Termtter
     end
 
     it 'should get default help' do
-      $stdout, old_stdout = StringIO.new, $stdout
+      $stdout, old_stdout = StringIO.new, $stdout # FIXME That suspends any debug informations!
       help_command = Client.get_command(:help)
+      help_command.should_not be_nil
       help_command.call
       $stdout.string.should_not == '' # 何がか出力されていること
       $stdout = old_stdout
@@ -243,8 +244,9 @@ module Termtter
           ['foo list', 'list foo'],
         ]
       )
-      $stdout, old_stdout = StringIO.new, $stdout
+      $stdout, old_stdout = StringIO.new, $stdout # FIXME That suspends any debug informations!
       help_command = Client.get_command(:help)
+      help_command.should_not be_nil
       help_command.call
       $stdout.string.should match(/foo USER/)
       $stdout.string.should match(/foo list/)
