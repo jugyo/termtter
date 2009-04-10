@@ -51,6 +51,12 @@ module Termtter
 
         time = "(#{Time.parse(s.created_at).strftime(time_format)})"
         id = s.id
+        source =
+          case s.source
+          when />(.*?)</ then $1
+          when 'web' then 'web'
+          end
+
         erbed_text = ERB.new(config.plugins.stdout.timeline_format).result(binding)
         output_text << TermColor.parse(erbed_text) + "\n"
       end
