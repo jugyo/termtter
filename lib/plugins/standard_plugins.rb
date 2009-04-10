@@ -12,11 +12,9 @@ module Termtter::Client
   register_command(
     :name => :update, :aliases => [:u],
     :exec_proc => lambda {|arg|
-      unless /^\s*$/ =~ arg
-        # TODO: Change to able to disable erb.
+      unless arg.empty?
         text = ERB.new(arg).result(binding).gsub(/\n/, ' ')
-        reply_to_status_id = public_storage[:last_status_id][$1] if /^@([A-Za-z0-9_]+)/ =~ text
-        result = Termtter::API.twitter.update(text, {'in_reply_to_status_id' => reply_to_status_id})
+        result = Termtter::API.twitter.update(text)
         puts "=> #{text}"
         result
       end
@@ -405,12 +403,11 @@ module Termtter::Client
         id, text = $1, $2
         user = public_storage[:log].select {|l| l.id == id.to_i }.first.user
         update_with_user_and_id(text, user.screen_name, id) if user
-      when /^\s*@(\w+)\s+(.+)$/
-        username, text = $1, $2
-        id = public_storage[:log].
-          select {|l| l.user.screen_name = username}.
-          sort {|a,b| b.id <=> a.id}.first.id
-        update_with_user_and_id(text, username, id) if id
+      when /^\s*@(\w+)/
+        in_reply_to_status_id = Termtter::API.twitter.user($1).status.id rescue nil
+        params = in_reply_to_status_id ? {:in_reply_to_status_id => in_reply_to_status_id} : {}
+        Termtter::API.twitter.update(arg, params)
+        puts "=> #{arg}"
       end
     },
     :completion_proc => lambda {|cmd, args|
