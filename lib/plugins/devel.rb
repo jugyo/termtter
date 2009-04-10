@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+begin
+  require 'ruby-debug'
+rescue LoadError
+end
+
 module Termtter::Client
   register_command(
    :name => :eval,
