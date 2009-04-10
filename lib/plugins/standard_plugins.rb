@@ -13,9 +13,8 @@ module Termtter::Client
     :name => :update, :aliases => [:u],
     :exec_proc => lambda {|arg|
       unless arg.empty?
-        result = Termtter::API.twitter.update(arg)
-        puts "=> #{text}"
-        result
+        Termtter::API.twitter.update(arg)
+        puts "=> #{arg}"
       end
     },
     :completion_proc => lambda {|cmd, args|
