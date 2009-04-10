@@ -227,7 +227,7 @@ module Termtter
       Client.call_commands('test')
     end
 
-    it 'should get help' do
+    it 'should get default help' do
       $stdout, old_stdout = StringIO.new, $stdout
       help_command = Client.get_command(:help)
       help_command.call
@@ -235,7 +235,7 @@ module Termtter
       $stdout = old_stdout
     end
 
-    it 'should get help' do
+    it 'should get an added help' do
       Client.register_command(
         :name => :foo,
         :help => [
