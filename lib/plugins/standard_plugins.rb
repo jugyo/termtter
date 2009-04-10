@@ -13,8 +13,7 @@ module Termtter::Client
     :name => :update, :aliases => [:u],
     :exec_proc => lambda {|arg|
       unless arg.empty?
-        text = ERB.new(arg).result(binding).gsub(/\n/, ' ')
-        result = Termtter::API.twitter.update(text)
+        result = Termtter::API.twitter.update(arg)
         puts "=> #{text}"
         result
       end
