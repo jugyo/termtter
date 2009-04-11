@@ -40,15 +40,20 @@ module Termtter::Client
     :help => ["direct,d USERNAME TEXT", "Send direct message"]
   )
 
+  direct_message_struct = Struct.new(:id, :text, :user, :created_at)
+  direct_message_struct.class_eval do
+    def method_missing(*args, &block)
+      nil
+    end
+  end
   register_command(
     :name => :direct_list, :aliases => [:dl],
     :exec_proc => lambda {|arg|
       dl = Termtter::API.twitter.direct_messages
       statuses = dl.map do |d|
-        Struct.new(:id, :text, :user, :created_at, :in_reply_to_status_id).
-               new(d.id, "@#{d.recipient.screen_name} #{d.text}", d.sender,  d.created_at)
+        direct_message_struct.new(d.id, d.text, d.sender, d.created_at)
       end
-      output statuses, :list_user_timeline
+      output statuses, :direct_messages
     },
     :completion_proc => lambda {|cmd, args| },
     :help => ["direct_list,dl", "List direct message"]
