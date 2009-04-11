@@ -10,7 +10,7 @@ self_file =
 $:.unshift(File.dirname(self_file) + "/lib")
 
 require 'termtter'
-config.system.devel = true unless ARGV.include? 'normal'
+config.devel = true unless ARGV.include? 'normal'
 Termtter::Client.run
 
 # Startup scripts for development

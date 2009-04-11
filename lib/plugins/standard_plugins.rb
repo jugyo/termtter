@@ -25,45 +25,33 @@ module Termtter::Client
     :help => ["update,u TEXT", "Post a new message"]
   )
 
-  direct_message_struct = Struct.new(:id, :text, :user, :created_at)
-  direct_message_struct.class_eval do
-    def method_missing(*args, &block)
-      nil
-    end
-  end
   register_command(
     :name => :direct, :aliases => [:d],
     :exec_proc => lambda {|arg|
-      case arg
-      when /^([^\s]+)\s+(.*)\s*$/
+      if /^([^\s]+)\s+(.*)\s*$/ =~ arg
         user, text = $1, $2
         Termtter::API.twitter.direct_message(user, text)
         puts "=> to:#{user} message:#{text}"
-      when 'list'
-        output(
-          Termtter::API.twitter.direct_messages.map { |d|
-            direct_message_struct.new(d.id, "#{d.text} => #{d.recipient_screen_name}", d.sender, d.created_at)
-          },
-          :direct_messages
-        )
-      when 'sent_list'
-        output(
-          Termtter::API.twitter.sent_direct_messages.map { |d|
-            direct_message_struct.new(d.id, "#{d.text} => #{d.recipient_screen_name}", d.sender, d.created_at)
-          },
-          :direct_messages
-        )
       end
     },
-    :completion_proc => lambda {|cmd, arg|
-      find_user_candidates(arg, "#{cmd} %s") + 
-        ["list", "sent_list"].grep(/^#{Regexp.quote(arg)}/).map { |i| "#{cmd} #{i}" }
+    :completion_proc => lambda {|cmd, args|
+      find_user_candidates args, "#{cmd} %s"
     },
-    :help => [
-      ["direct,d USERNAME TEXT", "Send direct message"],
-      ["direct,d list", 'List direct messages'],
-      ["direct,d sent_list", 'List sent direct messages']
-    ]
+    :help => ["direct,d USERNAME TEXT", "Send direct message"]
+  )
+
+  register_command(
+    :name => :direct_list, :aliases => [:dl],
+    :exec_proc => lambda {|arg|
+      dl = Termtter::API.twitter.direct_messages
+      statuses = dl.map do |d|
+        Struct.new(:id, :text, :user, :created_at, :in_reply_to_status_id).
+               new(d.id, "@#{d.recipient.screen_name} #{d.text}", d.sender,  d.created_at)
+      end
+      output statuses, :list_user_timeline
+    },
+    :completion_proc => lambda {|cmd, args| },
+    :help => ["direct_list,dl", "List direct message"]
   )
 
   register_command(
@@ -504,7 +492,7 @@ module Termtter::Client
   end
 
   def self.find_users(text)
-    public_storage[:users].select {|user| /^#{Regexp.quote(text)}/ =~ user}
+    public_storage[:users].select {|user| /#{Regexp.quote(text)}/ =~ user}
   end
 
   def self.find_user_candidates(a, b)

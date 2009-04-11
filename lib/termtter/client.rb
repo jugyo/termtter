@@ -110,13 +110,11 @@ module Termtter
       end
 
       def apply_filters(statuses, event)
-        filtered = statuses.map(&:dup)
-        @filters.each do |f|
-          filtered = f.call(filtered, event)
-        end
-        filtered
-      rescue => e
-        handle_error e
+          filtered = statuses.map(&:dup)
+          @filters.each do |f|
+            filtered = f.call(filtered, event)
+          end
+          filtered
       end
 
       def apply_filters_for_hook(statuses, hook_name)
@@ -133,8 +131,6 @@ module Termtter
           result = hook.call(*args)
         }
         result
-      rescue => e
-        handle_error e
       end
 
       def call_commands(text, tw = nil)
@@ -221,7 +217,7 @@ module Termtter
       end
 
       def post_config_load()
-        if config.system.devel
+        if config.devel
           plugin 'devel'
         end
       end
@@ -358,7 +354,7 @@ module Termtter
       def handle_error(e)
         if logger
           logger.error("#{e.class.to_s}: #{e.message}")
-          logger.error(e.backtrace.join("\n")) if config.system.devel
+          logger.error(e.backtrace.join("\n")) if config.devel
         else
           raise e
         end
