@@ -25,21 +25,6 @@ module Termtter::Client
     :help => ["update,u TEXT", "Post a new message"]
   )
 
-  register_command(
-    :name => :direct, :aliases => [:d],
-    :exec_proc => lambda {|arg|
-      if /^([^\s]+)\s+(.*)\s*$/ =~ arg
-        user, text = $1, $2
-        Termtter::API.twitter.direct_message(user, text)
-        puts "=> to:#{user} message:#{text}"
-      end
-    },
-    :completion_proc => lambda {|cmd, args|
-      find_user_candidates args, "#{cmd} %s"
-    },
-    :help => ["direct,d USERNAME TEXT", "Send direct message"]
-  )
-
   direct_message_struct = Struct.new(:id, :text, :user, :created_at)
   direct_message_struct.class_eval do
     def method_missing(*args, &block)
@@ -47,16 +32,38 @@ module Termtter::Client
     end
   end
   register_command(
-    :name => :direct_list, :aliases => [:dl],
+    :name => :direct, :aliases => [:d],
     :exec_proc => lambda {|arg|
-      dl = Termtter::API.twitter.direct_messages
-      statuses = dl.map do |d|
-        direct_message_struct.new(d.id, d.text, d.sender, d.created_at)
+      case arg
+      when /^([^\s]+)\s+(.*)\s*$/
+        user, text = $1, $2
+        Termtter::API.twitter.direct_message(user, text)
+        puts "=> to:#{user} message:#{text}"
+      when 'list'
+        output(
+          Termtter::API.twitter.direct_messages.map { |d|
+            direct_message_struct.new(d.id, "#{d.text} => #{d.recipient_screen_name}", d.sender, d.created_at)
+          },
+          :direct_messages
+        )
+      when 'sent_list'
+        output(
+          Termtter::API.twitter.sent_direct_messages.map { |d|
+            direct_message_struct.new(d.id, "#{d.text} => #{d.recipient_screen_name}", d.sender, d.created_at)
+          },
+          :direct_messages
+        )
       end
-      output statuses, :direct_messages
     },
-    :completion_proc => lambda {|cmd, args| },
-    :help => ["direct_list,dl", "List direct message"]
+    :completion_proc => lambda {|cmd, arg|
+      find_user_candidates(arg, "#{cmd} %s") + 
+        ["list", "sent_list"].grep(/^#{Regexp.quote(arg)}/).map { |i| "#{cmd} #{i}" }
+    },
+    :help => [
+      ["direct,d USERNAME TEXT", "Send direct message"],
+      ["direct,d list", 'List direct messages'],
+      ["direct,d sent_list", 'List sent direct messages']
+    ]
   )
 
   register_command(
