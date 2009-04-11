@@ -110,11 +110,13 @@ module Termtter
       end
 
       def apply_filters(statuses, event)
-          filtered = statuses.map(&:dup)
-          @filters.each do |f|
-            filtered = f.call(filtered, event)
-          end
-          filtered
+        filtered = statuses.map(&:dup)
+        @filters.each do |f|
+          filtered = f.call(filtered, event)
+        end
+        filtered
+      rescue => e
+        handle_error e
       end
 
       def apply_filters_for_hook(statuses, hook_name)
@@ -131,6 +133,8 @@ module Termtter
           result = hook.call(*args)
         }
         result
+      rescue => e
+        handle_error e
       end
 
       def call_commands(text, tw = nil)
