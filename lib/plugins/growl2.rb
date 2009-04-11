@@ -28,19 +28,19 @@ config.plugins.growl.set_default(:priority_verylow_keyword, [])
 config.plugins.growl.set_default(:sticky_user, [])
 config.plugins.growl.set_default(:sticky_keyword, [])
 growl_keys    = { 'user'    =>  config.plugins.growl.growl_user,
-                  'keyword' =>  Regexp.union(config.plugins.growl.growl_keyword) }
+                  'keyword' =>  Regexp.union(*config.plugins.growl.growl_keyword) }
 priority_keys = { 'user'    => [config.plugins.growl.priority_veryhigh_user,
                                 config.plugins.growl.priority_high_user,
                                 config.plugins.growl.priority_normal_user,
                                 config.plugins.growl.priority_low_user,
                                 config.plugins.growl.priority_verylow_user],
-                  'keyword' => [Regexp.union(config.plugins.growl.priority_veryhigh_keyword),
-                                Regexp.union(config.plugins.growl.priority_high_keyword),
-                                Regexp.union(config.plugins.growl.priority_normal_keyword),
-                                Regexp.union(config.plugins.growl.priority_low_keyword),
-                                Regexp.union(config.plugins.growl.priority_verylow_keyword) ] }
+                  'keyword' => [Regexp.union(*config.plugins.growl.priority_veryhigh_keyword),
+                                Regexp.union(*config.plugins.growl.priority_high_keyword),
+                                Regexp.union(*config.plugins.growl.priority_normal_keyword),
+                                Regexp.union(*config.plugins.growl.priority_low_keyword),
+                                Regexp.union(*config.plugins.growl.priority_verylow_keyword) ] }
 sticky_keys   = { 'user'    =>  config.plugins.growl.sticky_user,
-                  'keyword' =>  Regexp.union(config.plugins.growl.sticky_keyword) }
+                  'keyword' =>  Regexp.union(*config.plugins.growl.sticky_keyword) }
 
 FileUtils.mkdir_p(config.plugins.growl.icon_cache_dir) unless File.exist?(config.plugins.growl.icon_cache_dir)
 Dir.glob("#{config.plugins.growl.icon_cache_dir}/*") {|f| File.delete(f) unless File.size?(f) }
