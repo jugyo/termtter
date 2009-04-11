@@ -497,7 +497,7 @@ module Termtter::Client
   end
 
   def self.find_users(text)
-    public_storage[:users].select {|user| /#{Regexp.quote(text)}/ =~ user}
+    public_storage[:users].select {|user| /^#{Regexp.quote(text)}/ =~ user}
   end
 
   def self.find_user_candidates(a, b)
