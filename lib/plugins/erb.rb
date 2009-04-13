@@ -4,7 +4,7 @@ require 'erb'
 
 Termtter::Client.register_hook(
   :name => :erb,
-  :points => [:pre_exec_update],
+  :point => :modify_arg_for_update,
   :exec_proc => lambda {|cmd, arg|
     ERB.new(arg).result(binding)
   }
