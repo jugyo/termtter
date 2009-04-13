@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 Termtter::Client.register_command(
-  :name => :execute,
+  :name => :exec_and_update,
   :exec_proc => lambda{|arg|
     return unless arg
     `#{arg}`.each_line do |line|
@@ -10,5 +10,5 @@ Termtter::Client.register_command(
       puts "=> #{line}"
     end
   },
-  :help => ['execute COMMAND', 'execute the command']
+  :help => ['exec_and_update COMMAND', 'execute the command']
 )
