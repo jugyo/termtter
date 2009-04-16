@@ -420,8 +420,13 @@ module Termtter::Client
         puts "=> #{arg}"
       end
     },
-    :completion_proc => lambda {|cmd, args|
-      # todo
+    :completion_proc => lambda {|cmd, arg|
+      case arg
+      when /(.*)@([^\s]*)$/
+        find_user_candidates $2, "#{cmd} #{$1}@%s"
+      when /(\d+)/
+        find_status_ids(arg).map{|id| "#{cmd} #{id}"}
+      end
     }
   )
 
