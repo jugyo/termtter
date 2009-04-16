@@ -237,7 +237,7 @@ module Termtter::Client
       when /@(.*)/
         find_user_candidates $1, "#{cmd} @%s"
       when /(\d+)/
-        find_status_ids(arg).map{|id| "#{cmd} #{$1}"}
+        find_status_ids(arg).map{|id| "#{cmd} #{id}"}
       else
         %w(favorite).grep(/^#{Regexp.quote arg}/)
       end
