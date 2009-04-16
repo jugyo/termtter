@@ -149,7 +149,7 @@ module Termtter
 
           @task_manager.invoke_and_wait do
             begin
-              call_hooks("pre_exec_#{command.name.to_s}", command_str, modified_arg)
+              call_hooks("pre_exec_#{command.name.to_s}", command, modified_arg)
               # exec command
               result = command.call(command_str, modified_arg, text)
               if result
