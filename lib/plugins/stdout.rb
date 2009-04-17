@@ -46,7 +46,7 @@ module Termtter
         status_color = config.plugins.stdout.colors[s.user.id.hash % config.plugins.stdout.colors.size]
         status = "#{s.user.screen_name}: #{TermColor.escape(text)}"
         if s.in_reply_to_status_id
-          status += " (repl. to #{s.in_reply_to_status_id})"
+          status += " (reply to #{s.in_reply_to_status_id})"
         end
 
         time = "(#{Time.parse(s.created_at).strftime(time_format)})"

@@ -481,7 +481,7 @@ module Termtter::Client
 
   * status_idを自分で入力してreply送信
   > reply 1234567890 message to status_id
-  => @foo message to status_id (repl. to 1234567890)
+  => @foo message to status_id (reply to 1234567890)
 
   * reply listコマンドで出したステータス番号に対してreply送信
   > reply up 0 message to status no
