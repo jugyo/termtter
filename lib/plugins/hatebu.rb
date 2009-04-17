@@ -43,10 +43,10 @@ module Termtter::Client
     },
     :completion_proc => lambda {|cmd, args|
       if args =~ /^(\d*)$/
-        find_status_id_candidates $1, "#{cmd} %s"
+        find_status_ids($1){|id|  "#{cmd} #{id}"}
       end
     },
-	:help => ['hatebu ID', 'Hatena bookmark a status']
+    :help => ['hatebu ID', 'Hatena bookmark a status']
   )
 end
 

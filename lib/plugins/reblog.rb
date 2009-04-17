@@ -16,7 +16,7 @@ module Termtter::Client
         else
           status = t.show(id).first
         end
-    
+
         Tumblr::API.write(config.plugins.reblog.email, config.plugins.reblog.password) do
           quote("#{status.text}", "<a href=\"http://twitter.com/#{status.user_screen_name}/status/#{status.id}\">Twitter / #{status.user_name}</a>")
         end
@@ -24,7 +24,7 @@ module Termtter::Client
     },
     :completion_proc => lambda {|cmd, args|
       if args =~ /^(\d*)$/
-        find_status_id_candidates $1, "#{cmd} %s"
+        find_status_ids($1){|id| "#{cmd} #{id}"}
       end
     },
     :help => ['reblog ID', 'Tumblr Reblog a status']
