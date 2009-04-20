@@ -427,7 +427,8 @@ module Termtter::Client
       when /(\d+)/
         find_status_ids(arg).map{|id| "#{cmd} #{id}"}
       end
-    }
+    },
+    :help => ["reply,re @USERNAME or STATUS_ID", "Send a reply"]
   )
 
   register_command(
