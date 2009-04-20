@@ -2,6 +2,7 @@
 
 require 'termcolor'
 require 'erb'
+require 'tempfile'
 
 config.plugins.stdout.set_default(
   :colors,
