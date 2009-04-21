@@ -334,7 +334,6 @@ module Termtter::Client
 
   public_storage[:users] ||= Set.new
   public_storage[:status_ids] ||= Set.new
-  public_storage[:last_status_id] ||= Hash.new
 
   register_hook(
     :name => :for_completion,
@@ -345,7 +344,6 @@ module Termtter::Client
         public_storage[:users] += s.text.scan(/@([a-zA-Z_0-9]*)/).flatten
         public_storage[:status_ids].add(s.id)
         public_storage[:status_ids].add(s.in_reply_to_status_id) if s.in_reply_to_status_id
-        public_storage[:last_status_id].store(s.user.screen_name, s.id)
       end
     }
   )
