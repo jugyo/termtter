@@ -181,8 +181,6 @@ module Termtter
       Client.should_receive(:load_config)
       Termtter::API.should_receive(:setup)
       Client.should_receive(:post_config_load)
-      Client.should_receive(:call_hooks)
-      Client.should_receive(:setup_update_timeline_task)
       Client.should_receive(:start_input_thread)
       Client.run
     end
