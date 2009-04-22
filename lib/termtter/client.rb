@@ -310,12 +310,22 @@ module Termtter
         setup_logger()
         post_config_load()
 
-        call_hooks(:initialize)
+        config.system.eval_scripts.each do |script|
+          begin
+            eval script
+          rescue Exception => e
+            handle_error(e)
+          end
+        end
 
-        plugin('update_timeline')
+        config.system.run_commands.each { |cmd| call_commands(cmd) }
 
-        @task_manager.run()
-        start_input_thread()
+        unless config.system.cmd_mode
+          call_hooks(:initialize)
+          plugin('update_timeline')
+          @task_manager.run()
+          start_input_thread()
+        end
       end
 
       def handle_error(e)
