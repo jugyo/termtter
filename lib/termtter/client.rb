@@ -314,6 +314,12 @@ module Termtter
 
         @init_block.call(self) if @init_block
 
+        unless @init_block  # compatibility for old style config file
+          plug 'standard_plugins'
+          plug 'stdout'
+          plug 'update_timeline'
+        end
+
         plug 'devel' if config.devel
 
         config.system.load_plugins.each do |plugin|
