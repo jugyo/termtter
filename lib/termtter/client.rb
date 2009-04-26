@@ -194,11 +194,6 @@ module Termtter
         @input_thread.kill if @input_thread
       end
 
-      def load_default_plugins
-        plugin 'standard_plugins'
-        plugin 'stdout'
-      end
-
       def load_config
         legacy_config_support() if File.exist? Termtter::CONF_DIR
         unless File.exist?(Termtter::CONF_FILE)
@@ -225,12 +220,6 @@ module Termtter
         FileUtils.mv(
           File.expand_path('~/.termtter___'),
           Termtter::CONF_FILE)
-      end
-
-      def post_config_load()
-        if config.devel
-          plugin 'devel'
-        end
       end
 
       def setup_readline
@@ -319,13 +308,13 @@ module Termtter
       end
 
       def run
-        load_default_plugins()
         load_config()
         Termtter::API.setup()
         setup_logger()
-        post_config_load()
 
         @init_block.call(self) if @init_block
+
+        plug 'devel' if config.devel
 
         config.system.eval_scripts.each do |script|
           begin
