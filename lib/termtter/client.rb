@@ -339,7 +339,7 @@ module Termtter
 
         unless config.system.cmd_mode
           call_hooks(:initialize)
-          plugin('update_timeline')
+          plug 'update_timeline'
           @task_manager.run()
           start_input_thread()
         end
