@@ -177,10 +177,8 @@ module Termtter
     end
 
     it 'run' do
-      Client.should_receive(:load_default_plugins)
       Client.should_receive(:load_config)
       Termtter::API.should_receive(:setup)
-      Client.should_receive(:post_config_load)
       Client.should_receive(:start_input_thread)
       Client.run
     end
