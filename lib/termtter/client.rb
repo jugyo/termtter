@@ -316,6 +316,10 @@ module Termtter
 
         plug 'devel' if config.devel
 
+        config.system.load_plugins.each do |plugin|
+          plug plugin
+        end
+
         config.system.eval_scripts.each do |script|
           begin
             eval script

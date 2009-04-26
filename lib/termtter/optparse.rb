@@ -23,6 +23,11 @@ OptionParser.new { |opt|
     config.system.run_commands << cmd
   end
 
+  config.system.load_plugins = []
+  opt.on('-p', '--plugin plugin', 'Load plugin') do |plugin|
+    config.system.load_plugins << plugin
+  end
+
   config.system.eval_scripts = []
   opt.on('-e', '--eval-script script', 'Eval script') do |script|
     config.system.eval_scripts << script
