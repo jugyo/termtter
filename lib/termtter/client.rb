@@ -10,21 +10,21 @@ module Termtter
 
   module Client
 
-    class << self
+    @hooks = {}
+    @commands = {}
+    @filters = []
+    @since_id = nil
+    @input_thread = nil
+    @task_manager = Termtter::TaskManager.new
 
-      def init
-        @hooks = {}
-        @commands = {}
-        @filters = []
-        @since_id = nil
-        @input_thread = nil
-        @task_manager = Termtter::TaskManager.new
-        config.set_default(:logger, nil)
-        config.set_default(:update_interval, 300)
-        config.set_default(:prompt, '> ')
-        config.set_default(:devel, false)
-        Thread.abort_on_exception = true
-      end
+    config.set_default(:logger, nil)
+    config.set_default(:update_interval, 300)
+    config.set_default(:prompt, '> ')
+    config.set_default(:devel, false)
+
+    Thread.abort_on_exception = true
+
+    class << self
 
       def plug(name, options = {})
         unless options.empty?
@@ -354,5 +354,3 @@ module Termtter
     end
   end
 end
-
-Termtter::Client.init
