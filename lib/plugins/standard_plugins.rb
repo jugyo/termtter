@@ -242,7 +242,7 @@ module Termtter::Client
         %w(favorite).grep(/^#{Regexp.quote arg}/)
       end
     },
-    :help => ['favorite,fav (ID|@USER|/WORD)', 'Favorite a status']
+    :help => ['favorite,fav (ID|@USER|/WORD)', 'Mark a status as a favorite']
   )
 
   def self.show_settings(conf, level = 0)
