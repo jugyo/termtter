@@ -353,14 +353,15 @@ module Termtter::Client
   end
 
   register_command(
-    :name      => :plugin,
+    :name      => :plug,
+    :alias     => :plugin,
     :exec_proc => lambda {|arg|
       if arg.empty?
         puts 'Should specify plugin name.'
         return
       end
       begin
-        result = plugin arg
+        result = plug arg
       rescue LoadError
       ensure
         puts "=> #{result.inspect}"
