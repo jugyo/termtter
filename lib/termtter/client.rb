@@ -314,12 +314,18 @@ module Termtter
         logger
       end
 
+      def init(&block)
+        @init_block = block
+      end
+
       def run
         load_default_plugins()
         load_config()
         Termtter::API.setup()
         setup_logger()
         post_config_load()
+
+        @init_block.call(self) if @init_block
 
         config.system.eval_scripts.each do |script|
           begin
