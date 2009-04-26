@@ -26,6 +26,17 @@ module Termtter
         Thread.abort_on_exception = true
       end
 
+      def plug(name, options = {})
+        unless options.empty?
+          options.each do |key, value|
+            config.plugins.__refer__(name.to_sym).__assign__(key.to_sym, value)
+          end
+        end
+        load "plugins/#{name}.rb"
+      rescue Exception => e
+        Termtter::Client.handle_error(e)
+      end
+
       def public_storage
         @public_storage ||= {}
       end
