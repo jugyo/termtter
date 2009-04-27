@@ -315,9 +315,9 @@ module Termtter
         @init_block.call(self) if @init_block
 
         unless @init_block  # compatibility for old style config file
-          plug 'standard_plugins'
           plug 'stdout'
-          plug 'update_timeline'
+          plug 'standard_commands'
+          plug 'auto_reload'
         end
 
         plug 'devel' if config.devel
