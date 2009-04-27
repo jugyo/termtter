@@ -42,6 +42,7 @@ module Termtter
       end
 
       def add_filter(&b)
+        warn "add_filter method will be removed. Use Termtter::Client.register_hook(:name => ..., :point => :filter_for_output, :exec => ... ) instead."
         @filters << b
       end
 
@@ -112,20 +113,18 @@ module Termtter
 
         statuses = statuses.sort_by{|s|s.id}
         call_hooks(:pre_filter, statuses, event)
-        filtered = apply_filters(statuses.map(&:dup), event)   # apply_filters
+
+        filtered = statuses.map(&:dup)
+        @filters.each do |f|  # TODO: code for compatibility. delete someday.
+          statuses = f.call(statuses, event)
+        end
+        apply_filters_for_hook(:filter_for_output, statuses, event)
+
         call_hooks(:post_filter, filtered, event)
         get_hooks(:output).each do |hook|
           filtered = apply_filters_for_hook("filter_for_#{hook.name}", filtered, event)
           hook.call(filtered, event)
         end
-      end
-
-      def apply_filters(statuses, event)
-          @filters.each do |f|  # TODO: code for compatibility. delete someday.
-            statuses = f.call(statuses, event)
-          end
-
-          apply_filters_for_hook(:filter_for_output, statuses, event)
       end
 
       def apply_filters_for_hook(hook_name, statuses, event)
