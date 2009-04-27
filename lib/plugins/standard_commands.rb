@@ -49,6 +49,24 @@ module Termtter::Client
     :help => ["update,u TEXT", "Post a new message"]
   )
 
+  register_command(
+    :name => :delete, :aliases =>[:del],
+    :exec_proc => lambda {|arg|
+      id =
+        case arg
+        when ''
+          Termtter::API.twitter.user_timeline(config.user_name)[0].id
+        when /^\d+$/
+          arg.to_i
+        end
+      if id
+        result = Termtter::API.twitter.remove_status(id)
+        puts "Deleted a status => ##{result.id} #{result.text}"
+      end
+    },
+    :help => ['delete,del [STATUS ID]', 'Delete a status']
+  )
+
   direct_message_struct = Struct.new(:id, :text, :user, :created_at)
   direct_message_struct.class_eval do
     def method_missing(*args, &block)
