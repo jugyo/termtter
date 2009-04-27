@@ -2,6 +2,7 @@
 
 require 'fileutils'
 require 'RMagick'
+require 'uri'
 
 # Copy from notify-send2.rb
 config.plugins.notify_send.set_default(:icon_cache_dir, "#{Termtter::CONF_DIR}/tmp/user_profile_images")
@@ -33,9 +34,13 @@ Termtter::Client.register_hook(
     Thread.start do
       statuses.each do |s|
         text = CGI.escapeHTML(s.text)
-        text.gsub!(%r{https?://[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+},'<a href="\0">\0</a>')
-        system 'notify-send', s.user.screen_name, text, '-i', get_icon_path(s)
-        sleep 0.1
+        text = %Q{"#{text}"} if text =~ /^-/
+        text.gsub!(URI.regexp,'<a href="\0">\0</a>')
+        begin
+          system 'notify-send', s.user.screen_name, text, '-i', get_icon_path(s)
+          sleep 0.05
+        rescue
+        end
       end
     end
   }
