@@ -59,6 +59,14 @@ If you would like to use proxy server, add configurations like this:
   config.proxy.user_name = 'USERNAME'
   config.proxy.password = 'PASSWORD'
 
+You can to load plugins in this way:
+
+  Termtter::Client.init do |t|
+    t.plug 'stdout'
+    t.plug 'standard_commands'
+    t.plug 'auto_reload'
+  end
+
 To update the config, just restart your termtter proccess.
 
 == FORUM:
