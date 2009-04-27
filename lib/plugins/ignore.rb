@@ -1,15 +1,21 @@
 # -*- coding: utf-8 -*-
 
-
 config.filters.ignore.set_default(:words, [])
 
 module Termtter::Client
-  add_filter do |statuses, _|
-    ignore_words = config.filters.ignore.words
-    statuses.delete_if do |s|
-      ignore_words.any? {|i| i =~ s.text }
-    end
-  end
+  register_hook(
+    :name => :ignore,
+    :point => :filter_for_output,
+    :exec => lambda { |statuses, event|  
+      ignore_words = config.filters.ignore.words
+      statuses.delete_if do |s|
+        ignore_words.any? do |word|
+          word = /#{Regexp.quote(word)}/ if word.kind_of? String
+          word =~ s.text
+        end
+      end
+    }
+  )
 end
 
 # filter/ignore.rb
