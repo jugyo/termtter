@@ -112,31 +112,27 @@ module Termtter
 
         statuses = statuses.sort_by{|s|s.id}
         call_hooks(:pre_filter, statuses, event)
-        filtered = apply_filters(statuses, event)   # apply_filters
+        filtered = apply_filters(statuses.map(&:dup), event)   # apply_filters
         call_hooks(:post_filter, filtered, event)
         get_hooks(:output).each do |hook|
-          filtered_for_hook = apply_filters_for_hook(filtered, hook.name)
-          hook.call(filtered_for_hook, event)
+          filtered = apply_filters_for_hook("filter_for_#{hook.name}", filtered, event)
+          hook.call(filtered, event)
         end
       end
 
       def apply_filters(statuses, event)
-          filtered = statuses.map(&:dup)
           @filters.each do |f|  # TODO: code for compatibility. delete someday.
-            filtered = f.call(filtered, event)
+            statuses = f.call(statuses, event)
           end
 
-          get_hooks(:filter_for_output).each do |hook|
-            filtered = hook.call(filtered, event)
-          end
-
-          filtered
+          apply_filters_for_hook(:filter_for_output, statuses, event)
       end
 
-      def apply_filters_for_hook(statuses, hook_name)
-        # TODO
-        filtered = statuses.map(&:dup)
-        filtered
+      def apply_filters_for_hook(hook_name, statuses, event)
+        get_hooks(hook_name).each do |hook|
+          statuses = hook.call(statuses, event)
+        end
+        statuses
       end
 
       # return last hook return value
