@@ -37,8 +37,8 @@ module Termtter::Client
     :name => :update, :aliases => [:u],
     :exec_proc => lambda {|arg|
       unless arg.empty?
-        Termtter::API.twitter.update(arg)
-        puts "=> #{arg}"
+        result = Termtter::API.twitter.update(arg)
+        puts "updated => ##{result.id} #{result.text}"
       end
     },
     :completion_proc => lambda {|cmd, args|
@@ -61,7 +61,7 @@ module Termtter::Client
         end
       if id
         result = Termtter::API.twitter.remove_status(id)
-        puts "Deleted a status => ##{result.id} #{result.text}"
+        puts "deleted => ##{result.id} #{result.text}"
       end
     },
     :help => ['delete,del [STATUS ID]', 'Delete a status']
