@@ -10,7 +10,7 @@ config.plugins.standard.set_default(
 module Termtter::Client
 
   register_command(
-    :name => :_update_timeline,
+    :name => :reload,
     :exec_proc => lambda {|arg|
       begin
         args = @since_id ? [{:since_id => @since_id}] : []
