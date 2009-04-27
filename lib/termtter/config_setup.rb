@@ -1,36 +1,28 @@
 # -*- coding: utf-8 -*-
 
+require 'erb'
+
 module Termtter
   module ConfigSetup
     module_function
     def run
       ui = create_highline
-      username = ui.ask('your twitter username: ')
+      user_name = ui.ask('your twitter user name: ')
       password = ui.ask('your twitter password: ') { |q| q.echo = false }
+
+      plugins = Dir.glob(File.expand_path(File.dirname(__FILE__) + "/../plugins/*.rb")).map  {|f|
+        f.match(%r|lib/plugins/(.*?).rb$|)[1]
+      }
+      standard_plugins = %w[stdout standard_commands auto_reload]
+
+      template = open(File.dirname(__FILE__) + '/config_template.erb').read
+      config = ERB.new(template, nil, '-').result(binding) # trim_mode => '-'
 
       Dir.mkdir(Termtter::CONF_DIR) unless File.exists?(Termtter::CONF_DIR)
       File.open(Termtter::CONF_FILE, 'w') {|io|
-        io.puts '# -*- coding: utf-8 -*-'
-
-        io.puts
-        io.puts "config.user_name = '#{username}'"
-        io.puts "config.password = '#{password}'"
-        io.puts "#config.update_interval = 120"
-        io.puts "#config.proxy.host = 'proxy host'"
-        io.puts "#config.proxy.port = '8080'"
-        io.puts "#config.proxy.user_name = 'proxy user'"
-        io.puts "#config.proxy.password = 'proxy password'"
-        io.puts
-        plugins = Dir.glob(File.expand_path(File.dirname(__FILE__) + "/../plugins/*.rb")).map  {|f|
-          f.match(%r|lib/plugins/(.*?).rb$|)[1]
-        }
-        plugins -= %w[stdout standard_plugins]
-        plugins.each do |p|
-          io.puts "#plugin '#{p}'"
-        end
-        io.puts
-        io.puts "# vim: set filetype=ruby"
+        io << config
       }
+
       puts "generated: ~/.termtter/config"
       puts "enjoy!"
     end
