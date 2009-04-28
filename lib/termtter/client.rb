@@ -122,8 +122,10 @@ module Termtter
 
         call_hooks(:post_filter, filtered, event)
         get_hooks(:output).each do |hook|
-          filtered = apply_filters_for_hook("filter_for_#{hook.name}", filtered, event)
-          hook.call(filtered, event)
+          hook.call(
+            apply_filters_for_hook("filter_for_#{hook.name}", filtered, event),
+            event
+          )
         end
       end
 
