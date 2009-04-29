@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.version = '#{Termtter::VERSION}'
   s.summary = "Terminal based Twitter client"
   s.description = "Termtter is a terminal based Twitter client"
-  s.files = %w( #{Dir['lib/**/*.rb'].join(' ')}
+  s.files = %w( #{Dir['lib/**/*.rb', 'lib/**/*.erb'].join(' ')}
                 #{Dir['spec/**/*.rb'].join(' ')}
                 #{Dir['test/**/*.rb', 'test/**/*.json'].join(' ')}
                 README.rdoc
