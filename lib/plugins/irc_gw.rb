@@ -5,6 +5,7 @@ require 'net/irc'
 # TODO: post text of stdout too
 
 config.plugins.irc_gw.set_default(:port, 16669)
+config.plugins.irc_gw.set_default(:last_statuses_count, 100)
 
 class TermtterIrcGateway < Net::IRC::Server::Session
   @@listners = []
@@ -15,7 +16,8 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     :point => :output,
     :exec => lambda { |statuses, event|
       if event == :update_friends_timeline
-        @@last_statuses = (@@last_statuses + statuses.dup).reverse![0..100].reverse!
+        @@last_statuses = 
+          (@@last_statuses + statuses.dup).reverse![0..config.plugins.irc_gw.last_statuses_count].reverse!
       end
 
       @@listners.each do |listner|
