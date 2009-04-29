@@ -6,8 +6,11 @@ module Termtter
 
   describe Client do
 
-    it 'should take command' do
+    before do
       Client.setup_logger
+    end
+
+    it 'should take command' do
       command = Command.new(:name => :test)
       Client.register_command(command)
       Client.get_command(:test).should == command
@@ -246,6 +249,39 @@ module Termtter
       help_command.call
       $stdout.string.should match(/foo USER/)
       $stdout.string.should match(/foo list/)
+    end
+
+    describe 'add commands' do
+      before(:each) do
+        Client.clear_command
+        Client.register_command(:name => :foo1)
+        Client.register_command(:name => :foo2)
+        Client.register_command(:name => :bar)
+      end
+
+      it 'commands number is 3' do
+        Client.commands.size.should == 3
+      end
+
+      it 'should find a command' do
+        Client.find_commands('foo1').size.should == 1
+        Client.find_commands('foo1')[0].name.should == :foo1
+        Client.find_commands('bar').size.should == 1
+      end
+
+      it 'should find no command' do
+        Client.find_commands('foo').size.should == 0
+      end
+    end
+
+    describe 'clear commands' do
+      before(:each) do
+        Client.clear_command
+      end
+
+      it 'should no command' do
+        Client.commands.size.should == 0
+      end
     end
   end
 end

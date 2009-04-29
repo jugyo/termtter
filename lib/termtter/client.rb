@@ -26,6 +26,8 @@ module Termtter
 
     class << self
 
+      attr_reader :commands, :hooks
+
       def plug(name, options = {})
         unless options.empty?
           options.each do |key, value|
@@ -82,6 +84,10 @@ module Termtter
             raise ArgumentError, 'must be given Termtter::Command or Hash'
           end
         @commands[command.name] = command
+      end
+
+      def clear_command
+        @commands.clear
       end
 
       def get_command(name)
@@ -174,6 +180,10 @@ module Termtter
         end
 
         raise CommandNotFound, text unless command_found
+      end
+
+      def find_commands(text)
+        @commands.values.select { |command| command.match?(text) }
       end
 
       def pause
