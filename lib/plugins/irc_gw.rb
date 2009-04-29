@@ -18,8 +18,15 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       :name => :irc_gw,
       :point => :output,
       :exec => lambda { |statuses, event|
+        msg_type =
+          case event
+          when :update_friends_timeline
+            PRIVMSG
+          else
+            NOTICE
+          end
         statuses.each do |s|
-          post s.user.screen_name, PRIVMSG, main_channel, s.text
+          post s.user.screen_name, msg_type, main_channel, s.text
         end
       }
     )
@@ -29,7 +36,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     begin
       termtter_command = m.command.downcase + ' ' + m.params.join(' ')
       unless Termtter::Client.find_commands(termtter_command).empty?
-        post '#termtter', PRIVMSG, main_channel, '> ' + termtter_command
+        post '#termtter', NOTICE, main_channel, '> ' + termtter_command
         Termtter::Client.call_commands(termtter_command)
       end
     rescue Termtter::CommandNotFound => e
