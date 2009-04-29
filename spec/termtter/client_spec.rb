@@ -30,7 +30,7 @@ module Termtter
         ['test  foo bar ',  'foo bar'],
         ['test  foo  bar ', 'foo  bar'],
       ].each do |input, args|
-        Client.call_commands(input, nil)
+        Client.call_commands(input)
         command_arg.should == args
       end
     end

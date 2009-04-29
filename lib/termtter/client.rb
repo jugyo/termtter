@@ -146,7 +146,7 @@ module Termtter
         result
       end
 
-      def call_commands(text, tw = nil)
+      def call_commands(text)
         return if text.empty?
 
         command_found = false
