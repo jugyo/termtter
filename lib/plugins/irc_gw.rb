@@ -5,6 +5,8 @@ require 'net/irc'
 # TODO: disable logger
 # TODO: post text of stdout too
 
+config.plugins.irc_gw.set_default(:port, 16669)
+
 class TermtterIrcGateway < Net::IRC::Server::Session
   attr_reader :server_name, :server_version
   def initialize(*args)
@@ -24,9 +26,13 @@ class TermtterIrcGateway < Net::IRC::Server::Session
 
   def on_message(m)
     if @user
-      # TODO: ここの処理、微妙です。on_message にはいろんな種類のメッセージが来るんです。。
-      termtter_command = m.command.downcase + ' ' + m.params.join(' ')
-      Termtter::Client.call_commands(termtter_command)
+      begin
+        # TODO: ここの処理、微妙です。on_message にはいろんな種類のメッセージが来るんです。。
+        termtter_command = m.command.downcase + ' ' + m.params.join(' ')
+        Termtter::Client.call_commands(termtter_command)
+      rescue => e
+        Termtter::Client.handle_error e
+      end
     end
   end
 end
@@ -34,7 +40,7 @@ end
 Thread.start do
   Net::IRC::Server.new(
     'localhost',
-    16668, # TODO: => config
+    config.plugins.irc_gw.port,
     TermtterIrcGateway,
     :logger => Termtter::Client.logger
   ).start
