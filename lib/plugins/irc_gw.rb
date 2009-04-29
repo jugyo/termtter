@@ -25,6 +25,18 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     )
   end
 
+  def on_message(m)
+    begin
+      termtter_command = m.command.downcase + ' ' + m.params.join(' ')
+      unless Termtter::Client.find_commands(termtter_command).empty?
+        post '#termtter', PRIVMSG, main_channel, '> ' + termtter_command
+        Termtter::Client.call_commands(termtter_command)
+      end
+    rescue Termtter::CommandNotFound => e
+      super
+    end
+  end
+
   def on_user(m)
     super
     post @prefix, JOIN, main_channel
@@ -36,11 +48,14 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   end
 end
 
-Thread.start do
-  Net::IRC::Server.new(
+unless defined? IRC_SERVER
+  IRC_SERVER = Net::IRC::Server.new(
     'localhost',
     config.plugins.irc_gw.port,
     TermtterIrcGateway,
     :logger => Termtter::Client.logger
-  ).start
+  )
+  Thread.start do
+    IRC_SERVER.start
+  end
 end
