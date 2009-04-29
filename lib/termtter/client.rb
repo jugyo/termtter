@@ -155,9 +155,10 @@ module Termtter
       def call_commands(text)
         return if text.empty?
 
-        command_found = false
-        @commands.each do |key, command|
-          next unless command.match?(text)
+        commands = find_commands(text)
+        raise CommandNotFound, text if commands.empty?
+
+        commands.each do |command|
           command_found = true
           command_str, command_arg = Command.split_command_line(text)
 
@@ -178,8 +179,6 @@ module Termtter
             end
           end
         end
-
-        raise CommandNotFound, text unless command_found
       end
 
       def find_commands(text)
