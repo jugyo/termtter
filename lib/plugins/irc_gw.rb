@@ -2,34 +2,53 @@
 
 require 'net/irc'
 
-# TODO: disable logger
 # TODO: post text of stdout too
 
 config.plugins.irc_gw.set_default(:port, 16669)
 
 class TermtterIrcGateway < Net::IRC::Server::Session
+  @@listners = []
+  @@last_statuses = []
+
+  Termtter::Client.register_hook(
+    :name => :irc_gw,
+    :point => :output,
+    :exec => lambda { |statuses, event|
+      if event == :update_friends_timeline
+        @@last_statuses = (@@last_statuses + statuses.dup).reverse![0..100].reverse!
+      end
+
+      @@listners.each do |listner|
+        listner.call(statuses.dup, event)
+      end
+    }
+  )
+
   def server_name; 'termtter' end
   def server_version; '0.0.0' end
   def main_channel; '#termtter' end
 
   def initialize(*args)
     super
-    Termtter::Client.register_hook(
-      :name => :irc_gw,
-      :point => :output,
-      :exec => lambda { |statuses, event|
-        msg_type =
-          case event
-          when :update_friends_timeline
-            PRIVMSG
-          else
-            NOTICE
-          end
-        statuses.each do |s|
-          post s.user.screen_name, msg_type, main_channel, s.text
-        end
-      }
-    )
+    @@listners << self
+    Thread.start do
+      sleep 1
+      self.call(@@last_statuses || [], :update_friends_timeline)
+    end
+  end
+
+  def call(statuses, event)
+    msg_type =
+      case event
+      when :update_friends_timeline
+        PRIVMSG
+      else
+        NOTICE
+      end
+
+    statuses.each do |s|
+      post s.user.screen_name, msg_type, main_channel, s.text
+    end
   end
 
   def on_message(m)
