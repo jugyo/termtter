@@ -38,7 +38,7 @@ module Termtter::Client
     :exec_proc => lambda {|arg|
       unless arg.empty?
         result = Termtter::API.twitter.update(arg)
-        puts "updated => ##{result.id} #{result.text}"
+        puts TermColor.parse("updated => #{result.text} <90>#{result.id}</90>")
       end
     },
     :completion_proc => lambda {|cmd, args|
@@ -61,7 +61,7 @@ module Termtter::Client
         end
       if id
         result = Termtter::API.twitter.remove_status(id)
-        puts "deleted => ##{result.id} #{result.text}"
+        puts TermColor.parse("deleted => #{result.text} <90>#{result.id}</90>")
       end
     },
     :help => ['delete,del [STATUS ID]', 'Delete a status']
@@ -500,7 +500,7 @@ module Termtter::Client
   def self.update_with_user_and_id(text, username, id)
     text = "@#{username} #{text}"
     result = Termtter::API.twitter.update(text, {'in_reply_to_status_id' => id})
-    puts TermColor.parse("=> #{text} <90>#{result.id}</90>")
+    puts TermColor.parse("replied => #{result.text} <90>#{result.id}</90>")
   end
 
 =begin
