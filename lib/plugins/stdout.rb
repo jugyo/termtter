@@ -4,12 +4,13 @@ require 'termcolor'
 require 'erb'
 require 'tempfile'
 
-config.plugins.stdout.set_default(
-  :colors,
-  [:none, :red, :green, :yellow, :blue, :magenta, :cyan])
+config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
   :timeline_format,
-  '<90><%=time%></90> <<%=status_color%>><%=status%></<%=status_color%>> <90><%=id%></90>')
+  '<90><%=time%></90> <<%=color%>><%=s.user.screen_name%> <%=text%></<%=color%>> ' +
+  '<90><%=reply_to ? reply_to + " " : ""%><%=s.id%> <%=source%></90>'
+)
+
 config.plugins.stdout.set_default(:search_highlight_format, '<on_magenta><white>\1</white></on_magenta>')
 
 config.plugins.stdout.set_default(:enable_pager, true)
@@ -43,15 +44,10 @@ module Termtter
 
       output_text = ''
       statuses.each do |s|
-        text = s.text
-        status_color = config.plugins.stdout.colors[s.user.id.hash % config.plugins.stdout.colors.size]
-        status = "#{s.user.screen_name}: #{TermColor.escape(text)}"
-        if s.in_reply_to_status_id
-          status += " (reply to #{s.in_reply_to_status_id})"
-        end
-
+        text = TermColor.escape(s.text)
+        color = config.plugins.stdout.colors[s.user.id.to_i % config.plugins.stdout.colors.size]
+        reply_to = s.in_reply_to_status_id ? "(reply to #{s.in_reply_to_status_id})" : nil
         time = "(#{Time.parse(s.created_at).strftime(time_format)})"
-        id = s.id
         source =
           case s.source
           when />(.*?)</ then $1
