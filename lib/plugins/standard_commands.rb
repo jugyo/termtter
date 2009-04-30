@@ -451,9 +451,10 @@ module Termtter::Client
         update_with_user_and_id(text, user.screen_name, id) if user
         public_storage.delete :log4re
       when /^\s*(\d+)\s+(.+)$/
-        id, text = $1, $2
-        user = public_storage[:log].select {|l| l.id == id.to_i }.first.user
-        update_with_user_and_id(text, user.screen_name, id) if user
+        s = Termtter::API.twitter.show($1) rescue nil
+        if s
+          update_with_user_and_id($2, s.user.screen_name, id)
+        end
       when /^\s*@(\w+)/
         in_reply_to_status_id = Termtter::API.twitter.user($1).status.id rescue nil
         params = in_reply_to_status_id ? {:in_reply_to_status_id => in_reply_to_status_id} : {}
@@ -497,10 +498,9 @@ module Termtter::Client
   )
 
   def self.update_with_user_and_id(text, username, id)
-    text = ERB.new("@#{username} #{text}").result(binding).gsub(/\n/, ' ')
+    text = "@#{username} #{text}"
     result = Termtter::API.twitter.update(text, {'in_reply_to_status_id' => id})
-    puts "=> #{text}"
-    result
+    puts TermColor.parse("=> #{text} <90>#{result.id}</90>")
   end
 
 =begin
