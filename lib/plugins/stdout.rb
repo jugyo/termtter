@@ -10,9 +10,6 @@ config.plugins.stdout.set_default(
   '<90><%=time%></90> <<%=color%>><%=s.user.screen_name%> <%=text%></<%=color%>> ' +
   '<90><%=reply_to ? reply_to + " " : ""%><%=s.id%> <%=source%></90>'
 )
-
-config.plugins.stdout.set_default(:search_highlight_format, '<on_magenta><white>\1</white></on_magenta>')
-
 config.plugins.stdout.set_default(:enable_pager, true)
 config.plugins.stdout.set_default(:pager, 'less -R -f +G')
 config.plugins.stdout.set_default(:window_height, 50)
