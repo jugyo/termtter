@@ -33,10 +33,6 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   def initialize(*args)
     super
     @@listners << self
-    Thread.start do
-      sleep 1
-      self.call(@@last_statuses || [], :update_friends_timeline)
-    end
   end
 
   def call(statuses, event)
@@ -49,25 +45,23 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       end
 
     statuses.each do |s|
-      post s.user.screen_name, msg_type, main_channel, s.text
+      post s.user.screen_name, msg_type, main_channel, [s.text, s.id].join(' ')
     end
   end
 
   def on_message(m)
-    begin
-      termtter_command = m.command.downcase + ' ' + m.params.join(' ')
-      unless Termtter::Client.find_commands(termtter_command).empty?
-        post '#termtter', NOTICE, main_channel, '> ' + termtter_command
-        Termtter::Client.call_commands(termtter_command)
-      end
-    rescue Termtter::CommandNotFound => e
-      super
+    termtter_command = m.command.downcase + ' ' + m.params.join(' ')
+    unless Termtter::Client.find_commands(termtter_command).empty?
+      post '#termtter', NOTICE, main_channel, '> ' + termtter_command
+      Termtter::Client.call_commands(termtter_command)
     end
   end
 
   def on_user(m)
     super
     post @prefix, JOIN, main_channel
+    post server_name, MODE, main_channel, "+o", @prefix.nick
+    self.call(@@last_statuses || [], :update_friends_timeline)
   end
 
   def on_privmsg(m)
