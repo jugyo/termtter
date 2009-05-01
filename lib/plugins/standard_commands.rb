@@ -11,31 +11,27 @@ module Termtter::Client
 
   register_command(
     :name => :reload,
-    :exec_proc => lambda {|arg|
-      begin
-        args = @since_id ? [{:since_id => @since_id}] : []
-        statuses = Termtter::API.twitter.friends_timeline(*args)
-        unless statuses.empty?
-          print "\e[1K\e[0G" unless win?
-          @since_id = statuses[0].id
-          output(statuses, :update_friends_timeline)
-          Readline.refresh_line
-        end
-      rescue => e
-        handle_error(e)
+    :exec => lambda {|arg|
+      args = @since_id ? [{:since_id => @since_id}] : []
+      statuses = Termtter::API.twitter.friends_timeline(*args)
+      unless statuses.empty?
+        print "\e[1K\e[0G" unless win?
+        @since_id = statuses[0].id
+        output(statuses, :update_friends_timeline)
+        Readline.refresh_line
       end
     }
   )
 
   register_command(
-    :name => :update, :aliases => [:u],
-    :exec_proc => lambda {|arg|
+    :name => :update, :alias => :u,
+    :exec => lambda {|arg|
       unless arg.empty?
         result = Termtter::API.twitter.update(arg)
         puts TermColor.parse("updated => #{result.text} <90>#{result.id}</90>")
       end
     },
-    :completion_proc => lambda {|cmd, args|
+    :completion => lambda {|cmd, args|
       if /(.*)@([^\s]*)$/ =~ args
         find_user_candidates $2, "#{cmd} #{$1}@%s"
       end
