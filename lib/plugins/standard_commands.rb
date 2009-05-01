@@ -186,7 +186,7 @@ module Termtter::Client
     :exec_proc => lambda {|arg|
       output(Termtter::API.twitter.replies, :replies)
     },
-    :help => ["replies,r", "List the most recent @replies for the authenticating user"]
+    :help => ["replies,r", "List the replies"]
   )
 
   register_command(
