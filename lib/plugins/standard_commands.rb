@@ -21,12 +21,6 @@ module Termtter::Client
           output(statuses, :update_friends_timeline)
           Readline.refresh_line
         end
-      rescue OpenURI::HTTPError => e
-        if e.message == '401 Unauthorized'
-          puts 'Could not login'
-          puts 'plese check your account settings'
-          exit!
-        end
       rescue => e
         handle_error(e)
       end
