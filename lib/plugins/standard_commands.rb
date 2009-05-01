@@ -417,7 +417,7 @@ module Termtter::Client
         public_storage[:plugins].sort
       end
     },
-    :help      => ['plugin FILE', 'Load a plugin']
+    :help      => ['plug FILE', 'Load a plugin']
   )
 
   register_command(
