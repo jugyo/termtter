@@ -258,7 +258,11 @@ module Termtter::Client
         word = $1
         raise "Not implemented yet."
       else
-        return
+        if public_storage[:typable_id] && typable_id?(arg)
+          id = typable_id_convert(arg)
+        else
+          return
+        end
       end
 
       r = Termtter::API.twitter.favorite id
@@ -271,7 +275,11 @@ module Termtter::Client
       when /(\d+)/
         find_status_ids(arg).map{|id| "#{cmd} #{id}"}
       else
-        %w(favorite).grep(/^#{Regexp.quote arg}/)
+        if public_storage[:typable_id] && typable_id?(arg)
+          "#{cmd} #{typable_id_convert(arg)}"
+        else
+          %w(favorite).grep(/^#{Regexp.quote arg}/)
+        end
       end
     },
     :help => ['favorite,fav (ID|@USER|/WORD)', 'Mark a status as a favorite']
