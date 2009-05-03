@@ -7,6 +7,7 @@ URL_SHORTTERS = [
   { :host => "ff.im", :pattern => %r'(http://ff\.im(/[\w/]+))'},
 ]
 
+config.plugins.expand_tinyurl.set_default(:shortters, [])
 config.plugins.expand_tinyurl.set_default(:skip_users, [])
 
 # for Ruby 1.8
@@ -20,10 +21,11 @@ end
 
 module Termtter::Client
   add_filter do |statuses, event|
+    shortters = URL_SHORTTERS + config.plugins.expand_tinyurl.shortters
     skip_users = config.plugins.expand_tinyurl.skip_users
     statuses.each do |s|
       skip_users.include?(s.user.screen_name) and next
-      URL_SHORTTERS.each do |site|
+      shortters.each do |site|
         s.text.gsub!(site[:pattern]) do |m|
           expand_url(site[:host], $2) || $1
         end
