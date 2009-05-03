@@ -7,6 +7,15 @@ URL_SHORTTERS = [
   { :host => "ff.im", :pattern => %r'(http://ff\.im(/[\w/]+))'},
 ]
 
+# for Ruby 1.8
+unless String.public_method_defined?(:force_encoding)
+  class String
+    def force_encoding(enc)
+      self
+    end
+  end
+end
+
 module Termtter::Client
   add_filter do |statuses, event|
     statuses.each do |s|
@@ -30,5 +39,5 @@ def expand_url(host, path)
   end
   res = http_class.new(host).head(path)
   return nil unless res.code == "301" or res.code == "302"
-  res['Location']
+  res['Location'].force_encoding(Encoding::UTF_8)
 end
