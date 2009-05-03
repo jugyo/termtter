@@ -19,8 +19,10 @@ unless String.public_method_defined?(:force_encoding)
   end
 end
 
-module Termtter::Client
-  add_filter do |statuses, event|
+Termtter::Client::register_hook(
+  :name => :expand_tinyurl,
+  :point => :filter_for_output,
+  :exec_proc => lambda do |statuses, event|
     shortters = URL_SHORTTERS + config.plugins.expand_tinyurl.shortters
     skip_users = config.plugins.expand_tinyurl.skip_users
     statuses.each do |s|
@@ -33,7 +35,7 @@ module Termtter::Client
     end
     statuses
   end
-end
+)
 
 def expand_url(host, path)
   http_class = Net::HTTP
