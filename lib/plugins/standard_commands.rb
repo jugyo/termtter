@@ -174,7 +174,11 @@ module Termtter::Client
   register_command(
     :name => :replies, :aliases => [:r],
     :exec_proc => lambda {|arg|
-      output(Termtter::API.twitter.replies, :replies)
+      res = Termtter::API.twitter.replies
+      unless arg.empty?
+        res = res.map {|e| e.user.screen_name == arg ? e : nil }.compact
+      end
+      output(res, :replies)
     },
     :help => ["replies,r", "List the replies"]
   )
