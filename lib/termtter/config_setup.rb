@@ -19,7 +19,7 @@ module Termtter
       config = ERB.new(template, nil, '-').result(binding) # trim_mode => '-'
 
       Dir.mkdir(Termtter::CONF_DIR) unless File.exists?(Termtter::CONF_DIR)
-      File.open(Termtter::CONF_FILE, 'w') {|io|
+      File.open(Termtter::CONF_FILE, 'w', 0600) {|io|
         io << config
       }
 
