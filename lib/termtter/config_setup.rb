@@ -13,7 +13,8 @@ module Termtter
       plugins = Dir.glob(File.expand_path(File.dirname(__FILE__) + "/../plugins/*.rb")).map  {|f|
         f.match(%r|lib/plugins/(.*?).rb$|)[1]
       }
-      standard_plugins = %w[stdout standard_commands auto_reload]
+      standard_plugins = %w[stdout standard_commands]
+      standard_plugins_finish = %w[auto_reload]
 
       template = open(File.dirname(__FILE__) + '/config_template.erb').read
       config = ERB.new(template, nil, '-').result(binding) # trim_mode => '-'
