@@ -4,7 +4,7 @@ URL_SHORTTERS = [
   { :host => "tinyurl.com", :pattern => %r'(http://tinyurl\.com(/[\w/]+))' },
   { :host => "is.gd", :pattern => %r'(http://is\.gd(/[\w/]+))' },
   { :host => "bit.ly", :pattern => %r'(http://bit\.ly(/[\w/]+))' },
-  { :host => "ff.im", :pattern => %r'(http://ff\.im(/[\w/]+))'},
+  { :host => "ff.im", :pattern => %r'(http://ff\.im(/[-\w/]+))'},
 ]
 
 config.plugins.expand_tinyurl.set_default(:shortters, [])
