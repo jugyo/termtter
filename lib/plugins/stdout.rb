@@ -7,13 +7,14 @@ require 'tempfile'
 config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
   :timeline_format,
-  '<90><%=time%></90> <<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ' +
-  '<90><%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%>[<%=status_id%>] <%=source%></90>'
+  '<90><%=time%> [<%=status_id%>]</90> <<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ' +
+  '<90><%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%><%=source%></90>'
 )
 config.plugins.stdout.set_default(:enable_pager, true)
 config.plugins.stdout.set_default(:pager, 'less -R -f +G')
 config.plugins.stdout.set_default(:window_height, 50)
 config.plugins.stdout.set_default(:typable_ids, ('aa'..'zz').to_a)
+config.plugins.stdout.set_default(:typable_id_prefix, '$')
 
 module Termtter
   class TypableIdGenerator
@@ -38,11 +39,22 @@ module Termtter
       @table[id]
     end
   end
-  
+
+  module Client
+    @typable_id_generator = TypableIdGenerator.new(config.plugins.stdout.typable_ids)
+
+    def self.data_to_typable_id(data)
+      id = config.plugins.stdout.typable_id_prefix + @typable_id_generator.next(data)
+    end
+
+    def self.typable_id_to_data(id)
+      @typable_id_generator.get(id)
+    end
+  end
+
   class StdOut < Hook
     def initialize
       super(:name => :stdout, :points => [:output])
-      @typable_id_generator = TypableIdGenerator.new(config.plugins.stdout.typable_ids)
     end
 
     def call(statuses, event)
@@ -68,12 +80,12 @@ module Termtter
       statuses.each do |s|
         text = TermColor.escape(s.text)
         color = config.plugins.stdout.colors[s.user.id.to_i % config.plugins.stdout.colors.size]
-        status_id = to_typable(s.id)
+        status_id = Termtter::Client.data_to_typable_id(s.id)
         reply_to_status_id =
           if s.in_reply_to_status_id.nil?
             nil
           else
-            to_typable(s.in_reply_to_status_id)
+            Termtter::Client.data_to_typable_id(s.in_reply_to_status_id)
           end
 
         time = "(#{Time.parse(s.created_at).strftime(time_format)})"
@@ -97,17 +109,29 @@ module Termtter
         print output_text
       end
     end
-
-    def to_typable(data)
-      id = '$' + @typable_id_generator.next(data)
-    end
   end
 
   Client.register_hook(StdOut.new)
+
+  Client.register_hook(
+    :name => :stdout_typable_id,
+    :point => /^modify_arg_for_.*/,
+    :exec => lambda { |cmd, arg|
+      if arg
+        prefix = config.plugins.stdout.typable_id_prefix
+        arg.gsub(/#{Regexp.quote(prefix)}\w+/) do |id|
+          Termtter::Client.typable_id_to_data(id[1..-1])
+        end
+      else
+        arg
+      end
+    }
+  )
 end
 
 # stdout.rb
 #   output statuses to stdout
 # example config
 #   config.plugins.stdout.colors = [:none, :red, :green, :yellow, :blue, :magenta, :cyan]
-#   config.plugins.stdout.timeline_format = '<90><%=time%></90> <<%=status_color%>><%=status%></<%=status_color%>> <90><%=id%></90>'
+#   config.plugins.stdout.timeline_format = '<90><%=time%> [<%=status_id%>]</90> <<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ' +
+#                                           '<90><%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%><%=source%></90>'
