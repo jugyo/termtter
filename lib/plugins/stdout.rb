@@ -8,16 +8,41 @@ config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
   :timeline_format,
   '<90><%=time%></90> <<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ' +
-  '<90><%=reply_to ? reply_to + " " : ""%><%=s.id%> <%=source%></90>'
+  '<90><%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%>[<%=status_id%>] <%=source%></90>'
 )
 config.plugins.stdout.set_default(:enable_pager, true)
 config.plugins.stdout.set_default(:pager, 'less -R -f +G')
 config.plugins.stdout.set_default(:window_height, 50)
+config.plugins.stdout.set_default(:typable_ids, ('aa'..'zz').to_a)
 
 module Termtter
+  class TypableIdGenerator
+    def initialize(ids)
+      if not ids.kind_of?(Array)
+        raise ArgumentError, 'ids should be an Array'
+      elsif ids.empty?
+        raise ArgumentError, 'ids should not be empty'
+      end
+      @ids = ids
+      @table = {}
+    end
+
+    def next(data)
+      id = @ids.shift
+      @ids.push id
+      @table[id] = data
+      id
+    end
+
+    def get(id)
+      @table[id]
+    end
+  end
+  
   class StdOut < Hook
     def initialize
       super(:name => :stdout, :points => [:output])
+      @typable_id_generator = TypableIdGenerator.new(config.plugins.stdout.typable_ids)
     end
 
     def call(statuses, event)
@@ -43,7 +68,14 @@ module Termtter
       statuses.each do |s|
         text = TermColor.escape(s.text)
         color = config.plugins.stdout.colors[s.user.id.to_i % config.plugins.stdout.colors.size]
-        reply_to = s.in_reply_to_status_id ? "(reply to #{s.in_reply_to_status_id})" : nil
+        status_id = to_typable(s.id)
+        reply_to_status_id =
+          if s.in_reply_to_status_id.nil?
+            nil
+          else
+            to_typable(s.in_reply_to_status_id)
+          end
+
         time = "(#{Time.parse(s.created_at).strftime(time_format)})"
         source =
           case s.source
@@ -64,6 +96,10 @@ module Termtter
       else
         print output_text
       end
+    end
+
+    def to_typable(data)
+      id = '$' + @typable_id_generator.next(data)
     end
   end
 
