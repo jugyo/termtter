@@ -23,7 +23,7 @@ module Termtter::Client
     :help      => ['open_url (TYPABLE|ID|@USER)', 'Open url'],
     :exec_proc => lambda {|arg|
       Thread.new(arg) do |arg|
-        if public_storage[:typable_id] && status = typable_id_status(arg)
+        if status = Termtter::Client.typable_id_to_data(arg)
           status.text.gsub(URI.regexp) {|uri|
             open_uri(uri)
           }
@@ -41,15 +41,11 @@ module Termtter::Client
       end
     },
     :completion_proc => lambda {|cmd, arg|
-      if public_storage[:typable_id] && typable_id?(arg)
-        "#{cmd} #{typable_id_convert(arg)}"
-      else
-        case arg
-        when /@(.*)/
-          find_user_candidates $1, "#{cmd} @%s"
-        when /(\d+)/
-          find_status_ids(arg).map{|id| "#{cmd} #{$1}"}
-        end
+      case arg
+      when /@(.*)/
+        find_user_candidates $1, "#{cmd} @%s"
+      when /(\d+)/
+        find_status_ids(arg).map{|id| "#{cmd} #{$1}"}
       end
     }
   )
