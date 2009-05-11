@@ -279,14 +279,14 @@ module Termtter::Client
       when /(\d+)/
         find_status_ids(arg).map{|id| "#{cmd} #{id}"}
       else
-        if public_storage[:typable_id] && typable_id?(arg)
-          "#{cmd} #{typable_id_convert(arg)}"
+        if data = Termtter::Client.typable_id_to_data(arg)
+          "#{cmd} #{data}"
         else
           %w(favorite).grep(/^#{Regexp.quote arg}/)
         end
       end
     },
-    :help => ['favorite,fav (ID|@USER|/WORD)', 'Mark a status as a favorite']
+    :help => ['favorite,fav (ID|@USER|TYPABLE|/WORD)', 'Mark a status as a favorite']
   )
 
   def self.show_settings(conf, level = 0)
