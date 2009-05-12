@@ -455,7 +455,7 @@ module Termtter::Client
       when /^\s*(\d+)\s+(.+)$/
         s = Termtter::API.twitter.show($1) rescue nil
         if s
-          update_with_user_and_id($2, s.user.screen_name, id)
+          update_with_user_and_id($2, s.user.screen_name, s.id)
         end
       when /^\s*@(\w+)/
         in_reply_to_status_id = Termtter::API.twitter.user($1).status.id rescue nil
