@@ -17,6 +17,10 @@ unless String.public_method_defined?(:force_encoding)
       self
     end
   end
+
+  module Encoding
+    UTF_8 = nil
+  end
 end
 
 Termtter::Client::register_hook(
