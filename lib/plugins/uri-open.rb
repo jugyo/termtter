@@ -43,9 +43,13 @@ module Termtter::Client
         end
         public_storage[:uris].clear
       when /^\s*list\s*$/
-        public_storage[:uris].reverse.each_with_index do |uri, index|
-          puts "#{index}: #{uri}"
-        end
+        public_storage[:uris].
+          enum_for(:each_with_index).
+          to_a.
+          reverse.
+          each  do |uri, index|
+            puts "#{index}: #{uri}"
+          end
       when /^\s*delete\s+(\d+)\s*$/
         puts 'delete'
         public_storage[:uris].delete_at($1.to_i)
