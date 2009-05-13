@@ -37,6 +37,11 @@ module Termtter::Client
           open_uri(uri)
         end
         public_storage[:uris].clear
+      when /^\s*all\s*$/
+        public_storage[:uris].each do |uri|
+          open_uri(uri)
+        end
+        public_storage[:uris].clear
       when /^\s*list\s*$/
         public_storage[:uris].each_with_index do |uri, index|
           puts "#{index}: #{uri}"
@@ -53,7 +58,7 @@ module Termtter::Client
       end
     },
     :completion_proc => lambda{|cmd, arg|
-      %w(list delete clear).grep(/^#{Regexp.quote arg}/).map{|a| "#{cmd} #{a}"}
+      %w(all list delete clear).grep(/^#{Regexp.quote arg}/).map{|a| "#{cmd} #{a}"}
     }
   )
 end
