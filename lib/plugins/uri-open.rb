@@ -65,7 +65,7 @@ end
 # ~/.termtter/config
 # plugin 'uri-open'
 #
-# see also: http://ujihisa.nowa.jp/entry/c3dd00c4e0
+# see also: http://ujihisa.blogspot.com/2009/05/fixed-uri-open-of-termtter.html
 #
 # KNOWN BUG
 # * In Debian, exit or C-c in the termtter would kill your firefox.
