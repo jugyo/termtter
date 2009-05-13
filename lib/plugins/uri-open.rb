@@ -14,18 +14,17 @@ module Termtter::Client
   )
 
   def self.open_uri(uri)
-    unless config.plugins.uri_open.browser.empty?
-      system config.plugins.uri_open.browser, uri
-    else
-      case RUBY_PLATFORM
-      when /linux/
-        system 'firefox', uri
-      when /mswin(?!ce)|mingw|bccwin/
-        system 'explorer', uri
+    cmd =
+      unless config.plugins.uri_open.browser.empty?
+        config.plugins.uri_open.browser
       else
-        system 'open', uri
+        case RUBY_PLATFORM
+        when /linux/; 'firefox'
+        when /mswin(?!ce)|mingw|bccwin/; 'explorer'
+        else; 'open'
+        end
       end
-    end
+    system cmd, uri
   end
 
   register_command(
