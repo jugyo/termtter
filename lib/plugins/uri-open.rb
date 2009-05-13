@@ -32,11 +32,8 @@ module Termtter::Client
     :name => :'uri-open', :aliases => [:uo],
     :exec_proc => lambda{|arg|
       case arg
-      when /^\s+$/
-        public_storage[:uris].each do |uri|
-          open_uri(uri)
-        end
-        public_storage[:uris].clear
+      when ''
+        open_uri public_storage[:uris].shift
       when /^\s*all\s*$/
         public_storage[:uris].each do |uri|
           open_uri(uri)
@@ -59,6 +56,8 @@ module Termtter::Client
       when /^\s*(\d+)\s*$/
         open_uri(public_storage[:uris][$1.to_i])
         public_storage[:uris].delete_at($1.to_i)
+      else
+        puts "**parse error in uri-open**"
       end
     },
     :completion_proc => lambda{|cmd, arg|
