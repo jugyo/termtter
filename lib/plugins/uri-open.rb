@@ -29,7 +29,7 @@ module Termtter::Client
 
   register_command(
     :name => :'uri-open', :aliases => [:uo],
-    :exec_proc => lambda{|arg|
+    :exec_proc => lambda {|arg|
       case arg
       when ''
         open_uri public_storage[:uris].shift
@@ -59,8 +59,8 @@ module Termtter::Client
         puts "**parse error in uri-open**"
       end
     },
-    :completion_proc => lambda{|cmd, arg|
-      %w(all list delete clear).grep(/^#{Regexp.quote arg}/).map{|a| "#{cmd} #{a}"}
+    :completion_proc => lambda {|cmd, arg|
+      %w(all list delete clear).grep(/^#{Regexp.quote arg}/).map {|a| "#{cmd} #{a}" }
     }
   )
 end
