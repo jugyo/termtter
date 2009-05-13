@@ -8,7 +8,7 @@ module Termtter::Client
     :points => [:output],
     :exec_proc => lambda {|statuses, event|
       statuses.each do |s|
-        public_storage[:uris] += s[:text].scan(%r|https?://[^\s]+|)
+        public_storage[:uris] = s[:text].scan(%r|https?://[^\s]+|) + public_storage[:uris]
       end
     }
   )
