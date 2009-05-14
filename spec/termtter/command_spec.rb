@@ -15,9 +15,11 @@ module Termtter
       @command = Command.new(params)
     end
 
-    it 'returns command regex' do
-      @command.pattern.
-        should == /^((update|u|up)|(update|u|up)\s+(.*?))\s*$/
+    describe '#pattern' do
+      it 'returns command regex' do
+        @command.pattern.
+          should == /^((update|u|up)|(update|u|up)\s+(.*?))\s*$/
+      end
     end
 
     it 'is given name as String or Symbol' do
@@ -108,17 +110,19 @@ module Termtter
       end
     end
 
-    it 'splits command line' do
-      Command.split_command_line('test foo bar').
-        should == ['test', 'foo bar']
-      Command.split_command_line('test   foo bar').
-        should == ['test', 'foo bar']
-      Command.split_command_line('test   foo  bar').
-        should == ['test', 'foo  bar']
-      Command.split_command_line(' test   foo  bar').
-        should == ['test', 'foo  bar']
-      Command.split_command_line(' test   foo  bar ').
-        should == ['test', 'foo  bar']
+    describe '.split_command_line' do
+      it 'splits from a command line string to the command name and the arg' do
+        Command.split_command_line('test foo bar').
+          should == ['test', 'foo bar']
+        Command.split_command_line('test   foo bar').
+          should == ['test', 'foo bar']
+        Command.split_command_line('test   foo  bar').
+          should == ['test', 'foo  bar']
+        Command.split_command_line(' test   foo  bar').
+          should == ['test', 'foo  bar']
+        Command.split_command_line(' test   foo  bar ').
+          should == ['test', 'foo  bar']
+      end
     end
   end
 end
