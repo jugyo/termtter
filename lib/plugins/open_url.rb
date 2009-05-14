@@ -24,7 +24,7 @@ module Termtter::Client
     :exec_proc => lambda {|arg|
       Thread.new(arg) do |arg|
         if status = Termtter::Client.typable_id_to_data(arg)
-          status.text.gsub(URI.regexp) {|uri|
+          status.text.gsub(URI.regexp(['http', 'https'])) {|uri|
             open_uri(uri)
           }
         else
@@ -33,9 +33,9 @@ module Termtter::Client
             user = $1
             statuses = Termtter::API.twitter.user_timeline(user)
             return if statuses.empty?
-            statuses[0].text.gsub(URI.regexp) {|uri| open_uri(uri) }
+            statuses[0].text.gsub(URI.regexp(['http', 'https'])) {|uri| open_uri(uri) }
           when /^\d+/
-            Termtter::API.twitter.show(arg).text.gsub(URI.regexp) {|uri| open_uri(uri) }
+            Termtter::API.twitter.show(arg).text.gsub(URI.regexp(['http', 'https'])) {|uri| open_uri(uri) }
           end
         end
       end
@@ -52,4 +52,4 @@ module Termtter::Client
 end
 
 #Optional Setting
-#  config.plugins.open_url.browser = firefox
+#  config.plugins.open_url.browser = 'firefox'

@@ -74,16 +74,31 @@ module Termtter
         end
       end
 
-      def register_command(arg)
+      def register_command(arg, opts = {}, &block)
         command = case arg
           when Command
             arg
           when Hash
             Command.new(arg)
+          when String
+            options = { :name => arg }
+            options.merge!(opts)
+            options[:exec_proc] = block
+            Command.new(options)
           else
-            raise ArgumentError, 'must be given Termtter::Command or Hash'
+            raise ArgumentError, 'must be given Termtter::Command, Hash or String with block'
           end
         @commands[command.name] = command
+      end
+
+      def add_command(name)
+        if block_given?
+          command = Command.new(:name => name)
+          yield command
+          @commands[command.name] = command
+        else
+          raise ArgumentError, 'must be given block to set parameters'
+        end
       end
 
       def clear_command

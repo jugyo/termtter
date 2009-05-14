@@ -21,6 +21,47 @@ module Termtter
       Client.get_command(:test).name.should == :test
     end
 
+    it 'should take register_command as block' do
+      process = lambda {}
+      Client.register_command('test', &process)
+      command = Client.get_command(:test)
+      command.name.should == :test
+      command.exec_proc.should == process
+    end
+
+    it 'should take register_command as block with options' do
+      process = lambda {}
+      Client.register_command('test', :help => 'help', &process)
+      command = Client.get_command(:test)
+      command.name.should == :test
+      command.exec_proc.should == process
+      command.help.should == 'help'
+    end
+
+    it 'should take add_command as block' do
+      Client.add_command('test') do |c|
+        c.aliases = ['t']
+        c.help = 'test command is a test'
+      end
+      command = Client.get_command(:test)
+      command.name.should == :test
+      command.aliases.should == [:t]
+      command.help.should == 'test command is a test'
+    end
+
+    it 'should take add_command as block without past config' do
+      Client.add_command('past') do |c|
+        c.help = 'past help'
+      end
+      Client.get_command(:past).help.should == 'past help'
+      Client.add_command('new') {}
+      Client.get_command(:new).help.should_not == 'past help'
+    end
+
+    it 'raises ArgumentError when call add_command without block' do
+      lambda { Client.add_command('past') }.should raise_error(ArgumentError)
+    end
+
     it 'should call command' do
       command_arg = nil
       command = Command.new(:name => :test, :exec_proc => lambda {|arg| command_arg = arg})
