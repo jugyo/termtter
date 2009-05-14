@@ -8,6 +8,19 @@ module Termtter
       lambda { Command.new(:nama => 1) }.should raise_error(ArgumentError)
       lambda { Command.new(:name => 1) }.should_not raise_error(ArgumentError)
     end
+
+    it 'does not destroy the argument hash' do
+      hash = {
+        :name => 1,
+        :exec => 3
+      }
+      Command.new hash
+
+      hash.should eql(hash)
+      hash[:name].should == 1
+      hash[:exec].should == 3
+      hash[:exec_proc].should be_nil
+    end
   end
 
   describe Command do
