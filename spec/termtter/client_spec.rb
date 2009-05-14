@@ -43,6 +43,28 @@ module Termtter
       command.help.should == 'test command is a test'
     end
 
+    it 'should take add_command as block' do
+      Client.add_command('test') do |c|
+        c.aliases = ['t']
+        c.help = 'test command is a test'
+      end
+      command = Client.get_command(:test)
+      command.name.should == :test
+      command.aliases.should == [:t]
+      command.help.should == 'test command is a test'
+    end
+
+    it 'should take add_command as options with block' do
+      Client.add_command('test', :aliases => ['s']) do |c|
+        c.aliases = ['t']
+        c.help = 'test command is a test'
+      end
+      command = Client.get_command(:test)
+      command.name.should == :test
+      command.aliases.should == [:s]
+      command.help.should == 'test command is a test'
+    end
+
     it 'should call command' do
       command_arg = nil
       command = Command.new(:name => :test, :exec_proc => lambda {|arg| command_arg = arg})

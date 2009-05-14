@@ -92,6 +92,19 @@ module Termtter
         @commands[command.name] = command
       end
 
+      def add_command(name, opts = {})
+        if block_given?
+          yield config.__system__.command_option
+          options = config.__system__.
+            command_option.__values__.merge(:name => name)
+          options.merge!(opts)
+          command = Command.new(options)
+          @commands[command.name] = command
+        else
+          raise ArgumentError, 'must be given block to set parameters'
+        end
+      end
+
       def clear_command
         @commands.clear
       end
