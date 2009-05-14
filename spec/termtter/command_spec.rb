@@ -3,22 +3,21 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 module Termtter
-
   describe Command do
-
     before do
       params =  {
-          :name            => 'update',
-          :aliases         => ['u', 'up'],
-          :exec_proc       => lambda {|arg| arg },
-          :completion_proc => lambda {|command, arg| ['complete1', 'complete2'] },
-          :help            => ['update,u TEXT', 'test command']
+        :name            => 'update',
+        :aliases         => ['u', 'up'],
+        :exec_proc       => lambda {|arg| arg },
+        :completion_proc => lambda {|command, arg| %w[complete1 complete2] },
+        :help            => ['update,u TEXT', 'test command']
       }
       @command = Command.new(params)
     end
 
     it 'should return command regex' do
-      @command.pattern.should == /^((update|u|up)|(update|u|up)\s+(.*?))\s*$/
+      @command.pattern.
+        should == /^((update|u|up)|(update|u|up)\s+(.*?))\s*$/
     end
 
     it 'should be given name as String or Symbol' do
@@ -77,8 +76,10 @@ module Termtter
 
     it 'should raise ArgumentError when constructor arguments are deficient' do
       lambda { Command.new }.should raise_error(ArgumentError)
-      lambda { Command.new(:exec_proc => lambda {|args|}) }.should raise_error(ArgumentError)
-      lambda { Command.new(:aliases => ['u']) }.should raise_error(ArgumentError)
+      lambda { Command.new(:exec_proc => lambda {|args|}) }.
+        should raise_error(ArgumentError)
+      lambda { Command.new(:aliases => ['u']) }.
+        should raise_error(ArgumentError)
     end
 
     it 'should call exec_proc when call method "call"' do
@@ -89,10 +90,14 @@ module Termtter
     end
 
     it 'should raise ArgumentError at call' do
-      lambda { @command.call('foo', nil, 'foo') }.should_not raise_error(ArgumentError)
-      lambda { @command.call('foo', 'foo', 'foo') }.should_not raise_error(ArgumentError)
-      lambda { @command.call('foo', false, 'foo') }.should raise_error(ArgumentError)
-      lambda { @command.call('foo', Array.new, 'foo') }.should raise_error(ArgumentError)
+      lambda { @command.call('foo', nil, 'foo') }.
+        should_not raise_error(ArgumentError)
+      lambda { @command.call('foo', 'foo', 'foo') }.
+        should_not raise_error(ArgumentError)
+      lambda { @command.call('foo', false, 'foo') }.
+        should raise_error(ArgumentError)
+      lambda { @command.call('foo', Array.new, 'foo') }.
+        should raise_error(ArgumentError)
     end
 
     describe '#alias=' do
@@ -104,12 +109,16 @@ module Termtter
     end
 
     it 'split command line' do
-      Command.split_command_line('test foo bar').should == ['test', 'foo bar']
-      Command.split_command_line('test   foo bar').should == ['test', 'foo bar']
-      Command.split_command_line('test   foo  bar').should == ['test', 'foo  bar']
-      Command.split_command_line(' test   foo  bar').should == ['test', 'foo  bar']
-      Command.split_command_line(' test   foo  bar ').should == ['test', 'foo  bar']
+      Command.split_command_line('test foo bar').
+        should == ['test', 'foo bar']
+      Command.split_command_line('test   foo bar').
+        should == ['test', 'foo bar']
+      Command.split_command_line('test   foo  bar').
+        should == ['test', 'foo  bar']
+      Command.split_command_line(' test   foo  bar').
+        should == ['test', 'foo  bar']
+      Command.split_command_line(' test   foo  bar ').
+        should == ['test', 'foo  bar']
     end
   end
 end
-
