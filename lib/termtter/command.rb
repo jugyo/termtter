@@ -27,6 +27,7 @@ module Termtter
       set cfg
     end
 
+    # set :: Hash -> ()
     def set(cfg)
       @name            = cfg[:name].to_sym
       @aliases         = cfg[:aliases].map {|e| e.to_sym }
@@ -35,6 +36,7 @@ module Termtter
       @help            = cfg[:help]
     end
 
+    # complement :: String -> [String]
     def complement(input)
       if match?(input) && input =~ /^[^\s]+\s/
         if completion_proc
@@ -48,6 +50,7 @@ module Termtter
       end
     end
 
+    # call :: ???
     def call(cmd = nil, arg = nil, original_text = nil)
       arg = case arg
         when nil
@@ -60,23 +63,28 @@ module Termtter
       exec_proc.call(arg)
     end
 
+    # match? :: String -> Boolean
     def match?(input)
       (pattern =~ input) != nil
     end
 
+    # pattern :: Regexp
     def pattern
       commands_regex = commands.map {|name| Regexp.quote(name.to_s) }.join('|')
       /^((#{commands_regex})|(#{commands_regex})\s+(.*?))\s*$/
     end
 
+    # commands :: [Symbol]
     def commands
       [name] + aliases
     end
 
+    # alias= :: Symbol -> ()
     def alias=(a)
       self.aliases = [a]
     end
 
+    # split_command_line :: String -> (String, String)
     def self.split_command_line(line)
       line.strip.split(/\s+/, 2)
     end
