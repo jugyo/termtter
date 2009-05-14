@@ -80,6 +80,11 @@ module Termtter
             arg
           when Hash
             Command.new(arg)
+          when String
+            yield config.__system__.command_option
+            options = config.__system__.
+              command_option.__values__.merge(:name => arg)
+            Command.new(options)
           else
             raise ArgumentError, 'must be given Termtter::Command or Hash'
           end
