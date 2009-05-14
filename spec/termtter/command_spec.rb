@@ -3,6 +3,13 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 module Termtter
+  describe 'Command#initialize' do
+    it 'requires the name element in the argument hash' do
+      lambda { Command.new(:nama => 1) }.should raise_error(ArgumentError)
+      lambda { Command.new(:name => 1) }.should_not raise_error(ArgumentError)
+    end
+  end
+
   describe Command do
     before do
       params =  {
@@ -74,14 +81,6 @@ module Termtter
       ].each do |input, result|
         @command.match?(input).should == result
       end
-    end
-
-    it 'raises ArgumentError when constructor arguments are deficient' do
-      lambda { Command.new }.should raise_error(ArgumentError)
-      lambda { Command.new(:exec_proc => lambda {|args|}) }.
-        should raise_error(ArgumentError)
-      lambda { Command.new(:aliases => ['u']) }.
-        should raise_error(ArgumentError)
     end
 
     it 'calls exec_proc when call method "call"' do
