@@ -93,6 +93,7 @@ module Termtter
 
       def add_command(name, opts = {})
         if block_given?
+          config.__system__.command_option.__clear__
           yield config.__system__.command_option
           options = config.__system__.
             command_option.__values__.merge(:name => name)

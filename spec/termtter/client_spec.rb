@@ -49,6 +49,15 @@ module Termtter
       command.help.should == 'test command is a test'
     end
 
+    it 'should take add_command as block without past config' do
+      Client.add_command('past', :aliases => ['p']) do |c|
+        c.help = 'past help'
+      end
+      Client.get_command(:past).help.should == 'past help'
+      Client.add_command('new') {}
+      Client.get_command(:new).help.should_not == 'past help'
+    end
+
     it 'should take add_command as options with block' do
       Client.add_command('test', :aliases => ['s']) do |c|
         c.aliases = ['t']
