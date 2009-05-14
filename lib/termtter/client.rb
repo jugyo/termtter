@@ -74,17 +74,16 @@ module Termtter
         end
       end
 
-      def register_command(arg, opts = {})
+      def register_command(arg, opts = {}, &block)
         command = case arg
           when Command
             arg
           when Hash
             Command.new(arg)
           when String
-            yield config.__system__.command_option
-            options = config.__system__.
-              command_option.__values__.merge(:name => arg)
+            options = { :name => arg }
             options.merge!(opts)
+            options[:exec_proc] = block
             Command.new(options)
           else
             raise ArgumentError, 'must be given Termtter::Command, Hash or String with block'

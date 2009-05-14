@@ -22,25 +22,20 @@ module Termtter
     end
 
     it 'should take register_command as block' do
-      Client.register_command('test') do |c|
-        c.aliases = ['t']
-        c.help = 'test command is a test'
-      end
+      process = lambda {}
+      Client.register_command('test', &process)
       command = Client.get_command(:test)
       command.name.should == :test
-      command.aliases.should == [:t]
-      command.help.should == 'test command is a test'
+      command.exec_proc.should == process
     end
 
-    it 'should take register_command as options with block' do
-      Client.register_command('test', :aliases => ['s']) do |c|
-        c.aliases = ['t']
-        c.help = 'test command is a test'
-      end
+    it 'should take register_command as block with options' do
+      process = lambda {}
+      Client.register_command('test', :help => 'help', &process)
       command = Client.get_command(:test)
       command.name.should == :test
-      command.aliases.should == [:s]
-      command.help.should == 'test command is a test'
+      command.exec_proc.should == process
+      command.help.should == 'help'
     end
 
     it 'should take add_command as block' do
