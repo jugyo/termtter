@@ -87,7 +87,7 @@ module Termtter
             options.merge!(opts)
             Command.new(options)
           else
-            raise ArgumentError, 'must be given Termtter::Command or Hash'
+            raise ArgumentError, 'must be given Termtter::Command, Hash or String with block'
           end
         @commands[command.name] = command
       end
