@@ -51,6 +51,10 @@ module Termtter
       @store.dup
     end
 
+    def __clear__
+      @store.clear
+    end
+
     __instance = self.new
     (class << self; self end).
       __send__(:define_method, :instance) { __instance }
