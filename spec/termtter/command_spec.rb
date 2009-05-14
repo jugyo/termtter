@@ -47,7 +47,7 @@ module Termtter
         ['upd',       ['update']],
         [' upd',      []],
         [' upd ',     []],
-        ['update a',    ['complete1', 'complete2']],
+        ['update a',  ['complete1', 'complete2']],
         [' update  ', []],
         ['u foo',     ['complete1', 'complete2']],
       ].each do |input, comp|
