@@ -95,6 +95,14 @@ module Termtter
       lambda { @command.call('foo', Array.new, 'foo') }.should raise_error(ArgumentError)
     end
 
+    describe '#alias=' do
+      it 'wraps aliases=' do
+        a = :ujihisa
+        @command.should_receive(:aliases=).with([a])
+        @command.alias = a
+      end
+    end
+
     it 'split command line' do
       Command.split_command_line('test foo bar').should == ['test', 'foo bar']
       Command.split_command_line('test   foo bar').should == ['test', 'foo bar']
