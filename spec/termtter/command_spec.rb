@@ -15,33 +15,33 @@ module Termtter
       @command = Command.new(params)
     end
 
-    it 'should return command regex' do
+    it 'returns command regex' do
       @command.pattern.
         should == /^((update|u|up)|(update|u|up)\s+(.*?))\s*$/
     end
 
-    it 'should be given name as String or Symbol' do
+    it 'is given name as String or Symbol' do
       Command.new(:name => 'foo').name.should == :foo
       Command.new(:name => :foo).name.should == :foo
     end
 
-    it 'should return name' do
+    it 'returns name' do
       @command.name.should == :update
     end
 
-    it 'should return aliases' do
+    it 'returns aliases' do
       @command.aliases.should == [:u, :up]
     end
 
-    it 'should return commands' do
+    it 'returns commands' do
       @command.commands.should == [:update, :u, :up]
     end
 
-    it 'should return help' do
+    it 'returns help' do
       @command.help.should == ['update,u TEXT', 'test command']
     end
 
-    it 'should return candidates for completion' do
+    it 'returns candidates for completion' do
       # complement
       [
         ['upd',       ['update']],
@@ -55,7 +55,7 @@ module Termtter
       end
     end
 
-    it 'should return command_info when call method "match?"' do
+    it 'returns command_info when call method "match?"' do
       [
         ['update',       true],
         ['up',           true],
@@ -74,7 +74,7 @@ module Termtter
       end
     end
 
-    it 'should raise ArgumentError when constructor arguments are deficient' do
+    it 'raises ArgumentError when constructor arguments are deficient' do
       lambda { Command.new }.should raise_error(ArgumentError)
       lambda { Command.new(:exec_proc => lambda {|args|}) }.
         should raise_error(ArgumentError)
@@ -82,14 +82,14 @@ module Termtter
         should raise_error(ArgumentError)
     end
 
-    it 'should call exec_proc when call method "call"' do
+    it 'calls exec_proc when call method "call"' do
       @command.call('foo', 'test', 'foo test').should == 'test'
       @command.call('foo', ' test', 'foo  test').should == ' test'
       @command.call('foo', ' test ', 'foo  test ').should == ' test '
       @command.call('foo', 'test test', 'foo test test').should == 'test test'
     end
 
-    it 'should raise ArgumentError at call' do
+    it 'raises ArgumentError at call' do
       lambda { @command.call('foo', nil, 'foo') }.
         should_not raise_error(ArgumentError)
       lambda { @command.call('foo', 'foo', 'foo') }.
@@ -108,7 +108,7 @@ module Termtter
       end
     end
 
-    it 'split command line' do
+    it 'splits command line' do
       Command.split_command_line('test foo bar').
         should == ['test', 'foo bar']
       Command.split_command_line('test   foo bar').
