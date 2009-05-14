@@ -74,7 +74,7 @@ module Termtter
         end
       end
 
-      def register_command(arg)
+      def register_command(arg, opts = {})
         command = case arg
           when Command
             arg
@@ -84,6 +84,7 @@ module Termtter
             yield config.__system__.command_option
             options = config.__system__.
               command_option.__values__.merge(:name => arg)
+            options.merge!(opts)
             Command.new(options)
           else
             raise ArgumentError, 'must be given Termtter::Command or Hash'
