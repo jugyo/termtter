@@ -50,7 +50,7 @@ module Termtter
     end
 
     it 'should take add_command as block without past config' do
-      Client.add_command('past', :aliases => ['p']) do |c|
+      Client.add_command('past') do |c|
         c.help = 'past help'
       end
       Client.get_command(:past).help.should == 'past help'
@@ -58,15 +58,8 @@ module Termtter
       Client.get_command(:new).help.should_not == 'past help'
     end
 
-    it 'should take add_command as options with block' do
-      Client.add_command('test', :aliases => ['s']) do |c|
-        c.aliases = ['t']
-        c.help = 'test command is a test'
-      end
-      command = Client.get_command(:test)
-      command.name.should == :test
-      command.aliases.should == [:s]
-      command.help.should == 'test command is a test'
+    it 'raises ArgumentError when call add_command without block' do
+      lambda { Client.add_command('past') }.should raise_error(ArgumentError)
     end
 
     it 'should call command' do

@@ -28,11 +28,11 @@ module Termtter
 
     # set :: Hash -> ()
     def set(cfg)
-      @name            = cfg[:name].to_sym
-      @aliases         = cfg[:aliases].map {|e| e.to_sym }
-      @exec_proc       = cfg[:exec_proc]
-      @completion_proc = cfg[:completion_proc]
-      @help            = cfg[:help]
+      self.name            = cfg[:name].to_sym
+      self.aliases     = cfg[:aliases]
+      self.exec_proc       = cfg[:exec_proc]
+      self.completion_proc = cfg[:completion_proc]
+      self.help            = cfg[:help]
     end
 
     # complement :: String -> [String]
@@ -76,6 +76,10 @@ module Termtter
     # commands :: [Symbol]
     def commands
       [name] + aliases
+    end
+
+    def aliases=(as)
+      @aliases = as.map { |a| a.to_sym }
     end
 
     # alias= :: Symbol -> ()
