@@ -12,6 +12,7 @@ module Termtter
     #   help:            help text for the command (Optional)
     def initialize(args)
       raise ArgumentError, ":name is not given." unless args.has_key?(:name)
+      args = args.dup
       args[:exec_proc] ||= args[:exec]
       args[:completion_proc] ||= args[:completion]
       args[:aliases] ||= [args[:alias]].compact
