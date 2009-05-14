@@ -52,4 +52,4 @@ module Termtter::Client
 end
 
 #Optional Setting
-#  config.plugins.open_url.browser = firefox
+#  config.plugins.open_url.browser = 'firefox'
