@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
 module Termtter
-
   class Command
-
     attr_accessor :name, :aliases, :exec_proc, :completion_proc, :help
 
     # args
-    #   name:            Symbol as command name
+    #   name:            (required) Symbol as command name
     #   aliases:         Array of command alias (ex. ['u', 'up'])
     #   exec_proc:       Proc for procedure of the command. If need the proc must return object for hook.
     #   completion_proc: Proc for input completion. The proc must return Array of candidates (Optional)
