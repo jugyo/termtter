@@ -9,10 +9,7 @@ config.password = '<%= password %>'
 #config.proxy.password = 'proxy password'
 
 Termtter::Client.init do |t|
-  <%- standard_plugins.each do |plugin| -%>
-  t.plug '<%= plugin %>'
-  <%- end -%>
   <%- (plugins - standard_plugins).each do |plugin| -%>
-  # t.plug '<%= plugin %>'
+#  t.plug '<%= plugin %>'
   <%- end -%>
 end
