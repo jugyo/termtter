@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 
+TINYURL_HOOK_COMMANDS = [:update, :reply]
+
 Termtter::Client.register_hook(
   :name => :tinyurl,
-  :points => [:modify_arg_for_update],
+  :points => TINYURL_HOOK_COMMANDS.map {|cmd|
+    "modify_arg_for_#{cmd.to_s}".to_sym
+  },
   :exec_proc => lambda {|cmd, arg|
     arg = arg.gsub(URI.regexp) do |url|
       if url =~ %r!^https?:!
