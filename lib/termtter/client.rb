@@ -21,6 +21,7 @@ module Termtter
     config.set_default(:update_interval, 300)
     config.set_default(:prompt, '> ')
     config.set_default(:devel, false)
+    config.set_default(:auto_reload, true)
 
     Thread.abort_on_exception = true
 
@@ -346,6 +347,7 @@ module Termtter
           plug 'auto_reload'
         end
 
+        plug 'auto_reload' if config.auto_reload
         plug 'devel' if config.devel
 
         config.system.load_plugins.each do |plugin|
