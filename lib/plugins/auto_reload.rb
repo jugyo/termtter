@@ -4,5 +4,9 @@ module Termtter::Client
     call_commands('reload')
   end
 
-  call_commands('reload')
+  register_hook(
+    :name => :auto_reload_init,
+    :point => :initialize,
+    :exec => lambda { call_commands('reload') }
+  )
 end
