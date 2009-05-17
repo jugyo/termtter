@@ -183,7 +183,7 @@ module Termtter
           modified_arg = call_hooks(
                             "modify_arg_for_#{command.name.to_s}",
                             command_str,
-                            command_arg ? command_arg.dup : nil) || command_arg || ''
+                            command_arg) || command_arg || ''
 
           @task_manager.invoke_and_wait do
             begin
