@@ -1,6 +1,6 @@
 = termtter
 
-http://github.com/jugyo/termtter
+http://termtter.org/
 
 == DESCRIPTION:
 
@@ -34,7 +34,7 @@ Search
 
 == REQUIREMENTS:
 
-* json_pure
+* json_pure or json
 * termcolor
 * rubytter
 
@@ -62,20 +62,15 @@ If you would like to use proxy server, add configurations like this:
 You can to load plugins in this way:
 
   Termtter::Client.init do |t|
-    t.plug 'stdout'
-    t.plug 'standard_commands'
-    t.plug 'auto_reload'
+    t.plug 'fib'
+    t.plug 'growl'
   end
 
 To update the config, just restart your termtter proccess.
 
 == FORUM:
 
-http://www.lingr.com/room/termtter
-
-== DOCUMENT:
-
-http://wiki.github.com/jugyo/termtter/home (in Japanese)
+http://groups.google.co.jp/group/termtter
 
 == TODO:
 
