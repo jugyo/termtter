@@ -119,11 +119,12 @@ module Termtter
     :exec => lambda { |cmd, arg|
       if arg
         prefix = config.plugins.stdout.typable_id_prefix
-        arg.gsub!(/#{Regexp.quote(prefix)}\w+/) do |id|
+        arg.gsub(/#{Regexp.quote(prefix)}\w+/) do |id|
           Termtter::Client.typable_id_to_data(id[1..-1]) || id
         end
+      else
+        arg
       end
-      arg
     }
   )
 end

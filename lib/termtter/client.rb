@@ -180,10 +180,11 @@ module Termtter
           command_found = true
           command_str, command_arg = Command.split_command_line(text)
 
-          modified_arg = call_hooks(
-                            "modify_arg_for_#{command.name.to_s}",
-                            command_str,
-                            command_arg) || command_arg || ''
+          modified_arg = command_arg
+          get_hooks("modify_arg_for_#{command.name.to_s}").each {|hook|
+            break if modified_arg == false # interrupt if hook return false
+            modified_arg = hook.call(command_str, modified_arg)
+          }
 
           @task_manager.invoke_and_wait do
             begin
