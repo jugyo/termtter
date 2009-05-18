@@ -1,0 +1,3 @@
+[submodule "vendor/rb-readline"]
+	path = vendor/rb-readline
+	url = git://github.com/jugyo/rb-readline.git
