@@ -5,6 +5,8 @@ $KCODE="u" unless Object.const_defined? :Encoding
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
+$:.unshift(File.dirname(__FILE__) + '/../vendor/rb-readline/readline/lib')
+
 require 'rubygems'
 require 'json'
 require 'net/https'
