@@ -13,7 +13,7 @@ Termtter::Client.register_hook(
     "modify_arg_for_#{cmd.to_s}".to_sym
   },
   :exec_proc => lambda {|cmd, arg|
-    arg.gsub!(URI_REGEXP) do |url|
+    arg.gsub(URI_REGEXP) do |url|
       url_enc = URI.escape(url)
       result = url
       SHORTURL_MAKERS.each do |site|
@@ -28,7 +28,6 @@ Termtter::Client.register_hook(
       end
       result
     end
-    arg
   }
 )
 
