@@ -102,18 +102,10 @@ module Termtter::Client
     case op
     when 'add'
       res = login.add_label(label, no)
-      if res.has_key?('error')
-        warn 'failed'
-        next
-      end
-      puts 'success'
+      res.has_key?('error') ?  warn('failed') : puts('success')
     when 'remove'
       res = login.remove_label(label, no)
-      if res.has_key?('error')
-        warn 'failed'
-        next
-      end
-      puts 'success'
+      res.has_key?('error') ?  warn('failed') : puts('success')
     else
       warn 'no such operate'
     end
