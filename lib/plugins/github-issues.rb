@@ -13,6 +13,21 @@ module Termtter::Client
   config.plugins.github_issues.set_default('user', 'jugyo')
   config.plugins.github_issues.set_default('repo', 'termtter')
 
+  register_command('isearch', :alias => 'ise', :help => ['isearch, ise WORD', 'search issue']) do |word|
+    if word.empty?
+      warn 'need search word'
+      next
+    end
+    res = gi_project.search(word)
+    if res.has_key?('error')
+      warn 'failed'
+      next
+    end
+    no_length = res['issues'].map {|i| i.number.to_s.size }.max
+    list = res['issues'].map {|i| "##{i.number.to_s.ljust(no_length)} #{i.title}" }
+    list.empty? ? warn('no issue found') : puts(list.join("\n"))
+  end
+
   register_command('ilist', :alias => 'il', :help => ['ilist, il', 'list all issues']) do |state|
     state = state.empty? ? 'open' : state
     list = gi_project.list(state)['issues']
