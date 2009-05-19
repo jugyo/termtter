@@ -41,7 +41,12 @@ module Termtter::Client
       warn 'need issue number'
       next
     end
-    issue = gi_project.show(no.to_i)['issue']
+    res = gi_project.show(no.to_i)
+    if res.has_key?('error')
+      warn 'no such issue'
+      next
+    end
+    issue = res['issue']
     label_length = issue.keys.map(&:size).max
     issue.each do |key, value|
       puts "#{key.rjust(label_length)}: #{value}"
