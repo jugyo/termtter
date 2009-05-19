@@ -82,7 +82,18 @@ module Termtter::Client
     end
   end
 
-  register_command('ilabel', :alias => 'ilb', :help => ['ilabel,ilb (add | remove) LABEL NO', 'add or remove label to issue']) do |args|
+  register_command('icommand', :alias => 'icom', :help => ['icommand, icom NO', 'write comment to issue']) do |no|
+    if no.empty?
+      warn 'need issue no'
+      next
+    end
+    login
+    comment = input_editor
+    res = login.comment(no.to_i, comment)
+    res.has_key?('error') ?  warn('failed') : puts('success')
+  end
+
+  register_command('ilabel', :alias => 'ilab', :help => ['ilabel,ilab (add | remove) LABEL NO', 'add or remove label to issue']) do |args|
     op, label, no = args.split(/\s/)
     unless [op, label, no].all?
       warn 'need op, label, no'
