@@ -23,7 +23,13 @@ module Termtter
     register_command(
       :name => :ls, :aliases => [],
       :exec_proc => lambda {|arg|
-        call_commands("list #{arg.empty? ? public_storage[:current] : arg}")
+        if arg.empty? && /\A#/ =~ public_storage[:current]
+          call_commands("search #{public_storage[:current]}")
+        elsif /\A#/ =~ arg
+          call_commands("search #{arg}")
+        else
+          call_commands("list #{arg.empty? ? public_storage[:current] : arg}")
+        end
       },
       :completion_proc => lambda {|cmd, args|
         find_user_candidates args, "#{cmd} %s"
