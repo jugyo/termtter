@@ -34,7 +34,7 @@ module Termtter
       def plug(name, options = {})
         unless options.empty?
           options.each do |key, value|
-            config.plugins.__refer__(name.to_sym).__assign__(key.to_sym, value)
+            config.plugins.__refer__(name.gsub(/-/, '_').to_sym).__assign__(key.to_sym, value)
           end
         end
         load "plugins/#{name}.rb"
