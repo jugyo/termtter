@@ -360,6 +360,9 @@ module Termtter::Client
         end
       end
       helps.compact!
+      unless arg.empty?
+        helps = helps.select {|n, _| /#{arg}/ =~ n }
+      end
       puts formatted_help(helps)
     },
     :help => ["help,h", "Print this help message"]
