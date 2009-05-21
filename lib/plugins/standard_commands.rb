@@ -13,7 +13,11 @@ module Termtter::Client
     :name => :reload,
     :exec => lambda {|arg|
       args = @since_id ? [{:since_id => @since_id}] : []
-      statuses = Termtter::API.twitter.friends_timeline(*args)
+      begin
+        statuses = Termtter::API.twitter.friends_timeline(*args)
+      rescue Errno::ETIMEDOUT, Timeout::Error
+        return nil
+      end
       unless statuses.empty?
         print "\e[1K\e[0G" unless win?
         @since_id = statuses[0].id
