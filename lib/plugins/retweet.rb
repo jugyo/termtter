@@ -20,8 +20,6 @@ module Termtter::Client
         case arg
         when /(\d+)/
           post_retweet(Termtter::API.twitter.show(arg))
-          #s = Twitter::API.twitter.show(arg)
-          #post_retweet(s)
         when /@([A-Za-z0-9_]+)/
           user = $1
           statuses = Termtter::API.twitter.user_timeline(user)

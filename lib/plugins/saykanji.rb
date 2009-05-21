@@ -22,7 +22,6 @@ def saykanji(text, say_speed)
   text_without_uri = text.gsub(URI.regexp(['http', 'https']), 'URI').
     gsub('～', '〜').gsub(/[－―]/, 'ー').gsub('&', 'アンド').
     delete("\n\`\'\"<>[]()|:;#")
-  #text_wakati = `echo #{text_without_uri}|mecab -O wakati|mecab -O yomi`.split(' ')
   text_wakati = `echo #{text_without_uri}|mecab -O wakati`.split(' ')
   text_wakati.map!{ |i|
     if /[@a-zA-Z]/ =~ i && File.file?(config.plugins.saykanji.kana_english_dict_path)
