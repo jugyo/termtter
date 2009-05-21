@@ -7,7 +7,6 @@
 ##   http://mecab.sourceforge.net/
 
 require 'uri'
-require 'csv'
 
 config.plugins.saykanji.set_default(:user_to_say, [])
 config.plugins.saykanji.set_default(:keyword_to_say, [])
