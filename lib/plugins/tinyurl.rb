@@ -13,14 +13,18 @@ Termtter::Client.register_hook(
     "modify_arg_for_#{cmd.to_s}".to_sym
   },
   :exec_proc => lambda {|cmd, arg|
+    http_class = Net::HTTP
+    unless config.proxy.host.nil? or config.proxy.host.empty?
+      http_class = Net::HTTP::Proxy(config.proxy.host,
+                                    config.proxy.port,
+                                    config.proxy.user_name,
+                                    config.proxy.password)
+    end
     arg.gsub(URI_REGEXP) do |url|
       url_enc = URI.escape(url)
       result = url
       SHORTURL_MAKERS.each do |site|
-        res = nil
-        Termtter::API.connection.start(site[:host], 80) do |http|
-          res = http.get(site[:format] % url_enc)
-        end
+        res = http_class.new(site[:host]).get(site[:format] % url_enc)
         if res.code == '200'
           result = res.body
           break
