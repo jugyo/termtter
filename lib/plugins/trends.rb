@@ -22,7 +22,7 @@ module Termtter::Client
       end
     end
     case command
-    when 'list'
+    when 'list', nil
       Net::HTTP.start(SEARCH_URI) do |http|
         res = http.get('/trends.json')
         show_trends JSON.parse(res.body)['trends']
