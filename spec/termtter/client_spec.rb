@@ -38,6 +38,12 @@ module Termtter
       command.help.should == 'help'
     end
 
+    it 'take register command as block with symbol name' do
+      lambda {
+        Client.register_command(:name) {}
+      }.should_not raise_error
+    end
+
     it 'should take add_command as block' do
       Client.add_command('test') do |c|
         c.aliases = ['t']

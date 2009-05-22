@@ -83,13 +83,13 @@ module Termtter
             arg
           when Hash
             Command.new(arg)
-          when String
+          when String, Symbol
             options = { :name => arg }
             options.merge!(opts)
             options[:exec_proc] = block
             Command.new(options)
           else
-            raise ArgumentError, 'must be given Termtter::Command, Hash or String with block'
+            raise ArgumentError, 'must be given Termtter::Command, Hash or String(Symbol) with block'
           end
         @commands[command.name] = command
       end
