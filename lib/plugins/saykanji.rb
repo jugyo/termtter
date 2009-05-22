@@ -56,18 +56,15 @@ module Termtter::Client
                 :point => :output,
                 :exec_proc => lambda {|statuses, event|
                   return unless event == :update_friends_timeline
-                  Thread.start do
-                    say_threads.each { |t| t.join }
-                    say_threads << Thread.start {
-                      statuses.each do |s|
-                        if /[ぁ-んァ-ヴ一-龠]/ =~ s.text
-                          saykanji(s.text,
-                                   config.plugins.saykanji.say_speed.to_i)
-                        else
-                          say(s.screen_name, s.text)
-                        end
+                  say_threads << Thread.start do
+                    (say_threads - [Thread.current]).each { |t| t.join }
+                    statuses.each do |s|
+                      if /[ぁ-んァ-ヴ一-龠]/ =~ s.text
+                        saykanji(s.text, config.plugins.saykanji.say_speed.to_i)
+                      else
+                        say(s.screen_name, s.text)
                       end
-                    }
+                    end
                   end
                 }
                 )
