@@ -258,7 +258,12 @@ module Termtter
         end
         Readline.completion_proc = lambda {|input|
           begin
-            @commands.map {|name, command| command.complement(input) }.flatten.compact
+            words = []
+            words << @commands.map {|name, command| command.complement(input) }
+            get_hooks(:completion).each do |hook|
+              words << hook.call(input) rescue nil
+            end
+            words.flatten.compact
           rescue => e
             handle_error(e)
           end
