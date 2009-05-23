@@ -55,12 +55,17 @@ module Termtter
         @filters.clear
       end
 
-      def register_hook(arg)
+      def register_hook(arg, opts = {}, &block)
         hook = case arg
           when Hook
             arg
           when Hash
             Hook.new(arg)
+          when String, Symbol
+            options = { :name => arg }
+            options.merge!(opts)
+            options[:exec_proc] = block
+            Hook.new(options)
           else
             raise ArgumentError, 'must be given Termtter::Hook or Hash'
           end

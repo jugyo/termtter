@@ -226,6 +226,29 @@ module Termtter
       hook2_called.should == true
     end
 
+    it 'should take register_hook as block' do
+      process = lambda {}
+      Client.register_hook('test', &process)
+      hook = Client.get_hook(:test)
+      hook.name.should == :test
+      hook.exec_proc.should == process
+    end
+
+    it 'should take register_hook as block with options' do
+      process = lambda {}
+      Client.register_hook('test', :point => :foo, &process)
+      hook = Client.get_hook(:test)
+      hook.name.should == :test
+      hook.exec_proc.should == process
+      hook.points.should == [:foo]
+    end
+
+    it 'take register hook as block with symbol name' do
+      lambda {
+        Client.register_hook(:name) {}
+      }.should_not raise_error
+    end
+
     it 'run' do
       Client.should_receive(:load_config)
       Termtter::API.should_receive(:setup)
