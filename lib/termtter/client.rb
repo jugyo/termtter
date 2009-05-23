@@ -347,6 +347,14 @@ module Termtter
         @init_block = block
       end
 
+      def load_default_plugins
+        plug 'stdout' if config.stdout
+        plug 'standard_commands' if config.standard_commands
+        plug 'standard_completion' if config.standard_completion
+        plug 'auto_reload' if config.auto_reload
+        plug 'devel' if config.devel
+      end
+
       def run
         load_config()
         Termtter::API.setup()
@@ -354,10 +362,7 @@ module Termtter
 
         @init_block.call(self) if @init_block
 
-        plug 'stdout' if config.stdout
-        plug 'standard_commands' if config.standard_commands
-        plug 'auto_reload' if config.auto_reload
-        plug 'devel' if config.devel
+        load_default_plugins
 
         config.system.load_plugins.each do |plugin|
           plug plugin
