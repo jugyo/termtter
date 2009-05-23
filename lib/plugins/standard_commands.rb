@@ -465,43 +465,6 @@ module Termtter::Client
     puts TermColor.parse("replied => #{result.text} <90>#{result.id}</90>")
   end
 
-=begin
-  = Termtter reply command
-  == Usage
-  === list
-  * ステータスリストを連番と一緒に出す。
-  > reply [list|ls]
-  0: foo: foo's message
-  1: bar: bar's message
-  ..
-
-  * ユーザ指定してリスト作成。
-  > reply [list|ls] foo
-  0: foo: foo's message0
-  1: foo: foo's message1
-
-  === reply
-  メッセージ送信の際、@usernameが自動的に付与される。
-
-  * status_idを自分で入力してreply送信
-  > reply 1234567890 message to status_id
-  => @foo message to status_id (reply to 1234567890)
-
-  * reply listコマンドで出したステータス番号に対してreply送信
-  > reply up 0 message to status no
-  => @foo message to status_no
-
-  * 対象ユーザの最後の発言に対してreply
-  > reply @foo message to foo
-  => @foo message to foo
-
-  == Todo
-  * 英語で説明 => ヘルプを設定する
-  * リファクタ
-  * 補完
-  * 確認画面を出したい
-=end
-
   def self.normalize_as_user_name(text)
     text.strip.sub(/^@/, '')
   end
