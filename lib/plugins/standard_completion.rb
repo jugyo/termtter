@@ -4,6 +4,7 @@ module Termtter::Client
 
   public_storage[:users] ||= Set.new
   public_storage[:status_ids] ||= Set.new
+  public_storage[:hashtag] ||= Set.new
 
   register_hook(
     :name => :for_completion,
@@ -31,6 +32,18 @@ module Termtter::Client
         end
 
       users.map {|u| "#{command_str}@%s" % u }
+    end
+  end
+
+  register_hook(:collect_hashtags, :point => /^post_exec_/) do |cmd, arg, result|
+    public_storage[:hashtag] += arg.scan(/\s+#([^\s]+)/).flatten if arg
+  end
+
+  register_hook(:hashtags_completion, :point => :completion) do |input|
+    if /(.*)#([^\s]*)$/ =~ input
+      command_str = $1
+      part_of_hashtag = $2
+      public_storage[:hashtag].grep(/^#{Regexp.quote(part_of_hashtag)}/i).map { |i| "#{command_str}##{i}" }
     end
   end
 end
