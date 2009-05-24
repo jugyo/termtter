@@ -7,6 +7,8 @@ config.plugins.standard.set_default(
  :limit_format,
  '<<%=remaining_color%>><%=limit.remaining_hits%></<%=remaining_color%>>/<%=limit.hourly_limit%> until <%=limit.reset_time%> (<%=remaining_time%> remaining)')
 
+config.set_default(:easy_reply, true)
+
 module Termtter::Client
 
   register_command(
@@ -27,7 +29,16 @@ module Termtter::Client
     :name => :update, :alias => :u,
     :exec => lambda {|arg|
       unless arg.empty?
-        result = Termtter::API.twitter.update(arg)
+        params = 
+          if config.easy_reply && /^\s*(@\w+)/ =~ arg
+            user_name = normalize_as_user_name($1)
+            in_reply_to_status_id = Termtter::API.twitter.user(user_name).status.id rescue nil
+            in_reply_to_status_id ? {:in_reply_to_status_id => in_reply_to_status_id} : {}
+          else
+            {}
+          end
+
+        result = Termtter::API.twitter.update(arg, params)
         puts TermColor.parse("updated => #{result.text} <90>#{result.id}</90>")
       end
     },
