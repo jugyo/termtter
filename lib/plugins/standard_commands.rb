@@ -160,7 +160,7 @@ module Termtter::Client
       output(statuses, :search)
     },
     :completion_proc => lambda {|cmd, arg|
-      public_storage[:search_keywords].grep(/#{Regexp.quote(arg)}/).map { |i| "#{cmd} #{i}" }
+      public_storage[:search_keywords].grep(/^#{Regexp.quote(arg)}/).map { |i| "#{cmd} #{i}" }
     },
     :help => ["search,s TEXT", "Search for Twitter"]
   )
