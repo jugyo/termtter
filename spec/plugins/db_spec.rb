@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+# TODO: Add tests for associations
+
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe 'db' do
