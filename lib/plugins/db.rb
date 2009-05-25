@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-require 'rubygems'
 require 'sequel'
-
 
 module Termtter
   module DB
@@ -28,17 +26,19 @@ module Termtter
     end
 
     class Status < Sequel::Model
-      many_to_one :usre
+      many_to_one :user
     end
     
     class User < Sequel::Model
       one_to_many :statuses
     end
+  end
 
-    Client::register_hook(:collect_statuses_for_db, :point => :pre_filter) do |statuses, event|
+  module Client
+    register_hook(:collect_statuses_for_db, :point => :pre_filter) do |statuses, event|
       statuses.each do |s|
-        if Status.filter(:id => s.id).count == 0
-          Status << {
+        if DB::Status.filter(:id => s.id).count == 0
+          DB::Status << {
             :id => s.id,
             :text => s.text,
             :user_id => s.user.id,
@@ -46,13 +46,18 @@ module Termtter
           }
         end
 
-        if User.filter(:id => s.user.id).count == 0
-          User << {
+        if DB::User.filter(:id => s.user.id).count == 0
+          DB::User << {
             :id => s.user.id,
             :screen_name => s.user.screen_name
           }
         end
       end
+    end
+
+    register_command(:db_search, :alias => :ds) do |arg|
+      statuses = DB::Status.filter(:text.like("%#{arg}%"))
+      output(statuses, :db_search)
     end
   end
 end
