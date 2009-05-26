@@ -36,28 +36,56 @@ module Termtter
   module Client
     register_hook(:collect_statuses_for_db, :point => :pre_filter) do |statuses, event|
       statuses.each do |s|
-        if Status.filter(:id => s.id).count == 0
-          Status << {
-            :id => s.id,
-            :text => s.text,
-            :source => s.source,
-            :user_id => s.user.id,
-            :created_at => Time.parse(s.created_at)
-          }
+
+        # Save statuses
+        if Status.filter(:id => s.id).empty?
+          status = {}
+          Status.columns.each do |col|
+            status[col] =
+              case col
+              when :user_id
+                s.user.id
+              else
+                s[col]
+              end
+          end
+          Status << status
         end
 
-        if User.filter(:id => s.user.id).count == 0
-          User << {
-            :id => s.user.id,
-            :screen_name => s.user.screen_name
-          }
+        # Save users
+        if User.filter(:id => s.user.id).empty?
+          user = {}
+          User.columns.each do |col|
+            user[col] = s.user[col]
+          end
+          User << user
         end
+
       end
     end
 
     register_command(:db_search, :alias => :ds) do |arg|
-      statuses = Status.filter(:text.like("%#{arg}%"))
+      statuses = Status.filter(:text.like("%#{arg}%")).limit(20)
       output(statuses, :db_search)
+    end
+
+    register_command(:db_clear) do |arg|
+      if confirm('Are you shure?')
+        User.delete
+        Status.delete
+      end
+    end
+
+    register_command(:db_list, :alias => :l) do |arg|
+      user_name = normalize_as_user_name(arg)
+      statuses = Status.join(:users, :id => :user_id).filter(:users__screen_name => user_name).limit(20)
+      output(statuses, :db_search)
+    end
+
+    register_command(:db_execute) do |arg|
+      DB.execute(arg).each do |row|
+        p row
+      end
     end
   end
 end
