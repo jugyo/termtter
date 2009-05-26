@@ -36,17 +36,17 @@ module Termtter
   module Client
     register_hook(:collect_statuses_for_db, :point => :pre_filter) do |statuses, event|
       statuses.each do |s|
-        if Status.filter(:id => s.id).count == 0
+        if Status.filter(:id => s.id).empty?
           Status << {
             :id => s.id,
             :text => s.text,
             :source => s.source,
             :user_id => s.user.id,
-            :created_at => Time.parse(s.created_at)
+            :created_at => s.created_at
           }
         end
 
-        if User.filter(:id => s.user.id).count == 0
+        if User.filter(:id => s.user.id).empty?
           User << {
             :id => s.user.id,
             :screen_name => s.user.screen_name
@@ -56,7 +56,7 @@ module Termtter
     end
 
     register_command(:db_search, :alias => :ds) do |arg|
-      statuses = Status.filter(:text.like("%#{arg}%"))
+      statuses = Status.filter(:text.like("%#{arg}%")).limit(20)
       output(statuses, :db_search)
     end
   end
