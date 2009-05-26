@@ -55,12 +55,17 @@ module Termtter
         @filters.clear
       end
 
-      def register_hook(arg)
+      def register_hook(arg, opts = {}, &block)
         hook = case arg
           when Hook
             arg
           when Hash
             Hook.new(arg)
+          when String, Symbol
+            options = { :name => arg }
+            options.merge!(opts)
+            options[:exec_proc] = block
+            Hook.new(options)
           else
             raise ArgumentError, 'must be given Termtter::Hook or Hash'
           end
@@ -83,13 +88,13 @@ module Termtter
             arg
           when Hash
             Command.new(arg)
-          when String
+          when String, Symbol
             options = { :name => arg }
             options.merge!(opts)
             options[:exec_proc] = block
             Command.new(options)
           else
-            raise ArgumentError, 'must be given Termtter::Command, Hash or String with block'
+            raise ArgumentError, 'must be given Termtter::Command, Hash or String(Symbol) with block'
           end
         @commands[command.name] = command
       end
@@ -189,11 +194,8 @@ module Termtter
           @task_manager.invoke_and_wait do
             begin
               call_hooks("pre_exec_#{command.name.to_s}", command, modified_arg)
-              # exec command
-              result = command.call(command_str, modified_arg, text)
-              if result
-                call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
-              end
+              result = command.call(command_str, modified_arg, text) # exec command
+              call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
             rescue CommandCanceled
             end
           end
@@ -258,7 +260,12 @@ module Termtter
         end
         Readline.completion_proc = lambda {|input|
           begin
-            @commands.map {|name, command| command.complement(input) }.flatten.compact
+            words = []
+            words << @commands.map {|name, command| command.complement(input) }
+            get_hooks(:completion).each do |hook|
+              words << hook.call(input) rescue nil
+            end
+            words.flatten.compact
           rescue => e
             handle_error(e)
           end
@@ -337,6 +344,14 @@ module Termtter
         @init_block = block
       end
 
+      def load_default_plugins
+        plug 'stdout' if config.stdout
+        plug 'standard_commands' if config.standard_commands
+        plug 'standard_completion' if config.standard_completion
+        plug 'auto_reload' if config.auto_reload
+        plug 'devel' if config.devel
+      end
+
       def run
         load_config()
         Termtter::API.setup()
@@ -344,10 +359,7 @@ module Termtter
 
         @init_block.call(self) if @init_block
 
-        plug 'stdout' if config.stdout
-        plug 'standard_commands' if config.standard_commands
-        plug 'auto_reload' if config.auto_reload
-        plug 'devel' if config.devel
+        load_default_plugins
 
         config.system.load_plugins.each do |plugin|
           plug plugin

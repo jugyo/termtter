@@ -7,6 +7,8 @@ config.plugins.standard.set_default(
  :limit_format,
  '<<%=remaining_color%>><%=limit.remaining_hits%></<%=remaining_color%>>/<%=limit.hourly_limit%> until <%=limit.reset_time%> (<%=remaining_time%> remaining)')
 
+config.set_default(:easy_reply, true)
+
 module Termtter::Client
 
   register_command(
@@ -27,13 +29,17 @@ module Termtter::Client
     :name => :update, :alias => :u,
     :exec => lambda {|arg|
       unless arg.empty?
-        result = Termtter::API.twitter.update(arg)
+        params = 
+          if config.easy_reply && /^\s*(@\w+)/ =~ arg
+            user_name = normalize_as_user_name($1)
+            in_reply_to_status_id = Termtter::API.twitter.user(user_name).status.id rescue nil
+            in_reply_to_status_id ? {:in_reply_to_status_id => in_reply_to_status_id} : {}
+          else
+            {}
+          end
+
+        result = Termtter::API.twitter.update(arg, params)
         puts TermColor.parse("updated => #{result.text} <90>#{result.id}</90>")
-      end
-    },
-    :completion => lambda {|cmd, args|
-      if /(.*)@([^\s]*)$/ =~ args
-        find_user_candidates $2, "#{cmd} #{$1}@%s"
       end
     },
     :help => ["update,u TEXT", "Post a new message"]
@@ -67,8 +73,8 @@ module Termtter::Client
     :name => :direct, :aliases => [:d],
     :exec_proc => lambda {|arg|
       case arg
-      when /^([^\s]+)\s+(.*)\s*$/
-        user, text = $1, $2
+      when /^([^\s]+)\s+?(.*)\s*$/
+        user, text = normalize_as_user_name($1), $2
         Termtter::API.twitter.direct_message(user, text)
         puts "=> to:#{user} message:#{text}"
       when 'list'
@@ -87,10 +93,6 @@ module Termtter::Client
         )
       end
     },
-    :completion_proc => lambda {|cmd, arg|
-      find_user_candidates(arg, "#{cmd} %s") + 
-        ["list", "sent_list"].grep(/^#{Regexp.quote(arg)}/).map { |i| "#{cmd} #{i}" }
-    },
     :help => [
       ["direct,d USERNAME TEXT", "Send direct message"],
       ["direct,d list", 'List direct messages'],
@@ -101,7 +103,7 @@ module Termtter::Client
   register_command(
     :name => :profile, :aliases => [:p],
     :exec_proc => lambda {|arg|
-      user = Termtter::API.twitter.user(arg.strip)
+      user = Termtter::API.twitter.user(normalize_as_user_name(arg))
       attrs = %w[ name screen_name url description profile_image_url location protected following
         friends_count followers_count statuses_count favourites_count
         id time_zone created_at utc_offset notifications
@@ -112,16 +114,13 @@ module Termtter::Client
         puts "#{attr.gsub('_', ' ').rjust(label_width)}: #{value}"
       end
     },
-    :completion_proc => lambda {|cmd, arg|
-      find_user_candidates arg, "#{cmd} %s"
-    },
     :help => ["profile,p USERNAME", "Show user's profile"]
   )
 
   register_command(
     :name => :followers,
     :exec_proc => lambda {|arg|
-      user_name = arg.strip
+      user_name = normalize_as_user_name(arg)
       user_name = config.user_name if user_name.empty?
 
       followers = []
@@ -132,9 +131,6 @@ module Termtter::Client
       Termtter::Client.public_storage[:followers] = followers
       public_storage[:users] += followers.map(&:screen_name)
       puts followers.map(&:screen_name).join(' ')
-    },
-    :completion_proc => lambda {|cmd, arg|
-      find_user_candidates arg, "#{cmd} %s"
     },
     :help => ["followers", "Show followers"]
   )
@@ -147,12 +143,10 @@ module Termtter::Client
         statuses = Termtter::API.twitter.friends_timeline
       else
         event = :list_user_timeline
-        statuses = Termtter::API.twitter.user_timeline(arg)
+        user_name = normalize_as_user_name(arg)
+        statuses = Termtter::API.twitter.user_timeline(user_name)
       end
       output(statuses, event)
-    },
-    :completion_proc => lambda {|cmd, arg|
-      find_user_candidates arg, "#{cmd} %s"
     },
     :help => ["list,l [USERNAME]", "List the posts"]
   )
@@ -166,7 +160,7 @@ module Termtter::Client
       output(statuses, :search)
     },
     :completion_proc => lambda {|cmd, arg|
-      public_storage[:search_keywords].grep(/#{Regexp.quote(arg)}/).map { |i| "#{cmd} #{i}" }
+      public_storage[:search_keywords].grep(/^#{Regexp.quote(arg)}/).map { |i| "#{cmd} #{i}" }
     },
     :help => ["search,s TEXT", "Search for Twitter"]
   )
@@ -221,12 +215,10 @@ module Termtter::Client
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         if /^(\w+)/ =~ arg
-          res = Termtter::API::twitter.follow($1.strip)
+          user_name = normalize_as_user_name($1)
+          res = Termtter::API::twitter.follow(user_name)
         end
       end
-    },
-    :completion_proc => lambda {|cmd, args|
-      find_user_candidates args, "#{cmd} %s"
     },
     :help => ['follow USER', 'Follow user']
   )
@@ -236,12 +228,10 @@ module Termtter::Client
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         if /^(\w+)/ =~ arg
-          res = Termtter::API::twitter.leave($1.strip)
+          user_name = normalize_as_user_name($1)
+          res = Termtter::API::twitter.leave(user_name)
         end
       end
-    },
-    :completion_proc => lambda {|cmd, args|
-      find_user_candidates args, "#{cmd} %s"
     },
     :help => ['leave USER', 'Leave user']
   )
@@ -254,8 +244,8 @@ module Termtter::Client
       when /^\d+/
         id = arg.to_i
       when /^@([A-Za-z0-9_]+)/
-        user = $1
-        statuses = Termtter::API.twitter.user_timeline(user)
+        user_name = normalize_as_user_name($1)
+        statuses = Termtter::API.twitter.user_timeline(user_name)
         return if statuses.empty?
         id = statuses[0].id
       when /^\/(.*)$/
@@ -274,8 +264,6 @@ module Termtter::Client
     },
     :completion_proc => lambda {|cmd, arg|
       case arg
-      when /@(.*)/
-        find_user_candidates $1, "#{cmd} @%s"
       when /(\d+)/
         find_status_ids(arg).map{|id| "#{cmd} #{id}"}
       else
@@ -377,24 +365,6 @@ module Termtter::Client
     }.join("\n")
   end
 
-  # completion for standard commands
-
-  public_storage[:users] ||= Set.new
-  public_storage[:status_ids] ||= Set.new
-
-  register_hook(
-    :name => :for_completion,
-    :points => [:pre_filter],
-    :exec_proc => lambda {|statuses, event|
-      statuses.each do |s|
-        public_storage[:users].add(s.user.screen_name)
-        public_storage[:users] += s.text.scan(/@([a-zA-Z_0-9]*)/).flatten
-        public_storage[:status_ids].add(s.id)
-        public_storage[:status_ids].add(s.in_reply_to_status_id) if s.in_reply_to_status_id
-      end
-    }
-  )
-
   public_storage[:plugins] = (Dir["#{File.dirname(__FILE__)}/*.rb"] + Dir["#{Termtter::CONF_DIR}/plugins/*.rb"]).map do |f|
     f.match(%r|([^/]+).rb$|)[1]
   end
@@ -415,7 +385,6 @@ module Termtter::Client
       end
     },
     :completion_proc => lambda {|cmd, args|
-      find_user_candidates args, "#{cmd} %s"
       unless args.empty?
         find_plugin_candidates args, "#{cmd} %s"
       else
@@ -460,8 +429,9 @@ module Termtter::Client
         if s
           update_with_user_and_id($2, s.user.screen_name, s.id)
         end
-      when /^\s*@(\w+)/
-        in_reply_to_status_id = Termtter::API.twitter.user($1).status.id rescue nil
+      when /^\s*(@\w+)/
+        user_name = normalize_as_user_name($1)
+        in_reply_to_status_id = Termtter::API.twitter.user(user_name).status.id rescue nil
         params = in_reply_to_status_id ? {:in_reply_to_status_id => in_reply_to_status_id} : {}
         Termtter::API.twitter.update(arg, params)
         puts "=> #{arg}"
@@ -469,8 +439,6 @@ module Termtter::Client
     },
     :completion_proc => lambda {|cmd, arg|
       case arg
-      when /(.*)@([^\s]*)$/
-        find_user_candidates $2, "#{cmd} #{$1}@%s"
       when /(\d+)/
         find_status_ids(arg).map{|id| "#{cmd} #{id}"}
       end
@@ -508,42 +476,9 @@ module Termtter::Client
     puts TermColor.parse("replied => #{result.text} <90>#{result.id}</90>")
   end
 
-=begin
-  = Termtter reply command
-  == Usage
-  === list
-  * ステータスリストを連番と一緒に出す。
-  > reply [list|ls]
-  0: foo: foo's message
-  1: bar: bar's message
-  ..
-
-  * ユーザ指定してリスト作成。
-  > reply [list|ls] foo
-  0: foo: foo's message0
-  1: foo: foo's message1
-
-  === reply
-  メッセージ送信の際、@usernameが自動的に付与される。
-
-  * status_idを自分で入力してreply送信
-  > reply 1234567890 message to status_id
-  => @foo message to status_id (reply to 1234567890)
-
-  * reply listコマンドで出したステータス番号に対してreply送信
-  > reply up 0 message to status no
-  => @foo message to status_no
-
-  * 対象ユーザの最後の発言に対してreply
-  > reply @foo message to foo
-  => @foo message to foo
-
-  == Todo
-  * 英語で説明 => ヘルプを設定する
-  * リファクタ
-  * 補完
-  * 確認画面を出したい
-=end
+  def self.normalize_as_user_name(text)
+    text.strip.sub(/^@/, '')
+  end
 
   def self.find_plugin_candidates(a, b)
     public_storage[:plugins].
@@ -557,15 +492,5 @@ module Termtter::Client
 
   def self.find_users(text)
     public_storage[:users].select {|user| /^#{Regexp.quote(text)}/ =~ user}
-  end
-
-  def self.find_user_candidates(a, b)
-    users = 
-      if a.nil? || a.empty?
-        public_storage[:users].to_a
-      else
-        public_storage[:users].grep(/^#{Regexp.quote a}/i)
-      end
-    users.map {|u| b % u }
   end
 end

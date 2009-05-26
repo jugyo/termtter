@@ -38,6 +38,12 @@ module Termtter
       command.help.should == 'help'
     end
 
+    it 'take register command as block with symbol name' do
+      lambda {
+        Client.register_command(:name) {}
+      }.should_not raise_error
+    end
+
     it 'should take add_command as block' do
       Client.add_command('test') do |c|
         c.aliases = ['t']
@@ -218,6 +224,29 @@ module Termtter
       Client.exit
       hook1_called.should == false
       hook2_called.should == true
+    end
+
+    it 'should take register_hook as block' do
+      process = lambda {}
+      Client.register_hook('test', &process)
+      hook = Client.get_hook(:test)
+      hook.name.should == :test
+      hook.exec_proc.should == process
+    end
+
+    it 'should take register_hook as block with options' do
+      process = lambda {}
+      Client.register_hook('test', :point => :foo, &process)
+      hook = Client.get_hook(:test)
+      hook.name.should == :test
+      hook.exec_proc.should == process
+      hook.points.should == [:foo]
+    end
+
+    it 'take register hook as block with symbol name' do
+      lambda {
+        Client.register_hook(:name) {}
+      }.should_not raise_error
     end
 
     it 'run' do
