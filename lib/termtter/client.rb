@@ -396,6 +396,8 @@ module Termtter
       end
 
       def confirm(message, default_yes = true, &block)
+        pause
+
         result = 
           if default_yes
             prompt = "\"#{message}".strip + "\" [Y/n] "
@@ -410,6 +412,8 @@ module Termtter
         end
 
         result
+      ensure
+        resume
       end
     end
   end
