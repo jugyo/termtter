@@ -395,14 +395,21 @@ module Termtter
         puts e.backtrace.join("\n")
       end
 
-      def confirm(message, default_yes = true)
-        if default_yes
-          prompt = "\"#{message}".strip + "\" [Y/n] "
-          /^y?$/i =~ Readline.readline(prompt, false) ? true : false
-        else
-          prompt = "\"#{message}".strip + "\" [N/y] "
-          /^n?$/i =~ Readline.readline(prompt, false) ? false : true
+      def confirm(message, default_yes = true, &block)
+        result = 
+          if default_yes
+            prompt = "\"#{message}".strip + "\" [Y/n] "
+            /^y?$/i =~ Readline.readline(prompt, false) ? true : false
+          else
+            prompt = "\"#{message}".strip + "\" [N/y] "
+            /^n?$/i =~ Readline.readline(prompt, false) ? false : true
+          end
+
+        if result && block
+          block.call
         end
+
+        result
       end
     end
   end
