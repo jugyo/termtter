@@ -76,7 +76,7 @@ module Termtter
       end
     end
 
-    register_command(:db_list, :alias => :l) do |arg|
+    register_command(:db_list) do |arg|
       user_name = normalize_as_user_name(arg)
       statuses = Status.join(:users, :id => :user_id).filter(:users__screen_name => user_name).limit(20)
       output(statuses, :db_search)
