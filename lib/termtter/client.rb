@@ -394,6 +394,16 @@ module Termtter
         puts "Error: #{e}"
         puts e.backtrace.join("\n")
       end
+
+      def confirm(message, default_yes = true)
+        if default_yes
+          prompt = "\"#{message}".strip + "\" [Y/n] "
+          /^y?$/i =~ Readline.readline(prompt, false) ? true : false
+        else
+          prompt = "\"#{message}".strip + "\" [N/y] "
+          /^n?$/i =~ Readline.readline(prompt, false) ? false : true
+        end
+      end
     end
   end
 end
