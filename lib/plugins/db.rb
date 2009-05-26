@@ -59,5 +59,12 @@ module Termtter
       statuses = Status.filter(:text.like("%#{arg}%")).limit(20)
       output(statuses, :db_search)
     end
+
+    register_command(:db_clear) do |arg|
+      if confirm('Are you shure?')
+        User.delete
+        Status.delete
+      end
+    end
   end
 end
