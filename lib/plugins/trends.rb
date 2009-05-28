@@ -72,8 +72,8 @@ module Termtter::Client
     public_storage[:trends].clear
     max = trends.size.to_s.size
     trends.each_with_index do |trend, idx|
-      public_storage[:trends] << trend.name
-      puts "#{idx.to_s.rjust(max)}: #{trend.name}"
+      public_storage[:trends] << trend['name']
+      puts "#{idx.to_s.rjust(max)}: #{trend['name']}"
     end
   end
 end
