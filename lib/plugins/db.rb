@@ -46,7 +46,7 @@ module Termtter
               when :user_id
                 s.user.id
               else
-                s[col]
+                s[col] rescue nil
               end
           end
           Status << status
