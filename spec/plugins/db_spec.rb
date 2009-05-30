@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# TODO: Add tests for associations
-
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe 'db' do
@@ -43,11 +41,12 @@ describe 'db' do
     user_1 = user_struct.new(1, 'jugyo')
     user_2 = user_struct.new(2, 'oyguj')
 
-    status_struct = Struct.new(:id, :text, :source, :user, :created_at)
+    status_struct = Struct.new(:id, :text, :source, :user, :in_reply_to_status_id,
+      :in_reply_to_user_id, :created_at)
     statuses = []
-    statuses << status_struct.new(1, 'foo', 'termtter', user_1, Time.now.to_s)
-    statuses << status_struct.new(2, 'bar', 'termtter', user_1, Time.now.to_s)
-    statuses << status_struct.new(3, 'xxx', 'web', user_2, Time.now.to_s)
+    statuses << status_struct.new(1, 'foo', 'termtter', user_1, 100, Time.now.to_s)
+    statuses << status_struct.new(2, 'bar', 'termtter', user_1, nil, nil, Time.now.to_s)
+    statuses << status_struct.new(3, 'xxx', 'web', user_2, nil, nil, Time.now.to_s)
 
     Termtter::Client.hooks[:collect_statuses_for_db].call(statuses, :update_friends_timeline)
 
@@ -56,5 +55,8 @@ describe 'db' do
 
     dataset = Status.all
     dataset.size.should == 3
+
+    User[:id => 1].statuses.size.should == 2
+    Status[:id => 1].user.id.should == 1
   end
 end
