@@ -13,7 +13,7 @@ module Termtter::Client
   register_command(
     :name      => :retweet,
     :aliases   => [:rt],
-    :help      => ['retweet,rt (TYPABLE|ID|@USER)', 'Post a retweet message'],
+    :help      => ['retweet,rt (ID|@USER)', 'Post a retweet message'],
     :exec_proc => lambda {|arg|
       arg, comment = arg.split(/\s/)
       if public_storage[:typable_id] && s = typable_id_status(arg)
@@ -27,18 +27,6 @@ module Termtter::Client
           statuses = Termtter::API.twitter.user_timeline(user)
           return if statuses.empty?
           post_retweet(statuses[0], comment)
-        end
-      end
-    },
-    :completion_proc => lambda {|cmd, arg|
-      if public_storage[:typable_id] && s = typable_id_status(arg)
-        "u #{ERB.new(config.plugins.retweet.format).result(binding)}"
-      else
-        case arg
-        when /@(.*)/
-          find_user_candidates $1, "#{cmd} @%s"
-        when /(\d+)/
-          find_status_ids(arg).map{|id| "#{cmd} #{$1}"}
         end
       end
     }
