@@ -10,7 +10,7 @@ module Termtter::Client
   SEARCH_URI = 'search.twitter.com'
   public_storage[:trends] = []
 
-  register_command(:trend) do |arg|
+  register_command :trend do |arg|
     command, first, second = arg.split(/\s/)
     query = []
     if first
@@ -57,6 +57,10 @@ module Termtter::Client
     when 'show'
       raise 'need number or word' if first.nil?
       word = public_storage[:trends][first.to_i] || first
+      call_commands "search #{word}"
+    when /^\d$/
+      word = public_storage[:trends][command.to_i]
+      raise 'no such trend' unless word
       call_commands "search #{word}"
     when 'open'
       raise 'nees number or word' if first.nil?
