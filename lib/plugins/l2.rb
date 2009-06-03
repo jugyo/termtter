@@ -21,5 +21,5 @@ module Termtter::Client
 end
 
 # l2.rb
-#   plugin 'l2'
+#   t.plug 'l2'
 # NOTE: l2.rb needs plugin/log

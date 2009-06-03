@@ -56,7 +56,7 @@ module Termtter::Client
 end
 
 # group.rb
-#   plugin 'group'
+#   t.plug 'group'
 #   config.plugins.group.groups = {
 #     :rits => %w(hakobe isano hitode909)
 #   }

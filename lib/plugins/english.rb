@@ -20,6 +20,6 @@ end
 #   select English posts only
 #
 # config sample:
-#   plugin 'english'
+#   t.plug 'english'
 # or,
-#   plugin 'english', :only => [:list_friends_timeline, :update_friends_timeline]
+#   t.plug 'english', :only => [:list_friends_timeline, :update_friends_timeline]
