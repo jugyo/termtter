@@ -55,7 +55,7 @@ module Termtter::Client
         show_trends trends[date]
       end
     when 'show'
-      raise 'nees number or word' if first.nil?
+      raise 'need number or word' if first.nil?
       word = public_storage[:trends][first.to_i] || first
       call_commands "search #{word}"
     when 'open'
