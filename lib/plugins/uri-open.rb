@@ -63,7 +63,7 @@ module Termtter::Client
   )
 end
 # ~/.termtter/config
-# plugin 'uri-open'
+# t.plug 'uri-open'
 #
 # see also: http://ujihisa.blogspot.com/2009/05/fixed-uri-open-of-termtter.html
 #
