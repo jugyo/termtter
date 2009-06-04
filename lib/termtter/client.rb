@@ -348,7 +348,6 @@ module Termtter
 
         @init_block.call(self) if @init_block
 
-        # load_default_plugins
         plug 'defaults'
 
         config.system.load_plugins.each do |plugin|
