@@ -21,9 +21,6 @@ module Termtter
     config.set_default(:update_interval, 300)
     config.set_default(:prompt, '> ')
     config.set_default(:devel, false)
-    config.set_default(:stdout, true)
-    config.set_default(:standard_commands, true)
-    config.set_default(:auto_reload, true)
 
     Thread.abort_on_exception = true
 
@@ -344,14 +341,6 @@ module Termtter
         @init_block = block
       end
 
-      def load_default_plugins
-        plug 'stdout' if config.stdout
-        plug 'standard_commands' if config.standard_commands
-        plug 'standard_completion' if config.standard_completion
-        plug 'auto_reload' if config.auto_reload
-        plug 'devel' if config.devel
-      end
-
       def run
         load_config()
         Termtter::API.setup()
@@ -359,7 +348,8 @@ module Termtter
 
         @init_block.call(self) if @init_block
 
-        load_default_plugins
+        # load_default_plugins
+        plug 'defaults'
 
         config.system.load_plugins.each do |plugin|
           plug plugin
