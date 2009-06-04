@@ -10,7 +10,7 @@ OptionParser.new { |opt|
   end
 
   opt.on('-d', '--devel', 'Start in developer mode') do |flg|
-    config.system.__assign__(:devel, true) if flg
+    config.__assign__(:devel, true) if flg
   end
 
   config.system.cmd_mode = false
