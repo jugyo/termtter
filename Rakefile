@@ -44,7 +44,7 @@ end
 desc 'run all specs'
 Spec::Rake::SpecTask.new do |t|
   t.spec_files = FileList['spec/**/*_spec.rb']
-  t.spec_opts = ['--colour --format progress --loadby mtime --reverse']
+  t.spec_opts = ['-c']
 end
 
 Rake::RDocTask.new do |t|
