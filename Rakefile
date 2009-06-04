@@ -55,4 +55,4 @@ Rake::RDocTask.new do |t|
   t.rdoc_files.include('README.rdoc', 'lib/**/*.rb')
 end
 
-CLEAN.include [ 'pkg', '*.gem' ]
+CLEAN.include [ 'pkg', 'rdoc' ]
