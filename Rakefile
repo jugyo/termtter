@@ -33,6 +33,19 @@ Rake::GemPackageTask.new(spec) do |p|
   p.need_tar = true
 end
 
+task :gemspec do
+  filename = "#{name}.gemspec"
+  open(filename, 'w') do |f|
+    f.write spec.to_ruby
+  end
+  puts <<-EOS
+  Successfully generated gemspec
+  Name: #{name}
+  Version: #{version}
+  File: #{filename}
+  EOS
+end
+
 task :install => [ :package ] do
   sh %{sudo gem install pkg/#{name}-#{version}.gem}
 end
