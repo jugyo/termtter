@@ -39,14 +39,6 @@ module Termtter::Client
           end
         end
       end
-    },
-    :completion_proc => lambda {|cmd, arg|
-      case arg
-      when /@(.*)/
-        find_user_candidates $1, "#{cmd} @%s"
-      when /(\d+)/
-        find_status_ids(arg).map{|id| "#{cmd} #{$1}"}
-      end
     }
   )
 end
