@@ -214,10 +214,8 @@ module Termtter::Client
     :name => :follow, :aliases => [],
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
-        if /^(\w+)/ =~ arg
-          user_name = normalize_as_user_name($1)
-          res = Termtter::API::twitter.follow(user_name)
-        end
+        user_name = normalize_as_user_name(arg)
+        res = Termtter::API::twitter.follow(user_name)
       end
     },
     :help => ['follow USER', 'Follow user']
@@ -227,10 +225,8 @@ module Termtter::Client
     :name => :leave, :aliases => [],
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
-        if /^(\w+)/ =~ arg
-          user_name = normalize_as_user_name($1)
-          res = Termtter::API::twitter.leave(user_name)
-        end
+        user_name = normalize_as_user_name(arg)
+        res = Termtter::API::twitter.leave(user_name)
       end
     },
     :help => ['leave USER', 'Leave user']
