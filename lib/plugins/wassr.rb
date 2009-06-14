@@ -42,9 +42,6 @@ module Termtter::Client
       event = :wassr_friends_timeline
       print_statuses(statuses, event)
     },
-    :completion_proc => lambda {|cmd, arg|
-      find_user_candidates arg, "#{cmd} %s"
-    },
     :help => ["wassr, wsr", "List the wassr timeline."]
   )
 end

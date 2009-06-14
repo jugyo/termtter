@@ -39,7 +39,7 @@ module Termtter::Client
           end
 
         result = Termtter::API.twitter.update(arg, params)
-        puts TermColor.parse("updated => #{result.text} <90>#{result.id}</90>")
+        puts "updated => #{result.text}"
       end
     },
     :help => ["update,u TEXT", "Post a new message"]
@@ -57,7 +57,7 @@ module Termtter::Client
         end
       if id
         result = Termtter::API.twitter.remove_status(id)
-        puts TermColor.parse("deleted => #{result.text} <90>#{result.id}</90>")
+        puts "deleted => #{result.text}"
       end
     },
     :help => ['delete,del [STATUS ID]', 'Delete a status']
@@ -214,10 +214,8 @@ module Termtter::Client
     :name => :follow, :aliases => [],
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
-        if /^(\w+)/ =~ arg
-          user_name = normalize_as_user_name($1)
-          res = Termtter::API::twitter.follow(user_name)
-        end
+        user_name = normalize_as_user_name(arg)
+        res = Termtter::API::twitter.follow(user_name)
       end
     },
     :help => ['follow USER', 'Follow user']
@@ -227,10 +225,8 @@ module Termtter::Client
     :name => :leave, :aliases => [],
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
-        if /^(\w+)/ =~ arg
-          user_name = normalize_as_user_name($1)
-          res = Termtter::API::twitter.leave(user_name)
-        end
+        user_name = normalize_as_user_name(arg)
+        res = Termtter::API::twitter.leave(user_name)
       end
     },
     :help => ['leave USER', 'Leave user']
@@ -365,7 +361,7 @@ module Termtter::Client
     }.join("\n")
   end
 
-  public_storage[:plugins] = (Dir["#{File.dirname(__FILE__)}/*.rb"] + Dir["#{Termtter::CONF_DIR}/plugins/*.rb"]).map do |f|
+  public_storage[:plugins] = (Dir["#{File.dirname(__FILE__)}/../*.rb"] + Dir["#{Termtter::CONF_DIR}/plugins/*.rb"]).map do |f|
     f.match(%r|([^/]+).rb$|)[1]
   end
 
@@ -473,7 +469,7 @@ module Termtter::Client
   def self.update_with_user_and_id(text, username, id)
     text = "@#{username} #{text}"
     result = Termtter::API.twitter.update(text, {'in_reply_to_status_id' => id})
-    puts TermColor.parse("replied => #{result.text} <90>#{result.id}</90>")
+    puts "replied => #{result.text}"
   end
 
   def self.normalize_as_user_name(text)

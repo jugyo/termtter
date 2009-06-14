@@ -24,9 +24,6 @@ module Termtter::Client
       end
       output(statuses, event)
     },
-    :completion_proc => lambda {|cmd, arg|
-      find_user_candidates arg, "#{cmd} %s"
-    },
     :help => ["list,l [USERNAME]", "List the posts"]
   )
 end

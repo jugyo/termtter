@@ -17,11 +17,6 @@ module Termtter::Client
         end
       end
     },
-    :completion_proc => lambda {|cmd, args|
-      if /(.*)@([^\s]*)$/ =~ args
-        find_user_candidates $2, "#{cmd} #{$1}@%s"
-      end
-    },
     :help => ["multi_reply,mp TEXT", "Reply to multi user"]
   )
 end

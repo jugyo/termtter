@@ -15,14 +15,11 @@ module Termtter::Client
     :name => :fibyou,
     :exec_proc => lambda {|arg|
       /(\w+)\s(\d+)/ =~ arg
-      name = $1
+      name = normalize_as_user_name($1)
       n = $2.to_i
       text = "@#{name} fib(#{n}) = #{fib n}"
       Termtter::API.twitter.update(text)
       puts "=> " << text
-    },
-    :completion_proc => lambda {|cmd, arg|
-      find_user_candidates arg, "#{cmd} %s"
     }
   )
 end

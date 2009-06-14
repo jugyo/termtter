@@ -128,14 +128,10 @@ module Termtter::Client
   register_command(
                    :name => :yhara,
                    :exec_proc => lambda{|arg|
-                     text = "#{'@' if arg[0..0] != '@'}#{arg} #{Yharian::text}"
+                     name = normalize_as_user_name(arg)
+                     text = "@#{name} #{Yharian::text}"
                      Termtter::API.twitter.update(text)
                      puts "=> #{text}"
-                   },
-                   :completion_proc => lambda {|cmd, args|
-                     if /(.*)@([^\s]*)$/ =~ args
-                       find_user_candidates $2, "#{cmd} #{$1}@%s"
-                     end
                    },
                    :help => ["yhara (USER)", 'Post a new Yharian sentence']
                    )

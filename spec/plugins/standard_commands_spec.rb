@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 require File.dirname(__FILE__) + '/../spec_helper'
-plugin 'standard_commands'
+Termtter::Client.plug 'defaults/standard_commands'
 
 module Termtter
   describe Client do
