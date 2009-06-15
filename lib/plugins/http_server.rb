@@ -1,6 +1,8 @@
 require 'webrick'
 require 'logger'
 
+config.plugins.http_server.set_default(:port, 5678)
+
 module Termtter::Client
   register_hook(:http_server_output, :point => :output) do |statuses, event|
     @http_server_output = statuses.to_json
@@ -13,7 +15,11 @@ module Termtter::Client
   @http_server_logger = Logger.new(STDOUT)
   @http_server_logger.level = Logger::WARN
   @http_server = WEBrick::HTTPServer.new(
-    :BindAddress => '127.0.0.1', :Port => 3000, :Logger => @http_server_logger, :AccessLog => [])
+    :BindAddress => '127.0.0.1',
+    :Port => config.plugins.http_server.port,
+    :Logger => @http_server_logger,
+    :AccessLog => []
+  )
 
   @http_server.mount_proc('/') do |req, res|
     @http_server_output = ''
