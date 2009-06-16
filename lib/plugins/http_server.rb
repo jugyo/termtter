@@ -4,6 +4,10 @@ require 'logger'
 config.plugins.http_server.set_default(:port, 5678)
 
 module Termtter::Client
+  if @http_server
+    @http_server.shutdown # for reload
+  end
+
   register_hook(:http_server_output, :point => :output) do |statuses, event|
     @http_server_output = statuses.to_json
   end
@@ -21,10 +25,10 @@ module Termtter::Client
     :AccessLog => []
   )
 
-  @http_server.mount_proc('/') do |req, res|
+  @http_server.mount_proc('/execute') do |req, res|
     @http_server_output = ''
     begin
-      command = req.path.sub(/^\/+/, '')
+      command = req.path.sub(/^\/execute\//, '')
       call_commands(command)
       res['Content-Type'] = 'text/javascript; charset=utf-8';
       res.body = @http_server_output
