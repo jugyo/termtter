@@ -63,28 +63,28 @@ $(document).ready(function(){
   }, 10 * 1000)
 })
 
-$("#prompt").bind("ajaxStart", function(){
-  $(this).hide();
-}).bind("ajaxComplete", function(){
-  $(this).show();
-});
-
 $("#result").bind("ajaxError", function(event, reqest){
   $('<div class="error_message"/>').text(reqest.responseText).appendTo(this);
+  scrollTo(0, document.height);
+  $("#prompt").show();
+}).bind("ajaxComplete", function(event, reqest){
+  scrollTo(0, document.height);
+  $("#prompt").show();
 });
 
 $("#execute_command").submit(function () {
   var command = $("#execute_text").val();
   $('<div class="status_line"/>').text('> ' + command).appendTo('#result');
   if (command.match(/^\s*$/)) {
-    return;
+    return false;
   }
+  $("#execute_text").val('');
+  $("#prompt").hide();
   execute_command(command);
   return false;
 });
 
 function execute_command(command) {
-  $("#execute_text").val('');
   var path = "/" + command
   $.getJSON(path,
     function(data){
@@ -98,8 +98,8 @@ function execute_command(command) {
         $('<span class="status_info"/>').text(status.id).appendTo(status_line);
         status_line.appendTo("#result");
       });
-      scrollTo(0, document.height);
-    });
+    }
+  );
 }
 
 function format_datetime(time_value) {
