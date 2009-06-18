@@ -350,10 +350,7 @@ module Termtter
         @init_block.call(self) if @init_block
 
         plug 'defaults'
-
-        config.system.load_plugins.each do |plugin|
-          plug plugin
-        end
+        plug config.system.load_plugins
 
         config.system.eval_scripts.each do |script|
           begin
