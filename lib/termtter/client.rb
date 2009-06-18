@@ -154,10 +154,9 @@ module Termtter
       end
 
       def apply_filters_for_hook(hook_name, statuses, event)
-        get_hooks(hook_name).each do |hook|
-          statuses = hook.call(statuses, event)
-        end
-        statuses
+        get_hooks(hook_name).inject(statuses) {|s, hook|
+          hook.call(s, event)
+        }
       end
 
       # return last hook return value
