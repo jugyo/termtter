@@ -62,7 +62,7 @@ module Termtter
             options[:exec_proc] = block
             Hook.new(options)
           else
-            raise ArgumentError, 'must be given Termtter::Hook or Hash'
+            raise ArgumentError, 'must be given Termtter::Hook, Hash, String or Symbol'
           end
         @hooks[hook.name] = hook
       end
