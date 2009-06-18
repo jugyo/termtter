@@ -289,7 +289,7 @@ module Termtter
             @task_manager.invoke_and_wait do
               Readline::HISTORY.pop if buf.empty?
               begin
-                  call_commands(buf)
+                call_commands(buf)
               rescue CommandNotFound => e
                 warn "Unknown command \"#{e}\""
                 warn 'Enter "help" for instructions'
