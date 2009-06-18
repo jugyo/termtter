@@ -34,13 +34,13 @@ img {
   margin: 1px 0;
 }
 .profile_image {
-  margin: 0 8px;
+  margin: 0 4px;
 }
 .status_info {
   color: #5C5C5C;
 }
 .status_text {
-  margin-right: 8px;
+  margin-right: 4px;
 }
 </style>
 <body>
@@ -88,12 +88,12 @@ function execute_command(command) {
     function(data){
       $.each(data, function(i, status){
         var status_line = $('<div class="status_line"/>');
-        $('<span class="status_info"/>').text('(' + format_datetime(status.created_at) + ')').appendTo(status_line);
+        $('<span class="status_info"/>').text('(' + format_datetime(status.created_at) + ') ').appendTo(status_line);
         var user_link = $('<a/>').attr('href', 'http://twitter.com/' + status.user.screen_name).attr('target', '_blank');
         $('<img class="profile_image"/>').attr('src', status.user.profile_image_url).attr('height', '14').attr('width', '14').appendTo(user_link);
         user_link.appendTo(status_line);
-        $('<span class="status_text"/>').text(status.user.screen_name + ': ' + status.text).appendTo(status_line);
-        $('<span class="status_info"/>').text(status.id).appendTo(status_line);
+        $('<span class="status_text"/>').text(' ' + status.user.screen_name + ': ' + status.text).appendTo(status_line);
+        $('<span class="status_info"/>').text(' ' + status.id).appendTo(status_line);
         status_line.appendTo("#result");
       });
       scrollTo(0, document.height);
