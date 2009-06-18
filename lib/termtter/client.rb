@@ -135,7 +135,7 @@ module Termtter
       def output(statuses, event)
         return if statuses.nil? || statuses.empty?
 
-        statuses = statuses.sort_by{|s|s.id}
+        statuses = statuses.sort_by(&:id)
         call_hooks(:pre_filter, statuses, event)
 
         filtered = apply_filters_for_hook(:filter_for_output, statuses.map(&:dup), event)
