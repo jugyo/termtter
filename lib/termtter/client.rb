@@ -194,7 +194,7 @@ module Termtter
       end
 
       def find_commands(text)
-        @commands.values.select { |command| command.match?(text) }
+        @commands.values.select {|command| command.match?(text) }
       end
 
       def pause
@@ -312,7 +312,7 @@ module Termtter
 
       def default_logger
         logger = Logger.new(STDOUT)
-        logger.formatter = lambda { |severity, time, progname, message|
+        logger.formatter = lambda {|severity, time, progname, message|
           color =
             case severity
             when /^DEBUG/
@@ -358,7 +358,7 @@ module Termtter
           end
         end
 
-        config.system.run_commands.each { |cmd| call_commands(cmd) }
+        config.system.run_commands.each {|cmd| call_commands(cmd) }
 
         unless config.system.cmd_mode
           call_hooks(:initialize)
@@ -383,13 +383,13 @@ module Termtter
       def confirm(message, default_yes = true, &block)
         pause
 
-        result = 
+        result = # Boolean in duck typing
           if default_yes
             prompt = "\"#{message}".strip + "\" [Y/n] "
-            /^y?$/i =~ Readline.readline(prompt, false) ? true : false
+            /^y?$/i =~ Readline.readline(prompt, false)
           else
             prompt = "\"#{message}".strip + "\" [N/y] "
-            /^n?$/i =~ Readline.readline(prompt, false) ? false : true
+            /^n?$/i =~ Readline.readline(prompt, false)
           end
 
         if result && block
