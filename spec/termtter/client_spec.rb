@@ -359,6 +359,13 @@ module Termtter
         Client.should_receive(:load).with('plugins/aaa.rb')
         Client.plug :aaa
       end
+
+      it 'loads plugins' do
+        Client.should_receive(:load).with('plugins/aaa.rb')
+        Client.should_receive(:load).with('plugins/bbb.rb')
+        Client.should_receive(:load).with('plugins/ccc.rb')
+        Client.plug ['aaa', 'bbb', 'ccc']
+      end
     end
   end
 end

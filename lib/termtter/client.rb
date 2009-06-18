@@ -28,8 +28,12 @@ module Termtter
 
       attr_reader :commands, :hooks
 
-      # plug :: Name -> (Hash) -> IO () where NAME = String | Symbol
+      # plug :: Name -> (Hash) -> IO () where NAME = String | Symbol | [NAME]
       def plug(name, options = {})
+        if Array === name # Obviously `name.respond_to?(:each)` is better, but for 1.8.6 compatibility we cannot.
+          name.each {|i| plug(i, options) }
+          return
+        end
         options.each do |key, value|
           config.plugins.__refer__(name.gsub(/-/, '_').to_sym).__assign__(key.to_sym, value)
         end
