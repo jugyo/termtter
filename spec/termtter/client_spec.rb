@@ -350,5 +350,15 @@ module Termtter
         Client.commands.size.should == 0
       end
     end
+
+    describe '.plug' do
+      it 'loads a plugin' do
+        Client.should_receive(:load).with('plugins/aaa.rb')
+        Client.plug 'aaa'
+
+        Client.should_receive(:load).with('plugins/aaa.rb')
+        Client.plug :aaa
+      end
+    end
   end
 end
