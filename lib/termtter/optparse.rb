@@ -33,6 +33,19 @@ OptionParser.new { |opt|
     config.system.eval_scripts << script
   end
 
+  config.system.eval_scripts = []
+  opt.on('-m', '--monochrome', 'No shell escapes for color highlightings') do |script|
+    require 'termcolor'
+    module TermColor
+      class << self
+        alias parse_orig parse
+        def parse(o)
+          o.gsub(/<.+?>(.*?)<\/.+?>/, '\1')
+        end
+      end
+    end
+  end
+
   opt.version = Termtter::VERSION
   opt.parse!(ARGV)
 }
