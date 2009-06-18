@@ -28,6 +28,7 @@ module Termtter
 
       attr_reader :commands, :hooks
 
+      # plug :: Name -> (Hash) -> IO () where NAME = String | Symbol
       def plug(name, options = {})
         options.each do |key, value|
           config.plugins.__refer__(name.gsub(/-/, '_').to_sym).__assign__(key.to_sym, value)
