@@ -29,10 +29,8 @@ module Termtter
       attr_reader :commands, :hooks
 
       def plug(name, options = {})
-        unless options.empty?
-          options.each do |key, value|
-            config.plugins.__refer__(name.gsub(/-/, '_').to_sym).__assign__(key.to_sym, value)
-          end
+        options.each do |key, value|
+          config.plugins.__refer__(name.gsub(/-/, '_').to_sym).__assign__(key.to_sym, value)
         end
         load "plugins/#{name}.rb"
       rescue Exception => e
