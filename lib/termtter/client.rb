@@ -179,7 +179,6 @@ module Termtter
         raise CommandNotFound, text if commands.empty?
 
         commands.each do |command|
-          command_found = true
           command_str, command_arg = Command.split_command_line(text)
 
           modified_arg = command_arg
@@ -188,13 +187,11 @@ module Termtter
             modified_arg = hook.call(command_str, modified_arg)
           }
 
-          @task_manager.invoke_and_wait do
-            begin
-              call_hooks("pre_exec_#{command.name.to_s}", command, modified_arg)
-              result = command.call(command_str, modified_arg, text) # exec command
-              call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
-            rescue CommandCanceled
-            end
+          begin
+            call_hooks("pre_exec_#{command.name.to_s}", command, modified_arg)
+            result = command.call(command_str, modified_arg, text) # exec command
+            call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
+          rescue CommandCanceled
           end
         end
       end
@@ -292,14 +289,16 @@ module Termtter
         trap_setting()
         @input_thread = Thread.new do
           while buf = Readline.readline(ERB.new(config.prompt).result(API.twitter.__send__(:binding)), true)
-            Readline::HISTORY.pop if buf.empty?
-            begin
-              call_commands(buf)
-            rescue CommandNotFound => e
-              warn "Unknown command \"#{e}\""
-              warn 'Enter "help" for instructions'
-            rescue => e
-              handle_error e
+            @task_manager.invoke_and_wait do
+              Readline::HISTORY.pop if buf.empty?
+              begin
+                  call_commands(buf)
+              rescue CommandNotFound => e
+                warn "Unknown command \"#{e}\""
+                warn 'Enter "help" for instructions'
+              rescue => e
+                handle_error e
+              end
             end
           end
         end
