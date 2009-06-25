@@ -361,10 +361,6 @@ module Termtter::Client
     }.join("\n")
   end
 
-  public_storage[:plugins] = (Dir["#{File.dirname(__FILE__)}/../*.rb"] + Dir["#{Termtter::CONF_DIR}/plugins/*.rb"]).map do |f|
-    f.match(%r|([^/]+).rb$|)[1]
-  end
-
   register_command(
     :name      => :plug,
     :alias     => :plugin,
@@ -381,21 +377,29 @@ module Termtter::Client
       end
     },
     :completion_proc => lambda {|cmd, args|
-      unless args.empty?
-        find_plugin_candidates args, "#{cmd} %s"
-      else
-        public_storage[:plugins].sort
-      end
+      plugin_list.grep(/^#{Regexp.quote(args)}/).map{|i| "#{cmd} #{i}"}
     },
-    :help      => ['plug FILE', 'Load a plugin']
+    :help => ['plug FILE', 'Load a plugin']
   )
 
+  def self.plugin_list
+    (Dir["#{File.dirname(__FILE__)}/../*.rb"] + Dir["#{Termtter::CONF_DIR}/plugins/*.rb"]).
+      map{|f| File.basename(f).sub(/\.rb$/, '')}.
+      sort
+  end
+
   register_command(
-    :name      => :plugins,
+    :name => :plugins,
     :exec_proc => lambda {|arg|
-      puts public_storage[:plugins].sort.join("\n")
+      list = plugin_list
+      width = list.map{|i|i.size}.max + 2
+      a = []
+      list.sort.each_slice(4) {|i|
+        a << i.map{|j| j + (" " * (width - j.size))}.join
+      }
+      puts TermColor.parse('<green>' + TermColor.escape(a.join("\n")) + '</green>')
     },
-    :help      => ['plugins', 'Show list of plugins']
+    :help => ['plugins', 'Show list of plugins']
   )
 
   register_command(
@@ -476,12 +480,6 @@ module Termtter::Client
 
   def self.normalize_as_user_name(text)
     text.strip.sub(/^@/, '')
-  end
-
-  def self.find_plugin_candidates(a, b)
-    public_storage[:plugins].
-      grep(/^#{Regexp.quote a}/i).
-      map {|u| b % u }
   end
 
   def self.find_status_ids(text)
