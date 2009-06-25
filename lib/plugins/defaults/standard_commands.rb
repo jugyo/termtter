@@ -427,10 +427,12 @@ module Termtter::Client
         end
       when /^\s*(@\w+)/
         user_name = normalize_as_user_name($1)
-        in_reply_to_status_id = Termtter::API.twitter.user(user_name).status.id rescue nil
-        params = in_reply_to_status_id ? {:in_reply_to_status_id => in_reply_to_status_id} : {}
-        Termtter::API.twitter.update(arg, params)
-        puts "=> #{arg}"
+        s = Termtter::API.twitter.user(user_name).status
+        if s
+          params = s ? {:in_reply_to_status_id => s.id} : {}
+          Termtter::API.twitter.update(arg, params)
+          puts "=> #{arg}"
+        end
       end
     },
     :completion_proc => lambda {|cmd, arg|
