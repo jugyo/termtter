@@ -67,6 +67,7 @@ module Termtter::Client
     :name => :group_filter,
     :point => :filter_for_output,
     :exec_proc => lambda do |statuses, event|
+      return statuses unless event == :update_friends_timeline
       return statuses unless config.plugins.group.default_filter
       skip_group = config.plugins.group.default_filter
       r = []
