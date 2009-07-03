@@ -15,6 +15,7 @@ config.plugins.stdout.set_default(:pager, 'less -R -f +G')
 config.plugins.stdout.set_default(:window_height, 50)
 config.plugins.stdout.set_default(:typable_ids, ('aa'..'zz').to_a)
 config.plugins.stdout.set_default(:typable_id_prefix, '$')
+config.plugins.stdout.set_default(:show_as_thread, false)
 
 module Termtter
   class TypableIdGenerator
@@ -78,25 +79,7 @@ module Termtter
 
       output_text = ''
       statuses.each do |s|
-        text = TermColor.escape(s.text)
-        color = config.plugins.stdout.colors[s.user.id.to_i % config.plugins.stdout.colors.size]
-        status_id = Termtter::Client.data_to_typable_id(s.id)
-        reply_to_status_id =
-          if s.in_reply_to_status_id.nil?
-            nil
-          else
-            Termtter::Client.data_to_typable_id(s.in_reply_to_status_id)
-          end
-
-        time = "(#{Time.parse(s.created_at).strftime(time_format)})"
-        source =
-          case s.source
-          when />(.*?)</ then $1
-          when 'web' then 'web'
-          end
-
-        erbed_text = ERB.new(config.plugins.stdout.timeline_format).result(binding)
-        output_text << TermColor.parse(erbed_text) + "\n"
+        output_text << status_line(s, time_format)
       end
 
       if config.plugins.stdout.enable_pager && ENV['LINES'] && statuses.size > ENV['LINES'].to_i
@@ -108,6 +91,34 @@ module Termtter
       else
         print output_text
       end
+    end
+
+    def status_line(s, time_format, indent = 0)
+      return '' unless s
+      text = TermColor.escape(s.text)
+      color = config.plugins.stdout.colors[s.user.id.to_i % config.plugins.stdout.colors.size]
+      status_id = Termtter::Client.data_to_typable_id(s.id)
+      reply_to_status_id =
+        if s.in_reply_to_status_id.nil?
+          nil
+        else
+          Termtter::Client.data_to_typable_id(s.in_reply_to_status_id)
+        end
+
+      time = "(#{Time.parse(s.created_at).strftime(time_format)})"
+      source =
+        case s.source
+        when />(.*?)</ then $1
+        when 'web' then 'web'
+        end
+
+      erbed_text = ERB.new(config.plugins.stdout.timeline_format).result(binding)
+      indent_text = indent > 0 ? "#{'    ' * (indent - 1)} ┗ " : ''
+      text = TermColor.parse(indent_text + erbed_text) + "\n"
+      if config.plugins.stdout.show_as_thread && s.in_reply_to_status_id
+        text << status_line(Status[s.in_reply_to_status_id], time_format, indent + 1)
+      end
+      text
     end
   end
 
