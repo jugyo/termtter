@@ -13,6 +13,8 @@ rescue LoadError
   growl = nil
 end
 
+config.plugins.growl.set_default(:sticky, false)
+config.plugins.growl.set_default(:priority, 0)
 config.plugins.growl.set_default(:icon_cache_dir, "#{Termtter::CONF_DIR}/tmp/user_profile_images")
 FileUtils.mkdir_p(config.plugins.growl.icon_cache_dir) unless File.exist?(config.plugins.growl.icon_cache_dir)
 
@@ -41,9 +43,16 @@ Termtter::Client.register_hook(
     Thread.start do
       statuses.each do |s|
         unless growl
+          # TODO: Add option for priority and sticky
           system 'growlnotify', s.user.screen_name, '-m', s.text.gsub("\n",''), '-n', 'termtter', '--image', get_icon_path(s)
         else
-          growl.notify "update_friends_timeline", s.user.screen_name, CGI.unescapeHTML(s.text)
+          growl.notify(
+            "update_friends_timeline",
+            s.user.screen_name,
+            CGI.unescapeHTML(s.text),
+            config.plugins.growl.priority,
+            config.plugins.growl.sticky
+          )
         end
         sleep 0.1
       end

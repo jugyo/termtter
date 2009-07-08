@@ -14,11 +14,19 @@ def get_icon_path(s)
   if !File.exist?(cache_file) || (File.atime(cache_file) + 24*60*60) < Time.now
     File.open(cache_file, "wb") do |f|
       begin
-        image  = open(URI.escape(s.user.profile_image_url)).read
+        http_class = Net::HTTP
+        unless config.proxy.host.nil? or config.proxy.host.empty?
+          http_class = Net::HTTP::Proxy(config.proxy.host,
+                                        config.proxy.port,
+                                        config.proxy.user_name,
+                                        config.proxy.password)
+        end
+        uri = URI.parse(URI.escape(s.user.profile_image_url))
+        image = http_class.get(uri.host, uri.path, uri.port)
         rimage = Magick::Image.from_blob(image).first
         rimage = rimage.resize_to_fill(48, 48)
         f << rimage.to_blob
-      rescue OpenURI::HTTPError
+      rescue Net::ProtocolError
         return nil
       end
     end

@@ -383,7 +383,7 @@ module Termtter
       end
 
       def confirm(message, default_yes = true, &block)
-        pause
+        pause # TODO: TaskManager から呼ばれるならこれいらないなぁ
 
         result = # Boolean in duck typing
           if default_yes
@@ -400,7 +400,7 @@ module Termtter
 
         result
       ensure
-        resume
+        resume # TODO: TaskManager から呼ばれるならこれいらないなぁ
       end
     end
   end

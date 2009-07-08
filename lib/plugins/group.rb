@@ -4,9 +4,9 @@ module Termtter
   class Status
     def is_member?(group = nil)
       if group
-        config.plugins.group.groups[group].include? self.user_screen_name
+        config.plugins.group.groups[group].include? self.user.screen_name
       else
-        config.plugins.group.groups.values.flatten.include? self.user_screen_name
+        config.plugins.group.groups.values.flatten.include? self.user.screen_name
       end
     end
   end
@@ -15,6 +15,8 @@ end
 module Termtter::Client
   config.plugins.group.
     set_default(:groups, {})
+  config.plugins.group.
+    set_default(:default_filter, nil)
 
   def self.find_group_candidates(a, b)
     config.plugins.group.groups.keys.map {|k| k.to_s}.
@@ -52,7 +54,31 @@ module Termtter::Client
                    },
    :help => ['group,g GROUPNAME', 'Filter by group members']
    )
-  
+
+  def self.is_member?(status, group = nil)
+    if group
+      config.plugins.group.groups[group].include? status.user.screen_name
+    else
+      config.plugins.group.groups.values.flatten.include? status.user.screen_name
+    end
+  end
+
+  register_hook(
+    :name => :group_filter,
+    :point => :filter_for_output,
+    :exec_proc => lambda do |statuses, event|
+      return statuses unless event == :update_friends_timeline
+      return statuses unless config.plugins.group.default_filter
+      skip_group = config.plugins.group.default_filter
+      r = []
+      statuses.each do |s|
+        unless self.is_member?(s, :dqn)
+          r << s
+        end
+      end
+      r
+    end
+  )
 end
 
 # group.rb
