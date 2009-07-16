@@ -15,8 +15,9 @@ module Termtter::Client
   register_command(
     :name => :whois,
     :exec_proc => lambda {|name|
-      revaled = whois? name
-      Termtter::API.twitter.update(revaled)
+      resolved = whois? name
+      Termtter::API.twitter.update(resolved)
+      puts '=> ' << resolved
     }
   )  
 end
