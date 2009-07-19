@@ -282,6 +282,10 @@ module Termtter
               exit
             end
           end
+          trap("CONT") do
+            Readline.refresh_line
+          end
+        rescue ArgumentError
         rescue Errno::ENOENT
         end
       end
