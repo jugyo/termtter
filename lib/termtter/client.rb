@@ -76,6 +76,7 @@ module Termtter
       end
 
       def get_hooks(point)
+        # TODO: sort by alphabet
         @hooks.values.select do |hook|
           hook.match?(point)
         end
