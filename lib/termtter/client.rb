@@ -175,25 +175,27 @@ module Termtter
       end
 
       def call_commands(text)
-        return if text.empty?
+        @task_manager.invoke_and_wait do
+          return if text.empty?
 
-        commands = find_commands(text)
-        raise CommandNotFound, text if commands.empty?
+          commands = find_commands(text)
+          raise CommandNotFound, text if commands.empty?
 
-        commands.each do |command|
-          command_str, command_arg = Command.split_command_line(text)
+          commands.each do |command|
+            command_str, command_arg = Command.split_command_line(text)
 
-          modified_arg = command_arg
-          get_hooks("modify_arg_for_#{command.name.to_s}").each {|hook|
-            break if modified_arg == false # interrupt if hook return false
-            modified_arg = hook.call(command_str, modified_arg)
-          }
+            modified_arg = command_arg
+            get_hooks("modify_arg_for_#{command.name.to_s}").each {|hook|
+              break if modified_arg == false # interrupt if hook return false
+              modified_arg = hook.call(command_str, modified_arg)
+            }
 
-          begin
-            call_hooks("pre_exec_#{command.name.to_s}", command, modified_arg)
-            result = command.call(command_str, modified_arg, text) # exec command
-            call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
-          rescue CommandCanceled
+            begin
+              call_hooks("pre_exec_#{command.name.to_s}", command, modified_arg)
+              result = command.call(command_str, modified_arg, text) # exec command
+              call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
+            rescue CommandCanceled
+            end
           end
         end
       end
@@ -295,16 +297,14 @@ module Termtter
         trap_setting()
         @input_thread = Thread.new do
           while buf = Readline.readline(ERB.new(config.prompt).result(API.twitter.__send__(:binding)), true)
-            @task_manager.invoke_and_wait do
-              Readline::HISTORY.pop if buf.empty?
-              begin
-                call_commands(buf)
-              rescue CommandNotFound => e
-                warn "Unknown command \"#{e}\""
-                warn 'Enter "help" for instructions'
-              rescue => e
-                handle_error e
-              end
+            Readline::HISTORY.pop if buf.empty?
+            begin
+              call_commands(buf)
+            rescue CommandNotFound => e
+              warn "Unknown command \"#{e}\""
+              warn 'Enter "help" for instructions'
+            rescue => e
+              handle_error e
             end
           end
         end
