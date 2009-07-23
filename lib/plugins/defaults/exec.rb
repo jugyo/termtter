@@ -3,6 +3,7 @@
 module Termtter::Client
   register_command(
     :name => :exec,
+    :alias => :'!',
     :exec_proc => lambda{|arg|
       return unless arg
       begin
