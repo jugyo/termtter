@@ -12,7 +12,7 @@ module Termtter
     end
 
     def match?(point)
-      !points.select{|pt|
+      points.any? {|pt|
         case pt
         when String, Symbol
           pt.to_s == point.to_s
@@ -21,7 +21,7 @@ module Termtter
         else
           false
         end
-      }.empty?
+      }
     end
 
     def call(*args)
