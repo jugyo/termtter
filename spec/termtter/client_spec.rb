@@ -356,7 +356,9 @@ module Termtter
       it 'loads a plugin' do
         Client.should_receive(:load).with('plugins/aaa.rb')
         Client.plug 'aaa'
+      end
 
+      it 'loads a plugin with plugin name as Symbol' do
         Client.should_receive(:load).with('plugins/aaa.rb')
         Client.plug :aaa
       end
