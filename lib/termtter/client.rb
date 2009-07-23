@@ -14,7 +14,6 @@ module Termtter
     @commands = {}
     @filters = []
     @since_id = nil
-    @input_thread = nil
     @task_manager = Termtter::TaskManager.new
 
     config.set_default(:logger, nil)
@@ -218,10 +217,8 @@ module Termtter
 
       def exit
         puts 'finalizing...'
-
         call_hooks(:exit)
         @task_manager.kill
-        @input_thread.kill if @input_thread
       end
 
       def load_config
@@ -250,65 +247,6 @@ module Termtter
         FileUtils.mv(
           File.expand_path('~/.termtter___'),
           Termtter::CONF_FILE)
-      end
-
-      def setup_readline
-        if Readline.respond_to?(:basic_word_break_characters=)
-          Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
-        end
-        Readline.completion_proc = lambda {|input|
-          begin
-            words = []
-            words << @commands.map {|name, command| command.complement(input) }
-            get_hooks(:completion).each do |hook|
-              words << hook.call(input) rescue nil
-            end
-            words.flatten.compact
-          rescue => e
-            handle_error(e)
-          end
-        }
-        vi_or_emacs = config.editing_mode
-        unless vi_or_emacs.empty?
-          Readline.__send__("#{vi_or_emacs}_editing_mode")
-        end
-      end
-
-      def trap_setting()
-        begin
-          stty_save = `stty -g`.chomp
-          trap("INT") do
-            begin
-              system "stty", stty_save
-            ensure
-              exit
-            end
-          end
-          trap("CONT") do
-            Readline.refresh_line
-          end
-        rescue ArgumentError
-        rescue Errno::ENOENT
-        end
-      end
-
-      def start_input_thread
-        setup_readline()
-        trap_setting()
-        @input_thread = Thread.new do
-          while buf = Readline.readline(ERB.new(config.prompt).result(API.twitter.__send__(:binding)), true)
-            Readline::HISTORY.pop if buf.empty?
-            begin
-              call_commands(buf)
-            rescue CommandNotFound => e
-              warn "Unknown command \"#{e}\""
-              warn 'Enter "help" for instructions'
-            rescue => e
-              handle_error e
-            end
-          end
-        end
-        @input_thread.join
       end
 
       def logger
@@ -368,9 +306,9 @@ module Termtter
         config.system.run_commands.each {|cmd| call_commands(cmd) }
 
         unless config.system.cmd_mode
-          call_hooks(:initialize)
           @task_manager.run()
-          start_input_thread()
+          call_hooks(:initialize)
+          call_hooks(:launched)
         end
       end
 
