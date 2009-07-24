@@ -145,6 +145,37 @@ module Termtter
       decided_arg.should == 'FOO'
     end
 
+    it 'calls pre_command hooks' do
+      hook_called = false
+      Client.register_hook( :name => :test,
+                            :points => [:pre_command],
+                            :exec_proc => lambda {|text| hook_called = true; text})
+      Client.register_command(:name => :update, :exec => lambda{|arg|})
+
+      hook_called.should == false
+      Client.call_commands('')
+      hook_called.should == true
+
+      hook_called = false
+      Client.call_commands('update foo')
+      hook_called.should == true
+    end
+
+    it 'calls post_command hooks' do
+      hook_called = false
+      Client.register_hook( :name => :test,
+                            :points => [:post_command],
+                            :exec_proc => lambda {|text| hook_called = true})
+      Client.register_command(:name => :update, :exec => lambda{|arg|})
+
+      hook_called.should == false
+      Client.call_commands('')
+      hook_called.should == false
+
+      Client.call_commands('update foo')
+      hook_called.should == true
+    end
+
     it 'calls pre_exec hooks' do
       hook_called = false
       Client.register_hook( :name => :test,
