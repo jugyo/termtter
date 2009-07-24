@@ -20,7 +20,7 @@ module Termtter::Client
     :exec => lambda do |arg|
       path = arg.scan(/[^\s]+$/).flatten.first rescue nil
 
-      if path && File.exists?(path)
+      if path && File.exists?(path) && File.file?(path)
         text = arg.gsub(/[^\s]+$/, '').strip
       else
         path = Termtter::CONF_DIR + '/tmp/twitpic_screencapture.png'
@@ -39,7 +39,7 @@ module Termtter::Client
         Termtter::API.twitter.update(post_message)
         puts "  => \"#{post_message}\""
       else
-        raise "File not found: #{path}"
+        puts 'Aboat!'
       end
     end
   )
