@@ -175,6 +175,12 @@ module Termtter
       end
 
       def call_commands(text)
+        call_hooks("pre_command", text)
+        # FIXME: This block can become Maybe Monad
+        get_hooks("pre_command").each {|hook|
+          break if text == nil # interrupt if hook returns nil
+          text = hook.call(text)
+        }
         return if text.empty?
 
         commands = find_commands(text)
@@ -184,6 +190,7 @@ module Termtter
           command_str, command_arg = Command.split_command_line(text)
 
           modified_arg = command_arg
+          # FIXME: This block can become Maybe Monad
           get_hooks("modify_arg_for_#{command.name.to_s}").each {|hook|
             break if modified_arg == false # interrupt if hook return false
             modified_arg = hook.call(command_str, modified_arg)
@@ -196,6 +203,7 @@ module Termtter
           rescue CommandCanceled
           end
         end
+        call_hooks("post_command", text)
       end
 
       def find_commands(text)
