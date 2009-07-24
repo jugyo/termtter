@@ -1,3 +1,106 @@
+== 1.3.0 XXXX-XX-XX
+
+MEMO: still under working...
+
+Koichiro Ohba (3):
+      Added group_filter.
+
+Shin-ichiro OGAWA (1):
+      Fix retweet command.
+
+Tomohiro Nishimura (17):
+      add github-issues plugin
+      add icomment command to github-issues plugin
+      add isearch command to github-issues plugin
+      now help command allow you to search specific one
+      add functionality of hash tag tracking for sl plugin
+      fix Termtter::Client.plug bug
+      add pool plugin
+      add comment for retweet plugin
+      register_command can take command name as symbol
+      add trends plugin
+      remove configatron method (already 1.2.0)
+
+Yasuhiro Matsumoto (1):
+      some color was broken on windows.
+
+emasaka (33):
+      expand-tinyurl.rb: added force_encoding for Ruby 1.9
+      expand-tinyurl.rb: added config "skip_users"
+      expand-tinyurl.rb: added config "shortters"
+      expand-tinyurl.rb: add_filter -> register_hook
+      expand-tinyurl.rb: refactored expand_url method
+      set permission 0600 when creating config file
+      modified regexp of ff.im (plugin/expand-tinyurl.rb)
+      moved "t.plug 'auto_reload'" to the end of default config file.
+      Defined dummy Encoding::UTF_8 for Ruby 1.8 (expand-tinyurl.rb)
+      use multiple URL shortening APIs.
+      separated options and texts in nofity-send* plugins
+      trap SIGCONT to redraw prompt
+
+jugyo (79):
+      Fixed modify_arg_for_* hook
+      Added a hook point for completion.
+      Changed the signature of register_hook
+      Updated a sample script
+      Added a plugin 'standard_completion'.
+      Changed to load a plugin 'standard_completion' as default plugin.
+      Changed to use completion of standard_completion.rb
+      Implemented easy_reply
+      Implemented completion for hashtags.
+      Fixed regex for completion of search keywords.
+      Implemented a db plugins.
+      Fixed bug for associations.
+      Added a method 'confirm'.
+      Added a command 'db_clear'.
+      Changed confirm to call block if given.
+      Fixed confirm to call pause and resume.
+      Added commands 'do_list' and 'db_execute'
+      Removed alias 'l' from command 'db_list'.
+      Fixed hook :collect_statuses_for_db
+      Fixed a bug devel option is not working.
+      Removed setting for config.devel
+      Changed to remove dir 'rdoc' when 'rake clean'.
+      Fixed 'spec_opts'
+      Create a plugin 'defaults' that load deafult plugins.
+      Added a task to generate gemspec.
+      Fixed completion_proc
+      Fixed path of standard plugins.
+      Implemented the http sever plugin.
+      Changed port configurable
+      Changed path for execute command.
+      Changed to handle files
+      Added favicon.ico
+      Created a web client.
+      Fixed bugs for ajax
+      Modified html
+      コマンドの処理を全て TaskManager の invoke_and_wait の中でやるようにした
+      Fixed commands plug and plugins.
+      Added a option 'show_as_thread' to stdout.
+      Added options sticky and priority to plugin growl.
+      Applied a patch from Kiwamu Okabe to notify-send3
+      Added a command 'twitpic' for upload an image to TwitPic.
+      Moved a plug 'devel'.
+      Added a default task to Rakefile
+      Moved retweet plugin to defaults
+      Moved fib plugin to defaults
+      Moved exec plugin to defaults
+      Added a alias '!' for exec command.
+      Renamed alias of exit command 'e' to 'quit'.
+      Deleted a disused plugin
+      Created a plugin 'command_line'.
+
+ktgy (5):
+      Added saykanji.rb
+
+ujihisa (13):
+      Added -m
+      Fixed wrong warning message
+      Termtter::Client.plug: Enable to receive array
+
+yoppi (2):
+      Added 'whois' command
+
 == 0.0.1 2008-12-26
 
 * 1 major enhancement:
