@@ -3,14 +3,9 @@
 module Termtter::Client
   register_command(
     :name => :exec,
+    :alias => :'!',
     :exec_proc => lambda{|arg|
-      return unless arg
-      begin
-        pause
-        system *arg.split(/\s+/)
-      ensure
-        resume
-      end
+      system *arg.split(/\s+/) if arg
     },
     :help => ['exec SHELL_COMMAND', 'execute a shell command']
   )

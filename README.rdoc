@@ -77,6 +77,26 @@ http://groups.google.co.jp/group/termtter
 - Enhance the document and spec
 - Improve the UI(a status view, etc...)
 
+== ADVANCED USAGE:
+
+  t.plug 'curry'
+
+Your termtter can curry commands.
+
+  > curry u
+  u > hi
+  updated => hi
+  u > curry @ujm
+  u @ujm > hi
+  updated => @ujm hi
+  u @ujm > uncurry
+  >
+
+You can also type `<` as curry.
+
+  > < u
+  u >
+
 == LICENSE:
 
 (The MIT License)

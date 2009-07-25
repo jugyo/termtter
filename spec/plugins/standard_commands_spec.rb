@@ -12,7 +12,7 @@ module Termtter
         [:search,  [:s]],  [:replies, [:r]],
         [:show,    [  ]],  [:shows,   [  ]],
         [:limit,   [:lm]], [:pause,   [  ]],
-        [:resume,  [  ]],  [:exit,    [:e]],
+        [:resume,  [  ]],  [:exit,    [:quit]],
       ].each do |name, aliases|
         command = Client.get_command(name)
         command.name.should == name

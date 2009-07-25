@@ -6,6 +6,9 @@ require 'rake/gempackagetask'
 require 'rake/rdoctask'
 require 'termtter/version'
 
+desc "default task"
+task :default => [:install, :spec]
+
 name = 'termtter'
 version = Termtter::VERSION
 
@@ -14,7 +17,7 @@ spec = Gem::Specification.new do |s|
   s.version = version
   s.summary = "Terminal based Twitter client."
   s.description = "Termtter is a terminal based Twitter client."
-  s.files = %w(Rakefile README.rdoc History.txt) + Dir.glob("{lib,spec,test}/**/*")
+  s.files = %w(Rakefile README.rdoc ChangeLog) + Dir.glob("{lib,spec,test}/**/*")
   s.executables = ["kill_termtter", "termtter"]
   s.add_dependency("json_pure", ">= 1.1.3")
   s.add_dependency("highline", ">= 1.5.0")
@@ -26,7 +29,7 @@ spec = Gem::Specification.new do |s|
   s.rubyforge_project = 'termtter'
   s.has_rdoc = true
   s.rdoc_options = ["--main", "README.rdoc", "--exclude", "spec"]
-  s.extra_rdoc_files = ["README.rdoc", "History.txt"]
+  s.extra_rdoc_files = ["README.rdoc", "ChangeLog"]
 end
 
 Rake::GemPackageTask.new(spec) do |p|

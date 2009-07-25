@@ -15,7 +15,7 @@ module Termtter::Client
     :aliases   => [:rt],
     :help      => ['retweet,rt (ID|@USER)', 'Post a retweet message'],
     :exec_proc => lambda {|arg|
-      arg, comment = arg.split(/\s/)
+      arg, comment = arg.split(/\s/, 2)
       if public_storage[:typable_id] && s = typable_id_status(arg)
         post_retweet(s, comment)
       else

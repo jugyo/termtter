@@ -134,7 +134,7 @@ module Termtter
       Client.register_hook( :name => :test2,
                             :points => [:pre_exec_update],
                             :exec_proc => lambda {|cmd, arg| decided_arg = arg})
-      Client.register_command(:name => :update, :aliases => [:u])
+      Client.register_command(:name => :update, :aliases => [:u], :exec => lambda{|arg|})
 
       input_command.should == nil
       input_arg.should == nil
@@ -145,12 +145,43 @@ module Termtter
       decided_arg.should == 'FOO'
     end
 
+    it 'calls pre_command hooks' do
+      hook_called = false
+      Client.register_hook( :name => :test,
+                            :points => [:pre_command],
+                            :exec_proc => lambda {|text| hook_called = true; text})
+      Client.register_command(:name => :update, :exec => lambda{|arg|})
+
+      hook_called.should == false
+      Client.call_commands('')
+      hook_called.should == true
+
+      hook_called = false
+      Client.call_commands('update foo')
+      hook_called.should == true
+    end
+
+    it 'calls post_command hooks' do
+      hook_called = false
+      Client.register_hook( :name => :test,
+                            :points => [:post_command],
+                            :exec_proc => lambda {|text| hook_called = true})
+      Client.register_command(:name => :update, :exec => lambda{|arg|})
+
+      hook_called.should == false
+      Client.call_commands('')
+      hook_called.should == false
+
+      Client.call_commands('update foo')
+      hook_called.should == true
+    end
+
     it 'calls pre_exec hooks' do
       hook_called = false
       Client.register_hook( :name => :test,
                             :points => [:pre_exec_update],
                             :exec_proc => lambda {|cmd, arg| hook_called = true})
-      Client.register_command(:name => :update)
+      Client.register_command(:name => :update, :exec => lambda{|arg|})
 
       hook_called.should == false
       Client.call_commands('update foo')
@@ -161,8 +192,8 @@ module Termtter
       command_called = false
       Client.register_hook( :name => :test,
                             :points => [:pre_exec_update],
-                            :exec_proc => lambda {|cmd, arg| false})
-      Client.register_command(:name => :update, :exec_proc => lambda {|cmd, arg| command_called = true})
+                            :exec_proc => lambda {|cmd, arg| raise CommandCanceled})
+      Client.register_command(:name => :update, :exec_proc => lambda {|arg| command_called = true})
 
       command_called.should == false
       Client.call_commands('update foo')
@@ -247,6 +278,7 @@ module Termtter
     end
 
     it 'runs' do
+      pending
       Client.should_receive(:load_config)
       Termtter::API.should_receive(:setup)
       Client.should_receive(:start_input_thread)
@@ -355,7 +387,9 @@ module Termtter
       it 'loads a plugin' do
         Client.should_receive(:load).with('plugins/aaa.rb')
         Client.plug 'aaa'
+      end
 
+      it 'loads a plugin with plugin name as Symbol' do
         Client.should_receive(:load).with('plugins/aaa.rb')
         Client.plug :aaa
       end

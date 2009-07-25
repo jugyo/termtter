@@ -14,7 +14,6 @@ module Termtter
     @commands = {}
     @filters = []
     @since_id = nil
-    @input_thread = nil
     @task_manager = Termtter::TaskManager.new
 
     config.set_default(:logger, nil)
@@ -77,6 +76,7 @@ module Termtter
       end
 
       def get_hooks(point)
+        # TODO: sort by alphabet
         @hooks.values.select do |hook|
           hook.match?(point)
         end
@@ -175,26 +175,36 @@ module Termtter
       end
 
       def call_commands(text)
-        return if text.empty?
-
-        commands = find_commands(text)
-        raise CommandNotFound, text if commands.empty?
-
-        commands.each do |command|
-          command_str, command_arg = Command.split_command_line(text)
-
-          modified_arg = command_arg
-          get_hooks("modify_arg_for_#{command.name.to_s}").each {|hook|
-            break if modified_arg == false # interrupt if hook return false
-            modified_arg = hook.call(command_str, modified_arg)
+        @task_manager.invoke_and_wait do
+          call_hooks("pre_command", text)
+          # FIXME: This block can become Maybe Monad
+          get_hooks("pre_command").each {|hook|
+            break if text == nil # interrupt if hook returns nil
+            text = hook.call(text)
           }
+          return if text.empty?
 
-          begin
-            call_hooks("pre_exec_#{command.name.to_s}", command, modified_arg)
-            result = command.call(command_str, modified_arg, text) # exec command
-            call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
-          rescue CommandCanceled
+          commands = find_commands(text)
+          raise CommandNotFound, text if commands.empty?
+
+          commands.each do |command|
+            command_str, command_arg = Command.split_command_line(text)
+
+            modified_arg = command_arg
+            # FIXME: This block can become Maybe Monad
+            get_hooks("modify_arg_for_#{command.name.to_s}").each {|hook|
+              break if modified_arg == false # interrupt if hook return false
+              modified_arg = hook.call(command_str, modified_arg)
+            }
+
+            begin
+              call_hooks("pre_exec_#{command.name.to_s}", command, modified_arg)
+              result = command.call(command_str, modified_arg, text) # exec command
+              call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
+            rescue CommandCanceled
+            end
           end
+          call_hooks("post_command", text)
         end
       end
 
@@ -216,10 +226,8 @@ module Termtter
 
       def exit
         puts 'finalizing...'
-
         call_hooks(:exit)
         @task_manager.kill
-        @input_thread.kill if @input_thread
       end
 
       def load_config
@@ -248,63 +256,6 @@ module Termtter
         FileUtils.mv(
           File.expand_path('~/.termtter___'),
           Termtter::CONF_FILE)
-      end
-
-      def setup_readline
-        if Readline.respond_to?(:basic_word_break_characters=)
-          Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
-        end
-        Readline.completion_proc = lambda {|input|
-          begin
-            words = []
-            words << @commands.map {|name, command| command.complement(input) }
-            get_hooks(:completion).each do |hook|
-              words << hook.call(input) rescue nil
-            end
-            words.flatten.compact
-          rescue => e
-            handle_error(e)
-          end
-        }
-        vi_or_emacs = config.editing_mode
-        unless vi_or_emacs.empty?
-          Readline.__send__("#{vi_or_emacs}_editing_mode")
-        end
-      end
-
-      def trap_setting()
-        begin
-          stty_save = `stty -g`.chomp
-          trap("INT") do
-            begin
-              system "stty", stty_save
-            ensure
-              exit
-            end
-          end
-        rescue Errno::ENOENT
-        end
-      end
-
-      def start_input_thread
-        setup_readline()
-        trap_setting()
-        @input_thread = Thread.new do
-          while buf = Readline.readline(ERB.new(config.prompt).result(API.twitter.__send__(:binding)), true)
-            @task_manager.invoke_and_wait do
-              Readline::HISTORY.pop if buf.empty?
-              begin
-                call_commands(buf)
-              rescue CommandNotFound => e
-                warn "Unknown command \"#{e}\""
-                warn 'Enter "help" for instructions'
-              rescue => e
-                handle_error e
-              end
-            end
-          end
-        end
-        @input_thread.join
       end
 
       def logger
@@ -350,6 +301,7 @@ module Termtter
         @init_block.call(self) if @init_block
 
         plug 'defaults'
+        plug 'devel' if config.devel
         plug config.system.load_plugins
 
         config.system.eval_scripts.each do |script|
@@ -363,9 +315,9 @@ module Termtter
         config.system.run_commands.each {|cmd| call_commands(cmd) }
 
         unless config.system.cmd_mode
-          call_hooks(:initialize)
           @task_manager.run()
-          start_input_thread()
+          call_hooks(:initialize)
+          call_hooks(:launched)
         end
       end
 
