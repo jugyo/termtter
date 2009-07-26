@@ -20,10 +20,10 @@ module Termtter::Client
   )
 
   register_hook(
-    :name => :curry_pre,
-    :point => :pre_command,
+    :name => :apply_curry,
+    :point => :prepare_command,
     :exec => lambda {|text|
-      /^(uncurry|<)$/ =~ text ? text : public_storage[:curry] + text
+      /^(uncurry|>)$/ =~ text ? text : public_storage[:curry] + text
     }
   )
 
