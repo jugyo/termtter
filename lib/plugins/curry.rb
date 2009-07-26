@@ -8,6 +8,12 @@ module Termtter::Client
     :aliases => [:<],
     :exec_proc => lambda {|arg|
       public_storage[:curry] = arg + ' '
+    },
+    :completion => lambda {|cmd, arg|
+      commands.map{|name, command| command.complement(arg)}.
+        flatten.
+        compact.
+        map{|i| "#{cmd} #{i}"}
     }
   )
 
