@@ -1,6 +1,4 @@
-== 1.3.0 XXXX-XX-XX
-
-MEMO: still under working...
+== 1.3.0 2009-07-27
 
 Koichiro Ohba (3):
       Added group_filter.
@@ -89,6 +87,15 @@ jugyo (79):
       Renamed alias of exit command 'e' to 'quit'.
       Deleted a disused plugin
       Created a plugin 'command_line'.
+      Added a irb command.
+      Changed to case sensitive for user name completion.
+      Fixed Rakefile. (closed #82)
+      Changed to not handle error at TaskManager#invoke_and_wait
+      Created the hook point 'prepare_command', and clean the code.
+      Changed to use the hook point 'prepare_command' for curry.
+      Added completion for curry command.
+      Created a new hook point named 'prepare_prompt'.
+      Changed to use prepare_prompt for curry, and changed specs as command.
 
 ktgy (5):
       Added saykanji.rb
@@ -97,6 +104,7 @@ ujihisa (13):
       Added -m
       Fixed wrong warning message
       Termtter::Client.plug: Enable to receive array
+      Added new plugin 'curry'
 
 yoppi (2):
       Added 'whois' command
