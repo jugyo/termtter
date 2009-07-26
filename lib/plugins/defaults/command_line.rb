@@ -34,13 +34,21 @@ module Termtter
       Client.call_commands(command_text)
     end
 
+    def prompt
+      prompt_text = config.prompt
+      Client.get_hooks('prepare_prompt').each {|hook|
+        prompt_text = hook.call(prompt_text)
+      }
+      prompt_text
+    end
+
     private
 
     def start_input_thread
       setup_readline()
       trap_setting()
       @input_thread = Thread.new do
-        while buf = Readline.readline(ERB.new(config.prompt).result(Termtter::API.twitter.__send__(:binding)), true)
+        while buf = Readline.readline(ERB.new(prompt).result(Termtter::API.twitter.__send__(:binding)), true)
           Readline::HISTORY.pop if buf.empty?
           begin
             call(buf)
