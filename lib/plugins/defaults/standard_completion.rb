@@ -6,6 +6,7 @@ module Termtter::Client
 
   #
   # completion for status ids
+  # (I want to delete)
   #
 
   public_storage[:status_ids] ||= Set.new

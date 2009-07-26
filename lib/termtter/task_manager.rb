@@ -51,11 +51,7 @@ module Termtter
 
     def invoke_and_wait(&block)
       synchronize do
-        begin
-          yield
-        rescue Exception => e
-          Termtter::Client.handle_error(e)
-        end
+        yield
       end
     end
 
