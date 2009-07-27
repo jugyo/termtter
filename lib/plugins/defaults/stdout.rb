@@ -115,6 +115,7 @@ module Termtter
       erbed_text = ERB.new(config.plugins.stdout.timeline_format).result(binding)
       indent_text = indent > 0 ? "#{'    ' * (indent - 1)} ┗ " : ''
       text = TermColor.parse(indent_text + erbed_text) + "\n"
+      text = TermColor.unescape(text)
       if config.plugins.stdout.show_as_thread && s.in_reply_to_status_id
         text << status_line(Status[s.in_reply_to_status_id], time_format, indent + 1)
       end
