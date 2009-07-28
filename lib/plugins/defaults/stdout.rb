@@ -8,7 +8,7 @@ config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
   :timeline_format,
   '<90><%=time%> [<%=status_id%>]</90> <<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ' +
-  '<90><%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%><%=source%></90>'
+  '<90><%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%><%=source%><%=s.user.protected ? "[P]" : ""%></90>'
 )
 config.plugins.stdout.set_default(:enable_pager, true)
 config.plugins.stdout.set_default(:pager, 'less -R -f +G')
