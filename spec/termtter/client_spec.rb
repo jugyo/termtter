@@ -368,6 +368,13 @@ module Termtter
         Client.find_commands('bar').size.should == 1
       end
 
+      it 'check command exists' do
+        Client.command_exists?('foo').should == false
+        Client.command_exists?('foo1').should == true
+        Client.command_exists?('bar').should == true
+        Client.command_exists?('foo1 bar').should == true
+      end
+
       it 'finds no command' do
         Client.find_commands('foo').size.should == 0
       end
