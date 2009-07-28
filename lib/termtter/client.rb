@@ -208,6 +208,10 @@ module Termtter
         end
       end
 
+      def command_exists?(text)
+        @commands.values.any? {|command| command.match?(text) }
+      end
+
       def find_commands(text)
         @commands.values.select {|command| command.match?(text) }
       end
