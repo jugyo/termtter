@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 
 config.plugins.retweet.set_default(:format, '<%= comment %>RT @<%=s.user.screen_name%>: <%=s.text%>')
+config.plugins.retweet.set_default(:block_protected, true)
 
 module Termtter::Client
   def self.post_retweet(s, comment = nil)
-    comment += ' ' unless comment.nil?
-    text = ERB.new(config.plugins.retweet.format).result(binding)
-    Termtter::API.twitter.update(text)
-    puts "=> #{text}"
+    if config.plugins.retweet.block_protected && s.user.protected
+      puts "#{s.user.screen_name} is protected."
+    else
+      comment += ' ' unless comment.nil?
+      text = ERB.new(config.plugins.retweet.format).result(binding)
+      Termtter::API.twitter.update(text)
+      puts "=> #{text}"
+    end
   end
 
   register_command(
