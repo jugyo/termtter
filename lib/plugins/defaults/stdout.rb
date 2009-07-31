@@ -8,7 +8,7 @@ config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
   :timeline_format,
   '<90><%=time%> [<%=status_id%>]</90> <<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ' +
-  '<90><%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%><%=source%></90>'
+  '<90><%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%><%=source%><%=s.user.protected ? "[P]" : ""%></90>'
 )
 config.plugins.stdout.set_default(:enable_pager, true)
 config.plugins.stdout.set_default(:pager, 'less -R -f +G')
@@ -115,6 +115,7 @@ module Termtter
       erbed_text = ERB.new(config.plugins.stdout.timeline_format).result(binding)
       indent_text = indent > 0 ? "#{'    ' * (indent - 1)} ┗ " : ''
       text = TermColor.parse(indent_text + erbed_text) + "\n"
+      text = TermColor.unescape(text)
       if config.plugins.stdout.show_as_thread && s.in_reply_to_status_id
         text << status_line(Status[s.in_reply_to_status_id], time_format, indent + 1)
       end

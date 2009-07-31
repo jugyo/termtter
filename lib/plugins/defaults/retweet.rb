@@ -4,6 +4,11 @@ config.plugins.retweet.set_default(:format, '<%= comment %>RT @<%=s.user.screen_
 
 module Termtter::Client
   def self.post_retweet(s, comment = nil)
+    if s.user.protected &&
+        !confirm("#{s.user.screen_name} is protected! Are you sure?", false)
+      return
+    end
+
     comment += ' ' unless comment.nil?
     text = ERB.new(config.plugins.retweet.format).result(binding)
     Termtter::API.twitter.update(text)
