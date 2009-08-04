@@ -327,7 +327,7 @@ module Termtter::Client
   register_command(
     :name => :exit, :aliases => [:quit],
     :exec_proc => lambda {|arg| exit},
-    :help => ['exit,e', 'Exit']
+    :help => ['exit,quit', 'Exit']
   )
 
   register_command(
