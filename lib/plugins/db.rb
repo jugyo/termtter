@@ -21,6 +21,7 @@ unless DB.table_exists?(:users)
   DB.create_table :users do
     primary_key :id
     String :screen_name
+    boolean :protected
   end
 end
 
@@ -56,7 +57,12 @@ module Termtter
         if User.filter(:id => s.user.id).empty?
           user = {}
           User.columns.each do |col|
-            user[col] = s.user[col]
+            user[col] =
+              if event == :search && col == :protected
+                false
+              else
+                s.user[col]
+              end
           end
           User << user
         end
