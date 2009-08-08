@@ -143,8 +143,11 @@ module Termtter::Client
         statuses = Termtter::API.twitter.friends_timeline
       else
         event = :list_user_timeline
-        user_name = normalize_as_user_name(arg)
-        statuses = Termtter::API.twitter.user_timeline(user_name)
+        statuses = []
+        Array(arg.split).each do |user|
+          user_name = normalize_as_user_name(user)
+          statuses += Termtter::API.twitter.user_timeline(user_name)
+        end
       end
       output(statuses, event)
     },
