@@ -188,7 +188,6 @@ module Termtter
 
       def call_commands(text)
         @task_manager.invoke_and_wait do
-          call_hooks("pre_command", text)
           # FIXME: This block can become Maybe Monad
           get_hooks("pre_command").each {|hook|
             break if text == nil # interrupt if hook returns nil
