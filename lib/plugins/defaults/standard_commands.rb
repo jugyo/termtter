@@ -143,8 +143,11 @@ module Termtter::Client
         statuses = Termtter::API.twitter.friends_timeline
       else
         event = :list_user_timeline
-        user_name = normalize_as_user_name(arg)
-        statuses = Termtter::API.twitter.user_timeline(user_name)
+        statuses = []
+        Array(arg.split).each do |user|
+          user_name = normalize_as_user_name(user)
+          statuses += Termtter::API.twitter.user_timeline(user_name)
+        end
       end
       output(statuses, event)
     },
@@ -471,6 +474,35 @@ module Termtter::Client
     },
     :help => ["redo,.", "Execute previous command"]
   )
+
+  register_command(:alias,
+    :help => ['alias NAME VALUE', 'Add alias for any operations']) do |text|
+    from, to = text.split(' ', 2)
+    next unless to
+    begin
+      add_alias from, to
+    rescue
+      STDOUT.print 'override? [y/n] '
+      STDOUT.flush
+      next unless /y/ =~ STDIN.gets.chomp
+      add_alias from, to, false
+    end
+    puts "#{from} => #{to}"
+  end
+
+  register_command(:remove_alias,
+    :help => ['remove_alias NAME', 'Remove alias completely']) do |target|
+    remove_alias target
+    STDOUT.puts 'done'
+  end
+
+  register_hook :aliases, :point => :pre_command do |text|
+    command, args = text.split(' ', 2)
+    if original = @aliases[command]
+      text = [original, args].compact.join(' ')
+    end
+    text
+  end
 
   def self.update_with_user_and_id(text, username, id)
     text = "@#{username} #{text}"

@@ -13,6 +13,7 @@ module Termtter
     @hooks = {}
     @commands = {}
     @filters = []
+    @aliases = {}
     @since_id = nil
     @task_manager = Termtter::TaskManager.new
 
@@ -125,6 +126,17 @@ module Termtter
         register_command(command)
       end
 
+      def add_alias(from, to, confirm = true)
+        if confirm
+          raise 'Already exist' if @aliases[from]
+        end
+        @aliases[from] = to
+      end
+
+      def remove_alias(target)
+        @aliases.delete target
+      end
+
       # statuses => [status, status, ...]
       # status => {
       #             :id => status id,
@@ -176,7 +188,6 @@ module Termtter
 
       def call_commands(text)
         @task_manager.invoke_and_wait do
-          call_hooks("pre_command", text)
           # FIXME: This block can become Maybe Monad
           get_hooks("pre_command").each {|hook|
             break if text == nil # interrupt if hook returns nil
