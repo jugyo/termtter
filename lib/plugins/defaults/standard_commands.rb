@@ -483,7 +483,7 @@ module Termtter::Client
       next unless /y/ =~ STDIN.gets.chomp
       add_alias from, to, false
     end
-    puts({from => to}.inspect)
+    puts "#{from} => #{to}"
   end
 
   register_command(:remove_alias,
