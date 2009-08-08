@@ -475,6 +475,7 @@ module Termtter::Client
   register_command(:alias,
     :help => ['alias NAME VALUE', 'Add alias for any operations']) do |text|
     from, to = text.split(' ', 2)
+    next unless to
     begin
       add_alias from, to
     rescue
