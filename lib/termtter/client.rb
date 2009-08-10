@@ -21,7 +21,6 @@ module Termtter
     config.set_default(:update_interval, 300)
     config.set_default(:prompt, '> ')
     config.set_default(:devel, false)
-    config.set_default(:async, false)
 
     Thread.abort_on_exception = true
 
@@ -192,14 +191,13 @@ module Termtter
       end
 
       def call_commands(text)
-        invoke_method = config.async ? :invoke_later : :invoke_and_wait
-        @task_manager.send(invoke_method) do
+        @task_manager.invoke_and_wait do
           # FIXME: This block can become Maybe Monad
           get_hooks("pre_command").each {|hook|
             break if text == nil # interrupt if hook returns nil
             text = hook.call(text)
           }
-          next if text.empty?
+          return if text.empty?
 
           commands = find_commands(text)
           raise CommandNotFound, text if commands.empty?
@@ -222,7 +220,6 @@ module Termtter
             end
           end
           call_hooks("post_command", text)
-          Readline.refresh_line if config.async
         end
       end
 
