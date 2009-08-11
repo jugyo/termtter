@@ -37,7 +37,7 @@ describe 'db' do
   end
 
   it 'calls hook' do
-    user_struct = Struct.new(:id, :screen_name)
+    user_struct = Struct.new(:id, :screen_name, :protected)
     user_1 = user_struct.new(1, 'jugyo')
     user_2 = user_struct.new(2, 'oyguj')
 
