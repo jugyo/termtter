@@ -32,9 +32,9 @@ module Termtter::Client
   end
 
   register_hook(:user_names_completion, :point => :completion) do |input|
-    if /(.*)@([^\s]*)$/ =~ input
+    if /(.*)\s([^\s]*)$/ =~ input
       command_str = $1
-      part_of_user_name = $2
+      part_of_user_name = $2.gsub(/^@/, '')
 
       users = 
         if part_of_user_name.nil? || part_of_user_name.empty?
@@ -43,7 +43,7 @@ module Termtter::Client
           public_storage[:users].grep(/^#{Regexp.quote(part_of_user_name)}/i)
         end
 
-      users.map {|u| "#{command_str}@%s" % u }
+      users.map {|u| "#{command_str} @%s" % u }
     end
   end
 
