@@ -15,7 +15,7 @@ config.plugins.stdout.set_default(:pager, 'less -R -f +G')
 config.plugins.stdout.set_default(:window_height, 50)
 config.plugins.stdout.set_default(:typable_ids, ('aa'..'zz').to_a)
 config.plugins.stdout.set_default(:typable_id_prefix, '$')
-config.plugins.stdout.set_default(:show_as_thread, false)
+config.plugins.stdout.set_default(:show_as_thread, false) # db plugin is required
 
 module Termtter
   class TypableIdGenerator
