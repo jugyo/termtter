@@ -58,7 +58,7 @@ module Termtter
           user = {}
           User.columns.each do |col|
             user[col] =
-              if event == :search && col == :protected
+              if event.class == SearchEvent && col == :protected
                 false
               else
                 s.user[col]
