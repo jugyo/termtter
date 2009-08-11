@@ -32,9 +32,9 @@ module Termtter::Client
   end
 
   register_hook(:user_names_completion, :point => :completion) do |input|
-    if /(.*)@([^\s]*)$/ =~ input
+    if /(.*)\s([^\s]*)$/ =~ input
       command_str = $1
-      part_of_user_name = $2
+      part_of_user_name = $2.gsub(/^@/, '')
 
       users = 
         if part_of_user_name.nil? || part_of_user_name.empty?
@@ -43,7 +43,7 @@ module Termtter::Client
           public_storage[:users].grep(/^#{Regexp.quote(part_of_user_name)}/i)
         end
 
-      users.map {|u| "#{command_str}@%s" % u }
+      users.map {|u| "#{command_str} @%s" % u }
     end
   end
 
@@ -53,8 +53,10 @@ module Termtter::Client
 
   public_storage[:hashtag] ||= Set.new
 
-  register_hook(:collect_hashtags, :point => /^post_exec_/) do |cmd, arg, result|
-    public_storage[:hashtag] += arg.scan(/\s+#([^\s]+)/i).flatten if arg
+  register_hook(:collect_hashtags, :point => :pre_filter) do |statuses, event|
+    statuses.each do |s|
+      public_storage[:hashtag] += s.text.scan(/#([^\s]+)/).flatten
+    end
   end
 
   register_hook(:hashtags_completion, :point => :completion) do |input|

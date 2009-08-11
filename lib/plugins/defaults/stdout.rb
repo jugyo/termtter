@@ -15,7 +15,7 @@ config.plugins.stdout.set_default(:pager, 'less -R -f +G')
 config.plugins.stdout.set_default(:window_height, 50)
 config.plugins.stdout.set_default(:typable_ids, ('aa'..'zz').to_a)
 config.plugins.stdout.set_default(:typable_id_prefix, '$')
-config.plugins.stdout.set_default(:show_as_thread, false)
+config.plugins.stdout.set_default(:show_as_thread, false) # db plugin is required
 
 module Termtter
   class TypableIdGenerator
@@ -59,10 +59,10 @@ module Termtter
     end
 
     def call(statuses, event)
-      print_statuses(statuses)
+      print_statuses(statuses, event)
     end
 
-    def print_statuses(statuses, sort = true, time_format = nil)
+    def print_statuses(statuses, event, sort = true, time_format = nil)
       return unless statuses and statuses.first
       unless time_format
         t0 = Time.now
@@ -79,7 +79,7 @@ module Termtter
 
       output_text = ''
       statuses.each do |s|
-        output_text << status_line(s, time_format)
+        output_text << status_line(s, time_format, event)
       end
 
       if config.plugins.stdout.enable_pager && ENV['LINES'] && statuses.size > ENV['LINES'].to_i
@@ -93,7 +93,7 @@ module Termtter
       end
     end
 
-    def status_line(s, time_format, indent = 0)
+    def status_line(s, time_format, event, indent = 0)
       return '' unless s
       text = TermColor.escape(s.text)
       color = config.plugins.stdout.colors[s.user.id.to_i % config.plugins.stdout.colors.size]
@@ -114,10 +114,13 @@ module Termtter
 
       erbed_text = ERB.new(config.plugins.stdout.timeline_format).result(binding)
       indent_text = indent > 0 ? "#{'    ' * (indent - 1)} ┗ " : ''
+
+      erbed_text = Client.get_hooks(:pre_coloring).inject(erbed_text){|result, hook| hook.call(result, event)}
+
       text = TermColor.parse(indent_text + erbed_text) + "\n"
       text = TermColor.unescape(text)
       if config.plugins.stdout.show_as_thread && s.in_reply_to_status_id
-        text << status_line(Status[s.in_reply_to_status_id], time_format, indent + 1)
+        text << status_line(Status[s.in_reply_to_status_id], time_format, event, indent + 1)
       end
       text
     end

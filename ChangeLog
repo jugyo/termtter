@@ -1,3 +1,27 @@
+== 1.3.1 2009-08-10
+
+Takaaki SONE:
+      Fixed help message for Exit
+      added protected column to users table.
+
+Tomohiro Nishimura:
+      add new command around the alias
+      more powerful list command available!
+      add alias method to Client module
+
+emasaka:
+      Added protected sign to default timeline_format.
+      Added hugeurl plugin: alternative of expand-tinyurl
+
+jugyo:
+      Fixed for termtter shutdown when raise network error.
+      Added a method 'command_exists?'
+      Changed to apply TermColor.unescape for status.text
+      Changed retweet command to add confirmation for protected user.
+
+ujihisa:
+      Ignore case for completion of user's screen name
+
 == 1.3.0 2009-07-27
 
 Koichiro Ohba (3):

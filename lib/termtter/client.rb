@@ -42,6 +42,10 @@ module Termtter
         Termtter::Client.handle_error(e)
       end
 
+      def alias(name, value)
+        @aliases[name] = value
+      end
+
       def public_storage
         @public_storage ||= {}
       end
