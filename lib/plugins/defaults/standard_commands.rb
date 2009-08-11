@@ -154,19 +154,28 @@ module Termtter::Client
     :help => ["list,l [USERNAME]", "List the posts"]
   )
 
+  class SearchEvent; attr_reader :query; def initialize(query); @query = query end; end
   public_storage[:search_keywords] = Set.new
   register_command(
     :name => :search, :aliases => [:s],
     :exec_proc => lambda {|arg|
       statuses = Termtter::API.twitter.search(arg)
       public_storage[:search_keywords] << arg
-      output(statuses, :search)
+      output(statuses, SearchEvent.new(arg))
     },
     :completion_proc => lambda {|cmd, arg|
       public_storage[:search_keywords].grep(/^#{Regexp.quote(arg)}/).map { |i| "#{cmd} #{i}" }
     },
     :help => ["search,s TEXT", "Search for Twitter"]
   )
+  register_hook(:highlight_for_search_query, :point => :pre_coloring) do |text, event|
+    case event
+    when SearchEvent
+      text.gsub(/(#{Regexp.quote(event.query)})/i, '<on_magenta><white>\1</white></on_magenta>')
+    else
+      text
+    end
+  end
 
   register_command(
     :name => :replies, :aliases => [:r],
