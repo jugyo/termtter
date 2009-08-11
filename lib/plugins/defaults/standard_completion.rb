@@ -53,8 +53,10 @@ module Termtter::Client
 
   public_storage[:hashtag] ||= Set.new
 
-  register_hook(:collect_hashtags, :point => /^post_exec_/) do |cmd, arg, result|
-    public_storage[:hashtag] += arg.scan(/\s+#([^\s]+)/i).flatten if arg
+  register_hook(:collect_hashtags, :point => :pre_filter) do |statuses, event|
+    statuses.each do |s|
+      public_storage[:hashtag] += s.text.scan(/#([^\s]+)/).flatten
+    end
   end
 
   register_hook(:hashtags_completion, :point => :completion) do |input|
