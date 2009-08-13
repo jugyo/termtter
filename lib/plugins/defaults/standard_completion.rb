@@ -60,10 +60,10 @@ module Termtter::Client
   end
 
   register_hook(:hashtags_completion, :point => :completion) do |input|
-    if /(.*)#([^\s]*)$/ =~ input
+    if /(.*)\s#([^\s]*)$/ =~ input
       command_str = $1
       part_of_hashtag = $2
-      public_storage[:hashtag].grep(/^#{Regexp.quote(part_of_hashtag)}/i).map { |i| "#{command_str}##{i}" }
+      public_storage[:hashtag].grep(/^#{Regexp.quote(part_of_hashtag)}/i).map { |i| "#{command_str} ##{i}" }
     end
   end
 end
