@@ -12,6 +12,8 @@
 #     > alias me list @jugyo
 #     > alias st search termtter
 #
+#     > remove_alias ls
+#
 
 config.plugins.alias.set_defaults(:aliases, {})
 
