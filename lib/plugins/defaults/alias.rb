@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 #
-# Examples for configuration:
-# 
-#   config.plugins.alias.aliases = {:ls => 'list', :hoge => 'update hoge'}
+# Examples:
 #
-# Examples for command
+#   ~/termtter/config
 #
-#   > alias ls list
-#   > alias me list @jugyo
-#   > alias st search termtter
+#     config.plugins.alias.aliases = {:ls => 'list', :hoge => 'update hoge'}
+#
+#   command line
+#
+#     > alias ls list
+#     > alias me list @jugyo
+#     > alias st search termtter
 #
 
 config.plugins.alias.set_defaults(:aliases, {})
