@@ -13,7 +13,6 @@ module Termtter
     @hooks = {}
     @commands = {}
     @filters = []
-    @aliases = {}
     @since_id = nil
     @task_manager = Termtter::TaskManager.new
 
@@ -40,10 +39,6 @@ module Termtter
         load "plugins/#{name}.rb"
       rescue Exception => e
         Termtter::Client.handle_error(e)
-      end
-
-      def alias(name, value)
-        @aliases[name] = value
       end
 
       def public_storage
@@ -128,17 +123,6 @@ module Termtter
           :exec_proc => lambda {|arg| call_commands(macro % arg)}
         }.merge(options)
         register_command(command)
-      end
-
-      def add_alias(from, to, confirm = true)
-        if confirm
-          raise 'Already exist' if @aliases[from]
-        end
-        @aliases[from] = to
-      end
-
-      def remove_alias(target)
-        @aliases.delete target
       end
 
       # statuses => [status, status, ...]
@@ -312,16 +296,22 @@ module Termtter
         @init_block = block
       end
 
+      def load_plugins
+        plug 'defaults'
+        plug 'devel' if config.devel
+        plug config.system.load_plugins
+      end
+
+      def eval_init_block
+        @init_block.call(self) if @init_block
+      end
+
       def run
         load_config()
         Termtter::API.setup()
         setup_logger()
-
-        @init_block.call(self) if @init_block
-
-        plug 'defaults'
-        plug 'devel' if config.devel
-        plug config.system.load_plugins
+        load_plugins()
+        eval_init_block()
 
         config.system.eval_scripts.each do |script|
           begin

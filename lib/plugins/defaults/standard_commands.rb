@@ -20,7 +20,7 @@ module Termtter::Client
         print "\e[1K\e[0G" unless win?
         @since_id = statuses[0].id
         output(statuses, :update_friends_timeline)
-        Readline.refresh_line
+        Readline.refresh_line if arg =~ /\-r/
       end
     }
   )
@@ -483,35 +483,6 @@ module Termtter::Client
     },
     :help => ["redo,.", "Execute previous command"]
   )
-
-  register_command(:alias,
-    :help => ['alias NAME VALUE', 'Add alias for any operations']) do |text|
-    from, to = text.split(' ', 2)
-    next unless to
-    begin
-      add_alias from, to
-    rescue
-      STDOUT.print 'override? [y/n] '
-      STDOUT.flush
-      next unless /y/ =~ STDIN.gets.chomp
-      add_alias from, to, false
-    end
-    puts "#{from} => #{to}"
-  end
-
-  register_command(:remove_alias,
-    :help => ['remove_alias NAME', 'Remove alias completely']) do |target|
-    remove_alias target
-    STDOUT.puts 'done'
-  end
-
-  register_hook :aliases, :point => :pre_command do |text|
-    command, args = text.split(' ', 2)
-    if original = @aliases[command]
-      text = [original, args].compact.join(' ')
-    end
-    text
-  end
 
   def self.update_with_user_and_id(text, username, id)
     text = "@#{username} #{text}"
