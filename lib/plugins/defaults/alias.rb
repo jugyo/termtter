@@ -15,7 +15,7 @@
 #     > remove_alias ls
 #
 
-config.plugins.alias.set_defaults(:aliases, {})
+config.plugins.alias.set_default(:aliases, {})
 
 module Termtter::Client
   @aliases = config.plugins.alias.aliases
@@ -52,8 +52,8 @@ module Termtter::Client
   register_hook :aliases, :point => :pre_command do |text|
     unless text =~ /^\s*$/
       command = text.scan(/\s*([^\s]*)\s*/).flatten.first
-      if original = @aliases.has_key?(command.to_sym)
-        text = text.sub(command, @aliases[command.to_sym])
+      if original = @aliases[command.to_sym]
+        text = text.sub(command, original)
       end
     end
     text
