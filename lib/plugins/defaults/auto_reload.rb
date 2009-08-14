@@ -2,7 +2,7 @@
 module Termtter::Client
   add_task(:name => :auto_reload, :interval => config.update_interval, :after => config.update_interval) do
     begin
-      call_commands('reload')
+      call_commands('reload -r')
     rescue Exception => e
       handle_error(e)
     end
@@ -13,7 +13,7 @@ module Termtter::Client
     :point => :initialize,
     :exec => lambda {
       begin
-        call_commands('reload')
+        call_commands('reload -r')
       rescue Exception => e
         handle_error(e)
       end
