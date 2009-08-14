@@ -24,6 +24,7 @@ module Termtter::Client
     def register_alias(alias_name, command)
       @aliases[alias_name.to_sym] = command.to_s
     end
+    alias_method :alias, :register_alias
 
     def remove_alias(alias_name)
       @aliases.delete alias_name.to_sym
