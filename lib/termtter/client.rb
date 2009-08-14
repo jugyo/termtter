@@ -296,16 +296,22 @@ module Termtter
         @init_block = block
       end
 
+      def load_plugins
+        plug 'defaults'
+        plug 'devel' if config.devel
+        plug config.system.load_plugins
+      end
+
+      def eval_init_block
+        @init_block.call(self) if @init_block
+      end
+
       def run
         load_config()
         Termtter::API.setup()
         setup_logger()
-
-        @init_block.call(self) if @init_block
-
-        plug 'defaults'
-        plug 'devel' if config.devel
-        plug config.system.load_plugins
+        load_plugins()
+        eval_init_block()
 
         config.system.eval_scripts.each do |script|
           begin
