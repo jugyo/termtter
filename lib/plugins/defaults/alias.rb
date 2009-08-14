@@ -38,8 +38,8 @@ module Termtter::Client
       register_alias alias_name, command
       puts "#{alias_name} => #{command}"
     else
-      @aliases.keys.sort.each do |k|
-        puts "#{k} => #{@aliases[k]}"
+      @aliases.keys.map{|i|i.to_s}.sort.each do |k|
+        puts "#{k} => #{@aliases[k.to_sym]}"
       end
     end
   end
