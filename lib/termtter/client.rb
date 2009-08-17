@@ -346,14 +346,13 @@ module Termtter
       def confirm(message, default_yes = true, &block)
         pause # TODO: TaskManager から呼ばれるならこれいらないなぁ
 
-        result = # Boolean in duck typing
+        prompt =
           if default_yes
-            prompt = "\"#{message}".strip + "\" [Y/n] "
-            /^y?$/i =~ Readline.readline(prompt, false)
+            "\"#{message}".strip + "\" [Y/n] "
           else
-            prompt = "\"#{message}".strip + "\" [N/y] "
-            /^n?$/i =~ Readline.readline(prompt, false)
+            "\"#{message}".strip + "\" [N/y] "
           end
+        result = !!(/^y?$/i =~ Readline.readline(prompt, false))
 
         if result && block
           block.call
