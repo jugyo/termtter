@@ -45,7 +45,8 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       end
 
     statuses.each do |s|
-      post s.user.screen_name, msg_type, main_channel, [s.text, s.id].join(' ')
+      typable_id = Termtter::Client.data_to_typable_id(s.id)
+      post s.user.screen_name, msg_type, main_channel, [s.text, typable_id].join(' ')
     end
   end
 
