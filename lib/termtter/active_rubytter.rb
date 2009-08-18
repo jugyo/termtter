@@ -27,5 +27,13 @@ module Termtter
         end
       end
     end
+
+    def to_hash
+      @data.inject({}) do |memo, (key, value)|
+        memo[key] =
+          (value.kind_of? self.class) ? value.to_hash : value
+        memo
+      end
+    end
   end
 end
