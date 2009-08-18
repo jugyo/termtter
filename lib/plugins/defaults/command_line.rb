@@ -108,4 +108,12 @@ module Termtter
   Client.register_hook(:finalize_command_line, :point => :exit) do
     CommandLine.stop
   end
+
+  Client.register_command(:vi_editing_mode) do |arg|
+    Readline.vi_editing_mode
+  end
+
+  Client.register_command(:emacs_editing_mode) do |arg|
+    Readline.emacs_editing_mode
+  end
 end
