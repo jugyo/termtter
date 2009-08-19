@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 SHORTURL_MAKERS = [
-  { :host => "tinyurl.com", :format => '/api-create.php?url=%s' },
-  { :host => "is.gd", :format => '/api.php?longurl=%s' },
   { :host => "to.ly", :format => '/api.php?longurl=%s' },
+  { :host => "is.gd", :format => '/api.php?longurl=%s' },
+  { :host => "tinyurl.com", :format => '/api-create.php?url=%s' },
 ]
 TINYURL_HOOK_COMMANDS = [:update, :reply]
 URI_REGEXP = URI.regexp(%w(http https ftp))
