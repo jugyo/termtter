@@ -17,7 +17,7 @@ module Termtter::Client
       args = @since_id ? [{:since_id => @since_id}] : []
       statuses = Termtter::API.twitter.friends_timeline(*args)
       unless statuses.empty?
-        print "\e[1K\e[0G" unless win?
+        print "\e[0G" + "\e[K" unless win?
         @since_id = statuses[0].id
         output(statuses, :update_friends_timeline)
         Readline.refresh_line if arg =~ /\-r/
