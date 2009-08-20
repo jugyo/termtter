@@ -69,10 +69,10 @@ module Termtter::Client
     :exec_proc => lambda do |statuses, event|
       return statuses unless event == :update_friends_timeline
       return statuses unless config.plugins.group.default_filter
-      skip_group = config.plugins.group.default_filter
+      filter_group = config.plugins.group.default_filter
       r = []
       statuses.each do |s|
-        unless self.is_member?(s, :dqn)
+        if self.is_member?(s, filter_group)
           r << s
         end
       end
@@ -86,5 +86,6 @@ end
 #   config.plugins.group.groups = {
 #     :rits => %w(hakobe isano hitode909)
 #   }
+#   config.plugins.group.default_filter = :rits
 # NOTE: group.rb needs plugin/log
 
