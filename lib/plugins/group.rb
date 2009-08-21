@@ -72,7 +72,7 @@ module Termtter::Client
       filter_group = config.plugins.group.default_filter
       r = []
       statuses.each do |s|
-        if self.is_member?(s, filter_group)
+        unless self.is_member?(s, filter_group)
           r << s
         end
       end
