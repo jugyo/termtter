@@ -9,6 +9,12 @@ self_file =
   end
 $:.unshift(File.dirname(self_file) + "/lib")
 
+if ARGV.delete('--upgrade')
+  Dir.chdir(File.dirname(self_file)) do
+    system "git pull --rebase" or abort "git-pull failed"
+  end
+end
+
 require 'termtter'
 Termtter::Client.run
 
