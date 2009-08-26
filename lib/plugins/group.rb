@@ -1,17 +1,5 @@
 # -*- coding: utf-8 -*-
 
-module Termtter
-  class Status
-    def is_member?(group = nil)
-      if group
-        config.plugins.group.groups[group].include? self.user.screen_name
-      else
-        config.plugins.group.groups.values.flatten.include? self.user.screen_name
-      end
-    end
-  end
-end
-
 module Termtter::Client
   config.plugins.group.
     set_default(:groups, {})
