@@ -10,6 +10,8 @@ config.plugins.stdout.set_default(
   '<90><%=time%> [<%=status_id%>]</90> <<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ' +
   '<90><%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%><%=source%><%=s.user.protected ? "[P]" : ""%></90>'
 )
+config.plugins.stdout.set_default(:time_format_today, '%H:%M:%S')
+config.plugins.stdout.set_default(:time_format_not_today, '%y/%m/%d %H:%M')
 config.plugins.stdout.set_default(:enable_pager, true)
 config.plugins.stdout.set_default(:pager, 'less -R -f +G')
 config.plugins.stdout.set_default(:window_height, 50)
@@ -71,9 +73,9 @@ module Termtter
         time_format = 
           if [t0.year, t0.month, t0.day] == [t1.year, t1.month, t1.day] \
             and [t1.year, t1.month, t1.day] == [t2.year, t2.month, t2.day]
-            '%H:%M:%S'
+            config.plugins.stdout.time_format_today
           else
-            '%y/%m/%d %H:%M'
+            config.plugins.stdout.time_format_not_today
           end
       end
 
