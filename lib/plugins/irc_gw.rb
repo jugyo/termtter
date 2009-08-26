@@ -25,6 +25,13 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       end
     }
   )
+  if Termtter::Client.respond_to? :register_output
+    Termtter::Client.register_output(:irc) do |message|
+      @@listners.each do |listener|
+        listener.log(message.gsub(/\e\[\d+m/, '')) # remove escape sequence
+      end
+    end
+  end
 
   def server_name; 'termtter' end
   def server_version; '0.0.0' end
@@ -68,6 +75,12 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   def on_privmsg(m)
     target, message = *m.params
     Termtter::Client.call_commands('update ' + message)
+  end
+
+  def log(str)
+    str.each_line do |line|
+      post server_name, NOTICE, main_channel, line
+    end
   end
 end
 
