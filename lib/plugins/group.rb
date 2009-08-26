@@ -22,15 +22,25 @@ module Termtter::Client
    :exec_proc => lambda {|arg|
      unless arg.empty?
        group_name = arg.to_sym
+       groups = config.plugins.group.groups
        if group_name == :all
-         targets = config.plugins.group.groups.values.flatten.uniq
+         targets = groups.values.flatten.uniq
+       elsif groups.keys.include? group_name
+         targets = groups[group_name]
        else
-         targets = config.plugins.group.groups[group_name]
+         ignore_cased = groups.keys.map(&:to_s).grep(/^#{group_name}$/i).map(&:to_sym)
+         if ignore_cased.length == 1
+           targets = groups[ignore_cased.first]
+         elsif ignore_cased.length > 1 
+           puts "which? #{ignore_cased.inspect.gsub(':','')}"
+         end
        end
-       statuses = targets ? targets.map { |target|
-          public_storage[:tweet][target]
-        }.flatten.uniq.compact.sort_by{ |s| s[:id]} : []
-       output(statuses, :search)
+       if targets
+         statuses = targets ? targets.map { |target|
+           public_storage[:tweet][target]
+         }.flatten.uniq.compact.sort_by{ |s| s[:id]} : []
+         output(statuses, :search)
+       end
      else
        config.plugins.group.groups.each_pair do |key, value|
          puts "#{key}: #{value.join(',')}"
