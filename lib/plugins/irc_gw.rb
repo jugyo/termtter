@@ -85,11 +85,13 @@ class TermtterIrcGateway < Net::IRC::Server::Session
 end
 
 unless defined? IRC_SERVER
+  logger = Logger.new($stdout)
+  logger.level = Logger::ERROR
   IRC_SERVER = Net::IRC::Server.new(
     'localhost',
     config.plugins.irc_gw.port,
     TermtterIrcGateway,
-    :logger => Termtter::Client.logger
+    :logger => logger
   )
   Thread.start do
     IRC_SERVER.start
