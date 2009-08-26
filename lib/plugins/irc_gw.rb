@@ -6,6 +6,7 @@ require 'net/irc'
 
 config.plugins.irc_gw.set_default(:port, 16669)
 config.plugins.irc_gw.set_default(:last_statuses_count, 100)
+config.plugins.irc_gw.set_default(:logger_level, Logger::ERROR)
 
 class TermtterIrcGateway < Net::IRC::Server::Session
   @@listners = []
@@ -86,7 +87,7 @@ end
 
 unless defined? IRC_SERVER
   logger = Logger.new($stdout)
-  logger.level = Logger::ERROR
+  logger.level = config.plugins.irc_gw.logger_level
   IRC_SERVER = Net::IRC::Server.new(
     'localhost',
     config.plugins.irc_gw.port,
