@@ -1,3 +1,4 @@
+# あ
 # -*- coding: utf-8 -*-
 module Termtter::Client
   def self.train(length)
