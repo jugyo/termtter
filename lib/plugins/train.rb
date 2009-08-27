@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 module Termtter::Client
   def self.train(length)
     text = "ε="
@@ -21,4 +21,3 @@ module Termtter::Client
     puts "=> " << result.text
   end
 end
-
