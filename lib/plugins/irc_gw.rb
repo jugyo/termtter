@@ -6,6 +6,7 @@ require 'net/irc'
 
 config.plugins.irc_gw.set_default(:port, 16669)
 config.plugins.irc_gw.set_default(:last_statuses_count, 100)
+config.plugins.irc_gw.set_default(:logger_level, Logger::ERROR)
 
 class TermtterIrcGateway < Net::IRC::Server::Session
   @@listners = []
@@ -25,6 +26,13 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       end
     }
   )
+  if Termtter::Client.respond_to? :register_output
+    Termtter::Client.register_output(:irc) do |message|
+      @@listners.each do |listener|
+        listener.log(message.gsub(/\e\[\d+m/, '')) # remove escape sequence
+      end
+    end
+  end
 
   def server_name; 'termtter' end
   def server_version; '0.0.0' end
@@ -45,7 +53,8 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       end
 
     statuses.each do |s|
-      post s.user.screen_name, msg_type, main_channel, [s.text, s.id].join(' ')
+      typable_id = Termtter::Client.data_to_typable_id(s.id)
+      post s.user.screen_name, msg_type, main_channel, [s.text, typable_id].join(' ')
     end
   end
 
@@ -68,14 +77,22 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     target, message = *m.params
     Termtter::Client.call_commands('update ' + message)
   end
+
+  def log(str)
+    str.each_line do |line|
+      post server_name, NOTICE, main_channel, line
+    end
+  end
 end
 
 unless defined? IRC_SERVER
+  logger = Logger.new($stdout)
+  logger.level = config.plugins.irc_gw.logger_level
   IRC_SERVER = Net::IRC::Server.new(
     'localhost',
     config.plugins.irc_gw.port,
     TermtterIrcGateway,
-    :logger => Termtter::Client.logger
+    :logger => logger
   )
   Thread.start do
     IRC_SERVER.start

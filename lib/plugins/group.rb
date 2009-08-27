@@ -1,17 +1,5 @@
 # -*- coding: utf-8 -*-
 
-module Termtter
-  class Status
-    def is_member?(group = nil)
-      if group
-        config.plugins.group.groups[group].include? self.user.screen_name
-      else
-        config.plugins.group.groups.values.flatten.include? self.user.screen_name
-      end
-    end
-  end
-end
-
 module Termtter::Client
   config.plugins.group.
     set_default(:groups, {})
@@ -34,15 +22,25 @@ module Termtter::Client
    :exec_proc => lambda {|arg|
      unless arg.empty?
        group_name = arg.to_sym
+       groups = config.plugins.group.groups
        if group_name == :all
-         targets = config.plugins.group.groups.values.flatten.uniq
+         targets = groups.values.flatten.uniq
+       elsif groups.keys.include? group_name
+         targets = groups[group_name]
        else
-         targets = config.plugins.group.groups[group_name]
+         ignore_cased = groups.keys.map(&:to_s).grep(/^#{group_name}$/i).map(&:to_sym)
+         if ignore_cased.length == 1
+           targets = groups[ignore_cased.first]
+         elsif ignore_cased.length > 1 
+           puts "which? #{ignore_cased.inspect.gsub(':','')}"
+         end
        end
-       statuses = targets ? targets.map { |target|
-          public_storage[:tweet][target]
-        }.flatten.uniq.compact.sort_by{ |s| s[:id]} : []
-       output(statuses, :search)
+       if targets
+         statuses = targets ? targets.map { |target|
+           public_storage[:tweet][target]
+         }.flatten.uniq.compact.sort_by{ |s| s[:id]} : []
+         output(statuses, :search)
+       end
      else
        config.plugins.group.groups.each_pair do |key, value|
          puts "#{key}: #{value.join(',')}"
@@ -69,10 +67,10 @@ module Termtter::Client
     :exec_proc => lambda do |statuses, event|
       return statuses unless event == :update_friends_timeline
       return statuses unless config.plugins.group.default_filter
-      skip_group = config.plugins.group.default_filter
+      filter_group = config.plugins.group.default_filter
       r = []
       statuses.each do |s|
-        unless self.is_member?(s, :dqn)
+        unless self.is_member?(s, filter_group)
           r << s
         end
       end
@@ -86,5 +84,6 @@ end
 #   config.plugins.group.groups = {
 #     :rits => %w(hakobe isano hitode909)
 #   }
+#   config.plugins.group.default_filter = :rits
 # NOTE: group.rb needs plugin/log
 
