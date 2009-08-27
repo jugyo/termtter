@@ -37,6 +37,7 @@ Search
 * json_pure or json
 * termcolor
 * rubytter
+* highline
 
 == INSTALL:
 
