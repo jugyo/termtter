@@ -13,7 +13,7 @@ module Termtter::Client
   end
 
   register_command(:trainyou, :help => ['trainyou [USER] [LENGTH] [(Optional) MESSAGE]', 'Post a train for a user']) do |arg|
-    /(\w+)\s(\d+).*/ =~ arg
+    /(\w+)\s(\d+)(.*)/ =~ arg
     name = normalize_as_user_name($1)
     length = $2.to_i
     msg = $3
