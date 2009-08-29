@@ -1,4 +1,4 @@
-# Requirements: fib plugin
+# It depends on defaults/fib.rb
 
 module Termtter::Client
   register_command(:fibyou) do |arg|

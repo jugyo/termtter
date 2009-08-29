@@ -26,7 +26,7 @@ Termtter::Client::register_hook(
         config.plugins.hugeurl.skip_users.include?(s.user.screen_name) and next
         s.text.gsub!(HUGEURL_TARGET_PATTERN) do |m|
           res = http.get('/hugeurl?url=' + m)
-          res.code == '200' ? res.body : m
+          res.code == '200' && res.body !~ /^</ ? res.body : m
         end
       end
     end
