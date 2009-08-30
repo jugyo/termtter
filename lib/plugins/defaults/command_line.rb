@@ -64,6 +64,7 @@ module Termtter
       if Readline.respond_to?(:basic_word_break_characters=)
         Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
       end
+      Readline.completion_case_fold = true
       Readline.completion_proc = lambda {|input|
         begin
           words = []
