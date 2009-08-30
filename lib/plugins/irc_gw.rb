@@ -2,8 +2,6 @@
 
 require 'net/irc'
 
-# TODO: post text of stdout too
-
 config.plugins.irc_gw.set_default(:port, 16669)
 config.plugins.irc_gw.set_default(:last_statuses_count, 100)
 config.plugins.irc_gw.set_default(:logger_level, Logger::ERROR)
