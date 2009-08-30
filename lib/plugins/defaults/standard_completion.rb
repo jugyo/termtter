@@ -64,7 +64,7 @@ module Termtter::Client
       command_str = $1
       part_of_hashtag = $2
       ht = public_storage[:hashtags]
-      (ht.grep(/^#{Regexp.quote(part_of_hashtag)}/) |
+      (ht.grep(/^#{Regexp.quote(part_of_hashtag)}/) | # prior
        ht.grep(/^#{Regexp.quote(part_of_hashtag)}/i) ).
         map { |i| "#{command_str} ##{i}" }
     end
