@@ -49,12 +49,13 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       when :update_friends_timeline
         PRIVMSG
       else
+        time_format = Termtter::Client.time_format_for statuses
         NOTICE
       end
-
     statuses.each do |s|
       typable_id = Termtter::Client.data_to_typable_id(s.id)
-      post s.user.screen_name, msg_type, main_channel, [s.text, typable_id].join(' ')
+      time = Time.parse(s.created_at).strftime(time_format) if time_format
+      post s.user.screen_name, msg_type, main_channel, [time, s.text, typable_id].compact.join(' ')
     end
   end
 

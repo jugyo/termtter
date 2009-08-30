@@ -53,6 +53,18 @@ module Termtter
     def self.typable_id_to_data(id)
       @typable_id_generator.get(id)
     end
+
+    def self.time_format_for(statuses)
+      t0 = Time.now
+      t1 = Time.parse(statuses.first[:created_at])
+      t2 = Time.parse(statuses.last[:created_at])
+      if [t0.year, t0.month, t0.day] == [t1.year, t1.month, t1.day] \
+        and [t1.year, t1.month, t1.day] == [t2.year, t2.month, t2.day]
+        config.plugins.stdout.time_format_today
+      else
+        config.plugins.stdout.time_format_not_today
+      end
+    end
   end
 
   class StdOut < Hook
@@ -66,18 +78,7 @@ module Termtter
 
     def print_statuses(statuses, event, sort = true, time_format = nil)
       return unless statuses and statuses.first
-      unless time_format
-        t0 = Time.now
-        t1 = Time.parse(statuses.first[:created_at])
-        t2 = Time.parse(statuses.last[:created_at])
-        time_format = 
-          if [t0.year, t0.month, t0.day] == [t1.year, t1.month, t1.day] \
-            and [t1.year, t1.month, t1.day] == [t2.year, t2.month, t2.day]
-            config.plugins.stdout.time_format_today
-          else
-            config.plugins.stdout.time_format_not_today
-          end
-      end
+      time_format ||= Termtter::Client.time_format_for statuses
 
       output_text = ''
       statuses.each do |s|
