@@ -6,6 +6,21 @@ config.plugins.irc_gw.set_default(:port, 16669)
 config.plugins.irc_gw.set_default(:last_statuses_count, 100)
 config.plugins.irc_gw.set_default(:logger_level, Logger::ERROR)
 
+module Termtter::Client
+  class << self
+    def friends
+      user_name = config.user_name
+
+      frinends = []
+      page = 0
+      begin
+        frinends += tmp = Termtter::API::twitter.friends(user_name, :page => page+=1)
+      end until tmp.empty?
+      frinends.map(&:screen_name)
+    end
+  end
+end
+
 class TermtterIrcGateway < Net::IRC::Server::Session
   @@listners = []
   @@last_statuses = []
@@ -69,6 +84,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     super
     post @prefix, JOIN, main_channel
     post server_name, MODE, main_channel, "+o", @prefix.nick
+    check_friends
     self.call(@@last_statuses || [], :update_friends_timeline)
   end
 
@@ -81,6 +97,21 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     str.each_line do |line|
       post server_name, NOTICE, main_channel, line
     end
+  end
+
+  def check_friends
+    params = []
+    max_params_count = 3
+    Termtter::Client.friends.each do |name|
+      prefix = Prefix.new("#{name}!#{name}@localhost")
+      post prefix, JOIN, main_channel
+      params << prefix.nick
+      next if params.size < max_params_count
+
+      post server_name, MODE, main_channel, "+#{"v" * params.size}", *params
+      params = []
+    end
+    post server_name, MODE, main_channel, "+#{"v" * params.size}", *params unless params.empty?
   end
 end
 
