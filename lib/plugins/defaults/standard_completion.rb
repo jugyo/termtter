@@ -63,7 +63,10 @@ module Termtter::Client
     if /(.*)\s#([^\s]*)$/ =~ input
       command_str = $1
       part_of_hashtag = $2
-      public_storage[:hashtags].grep(/^#{Regexp.quote(part_of_hashtag)}/i).map { |i| "#{command_str} ##{i}" }
+      ht = public_storage[:hashtags]
+      (ht.grep(/^#{Regexp.quote(part_of_hashtag)}/) |
+       ht.grep(/^#{Regexp.quote(part_of_hashtag)}/i) ).
+        map { |i| "#{command_str} ##{i}" }
     end
   end
 end
