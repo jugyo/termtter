@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-require 'appscript'
+require 'appscript' or raise 'itunes plugin cannot run'
 
 config.plugins.itunes.set_default(:prefix, 'Listening now:')
 config.plugins.itunes.set_default(:suffix, '#iTunes #listening')
 config.plugins.itunes.set_default(
   :format,
-  '<%=prefix%> <%=track_name%> (<%=time%>) <%=artist%> <%=album%> <%=suffix%>'
-)
+  '<%=prefix%> <%=track_name%> (<%=time%>) <%=artist%> <%=album%> <%=suffix%>')
 
 module Termtter::Client
   register_command :name => :listening_now, :aliases => [:ln],
@@ -28,7 +27,7 @@ module Termtter::Client
         Termtter::API.twitter.update(erbed_text)
         puts "=> " << erbed_text
       rescue => e
-          p e
+        p e
       end
     }
 end
