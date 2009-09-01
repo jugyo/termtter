@@ -22,6 +22,9 @@ module Termtter::Client
         suffix     = config.plugins.itunes.suffix
         erbed_text = ERB.new(config.plugins.itunes.format).result(binding)
         erbed_text.gsub!(/\s{2,}/, ' ')
+        if args.length > 0
+          erbed_text = args + ' ' + erbed_text
+        end
         Termtter::API.twitter.update(erbed_text)
         puts "=> " << erbed_text
       rescue => e
