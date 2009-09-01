@@ -1,66 +1,102 @@
 = termtter
 
-http://github.com/jugyo/termtter
+http://termtter.org/
 
 == DESCRIPTION:
 
-Termtter is a terminal based Twitter client
+Termtter is a terminal based Twitter client.
 
 == FEATURES/PROBLEMS:
 
 == SYNOPSIS:
 
-Run:
+=== Run:
 
-  termtter
+  % termtter
+
+=== Some Termtter Commands:
+
+Show help
+
+  > help
+
+Update status
+
+  > update hi!
+
+Show replies
+
+  > replies
+
+Search
+
+  > search termtter
 
 == REQUIREMENTS:
 
-* json
-* configatron
+* json_pure or json
+* termcolor
+* rubytter
+* highline
 
 == INSTALL:
 
-  sudo gem source -a http://gems.github.com (you only have to do this once)
-  sudo gem install jugyo-termtter
+  % sudo gem install termtter
 
-  if you want to install gem package from source code, install like following.
+== CONFIGURATION:
 
-  git clone git://github.com/jugyo/termtter.git
-  cd termtter
-  rake manifest
-  rake gemspec
-  gem build termtter.gemspec
-  gem install *.gem
-
-Just run a new command termtter.
-
-  termtter
-
-Termtter generates a configuration file named '.termtter' in your HOME directory.
+Termtter generates a configuration file named '~/.termtter/config'.
 You can edit the file anytime.
 
-  vim ~/.termtter
+  % vim ~/.termtter/config
 
-  configatron.user_name = 'USERNAME'
-  configatron.password = 'PASSWORD'
+  config.user_name = 'USERNAME'
+  config.password = 'PASSWORD'
 
 If you would like to use proxy server, add configurations like this:
 
-  configatron.proxy.host = 'PROXYHOST'
-  configatron.proxy.port = 'PROXYPORT'
-  configatron.proxy.user_name = 'USERNAME'
-  configatron.proxy.password = 'PASSWORD'
+  config.proxy.host = 'PROXYHOST'
+  config.proxy.port = 'PROXYPORT'
+  config.proxy.user_name = 'USERNAME'
+  config.proxy.password = 'PASSWORD'
+
+You can to load plugins in this way:
+
+  Termtter::Client.init do |t|
+    t.plug 'fib'
+    t.plug 'growl'
+  end
 
 To update the config, just restart your termtter proccess.
 
 == FORUM:
 
-http://www.lingr.com/room/termtter
+http://groups.google.co.jp/group/termtter
 
-== DOCUMENT:
+== TODO:
 
-http://wiki.github.com/jugyo/termtter/home (in Japanese)
+- Enhance the document and spec
+- Improve the UI(a status view, etc...)
+
+== ADVANCED USAGE:
+
+  t.plug 'curry'
+
+Your termtter can curry commands.
+
+  > curry u
+  u > hi
+  updated => hi
+  u > curry @ujm
+  u @ujm > hi
+  updated => @ujm hi
+  u @ujm > uncurry
+  >
+
+You can also type `<` as curry.
+
+  > < u
+  u >
 
 == LICENSE:
 
