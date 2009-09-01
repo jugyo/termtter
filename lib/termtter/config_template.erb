@@ -1,0 +1,15 @@
+# -*- coding: utf-8 -*-
+
+config.user_name = '<%= user_name %>'
+config.password = '<%= password %>'
+#config.update_interval = 120
+#config.proxy.host = 'proxy host'
+#config.proxy.port = '8080'
+#config.proxy.user_name = 'proxy user'
+#config.proxy.password = 'proxy password'
+
+Termtter::Client.init do |t|
+  <%- (plugins - standard_plugins).each do |plugin| -%>
+#  t.plug '<%= plugin %>'
+  <%- end -%>
+end

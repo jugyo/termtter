@@ -1,1 +1,0 @@
-Termtter::Client.pause

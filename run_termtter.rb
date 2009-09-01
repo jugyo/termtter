@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
-
-$KCODE = 'u'
+# -*- coding: utf-8 -*-
 
 self_file =
   if File.ftype(__FILE__) == 'link'
@@ -9,6 +8,12 @@ self_file =
     __FILE__
   end
 $:.unshift(File.dirname(self_file) + "/lib")
+
+if ARGV.delete('--upgrade')
+  Dir.chdir(File.dirname(self_file)) do
+    system "git pull --rebase" or abort "git-pull failed"
+  end
+end
 
 require 'termtter'
 Termtter::Client.run
