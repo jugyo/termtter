@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 SHORTURL_MAKERS = [
-  { :host => "api.bit.ly", :format => '/shorten?version=2.0.1&longUrl=%s&login=termtter&apiKey=R_e7f22d523a803dbff7f67de18c109856' },
+  { :host => "api.bit.ly",
+    :format => '/shorten?version=2.0.1&longUrl=%s&login=termtter&apiKey=R_e7f22d523a803dbff7f67de18c109856' },
   { :host => "to.ly", :format => '/api.php?longurl=%s' },
   { :host => "is.gd", :format => '/api.php?longurl=%s' },
   { :host => "tinyurl.com", :format => '/api-create.php?url=%s' },
