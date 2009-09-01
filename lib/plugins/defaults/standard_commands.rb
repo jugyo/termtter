@@ -5,7 +5,7 @@ require 'set'
 
 config.plugins.standard.set_default(
  :limit_format,
- '<<%=remaining_color%>><%=limit.remaining_hits%></<%=remaining_color%>>/<%=limit.hourly_limit%> until <%=limit.reset_time%> (<%=remaining_time%> remaining)')
+ '<<%=remaining_color%>><%=limit.remaining_hits%></<%=remaining_color%>>/<%=limit.hourly_limit%> until <%=Time.parse(limit.reset_time).getlocal%> (<%=remaining_time%> remaining)')
 
 config.set_default(:easy_reply, true)
 
@@ -17,7 +17,7 @@ module Termtter::Client
       args = @since_id ? [{:since_id => @since_id}] : []
       statuses = Termtter::API.twitter.friends_timeline(*args)
       unless statuses.empty?
-        print "\e[1K\e[0G" unless win?
+        print "\e[0G" + "\e[K" unless win?
         @since_id = statuses[0].id
         output(statuses, :update_friends_timeline)
         Readline.refresh_line if arg =~ /\-r/
