@@ -45,7 +45,7 @@ module Termtter
     end
 
     def get_id(data)
-      @rtable[data]
+      @rtable[data] || self.next(data)
     end
   end
 
@@ -53,8 +53,7 @@ module Termtter
     @typable_id_generator = TypableIdGenerator.new(config.plugins.stdout.typable_ids)
 
     def self.data_to_typable_id(data)
-      id = config.plugins.stdout.typable_id_prefix +
-        (@typable_id_generator.get_id(data) || @typable_id_generator.next(data))
+      id = config.plugins.stdout.typable_id_prefix + @typable_id_generator.get_id(data)
     end
 
     def self.typable_id_to_data(id)
