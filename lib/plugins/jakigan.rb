@@ -16,7 +16,12 @@ end
 
 module Termtter::Client
   module Jakigan
-    TEMPLATES = ['%s、か。ククク、その真の意図、邪気眼を持たぬ者には分かるまい。']
+    TEMPLATES = [
+      # http://twitter.com/yugui/status/3086394151
+      '%s、か。ククク、その真の意図、邪気眼を持たぬ者には分かるまい。',
+      # http://twitter.com/Sixeight/statuses/3705973751
+      '僕の邪気眼は%sです。'
+    ]
   end
   register_macro(:jkg, "update #{Jakigan::TEMPLATES.sample}",
     :help => ['jkg {MESSAGE}', 'update "{MESSAGE}+something jkg."'],
