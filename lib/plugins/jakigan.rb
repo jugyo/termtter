@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 module Termtter::Client
-  register_macro(:jkg, "update %s¡¢¤«¡£¥¯¥¯¥¯¡¢¤½¤Î¿¿¤Î°Õ¿Þ¡¢¼Ùµ¤´ã¤ò»ý¤¿¤Ì¼Ô¤Ë¤ÏÊ¬¤«¤ë¤Þ¤¤¡£",
+  register_macro(:jkg, "update %sã€ã‹ã€‚ã‚¯ã‚¯ã‚¯ã€ãã®çœŸã®æ„å›³ã€é‚ªæ°—çœ¼ã‚’æŒãŸã¬è€…ã«ã¯åˆ†ã‹ã‚‹ã¾ã„ã€‚",
     :help => ['jkg {MESSAGE}', 'update "{MESSAGE}+something jkg."'],
     :aliases => [:j, :jk]
   )
