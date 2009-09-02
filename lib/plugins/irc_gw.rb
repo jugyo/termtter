@@ -91,6 +91,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   def on_privmsg(m)
     target, message = *m.params
     Termtter::Client.call_commands('update ' + message)
+    post @prefix, TOPIC, main_channel, message
   end
 
   def log(str)
