@@ -171,7 +171,8 @@ module Termtter::Client
   register_hook(:highlight_for_search_query, :point => :pre_coloring) do |text, event|
     case event
     when SearchEvent
-      text.gsub(/(#{Regexp.quote(event.query)})/i, '<on_magenta><white>\1</white></on_magenta>')
+      query = event.query.split(/\s/).map{|q|Regexp.quote(q)}.join("|")
+      text.gsub(/(#{query})/i, '<on_magenta><white>\1</white></on_magenta>')
     else
       text
     end
