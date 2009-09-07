@@ -379,7 +379,13 @@ module Termtter::Client
     :alias     => :plugin,
     :exec_proc => lambda {|arg|
       if arg.empty?
-        puts 'Should specify plugin name.'
+        list = plugin_list
+        width = list.map{|i|i.size}.max + 2
+        a = []
+        list.sort.each_slice(4) {|i|
+          a << i.map{|j| j + (" " * (width - j.size))}.join
+        }
+        puts TermColor.parse('<green>' + TermColor.escape(a.join("\n")) + '</green>')
         return
       end
       begin
@@ -403,7 +409,7 @@ module Termtter::Client
 
   register_command(
     :name => :plugins,
-    :exec_proc => lambda {|arg|
+    :exec_proc => lambda {|_|
       list = plugin_list
       width = list.map{|i|i.size}.max + 2
       a = []
