@@ -25,6 +25,6 @@ module Termtter::Client
   end
   register_macro(:jkg, "update #{Jakigan::TEMPLATES.sample}",
     :help => ['jkg {MESSAGE}', 'update "{MESSAGE}+something jkg."'],
-    :aliases => [:j, :jk]
+    :alias => :jk
   )
 end
