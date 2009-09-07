@@ -171,7 +171,7 @@ module Termtter::Client
   register_hook(:highlight_for_search_query, :point => :pre_coloring) do |text, event|
     case event
     when SearchEvent
-      query = event.query.split(/\s/).map{|q|Regexp.quote(q)}.join("|")
+      query = event.query.split(/\s/).map {|q|Regexp.quote(q)}.join("|")
       text.gsub(/(#{query})/i, '<on_magenta><white>\1</white></on_magenta>')
     else
       text
@@ -199,7 +199,7 @@ module Termtter::Client
     :completion_proc => lambda {|cmd, arg|
       case arg
       when /(\w+):\s*(\d+)\s*$/
-        find_status_ids($2).map{|id| "#{cmd} #{$1}: #{id}"}
+        find_status_ids($2).map {|id| "#{cmd} #{$1}: #{id}"}
       else
         users = find_users(arg)
         unless users.empty?
@@ -274,7 +274,7 @@ module Termtter::Client
     :completion_proc => lambda {|cmd, arg|
       case arg
       when /(\d+)/
-        find_status_ids(arg).map{|id| "#{cmd} #{id}"}
+        find_status_ids(arg).map {|id| "#{cmd} #{id}"}
       else
         if data = Termtter::Client.typable_id_to_data(arg)
           "#{cmd} #{data}"
@@ -376,10 +376,10 @@ module Termtter::Client
 
   jugyo = lambda {|_|
     list = plugin_list
-    width = list.map{|i|i.size}.max + 2
+    width = list.map {|i|i.size}.max + 2
     a = []
     list.sort.each_slice(4) {|i|
-      a << i.map{|j| j + (" " * (width - j.size))}.join
+      a << i.map {|j| j + (" " * (width - j.size))}.join
     }
     puts TermColor.parse('<green>' + TermColor.escape(a.join("\n")) + '</green>')
   }
@@ -400,14 +400,14 @@ module Termtter::Client
       end
     },
     :completion_proc => lambda {|cmd, args|
-      plugin_list.grep(/^#{Regexp.quote(args)}/).map{|i| "#{cmd} #{i}"}
+      plugin_list.grep(/^#{Regexp.quote(args)}/).map {|i| "#{cmd} #{i}"}
     },
     :help => ['plug FILE', 'Load a plugin']
   )
 
   def self.plugin_list
     (Dir["#{File.dirname(__FILE__)}/../*.rb"] + Dir["#{Termtter::CONF_DIR}/plugins/*.rb"]).
-      map{|f| File.basename(f).sub(/\.rb$/, '')}.
+      map {|f| File.basename(f).sub(/\.rb$/, '')}.
       sort
   end
 
@@ -426,7 +426,7 @@ module Termtter::Client
         public_storage[:log4re] =
           if $1
             public_storage[:log].
-              select{|l| l.user.screen_name == $1}.
+              select {|l| l.user.screen_name == $1}.
               sort {|a,b| a.id <=> b.id}
           else
             public_storage[:log].sort {|a,b| a.id <=> b.id}
@@ -458,7 +458,7 @@ module Termtter::Client
     :completion_proc => lambda {|cmd, arg|
       case arg
       when /(\d+)/
-        find_status_ids(arg).map{|id| "#{cmd} #{id}"}
+        find_status_ids(arg).map {|id| "#{cmd} #{id}"}
       end
     },
     :help => ["reply,re @USERNAME or STATUS_ID", "Send a reply"]
