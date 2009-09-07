@@ -412,12 +412,6 @@ module Termtter::Client
   end
 
   register_command(
-    :name => :plugins,
-    :exec_proc => jugyo,
-    :help => ['plugins', 'Show list of plugins']
-  )
-
-  register_command(
     :name => :reply,
     :aliases => [:re],
     :exec_proc => lambda {|arg|
