@@ -374,16 +374,6 @@ module Termtter::Client
     }.join("\n")
   end
 
-  jugyo = lambda {|_|
-    list = plugin_list
-    width = list.map {|i|i.size}.max + 2
-    a = []
-    list.sort.each_slice(4) {|i|
-      a << i.map {|j| j + (" " * (width - j.size))}.join
-    }
-    puts TermColor.parse('<green>' + TermColor.escape(a.join("\n")) + '</green>')
-  }
-
   register_command(
     :name      => :plug,
     :alias     => :plugin,
@@ -405,10 +395,18 @@ module Termtter::Client
     :help => ['plug FILE', 'Load a plugin']
   )
 
+  ## plugin_list :: IO ()
   def self.plugin_list
-    (Dir["#{File.dirname(__FILE__)}/../*.rb"] + Dir["#{Termtter::CONF_DIR}/plugins/*.rb"]).
+    plugin_list = (Dir["#{File.dirname(__FILE__)}/../*.rb"] + Dir["#{Termtter::CONF_DIR}/plugins/*.rb"]).
       map {|f| File.basename(f).sub(/\.rb$/, '')}.
       sort
+    list = plugin_list
+    width = list.map {|i|i.size}.max + 2
+    a = []
+    list.sort.each_slice(4) {|i|
+      a << i.map {|j| j + (" " * (width - j.size))}.join
+    }
+    puts TermColor.parse('<green>' + TermColor.escape(a.join("\n")) + '</green>')
   end
 
   register_command(
