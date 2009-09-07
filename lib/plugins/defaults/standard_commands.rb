@@ -374,18 +374,22 @@ module Termtter::Client
     }.join("\n")
   end
 
+  jugyo = lambda {|_|
+    list = plugin_list
+    width = list.map{|i|i.size}.max + 2
+    a = []
+    list.sort.each_slice(4) {|i|
+      a << i.map{|j| j + (" " * (width - j.size))}.join
+    }
+    puts TermColor.parse('<green>' + TermColor.escape(a.join("\n")) + '</green>')
+  }
+
   register_command(
     :name      => :plug,
     :alias     => :plugin,
     :exec_proc => lambda {|arg|
       if arg.empty?
-        list = plugin_list
-        width = list.map{|i|i.size}.max + 2
-        a = []
-        list.sort.each_slice(4) {|i|
-          a << i.map{|j| j + (" " * (width - j.size))}.join
-        }
-        puts TermColor.parse('<green>' + TermColor.escape(a.join("\n")) + '</green>')
+        jugyo.call nil
         return
       end
       begin
@@ -409,15 +413,7 @@ module Termtter::Client
 
   register_command(
     :name => :plugins,
-    :exec_proc => lambda {|_|
-      list = plugin_list
-      width = list.map{|i|i.size}.max + 2
-      a = []
-      list.sort.each_slice(4) {|i|
-        a << i.map{|j| j + (" " * (width - j.size))}.join
-      }
-      puts TermColor.parse('<green>' + TermColor.escape(a.join("\n")) + '</green>')
-    },
+    :exec_proc => jugyo,
     :help => ['plugins', 'Show list of plugins']
   )
 
