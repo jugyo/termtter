@@ -423,13 +423,14 @@ module Termtter::Client
     :exec_proc => lambda {|arg|
       case arg
       when /^\s*(?:list|ls)\s*(?:\s+(\w+))?\s*$/
-        public_storage[:log4re] = if $1
-                                    public_storage[:log].
-                                      select{|l| l.user.screen_name == $1}.
-                                      sort {|a,b| a.id <=> b.id}
-                                  else
-                                    public_storage[:log].sort {|a,b| a.id <=> b.id}
-                                  end
+        public_storage[:log4re] =
+          if $1
+            public_storage[:log].
+              select{|l| l.user.screen_name == $1}.
+              sort {|a,b| a.id <=> b.id}
+          else
+            public_storage[:log].sort {|a,b| a.id <=> b.id}
+          end
         public_storage[:log4re].each_with_index do |s, i|
           puts "#{i}: #{s.user.screen_name}: #{s.text}"
         end
