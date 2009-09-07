@@ -4,7 +4,7 @@ config.plugins.confirm.set_default(:commands, [:update, :reply, :direct])
 config.plugins.confirm.set_default(
   :conditions,
   [
-    lambda { |cmd_name, arg|
+    lambda {|cmd_name, arg|
       if cmd_name == :direct && arg =~ /^(list|sent_list)$/
         false
       else
@@ -34,7 +34,6 @@ Termtter::Client.register_hook(
         puts 'canceled.'
         raise Termtter::CommandCanceled
       end
-
     end
   }
 )
