@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-$KCODE="u" unless Object.const_defined? :Encoding
+$KCODE = "u" unless Object.const_defined? :Encoding
 
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
