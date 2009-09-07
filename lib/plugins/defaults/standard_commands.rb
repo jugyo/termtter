@@ -379,7 +379,7 @@ module Termtter::Client
     :alias     => :plugin,
     :exec_proc => lambda {|arg|
       if arg.empty?
-        jugyo.call nil
+        plugin_list
         return
       end
       begin
