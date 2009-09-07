@@ -20,4 +20,8 @@ module Termtter
       end
     end
   end
+
+  describe 'standard_commands' do
+    it 'needs more specs!'
+  end
 end
