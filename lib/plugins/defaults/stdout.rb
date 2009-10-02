@@ -35,6 +35,7 @@ module Termtter
     def next(data)
       id = @ids.shift
       @ids.push id
+      @rtable.delete(@table[id])
       @table[id] = data
       @rtable[data] = id
       id
