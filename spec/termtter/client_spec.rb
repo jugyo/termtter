@@ -326,6 +326,7 @@ module Termtter
     end
 
     it 'gets default help' do
+      Client.plug 'defaults' # FIXME: Do not need
       $stdout, old_stdout = StringIO.new, $stdout # FIXME That suspends any debug informations!
       help_command = Client.get_command(:help)
       help_command.should_not be_nil
@@ -335,6 +336,7 @@ module Termtter
     end
 
     it 'gets an added help' do
+      Client.plug 'defaults' # FIXME: Do not need
       Client.register_command(
         :name => :foo,
         :help => [
