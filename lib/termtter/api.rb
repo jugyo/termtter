@@ -23,10 +23,10 @@ module Termtter
         @twitter = create_twitter(config.user_name, config.password)
       end
 
-      def switch_user(username = nil)
+      def switch_user(username = nil, password = nil)
         highline = create_highline
         username = highline.ask('your twitter username: ') if username.nil? || username.empty?
-        password = highline.ask('your twitter password: ') { |q| q.echo = false }
+        password = highline.ask('your twitter password: ') { |q| q.echo = false } if username.nil? || username.empty?
         @twitter = create_twitter(username, password)
       end
 
