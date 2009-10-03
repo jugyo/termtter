@@ -45,15 +45,6 @@ module Termtter
         @public_storage ||= {}
       end
 
-      def add_filter(&b)
-        warn "add_filter method will be removed. Use Termtter::Client.register_hook(:name => ..., :point => :filter_for_output, :exec => ... ) instead."
-        @filters << b
-      end
-
-      def clear_filter
-        @filters.clear
-      end
-
       def register_hook(arg, opts = {}, &block)
         hook = case arg
           when Hook
