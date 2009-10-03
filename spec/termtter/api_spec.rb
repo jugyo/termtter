@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 require File.dirname(__FILE__) + '/../spec_helper'
-require 'termtter/active_rubytter'
 
 module Termtter
   describe API do
