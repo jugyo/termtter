@@ -27,7 +27,7 @@ module Readline
 end
 
 def win?
-  RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin|cygwin/
+  !!(RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin|cygwin/)
 end
 
 if win?
