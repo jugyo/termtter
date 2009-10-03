@@ -44,7 +44,7 @@ module Termtter
       config.system.eval_scripts = []
       opt.on('-m', '--monochrome', 'No shell escapes for color highlightings') do |script|
         require 'termcolor'
-        module TermColor
+        module ::TermColor
           class << self
             alias parse_orig parse
             def parse(o)
