@@ -7,7 +7,6 @@ module Termtter
     before do
       API.module_eval{
         @twitter = nil
-        @connection = nil
       }
     end
 
@@ -17,15 +16,13 @@ module Termtter
       t.login.should == 'foo'
     end
 
-    it 'can create connection and twitter' do
+    it 'can create twitter' do
       API.setup
-      API.connection.class.should == Connection
       API.twitter.class.should == Rubytter
     end
 
     it 'can restore user' do
       API.restore_user
-      API.connection.should == nil
       API.twitter.class.should == Rubytter
     end
 
