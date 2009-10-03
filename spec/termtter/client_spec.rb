@@ -277,6 +277,33 @@ module Termtter
       }.should_not raise_error
     end
 
+    it 'can apply filter' do
+      statuses = [
+        { :id => 2,
+          :created_at => Time.now,
+          :user_id => 2,
+          :name => 'name',
+          :screen_name => 'screen name',
+          :source => 'termtter',
+          :reply_to => 1,
+          :text => 'hi',
+          :original_data => 'hi' }
+      ]
+      event     = :output_for_test
+      hook_name = :my_hook
+
+      hook = Client.register_hook(hook_name) {|s, e| s.text.should == 'hi'; e.should == event }
+      hook.should_receive(:call)
+      Client.should_receive(:get_hooks).with(hook_name).and_return([hook])
+      Client.apply_filters_for_hook(hook_name, statuses, event)
+    end
+
+    it 'can add macro' do
+      Client.should_receive(:register_command).
+        with {|arg| arg.should be_an_instance_of(Hash) }
+      Client.register_macro('greet', "update %s")
+    end
+
     it 'runs' do
       pending
       Client.should_receive(:load_config)
