@@ -74,5 +74,19 @@ module Termtter
       @task_manager.delete_task('foo')
       @task_manager.get_task('foo').should == nil
     end
+
+    it 'should be killed' do
+      @task_manager.instance_eval('@work').should == true
+      @task_manager.kill
+      @task_manager.instance_eval('@work').should == false
+    end
+
+    it 'should be paused or resumed' do
+      @task_manager.instance_eval('@pause').should == false
+      @task_manager.pause
+      @task_manager.instance_eval('@pause').should == true
+      @task_manager.resume
+      @task_manager.instance_eval('@pause').should == false
+    end
   end
 end
