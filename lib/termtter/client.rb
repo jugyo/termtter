@@ -352,7 +352,13 @@ module Termtter
           else
             "\"#{message}".strip + "\" [N/y] "
           end
-        result = !!(/^y?$/i =~ Readline.readline(prompt, false))
+        readline = Readline.readline(prompt, false)
+        result =
+          if !!(/^$/ =~ readline) 
+            default_yes
+          else
+            !!(/^y/i =~ readline)
+          end
 
         if result && block
           block.call
