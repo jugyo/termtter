@@ -7,7 +7,7 @@ module Termtter
 
     def initialize()
       @tasks = {}
-      @work = true
+      @work  = true
       @mutex = Mutex.new
       @pause = false
     end
@@ -43,9 +43,7 @@ module Termtter
 
     def invoke_later
       Thread.new do
-        invoke_and_wait do
-          yield
-        end
+        invoke_and_wait { yield }
       end
     end
 
@@ -89,7 +87,7 @@ module Termtter
 
     def pull_due_tasks()
       synchronize do
-        time_now = Time.now
+        time_now  = Time.now
         due_tasks = []
         @tasks.delete_if do |key, task|
           if task.work && task.exec_at <= time_now

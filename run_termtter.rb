@@ -16,6 +16,7 @@ if ARGV.delete('--upgrade')
 end
 
 require 'termtter'
+Termtter::OptParser::parse!(ARGV)
 Termtter::Client.run
 
 # Startup scripts for development

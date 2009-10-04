@@ -7,6 +7,80 @@ module Termtter
       Client.setup_logger
     end
 
+    # FIXME: Depends recent implement
+    it 'can run' do
+      Client.should_receive(:load_config) {}
+      Termtter::API.should_receive(:setup) {}
+      Client.should_receive(:setup_logger) {}
+      Client.should_receive(:load_plugins) {}
+      Client.should_receive(:eval_init_block) {}
+
+      config.system.eval_scripts = []
+      config.system.cmd_mode = true
+      Client.run
+    end
+
+    it 'can run (eval script cannot eval)' do
+      Client.stub(:load_config) {}
+      Termtter::API.stub(:setup) {}
+      Client.stub(:setup_logger) {}
+      Client.stub(:load_plugins) {}
+      Client.stub(:eval_init_block) {}
+
+      config.system.eval_scripts = ['raise']
+      Client.should_receive(:handle_error)
+
+      config.system.cmd_mode = true
+      Client.run
+    end
+
+    it 'can run (eval script cannot eval)' do
+      Client.stub(:load_config) {}
+      Termtter::API.stub(:setup) {}
+      Client.stub(:setup_logger) {}
+      Client.stub(:load_plugins) {}
+      Client.stub(:eval_init_block) {}
+
+      config.system.eval_scripts = []
+      config.system.cmd_mode = false
+      Client.instance_variable_get(:@task_manager).should_receive(:run) {}
+      Client.should_receive(:call_hooks).with(:initialize)
+      Client.should_receive(:call_hooks).with(:launched)
+      Client.run
+    end
+
+    it 'set init block' do
+      dummy = lambda {}
+      Client.init(&dummy)
+      Client.instance_variable_get(:@init_block).should == dummy
+    end
+
+    it 'can run init block' do
+      Client.init() {}
+      Client.instance_variable_get(:@init_block).
+        should_receive(:call).with(Client)
+      Client.eval_init_block
+    end
+
+    it 'can load plugins when initializing stage (normal)' do
+      config.devel = false
+      Client.should_receive(:plug).exactly(2).times
+      Client.load_plugins
+    end
+
+    it 'can load plugins when initializing stage (devel)' do
+      Client.should_receive(:plug).exactly(2).times
+      Client.load_plugins
+    end
+
+    it 'can pause and resume' do
+      manager = Client.instance_variable_get(:@task_manager)
+      manager.should_receive(:pause)
+      Client.pause
+      manager.should_receive(:resume)
+      Client.resume
+    end
+
     it 'takes command' do
       command = Command.new(:name => :test)
       Client.register_command(command)
@@ -40,6 +114,15 @@ module Termtter
         Client.register_command(:name) {}
       }.should_not raise_error
     end
+
+    it 'register_command can raise error when take invalid argument' do
+      [1, ['hoge', 'fuga'], nil, Object.new].each do |bad|
+        lambda {
+          Client.register_command(bad)
+        }.should raise_error(ArgumentError)
+      end
+    end
+
 
     it 'takes add_command as block' do
       Client.add_command('test') do |c|
@@ -77,8 +160,9 @@ module Termtter
         ['test  foo bar ',  'foo bar'],
         ['test  foo  bar ', 'foo  bar'],
       ].each do |input, args|
-        Client.call_commands(input)
+        status = Client.call_commands(input)
         command_arg.should == args
+        status.should == 0
       end
     end
 
@@ -99,6 +183,14 @@ module Termtter
       hook_called.should == false
       Client.call_hooks(:point1)
       hook_called.should == true
+    end
+
+    it 'register_hook can raise error when take invalid argument' do
+      [1, ['hoge', 'fuga'], nil, Object.new].each do |bad|
+        lambda {
+          Client.register_hook(bad)
+        }.should raise_error(ArgumentError)
+      end
     end
 
     it 'calls new_hook with args' do
@@ -222,6 +314,8 @@ module Termtter
 
       hook_called.should == false
       Client.should_receive(:puts)
+      Client.instance_variable_get(:@task_manager).
+        should_receive(:kill) {}
       Client.exit
       hook_called.should == true
     end
@@ -234,6 +328,7 @@ module Termtter
 
       hook1_called.should == false
       hook2_called.should == false
+      Client.instance_variable_get(:@task_manager).stub(:kill)
       Client.should_receive(:puts)
       Client.exit
       hook1_called.should == true
@@ -277,38 +372,82 @@ module Termtter
       }.should_not raise_error
     end
 
-    it 'runs' do
-      pending
-      Client.should_receive(:load_config)
-      Termtter::API.should_receive(:setup)
-      Client.should_receive(:start_input_thread)
-      Client.run
+    it 'can apply filter' do
+      statuses = [
+        { :id => 2,
+          :created_at => Time.now,
+          :user_id => 2,
+          :name => 'name',
+          :screen_name => 'screen name',
+          :source => 'termtter',
+          :reply_to => 1,
+          :text => 'hi',
+          :original_data => 'hi' }
+      ]
+      event     = :output_for_test
+      hook_name = :my_hook
+
+      hook = Client.register_hook(hook_name) {|s, e| s.text.should == 'hi'; e.should == event }
+      hook.should_receive(:call)
+      Client.should_receive(:get_hooks).with(hook_name).and_return([hook])
+      Client.apply_filters_for_hook(hook_name, statuses, event)
     end
 
-    it 'load_config'
-
-    it 'does nothing when ~/.termtter is directory' do
-      File.should_receive(:ftype).and_return('directory')
-      Client.should_not_receive(:move_legacy_config_file)
-      Client.legacy_config_support
+    it 'can add macro' do
+      Client.should_receive(:register_command).
+        with {|arg| arg.should be_an_instance_of(Hash) }
+      Client.register_macro('greet', "update %s")
     end
 
-    it 'does "move_legacy_config_file" when ~/.termtter is file' do
-      File.should_receive(:ftype).and_return('file')
-      Client.should_receive(:move_legacy_config_file)
-      Client.legacy_config_support
+    it 'can load config' do
+      Client.should_receive(:load).with(Termtter::CONF_FILE)
+      Client.load_config
     end
 
-    it 'moves legacy config file' do
-      FileUtils.should_receive(:mv).twice
-      Dir.should_receive(:mkdir)
-      Client.move_legacy_config_file
+    it 'can create config file when load_config' do
+      File.should_receive(:exist?).and_return(false)
+      require 'termtter/config_setup'
+      ConfigSetup.should_receive(:run).and_return(false)
+      Client.stub(:load).with(Termtter::CONF_FILE)
+      Client.load_config
+    end
+
+    it 'can output status (bad)' do
+      Client.should_not_receive(:call_hooks)
+      Client.output(nil, :hoge)
+      Client.should_not_receive(:call_hooks)
+      Client.output([], :hoge)
+    end
+
+    # FIXME: too dirty
+    it 'can output status (good)' do
+      statuses = mock('statuses', :null_object => true)
+      statuses.stub(:empty? => false, :nil? => false)
+      event = :event
+      Client.should_receive(:call_hooks).with(:pre_filter, statuses, event)
+      Client.should_receive(:apply_filters_for_hook).exactly(2).times.
+        with(an_instance_of(Symbol), anything, event).
+        and_return(statuses)
+      Client.should_receive(:call_hooks).with(:post_filter, statuses, event)
+      hook = mock(:hook, :name => 'test')
+      hook.should_receive(:call).with(anything, event)
+      Client.should_receive(:get_hooks).with(:output).and_return([hook])
+      Client.output(statuses, event)
     end
 
     it 'handles error' do
-      logger = Client.instance_eval{@logger}
+      logger = Client.instance_variable_get(:@logger)
       logger.should_receive(:error).with("StandardError: error")
       Client.handle_error StandardError.new('error')
+    end
+
+    it 'handle_error raise error when logger is nothing' do
+      Client.instance_variable_set(:@logger, nil)
+      $stderr, old = StringIO.new, $stderr
+      Client.handle_error(StandardError.new('error'))
+      $stderr.rewind
+      $stderr.gets.should match(/\AError: error/)
+      $stderr = old
     end
 
     it 'cancels command by hook' do
@@ -326,6 +465,7 @@ module Termtter
     end
 
     it 'gets default help' do
+      Client.plug 'defaults' # FIXME: Do not need
       $stdout, old_stdout = StringIO.new, $stdout # FIXME That suspends any debug informations!
       help_command = Client.get_command(:help)
       help_command.should_not be_nil
@@ -335,6 +475,7 @@ module Termtter
     end
 
     it 'gets an added help' do
+      Client.plug 'defaults' # FIXME: Do not need
       Client.register_command(
         :name => :foo,
         :help => [
@@ -348,6 +489,71 @@ module Termtter
       help_command.call
       $stdout.string.should match(/foo USER/)
       $stdout.string.should match(/foo list/)
+    end
+
+    it 'can confirm before update (yes default)' do
+      message = 'hello'
+      Readline.should_receive(:readline).
+        with("\"#{message}".strip + "\" [Y/n] ", false)
+      Client.confirm(message)
+    end
+
+    it 'can confirm before update (no default)' do
+      message = 'hello'
+      Readline.should_receive(:readline).
+        with("\"#{message}".strip + "\" [N/y] ", false)
+      Client.confirm(message, false)
+    end
+
+    it 'can configm before update' do
+      ok_pattern = [ 'y', 'Y', '' ]
+      ng_pattern = [
+        'n', 'N',
+        ('a'..'z').to_a,
+        ('A'..'Z').to_a ].flatten
+      ng_pattern -= ['y', 'Y']
+
+      ok_pattern.each do |ask|
+        Readline.should_receive(:readline).and_return(ask)
+        Client.confirm('hello').should be_true
+      end
+      ng_pattern.each do |ask|
+        Readline.should_receive(:readline).and_return(ask)
+        Client.confirm('hello').should be_false
+      end
+    end
+
+    it 'confirm can take block as callback' do
+      Readline.stub(:readline => 'y')
+      called = false
+      Client.confirm('hello') { called = true }
+      called.should be_true
+    end
+
+    it 'default logger can cahnge error to fit security level' do
+      logger = Client.default_logger
+      TermColor.should_receive(:parse).with(match(/blue/))
+      logger.debug 'hi'
+      TermColor.should_receive(:parse).with(match(/cyan/))
+      logger.info 'hi'
+      TermColor.should_receive(:parse).with(match(/magenta/))
+      logger.warn 'hi'
+      TermColor.should_receive(:parse).with(match(/red/))
+      logger.error 'hi'
+      TermColor.should_receive(:parse).with(match(/on_red/))
+      logger.fatal 'hi'
+      TermColor.should_receive(:parse).with(match(/white/))
+      logger.unknown 'hi'
+    end
+
+    it 'can cancel command' do
+      text = 'text'
+      command = mock('command', :null_object => true)
+      command.stub(:call) { raise CommandCanceled }
+      Client.stub(:find_commands).with(text).and_return([command])
+      lambda {
+        Client.call_commands(text).should == 1
+      }.should_not raise_error
     end
 
     describe 'add commands' do

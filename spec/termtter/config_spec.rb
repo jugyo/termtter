@@ -29,6 +29,23 @@ module Termtter
       @config.storage.should == :value2
     end
 
+    it 'should be able to inspect' do
+      @config.storage = :value
+      @config.inspect.should == {:storage => :value}.inspect
+    end
+
+    it 'should be able to get __values__' do
+      @config.storage = :value
+      @config.__values__.should == {:storage => :value}
+    end
+
+    it 'should be able to __clear__' do
+      @config.storage = :value
+      @config.storage.should == :value
+      @config.__clear__
+      @config.__values__.should == {}
+    end
+
     it 'should be able to store any data' do
       [
         ['string',  'value'   ],

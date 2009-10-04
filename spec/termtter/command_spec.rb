@@ -77,6 +77,11 @@ module Termtter
       end
     end
 
+    it 'returns empty array as candidates when competition_proc is nil'do
+      command = Command.new(:name => :foo)
+      command.complement('foo bar').should == []
+    end
+
     it 'returns command_info when call method "match?"' do
       [
         ['update',       true],

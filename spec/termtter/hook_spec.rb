@@ -62,6 +62,18 @@ module Termtter
       hook.match?(:'_bar_').should == false
     end
 
+    it 'should not match invalid point' do
+      hook = Hook.new(
+        :name => :spam,
+        :points => [1, { }, nil],
+        :exec_proc => lambda{|cmd, arg|
+        }
+        )
+      hook.match?(1).should == false
+      hook.match?({ }).should == false
+      hook.match?(nil).should == false
+    end
+
     it 'call hook proc' do
       proc_args = nil
       hook = Hook.new(

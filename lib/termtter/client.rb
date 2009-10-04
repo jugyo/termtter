@@ -10,10 +10,10 @@ module Termtter
 
   module Client
 
-    @hooks = {}
-    @commands = {}
-    @filters = []
-    @since_id = nil
+    @hooks        = {}
+    @commands     = {}
+    @filters      = []
+    @since_id     = nil
     @task_manager = Termtter::TaskManager.new
 
     config.set_default(:logger, nil)
@@ -25,7 +25,7 @@ module Termtter
 
     class << self
 
-      attr_reader :commands, :hooks
+      attr_reader :commands, :hooks, :logger
 
       # plug :: Name -> (Hash) -> IO () where NAME = String | Symbol | [NAME]
       def plug(name, options = {})
@@ -45,30 +45,27 @@ module Termtter
         @public_storage ||= {}
       end
 
-      def add_filter(&b)
-        warn "add_filter method will be removed. Use Termtter::Client.register_hook(:name => ..., :point => :filter_for_output, :exec => ... ) instead."
-        @filters << b
-      end
-
-      def clear_filter
-        @filters.clear
-      end
-
       def register_hook(arg, opts = {}, &block)
-        hook = case arg
-          when Hook
+        register_(:hook, arg, opts, &block)
+      end
+
+      def register_(type, arg, opts = {}, &block)
+        type = type.to_s.capitalize
+        klass = Termtter.const_get(type)
+        target = case arg
+          when klass
             arg
           when Hash
-            Hook.new(arg)
+            klass.new(arg)
           when String, Symbol
             options = { :name => arg }
             options.merge!(opts)
             options[:exec_proc] = block
-            Hook.new(options)
+            klass.new(options)
           else
-            raise ArgumentError, 'must be given Termtter::Hook, Hash, String or Symbol'
+            raise ArgumentError, "must be given Termtter::#{type}, Hash or String(Symbol) with block"
           end
-        @hooks[hook.name] = hook
+        instance_variable_get(:"@#{type.downcase}s")[target.name] = target
       end
 
       def get_hook(name)
@@ -83,20 +80,7 @@ module Termtter
       end
 
       def register_command(arg, opts = {}, &block)
-        command = case arg
-          when Command
-            arg
-          when Hash
-            Command.new(arg)
-          when String, Symbol
-            options = { :name => arg }
-            options.merge!(opts)
-            options[:exec_proc] = block
-            Command.new(options)
-          else
-            raise ArgumentError, 'must be given Termtter::Command, Hash or String(Symbol) with block'
-          end
-        @commands[command.name] = command
+        register_(:command, arg, opts, &block)
       end
 
       def add_command(name)
@@ -145,14 +129,10 @@ module Termtter
 
         filtered = apply_filters_for_hook(:filter_for_output, statuses.map(&:clone), event)
 
-        @filters.each do |f|  # TODO: code for compatibility. delete someday.
-          filtered = f.call(filtered, event)
-        end
-
         call_hooks(:post_filter, filtered, event)
         get_hooks(:output).each do |hook|
           hook.call(
-            apply_filters_for_hook("filter_for_#{hook.name}", filtered, event),
+            apply_filters_for_hook(:"filter_for_#{hook.name}", filtered, event),
             event
           )
         end
@@ -175,6 +155,11 @@ module Termtter
       end
 
       def call_commands(text)
+        # status
+        #   0: done
+        #   1: canceled
+        status = 0
+
         @task_manager.invoke_and_wait do
           # FIXME: This block can become Maybe Monad
           get_hooks("pre_command").each {|hook|
@@ -201,9 +186,11 @@ module Termtter
               result = command.call(command_str, modified_arg, text) # exec command
               call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
             rescue CommandCanceled
+              status = 1
             end
           end
           call_hooks("post_command", text)
+          status
         end
       end
 
@@ -234,35 +221,11 @@ module Termtter
       end
 
       def load_config
-        legacy_config_support() if File.exist? Termtter::CONF_DIR
         unless File.exist?(Termtter::CONF_FILE)
           require 'termtter/config_setup'
           ConfigSetup.run
         end
         load Termtter::CONF_FILE
-      end
-
-      def legacy_config_support
-        case File.ftype(File.expand_path('~/.termtter'))
-        when 'directory'
-          # nop
-        when 'file'
-          move_legacy_config_file
-        end
-      end
-
-      def move_legacy_config_file
-        FileUtils.mv(
-          Termtter::CONF_DIR,
-          File.expand_path('~/.termtter___'))
-        Dir.mkdir(Termtter::CONF_DIR)
-        FileUtils.mv(
-          File.expand_path('~/.termtter___'),
-          Termtter::CONF_FILE)
-      end
-
-      def logger
-        @logger
       end
 
       def setup_logger
@@ -339,8 +302,8 @@ module Termtter
         end
         get_hooks(:on_error).each {|hook| hook.call(e) }
       rescue Exception => e
-        puts "Error: #{e}"
-        puts e.backtrace.join("\n")
+        $stderr.puts "Error: #{e}"
+        $stderr.puts e.backtrace.join("\n")
       end
 
       def confirm(message, default_yes = true, &block)
@@ -354,9 +317,7 @@ module Termtter
           end
         result = !!(/^y?$/i =~ Readline.readline(prompt, false))
 
-        if result && block
-          block.call
-        end
+        block.call if result && block
 
         result
       ensure

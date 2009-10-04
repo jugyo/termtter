@@ -6,8 +6,8 @@ module Termtter
 
     def initialize(args)
       raise ArgumentError, ":name is not given." unless args.has_key?(:name)
-      @name = args[:name].to_sym
-      @points = args[:points] || [args[:point]].compact
+      @name      = args[:name].to_sym
+      @points    = args[:points]    || [args[:point]].compact
       @exec_proc = args[:exec_proc] || args[:exec] || lambda {}
     end
 
