@@ -408,6 +408,7 @@ module Termtter
       File.should_receive(:exist?).and_return(false)
       require 'termtter/config_setup'
       ConfigSetup.should_receive(:run).and_return(false)
+      Client.stub(:load).with(Termtter::CONF_FILE)
       Client.load_config
     end
 
