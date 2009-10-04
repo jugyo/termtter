@@ -136,14 +136,10 @@ module Termtter
 
         filtered = apply_filters_for_hook(:filter_for_output, statuses.map(&:clone), event)
 
-        @filters.each do |f|  # TODO: code for compatibility. delete someday.
-          filtered = f.call(filtered, event)
-        end
-
         call_hooks(:post_filter, filtered, event)
         get_hooks(:output).each do |hook|
           hook.call(
-            apply_filters_for_hook("filter_for_#{hook.name}", filtered, event),
+            apply_filters_for_hook(:"filter_for_#{hook.name}", filtered, event),
             event
           )
         end
@@ -166,6 +162,11 @@ module Termtter
       end
 
       def call_commands(text)
+        # status
+        #   0: done
+        #   1: canceled
+        status = 0
+
         @task_manager.invoke_and_wait do
           # FIXME: This block can become Maybe Monad
           get_hooks("pre_command").each {|hook|
@@ -192,9 +193,11 @@ module Termtter
               result = command.call(command_str, modified_arg, text) # exec command
               call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
             rescue CommandCanceled
+              status = 1
             end
           end
           call_hooks("post_command", text)
+          status
         end
       end
 
@@ -225,31 +228,11 @@ module Termtter
       end
 
       def load_config
-        legacy_config_support() if File.exist? Termtter::CONF_DIR
         unless File.exist?(Termtter::CONF_FILE)
           require 'termtter/config_setup'
           ConfigSetup.run
         end
         load Termtter::CONF_FILE
-      end
-
-      def legacy_config_support
-        case File.ftype(File.expand_path('~/.termtter'))
-        when 'directory'
-          # nop
-        when 'file'
-          move_legacy_config_file
-        end
-      end
-
-      def move_legacy_config_file
-        FileUtils.mv(
-          Termtter::CONF_DIR,
-          File.expand_path('~/.termtter___'))
-        Dir.mkdir(Termtter::CONF_DIR)
-        FileUtils.mv(
-          File.expand_path('~/.termtter___'),
-          Termtter::CONF_FILE)
       end
 
       def logger
@@ -345,9 +328,7 @@ module Termtter
           end
         result = !!(/^y?$/i =~ Readline.readline(prompt, false))
 
-        if result && block
-          block.call
-        end
+        block.call if result && block
 
         result
       ensure
