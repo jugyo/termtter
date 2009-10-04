@@ -15,5 +15,6 @@ describe Termtter::Client, 'when the plugin whois is loaded' do
 
     whois?(name).should == ip
     whois?(ip).should == name
+    # FIXME: This spec doesn't pass in Canada
   end
 end
