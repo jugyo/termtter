@@ -122,9 +122,11 @@ module Termtter
     end
 
     it 'invoke_later calls invoke_and_wait' do
-      block = lambda {}
+      called = false
+      block = lambda { called = true}
       @task_manager.should_receive(:invoke_and_wait).with(&block)
       @task_manager.invoke_later &block
+      called.should be_true
     end
   end
 end
