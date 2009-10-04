@@ -24,6 +24,7 @@ require 'termtter/task_manager'
 require 'termtter/client'
 require 'termtter/api'
 require 'termtter/system_extensions'
+require 'termtter/for_windows' if win?
 
 module Termtter
   APP_NAME = 'termtter'

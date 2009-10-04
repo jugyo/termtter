@@ -4,6 +4,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 require 'highline'
 
 describe Termtter do
+
   it 'provides create_highline' do
     h = create_highline
     h.class.should == HighLine
@@ -17,6 +18,5 @@ describe Termtter do
     win?.should == true
     RUBY_PLATFORM = original_ruby_platform
   end
-
 end
 
