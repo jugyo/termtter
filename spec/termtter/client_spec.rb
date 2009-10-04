@@ -443,11 +443,11 @@ module Termtter
 
     it 'handle_error raise error when logger is nothing' do
       Client.instance_variable_set(:@logger, nil)
-      $stdout, old = StringIO.new, $stdout
+      $stderr, old = StringIO.new, $stderr
       Client.handle_error(StandardError.new('error'))
-      $stdout.rewind
-      $stdout.gets.should match(/\AError: error/)
-      $stdout = old
+      $stderr.rewind
+      $stderr.gets.should match(/\AError: error/)
+      $stderr = old
     end
 
     it 'cancels command by hook' do

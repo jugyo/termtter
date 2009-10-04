@@ -20,7 +20,7 @@ module Termtter
     end
 
     def stop
-      @input_thread.kill
+      @input_thread.kill rescue nil
     end
 
     def call(command_text)

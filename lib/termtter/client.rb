@@ -302,8 +302,8 @@ module Termtter
         end
         get_hooks(:on_error).each {|hook| hook.call(e) }
       rescue Exception => e
-        puts "Error: #{e}"
-        puts e.backtrace.join("\n")
+        $stderr.puts "Error: #{e}"
+        $stderr.puts e.backtrace.join("\n")
       end
 
       def confirm(message, default_yes = true, &block)

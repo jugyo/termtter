@@ -4,12 +4,8 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Termtter::Client, 'when the plugin cool is loaded' do
   before do
-    @debug, @update_arg, @update_params = [], [], []
-    Termtter::Client.plug 'multi_output'
-    Termtter::Client.delete_output(:stdout)
-    Termtter::Client.register_output(:debug) do |msg|
-      @debug << msg
-    end
+    $stdout, @old_stdout = StringIO.new, $stdout # FIXME That suspends any debug informations!
+    @update_arg, @update_params = [], []
     config.system.cmd_mode = true
     Termtter::Client.run
     Termtter::API.twitter.stub!(:update) {|arg, param|
@@ -22,10 +18,17 @@ describe Termtter::Client, 'when the plugin cool is loaded' do
     Termtter::Client.plug 'cool'
   end
 
+  after do
+    config.system.cmd_mode = false
+    Termtter::Client.exit
+    $stdout = @old_stdout
+  end
+
   it 'register command cool' do
     command = Termtter::Client.get_command(:cool)
     Termtter::Client.call_commands('cool')
-    @debug.should == ['updated => cool.']
+    $stdout.rewind
+    $stdout.read.should == "updated => cool.\n"
     @update_arg.should == ['cool.']
     @update_params.should == [{ }]
   end
