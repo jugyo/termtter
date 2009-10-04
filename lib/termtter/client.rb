@@ -46,20 +46,26 @@ module Termtter
       end
 
       def register_hook(arg, opts = {}, &block)
-        hook = case arg
-          when Hook
+        register_(:hook, arg, opts, &block)
+      end
+
+      def register_(type, arg, opts = {}, &block)
+        type = type.to_s.capitalize
+        klass = Termtter.const_get(type)
+        target = case arg
+          when klass
             arg
           when Hash
-            Hook.new(arg)
+            klass.new(arg)
           when String, Symbol
             options = { :name => arg }
             options.merge!(opts)
             options[:exec_proc] = block
-            Hook.new(options)
+            klass.new(options)
           else
-            raise ArgumentError, 'must be given Termtter::Hook, Hash, String or Symbol'
+            raise ArgumentError, "must be given Termtter::#{type}, Hash or String(Symbol) with block"
           end
-        @hooks[hook.name] = hook
+        instance_variable_get(:"@#{type.downcase}s")[target.name] = target
       end
 
       def get_hook(name)
@@ -74,20 +80,7 @@ module Termtter
       end
 
       def register_command(arg, opts = {}, &block)
-        command = case arg
-          when Command
-            arg
-          when Hash
-            Command.new(arg)
-          when String, Symbol
-            options = { :name => arg }
-            options.merge!(opts)
-            options[:exec_proc] = block
-            Command.new(options)
-          else
-            raise ArgumentError, 'must be given Termtter::Command, Hash or String(Symbol) with block'
-          end
-        @commands[command.name] = command
+        register_(:command, arg, opts, &block)
       end
 
       def add_command(name)
