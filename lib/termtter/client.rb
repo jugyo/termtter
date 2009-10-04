@@ -10,10 +10,10 @@ module Termtter
 
   module Client
 
-    @hooks = {}
-    @commands = {}
-    @filters = []
-    @since_id = nil
+    @hooks        = {}
+    @commands     = {}
+    @filters      = []
+    @since_id     = nil
     @task_manager = Termtter::TaskManager.new
 
     config.set_default(:logger, nil)
@@ -25,7 +25,7 @@ module Termtter
 
     class << self
 
-      attr_reader :commands, :hooks
+      attr_reader :commands, :hooks, :logger
 
       # plug :: Name -> (Hash) -> IO () where NAME = String | Symbol | [NAME]
       def plug(name, options = {})
@@ -226,10 +226,6 @@ module Termtter
           ConfigSetup.run
         end
         load Termtter::CONF_FILE
-      end
-
-      def logger
-        @logger
       end
 
       def setup_logger

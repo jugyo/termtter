@@ -18,9 +18,7 @@ module Termtter
         @twitter = create_twitter(config.user_name, config.password)
       end
 
-      def restore_user
-        @twitter = create_twitter(config.user_name, config.password)
-      end
+      alias restore_user setup
 
       def switch_user(username = nil, password = nil)
         highline = create_highline
