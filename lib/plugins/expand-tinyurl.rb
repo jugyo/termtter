@@ -54,4 +54,6 @@ def expand_url(host, path)
   res = http_class.new(host).head(path)
   return nil unless res.code == "301" or res.code == "302"
   res['Location'].force_encoding(Encoding::UTF_8)
+rescue
+  nil
 end
