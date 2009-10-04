@@ -13,9 +13,9 @@ module Termtter
     def initialize(args)
       raise ArgumentError, ":name is not given." unless args.has_key?(:name)
       args = args.dup
-      args[:exec_proc] ||= args[:exec]
+      args[:exec_proc]       ||= args[:exec]
       args[:completion_proc] ||= args[:completion]
-      args[:aliases] ||= [args[:alias]].compact
+      args[:aliases]         ||= [args[:alias]].compact
 
       cfg = {
         :aliases        => [],
@@ -29,7 +29,7 @@ module Termtter
     # set :: Hash -> ()
     def set(cfg)
       self.name            = cfg[:name].to_sym
-      self.aliases     = cfg[:aliases]
+      self.aliases         = cfg[:aliases]
       self.exec_proc       = cfg[:exec_proc]
       self.completion_proc = cfg[:completion_proc]
       self.help            = cfg[:help]
