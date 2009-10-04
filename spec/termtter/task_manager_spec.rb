@@ -120,5 +120,11 @@ module Termtter
       @task_manager.resume
       @task_manager.instance_eval('@pause').should == false
     end
+
+    it 'invoke_later calls invoke_and_wait' do
+      block = lambda {}
+      @task_manager.should_receive(:invoke_and_wait).with(&block)
+      @task_manager.invoke_later &block
+    end
   end
 end
