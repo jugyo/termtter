@@ -40,7 +40,7 @@ def saykanji(text, say_speed)
     end
   }
   text_to_say = `echo #{text_wakati.join}|mecab -O yomi`
-  system "SayKana", "-s", "#{say_speed}", "#{text_to_say}"
+  system "SayKana -s #{say_speed} \"#{text_to_say}\" 2>/dev/null"
 end
 
 def say(who, text)
