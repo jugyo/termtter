@@ -23,6 +23,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency("highline", ">= 1.5.0")
   s.add_dependency("termcolor", ">= 0.3.1")
   s.add_dependency("rubytter", ">= 0.9.1")
+  s.add_dependency("oauth", ">= 0.3.6")
   s.authors = %w(jugyo ujihisa)
   s.email = 'jugyo.org@gmail.com'
   s.homepage = 'http://termtter.org/'
