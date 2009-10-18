@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jugyo", "ujihisa"]
-  s.date = %q{2009-10-17}
+  s.date = %q{2009-10-18}
   s.description = %q{Termtter is a terminal based Twitter client.}
   s.email = %q{jugyo.org@gmail.com}
   s.executables = ["kill_termtter", "termtter"]
@@ -26,21 +26,21 @@ Gem::Specification.new do |s|
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<json_pure>, [">= 1.1.3"])
       s.add_runtime_dependency(%q<highline>, [">= 1.5.0"])
-      s.add_runtime_dependency(%q<termcolor>, [">= 0.3.1"])
-      s.add_runtime_dependency(%q<rubytter>, [">= 0.9.1"])
+      s.add_runtime_dependency(%q<termcolor>, [">= 1.0.0"])
+      s.add_runtime_dependency(%q<rubytter>, [">= 0.9.2"])
       s.add_runtime_dependency(%q<oauth>, [">= 0.3.6"])
     else
       s.add_dependency(%q<json_pure>, [">= 1.1.3"])
       s.add_dependency(%q<highline>, [">= 1.5.0"])
-      s.add_dependency(%q<termcolor>, [">= 0.3.1"])
-      s.add_dependency(%q<rubytter>, [">= 0.9.1"])
+      s.add_dependency(%q<termcolor>, [">= 1.0.0"])
+      s.add_dependency(%q<rubytter>, [">= 0.9.2"])
       s.add_dependency(%q<oauth>, [">= 0.3.6"])
     end
   else
     s.add_dependency(%q<json_pure>, [">= 1.1.3"])
     s.add_dependency(%q<highline>, [">= 1.5.0"])
-    s.add_dependency(%q<termcolor>, [">= 0.3.1"])
-    s.add_dependency(%q<rubytter>, [">= 0.9.1"])
+    s.add_dependency(%q<termcolor>, [">= 1.0.0"])
+    s.add_dependency(%q<rubytter>, [">= 0.9.2"])
     s.add_dependency(%q<oauth>, [">= 0.3.6"])
   end
 end
