@@ -22,6 +22,7 @@ module Termtter
           consumer = OAuth::Consumer.new(CONSUMER_KEY, CONSUMER_SECRET, :site => 'http://twitter.com')
           access_token = OAuth::AccessToken.new(consumer, config.access_token, config.access_token_secret)
           @twitter = OAuthRubytter.new(access_token, twitter_option)
+          config.user_name = @twitter.verify_credentials[:name]
         end
       end
 
