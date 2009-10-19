@@ -139,20 +139,27 @@ module Termtter::Client
   register_command(
     :name => :list, :aliases => [:l],
     :exec_proc => lambda {|arg|
+      if arg =~ /\-([\d]+)/
+        options = {:count => $1}
+        arg = arg.gsub(/\-([\d]+)/, '')
+      else
+        options = {}
+      end
+
       if arg.empty?
         event = :list_friends_timeline
-        statuses = Termtter::API.twitter.friends_timeline
+        statuses = Termtter::API.twitter.friends_timeline(options)
       else
         event = :list_user_timeline
         statuses = []
         Array(arg.split).each do |user|
           user_name = normalize_as_user_name(user)
-          statuses += Termtter::API.twitter.user_timeline(user_name)
+          statuses += Termtter::API.twitter.user_timeline(user_name, options)
         end
       end
       output(statuses, event)
     },
-    :help => ["list,l [USERNAME]", "List the posts"]
+    :help => ["list,l [USERNAME] [-COUNT]", "List the posts"]
   )
 
   class SearchEvent; attr_reader :query; def initialize(query); @query = query end; end
