@@ -4,7 +4,6 @@ require 'logger'
 require 'termcolor'
 
 module Termtter
-
   class CommandNotFound < StandardError; end
   class CommandCanceled < StandardError; end
 

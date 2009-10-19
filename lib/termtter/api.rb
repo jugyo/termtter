@@ -16,7 +16,14 @@ module Termtter
       attr_reader :connection, :twitter
       def setup
         @connection = Connection.new
-        @twitter = create_twitter(config.user_name, config.password)
+        if config.access_token.empty? && config.access_token_secret.empty?
+          @twitter = Rubytter.new(config.user_name, config.password, twitter_option)
+        else
+          consumer = OAuth::Consumer.new(CONSUMER_KEY, CONSUMER_SECRET, :site => 'http://twitter.com')
+          access_token = OAuth::AccessToken.new(consumer, config.access_token, config.access_token_secret)
+          @twitter = OAuthRubytter.new(access_token, twitter_option)
+          config.user_name = @twitter.verify_credentials[:name]
+        end
       end
 
       def restore_user
@@ -30,26 +37,22 @@ module Termtter
         @twitter = create_twitter(username, password)
       end
 
-      def create_twitter(user_name, password)
-        Rubytter.new(
-          user_name,
-          password,
-          {
-            :app_name => config.app_name.empty? ? Termtter::APP_NAME : config.app_name,
-            :host => config.host,
-            :header => {
-              'User-Agent' => 'Termtter http://github.com/jugyo/termtter',
-              'X-Twitter-Client' => 'Termtter',
-              'X-Twitter-Client-URL' => 'http://github.com/jugyo/termtter',
-              'X-Twitter-Client-Version' => Termtter::VERSION
-            },
-            :enable_ssl => config.enable_ssl,
-            :proxy_host => config.proxy.host,
-            :proxy_port => config.proxy.port,
-            :proxy_user_name => config.proxy.user_name,
-            :proxy_password => config.proxy.password
-          }
-        )
+      def twitter_option
+        {
+          :app_name => config.app_name.empty? ? Termtter::APP_NAME : config.app_name,
+          :host => config.host,
+          :header => {
+            'User-Agent' => 'Termtter http://github.com/jugyo/termtter',
+            'X-Twitter-Client' => 'Termtter',
+            'X-Twitter-Client-URL' => 'http://github.com/jugyo/termtter',
+            'X-Twitter-Client-Version' => Termtter::VERSION
+          },
+          :enable_ssl => config.enable_ssl,
+          :proxy_host => config.proxy.host,
+          :proxy_port => config.proxy.port,
+          :proxy_user_name => config.proxy.user_name,
+          :proxy_password => config.proxy.password
+        }
       end
     end
   end
