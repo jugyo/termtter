@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-gem 'rubytter', '>= 0.6.5'
-require 'rubytter'
 
 config.set_default(:host, 'twitter.com')
 config.proxy.set_default(:port, '8080')
