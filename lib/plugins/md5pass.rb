@@ -18,14 +18,10 @@ module Termtter::Client
       Base64.encode64(Digest::MD5.digest(str))[0, len]
   end
 
-  register_command(
-    :name => :md5pass, :aliases => [:md],
-    :exec_proc => lambda {|arg|
-      config.password = gen_pass(arg)
-      Termtter::API.setup()
-    },
-    :help => ["md5pass MASTER_PASSWORD", "Login with md5 password."]
-  )
+  hl = create_highline
+  mp = hl.ask('your master password for md5pass: ') { |q| q.echo = false }
+  config.password = gen_pass(mp)
+  Termtter::API.setup()
 
   register_command(
     :name => :show_md5pass,
