@@ -157,3 +157,15 @@ def create_highline
   end
   HighLine.new($stdin)
 end
+
+def open_brawser(url)
+  return false
+  case RUBY_PLATFORM
+  when /linux/
+    system 'firefox', url
+  when /mswin(?!ce)|mingw|bccwin/
+    system 'explorer', url
+  else
+    system 'open', url
+  end
+end

@@ -16,5 +16,10 @@ describe Termtter::Client, 'when the plugin whois is loaded' do
     whois?(name).should == ip
     whois?(ip).should == name
     # FIXME: This spec doesn't pass in Canada
+    #  1)  
+    #  'Termtter::Client when the plugin whois is loaded should be whois define' FAILED
+    #  expected: "66.249.89.104",
+    #       got: "no address for jp-in-f104.google.com" (using ==)
+    #  ./spec/plugins/whois_spec.rb:16:
   end
 end

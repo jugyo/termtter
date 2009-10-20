@@ -5,29 +5,19 @@ require 'erb'
 module Termtter
   module ConfigSetup
     module_function
-    # TODO: move this method to suitable place
-    def open_brawser(url)
-      case RUBY_PLATFORM
-      when /linux/
-        system 'firefox', url
-      when /mswin(?!ce)|mingw|bccwin/
-        system 'explorer', url
-      else
-        system 'open', url
-      end
-    end
-
     def run
       puts 'connecting to twitter...'
 
       consumer = OAuth::Consumer.new(CONSUMER_KEY, CONSUMER_SECRET, :site => 'http://twitter.com')
       request_token = consumer.get_request_token
 
-      open_brawser(request_token.authorize_url)
+      unless open_brawser(request_token.authorize_url)
+        puts "Authorize URL: #{request_token.authorize_url}"
+      end
       sleep 2
 
       ui = create_highline
-      pin = ui.ask('Enter PIN: ')
+      pin = ui.ask('Please enter PIN: ')
       access_token = request_token.get_access_token(:oauth_verifier => pin)
       token = access_token.token
       secret = access_token.secret
