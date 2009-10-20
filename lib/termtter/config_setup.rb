@@ -11,7 +11,7 @@ module Termtter
       consumer = OAuth::Consumer.new(CONSUMER_KEY, CONSUMER_SECRET, :site => 'http://twitter.com')
       request_token = consumer.get_request_token
 
-      unless open_brawser(request_token.authorize_url)
+      unless open_browser(request_token.authorize_url)
         puts "Authorize URL: #{request_token.authorize_url}"
       end
       sleep 2
