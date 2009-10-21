@@ -26,10 +26,13 @@ module Termtter::Client
       end
     if ENV['TERM'] == 'screen' &&
        cmd =~ /.*w3m/ &&
-       config.plugins.uri_open.split == true
-      system "screen", "-X", "eval",
-                       "split", "focus",
-                       "screen #{cmd} #{uri}"
+       config.plugins.uri_open.screen == true
+      if config.plugins.uri_open.split == false
+        system "screen", "-X", "eval", "screen #{cmd} #{uri}"
+      else
+        system "screen", "-X", "eval",
+                         "split", "focus", "screen #{cmd} #{uri}"
+      end
     else 
       system cmd, uri
     end
@@ -72,6 +75,11 @@ module Termtter::Client
 end
 # ~/.termtter/config
 # t.plug 'uri-open'
+#
+# w3m options:
+# config.plugins.uri_open.browser = 'w3m'
+# config.plugins.uri_open.screen = true or false   # use new screen
+# config.plugins.uri_open.split = true or false    # use new splited screen
 #
 # see also: http://ujihisa.blogspot.com/2009/05/fixed-uri-open-of-termtter.html
 #
