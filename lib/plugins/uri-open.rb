@@ -24,13 +24,11 @@ module Termtter::Client
         else; 'open'
         end
       end
-    if 
     if ENV['TERM'] == 'screen' && cmd =~ /.*w3m/
       unless config.plugins.uri_open.split
         system "screen", "-X", "eval", "screen #{cmd} #{uri}"
       else
-        system "screen", "-X", "eval", "split", "focus",
-                                       "screen #{cmd} #{uri}"
+        system "screen", "-X", "eval", "split", "focus", "screen #{cmd} #{uri}"
       end
     else 
       system cmd, uri
