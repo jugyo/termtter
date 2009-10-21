@@ -24,7 +24,11 @@ module Termtter::Client
         else; 'open'
         end
       end
-    system cmd, uri
+    if ENV['TERM'] == 'screen' || cmd =~ /.*w3m/
+      system "screen", "-X", "eval", "split", "focus", "screen #{cmd} #{uri}"
+    else 
+      system cmd, uri
+    end
   end
 
   register_command(
