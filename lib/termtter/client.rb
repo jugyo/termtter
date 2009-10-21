@@ -297,7 +297,6 @@ module Termtter
 
       def load_plugins
         plug 'defaults'
-        plug 'devel' if config.devel
         plug config.system.load_plugins
       end
 
