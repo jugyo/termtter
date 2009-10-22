@@ -20,7 +20,7 @@ module Termtter
           config.password = ui.ask('Password: ') { |q| q.echo = false} if config.password.empty?
           @twitter = Rubytter.new(config.user_name, config.password, twitter_option)
         else
-          consumer = OAuth::Consumer.new(CONSUMER_KEY, CONSUMER_SECRET, :site => 'http://twitter.com')
+          consumer = OAuth::Consumer.new(CONSUMER_KEY, CONSUMER_SECRET, :site => 'http://twitter.com', :proxy => ENV['http_proxy'])
           access_token = OAuth::AccessToken.new(consumer, config.access_token, config.access_token_secret)
           @twitter = OAuthRubytter.new(access_token, twitter_option)
           config.user_name = @twitter.verify_credentials[:screen_name]

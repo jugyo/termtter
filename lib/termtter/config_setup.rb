@@ -8,7 +8,7 @@ module Termtter
     def run
       puts 'connecting to twitter...'
 
-      consumer = OAuth::Consumer.new(CONSUMER_KEY, CONSUMER_SECRET, :site => 'http://twitter.com')
+      consumer = OAuth::Consumer.new(CONSUMER_KEY, CONSUMER_SECRET, :site => 'http://twitter.com', :proxy => ENV['http_proxy'])
       request_token = consumer.get_request_token
 
       unless open_brawser(request_token.authorize_url)
