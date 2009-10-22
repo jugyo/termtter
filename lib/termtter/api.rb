@@ -14,7 +14,10 @@ module Termtter
       attr_reader :connection, :twitter
       def setup
         @connection = Connection.new
-        if config.access_token.empty? && config.access_token_secret.empty?
+        if config.access_token.empty? || config.access_token_secret.empty?
+          ui = create_highline
+          config.user_name = ui.ask('Username: ') if config.user_name.empty?
+          config.password = ui.ask('Password: ') { |q| q.echo = false} if config.password.empty?
           @twitter = Rubytter.new(config.user_name, config.password, twitter_option)
         else
           consumer = OAuth::Consumer.new(CONSUMER_KEY, CONSUMER_SECRET, :site => 'http://twitter.com')
