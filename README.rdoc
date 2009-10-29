@@ -1,20 +1,18 @@
-= termtter
-
-http://termtter.org/
-
-== DESCRIPTION:
+= Termtter
 
 Termtter is a terminal based Twitter client.
 
-== FEATURES/PROBLEMS:
+For more information, see http://termtter.org/ and http://lingr.com/room/termtter
 
-== SYNOPSIS:
+== INSTALL:
 
-=== Run:
+  % sudo gem install termtter
+
+== Run:
 
   % termtter
 
-=== Some Termtter Commands:
+== Commands:
 
 Show help
 
@@ -31,17 +29,6 @@ Show replies
 Search
 
   > search termtter
-
-== REQUIREMENTS:
-
-* json_pure or json
-* termcolor
-* rubytter
-* highline
-
-== INSTALL:
-
-  % sudo gem install termtter
 
 == CONFIGURATION:
 
@@ -60,15 +47,6 @@ You can to load plugins in this way:
   end
 
 To update the config, just restart your termtter proccess.
-
-== FORUM:
-
-http://groups.google.co.jp/group/termtter
-
-== TODO:
-
-- Enhance the document and spec
-- Improve the UI(a status view, etc...)
 
 == ADVANCED USAGE:
 
@@ -89,6 +67,18 @@ You can also type `<` as curry.
 
   > < u
   u >
+
+== REQUIREMENTS:
+
+* json_pure or json
+* termcolor
+* rubytter
+* highline
+
+== TODO:
+
+- Enhance the document and spec
+- Improve the UI(a status view, etc...)
 
 == LICENSE:
 

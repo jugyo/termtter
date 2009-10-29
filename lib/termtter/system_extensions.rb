@@ -159,7 +159,6 @@ def create_highline
 end
 
 def open_browser(url)
-  return false
   case RUBY_PLATFORM
   when /linux/
     system 'firefox', url

@@ -14,7 +14,8 @@ require 'net/https'
 require 'open-uri'
 require 'optparse'
 require 'readline'
-require 'oauth'
+gem 'rubytter', '>= 0.9.2'
+require 'rubytter'
 
 require 'termtter/config'
 require 'termtter/version'
@@ -37,7 +38,4 @@ module Termtter
   config.system.set_default :conf_file, CONF_DIR + '/config'
   CONF_FILE = config.system.conf_file
   $:.unshift(Termtter::CONF_DIR)
-
-  CONSUMER_KEY = 'O80mRgLxHgpzB5yVOnxmiA'
-  CONSUMER_SECRET = 'jylXMjnIbfaNKpEQjgcVeZWJFTaKXFnj1RA4qTeEM'
 end

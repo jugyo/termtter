@@ -12,7 +12,7 @@ config.plugins.stdout.set_default(
 )
 config.plugins.stdout.set_default(:time_format_today, '%H:%M:%S')
 config.plugins.stdout.set_default(:time_format_not_today, '%y/%m/%d %H:%M')
-config.plugins.stdout.set_default(:enable_pager, true)
+config.plugins.stdout.set_default(:enable_pager, false)
 config.plugins.stdout.set_default(:pager, 'less -R -f +G')
 config.plugins.stdout.set_default(:window_height, 50)
 config.plugins.stdout.set_default(:typable_ids, ('aa'..'zz').to_a)

@@ -6,21 +6,8 @@ module Termtter
   module ConfigSetup
     module_function
     def run
-      puts 'connecting to twitter...'
-
-      consumer = OAuth::Consumer.new(CONSUMER_KEY, CONSUMER_SECRET, :site => 'http://twitter.com')
-      request_token = consumer.get_request_token
-
-      unless open_browser(request_token.authorize_url)
-        puts "Authorize URL: #{request_token.authorize_url}"
-      end
-      sleep 2
-
       ui = create_highline
-      pin = ui.ask('Please enter PIN: ')
-      access_token = request_token.get_access_token(:oauth_verifier => pin)
-      token = access_token.token
-      secret = access_token.secret
+      user_name = ui.ask('your twitter user name: ')
 
       plugins = Dir.glob(File.expand_path(File.dirname(__FILE__) + "/../plugins/*.rb")).map  {|f|
         f.match(%r|lib/plugins/(.*?).rb$|)[1]
@@ -36,10 +23,6 @@ module Termtter
       }
 
       puts "generated: ~/.termtter/config"
-      puts "enjoy!"
-    rescue OAuth::Unauthorized
-      puts 'failed to authentication!'
-      exit 1
     end
   end
 end

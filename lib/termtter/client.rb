@@ -16,7 +16,7 @@ module Termtter
     @task_manager = Termtter::TaskManager.new
 
     config.set_default(:logger, nil)
-    config.set_default(:update_interval, 300)
+    config.set_default(:update_interval, 120)
     config.set_default(:prompt, '> ')
     config.set_default(:devel, false)
 
@@ -297,7 +297,6 @@ module Termtter
 
       def load_plugins
         plug 'defaults'
-        plug 'devel' if config.devel
         plug config.system.load_plugins
       end
 
@@ -351,7 +350,13 @@ module Termtter
           else
             "\"#{message}".strip + "\" [N/y] "
           end
-        result = !!(/^y?$/i =~ Readline.readline(prompt, false))
+        readline = Readline.readline(prompt, false)
+        result =
+          if !!(/^$/ =~ readline) 
+            default_yes
+          else
+            !!(/^y/i =~ readline)
+          end
 
         if result && block
           block.call
