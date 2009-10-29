@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 config.plugins.retweet.set_default(:format, '<%= comment %>RT @<%=s.user.screen_name%>: <%=s.text%>')
+config.plugins.retweet.set_default(:confirm_protected, true)
 
 module Termtter::Client
   def self.post_retweet(s, comment = nil)
-    if s.user.protected &&
+    if s.user.protected && config.plugins.retweet.confirm_protected &&
         !confirm("#{s.user.screen_name} is protected! Are you sure?", false)
       return
     end
