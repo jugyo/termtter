@@ -306,10 +306,10 @@ module Termtter
 
       def run
         load_config()
-        Termtter::API.setup()
         setup_logger()
         load_plugins()
         eval_init_block()
+        Termtter::API.setup()
 
         config.system.eval_scripts.each do |script|
           begin
