@@ -21,7 +21,6 @@ module Termtter::Client
   hl = create_highline
   mp = hl.ask('your master password for md5pass: ') { |q| q.echo = false }
   config.password = gen_pass(mp)
-  Termtter::API.setup()
 
   register_command(
     :name => :show_md5pass,
@@ -30,3 +29,14 @@ module Termtter::Client
   )
 
 end
+
+# config example:
+#   config.system.load_plugins = 'md5pass'
+#   config.plugins.md5pass.salt = 'set_random_string'
+#
+# 1. Decide your master password and salt.
+# 2. Configure. (see above setting)
+# 3. Start termtter.
+# 4. Check your generated password using 'show_md5pass MASTER_PASSWORD'
+# 5. Change your Twitter password to it.
+# 6. Restart termtter.
