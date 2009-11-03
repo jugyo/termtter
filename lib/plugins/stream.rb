@@ -31,43 +31,48 @@ module Termtter::Client
 
   register_command(:stream) do |arg|
 
-    targets = arg.split.map do |name|
-      Termtter::API.twitter.user(name).id
-    end
+    catch(:exit) do
+      args = arg.split
 
-    if targets.empty?
-      if defined?(DB)
-        names = []
+      case args[0]
+      when ':stop'
+        config.plugins.stream.followed_users = []
+        config.plugins.stream.thread.kill rescue nil
+        puts 'stream is down'
+        throw :exit
+      when ':followers'
+        p config.plugins.stream.followed_users
+        throw :exit
+      end
+
+      throw :exti if config.plugins.stream.thread.alive?
+
+      targets = args.map do |name|
+        Termtter::API.twitter.user(name).id
+      end
+
+      if targets.empty?
+        id_method =  defined?(DB) ? :user_id : :id
+
+        config.plugins.stream.followed_users = []
         friends(370).each do |t|
-          names << t[:screen_name]
-          targets << t.user_id
+          config.plugins.stream.followed_users << t[:screen_name]
+          targets << t.__send__(id_method)
         end
-        p names
-      else
-        names = []
-        friends(370).each do |t|
-          names << t.screen_name
-          targets << t.id
-        end
-        p names
+        p config.plugins.stream.followed_users
+      end
+
+      config.plugins.stream.thread = Thread.new do
+        TweetStream::Client.new(config.user_name, config.password).
+          filter(:follow => targets) do |status|
+            output [Termtter::ActiveRubytter.new(status)], :stream_output
+          end
+      end
+
+      at_exit do
+        config.plugins.stream.thread.kill
       end
     end
-
-
-    config.plugins.stream.thread = Thread.new do
-      TweetStream::Client.new(config.user_name, config.password).
-        filter(:follow => targets) do |status|
-          output [Termtter::ActiveRubytter.new(status)], :stream_output
-        end
-    end
-
-    at_exit do
-      config.plugins.stream.thread.kill
-    end
-  end
-
-  register_command(:stop_stream) do |args|
-    config.plugins.stream.thread.kill
   end
 end
 
