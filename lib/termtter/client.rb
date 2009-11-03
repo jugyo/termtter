@@ -155,6 +155,7 @@ module Termtter
             event
           )
         end
+        call_hooks(:post_output)
       end
 
       def apply_filters_for_hook(hook_name, statuses, event)

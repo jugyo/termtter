@@ -152,6 +152,15 @@ module Termtter
       end
     }
   )
+
+  Client.register_hook(
+    :name => :stdout_refresh_line,
+    :point => 'post_output',
+    :exec => lambda {
+      Readline.refresh_line
+    }
+  )
+
 end
 
 # stdout.rb
