@@ -35,7 +35,8 @@ module Termtter::Client
     config.plugins.stream.thread = Thread.new do
       begin
         max = config.plugins.stream.max_following
-        targets = friends(max).map(&:id)
+        targets = friends(max).map{ |u| u[:"`user_id`"]}
+        p friends(max).map{ |u| u[:"`screen_name`"]}
         puts "streaming #{targets.length} friends."
         TweetStream::Client.new(config.user_name, config.password).
           filter(:follow => targets) do |status|
