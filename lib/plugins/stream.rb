@@ -32,23 +32,6 @@ module Termtter::Client
   end
 
   register_command(:stream) do |arg|
-    config.plugins.stream.thread = Thread.new do
-      begin
-        max = config.plugins.stream.max_following
-        targets = friends(max).map{ |u| u[:"`user_id`"]}
-        p friends(max).map{ |u| u[:"`screen_name`"]}
-        puts "streaming #{targets.length} friends."
-        TweetStream::Client.new(config.user_name, config.password).
-          filter(:follow => targets) do |status|
-          output [Termtter::ActiveRubytter.new(status)], :stream_output
-        end
-      rescue => e
-        p e
-        puts "streaming seems broken."
-        config.plugins.stream.max_following -= 10 if config.plugins.stream.max_following > 10
-        retry
-      end
-    end
 
     catch(:exit) do
       args = arg.split
@@ -64,7 +47,7 @@ module Termtter::Client
         throw :exit
       end
 
-      throw :exit if config.plugins.stream.thread.alive?
+      throw :exit unless config.plugins.stream.thread.empty?
 
       targets = args.map do |name|
         Termtter::API.twitter.user(name).id
@@ -73,12 +56,37 @@ module Termtter::Client
       if targets.empty?
         id_method =  defined?(DB) ? :user_id : :id
 
+        max = config.plugins.stream.max_following
         config.plugins.stream.followed_users = []
-        friends(370).each do |t|
+        friends(config.plugins.stream.max_following).each do |t|
           config.plugins.stream.followed_users << t[:screen_name]
           targets << t.__send__(id_method)
         end
         p config.plugins.stream.followed_users
+        puts "streaming #{targets.length} friends."
+      end
+
+      config.plugins.stream.thread = Thread.new do
+        begin
+          puts "try to get #{targets.length} friends streams"
+          TweetStream::Client.new(config.user_name, config.password).
+            filter(:follow => targets) do |status|
+            output [Termtter::ActiveRubytter.new(status)], :stream_output
+          end
+        rescue => e
+          puts "streaming seems broken."
+
+          config.plugins.stream.max_following -= 10
+
+          if config.plugins.stream.max_following > 10
+            config.plugins.stream.followed_users =
+              config.plugins.stream.followed_users.take(
+                config.plugins.stream.max_following)
+            targets = targets.take(
+                config.plugins.stream.max_following)
+            retry
+          end
+        end
       end
 
       at_exit do
