@@ -64,7 +64,7 @@ module Termtter::Client
         throw :exit
       end
 
-      throw :exti if config.plugins.stream.thread.alive?
+      throw :exit if config.plugins.stream.thread.alive?
 
       targets = args.map do |name|
         Termtter::API.twitter.user(name).id
