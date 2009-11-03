@@ -31,23 +31,6 @@ module Termtter::Client
   end
 
   register_command(:stream) do |arg|
-    max = config.plugins.stream.max_following
-    all_targets = friends(max)
-    config.plugins.stream.thread = Thread.new do
-      begin
-        targets = all_targets.take(max).map{ |u| u[:"`user_id`"]}
-        puts "streaming #{targets.length} friends."
-        TweetStream::Client.new(config.user_name, config.password).
-          filter(:follow => targets) do |status|
-          output [Termtter::ActiveRubytter.new(status)], :stream_output
-        end
-      rescue(NoMethodError) => e    # #<NoMethodError: private method `split' called for nil:NilClass>
-        puts "stream seems broken (#{e.inspect})."
-        max -= 10 if max > 10
-        retry
-      end
-    end
-
     catch(:exit) do
       args = arg.split
 
@@ -62,21 +45,34 @@ module Termtter::Client
         throw :exit
       end
 
-      throw :exit if config.plugins.stream.thread.alive?
+      throw :exit unless config.plugins.stream.thread.empty?
 
-      targets = args.map do |name|
-        Termtter::API.twitter.user(name).id
+      targets = args.map { |name|
+        Termtter::API.twitter.user(name).id rescue nil
+      }
+
+      max = config.plugins.stream.max_following
+      unless targets and targets.length > 0
+        keys = [:user_id, :"`user_id`", :id, :"`id`"]
+        targets = friends(max).map{ |u|
+          keys.map{ |k| u[k] rescue nil}.compact.first
+        }.compact
       end
 
-      if targets.empty?
-        id_method =  defined?(DB) ? :user_id : :id
-
-        config.plugins.stream.followed_users = []
-        friends(370).each do |t|
-          config.plugins.stream.followed_users << t[:screen_name]
-          targets << t.__send__(id_method)
+      config.plugins.stream.thread = Thread.new do
+        begin
+          current_targets = targets.take(max)
+          targets = targets.take(max)
+          puts "streaming #{current_targets.length} friends."
+          TweetStream::Client.new(config.user_name, config.password).
+            filter(:follow => current_targets) do |status|
+            output [Termtter::ActiveRubytter.new(status)], :stream_output
+          end
+        rescue(NoMethodError) => e    # #<NoMethodError: private method `split' called for nil:NilClass>
+          puts "stream seems broken (#{e.inspect})."
+          max -= 10 if max > 10
+          retry
         end
-        p config.plugins.stream.followed_users
       end
 
       at_exit do
