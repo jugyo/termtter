@@ -50,13 +50,41 @@ module Termtter::Client
       end
     end
 
-    at_exit do
-      config.plugins.stream.thread.kill
-    end
-  end
+    catch(:exit) do
+      args = arg.split
 
-  register_command(:stop_stream) do |args|
-    config.plugins.stream.thread.kill
+      case args[0]
+      when ':stop'
+        config.plugins.stream.followed_users = []
+        config.plugins.stream.thread.kill rescue nil
+        puts 'stream is down'
+        throw :exit
+      when ':followers'
+        p config.plugins.stream.followed_users
+        throw :exit
+      end
+
+      throw :exti if config.plugins.stream.thread.alive?
+
+      targets = args.map do |name|
+        Termtter::API.twitter.user(name).id
+      end
+
+      if targets.empty?
+        id_method =  defined?(DB) ? :user_id : :id
+
+        config.plugins.stream.followed_users = []
+        friends(370).each do |t|
+          config.plugins.stream.followed_users << t[:screen_name]
+          targets << t.__send__(id_method)
+        end
+        p config.plugins.stream.followed_users
+      end
+
+      at_exit do
+        config.plugins.stream.thread.kill
+      end
+    end
   end
 end
 
