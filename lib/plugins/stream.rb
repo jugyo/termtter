@@ -10,12 +10,11 @@ module Termtter::Client
 
   class << self
     if defined?(DB)
-      def friends(max = 1/0.0)
+      def friends(max = 999999)
         Status.group(:user_id).
           select(:user_id, :screen_name).
           join(:users, :id => :user_id).
-          order(:COUNT.sql_function.desc).
-          take(max)
+          order(:COUNT.sql_function.desc).take(max)
       end
     else
       def friends(max = 1/0.0)
@@ -32,20 +31,19 @@ module Termtter::Client
   end
 
   register_command(:stream) do |arg|
+    max = config.plugins.stream.max_following
+    all_targets = friends(max)
     config.plugins.stream.thread = Thread.new do
       begin
-        max = config.plugins.stream.max_following
-        targets = friends(max).map{ |u| u[:"`user_id`"]}
-        p friends(max).map{ |u| u[:"`screen_name`"]}
+        targets = all_targets.take(max).map{ |u| u[:"`user_id`"]}
         puts "streaming #{targets.length} friends."
         TweetStream::Client.new(config.user_name, config.password).
           filter(:follow => targets) do |status|
           output [Termtter::ActiveRubytter.new(status)], :stream_output
         end
-      rescue => e
-        p e
-        puts "streaming seems broken."
-        config.plugins.stream.max_following -= 10 if config.plugins.stream.max_following > 10
+      rescue(NoMethodError) => e    # #<NoMethodError: private method `split' called for nil:NilClass>
+        puts "stream seems broken (#{e.inspect})."
+        max -= 10 if max > 10
         retry
       end
     end
