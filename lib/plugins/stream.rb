@@ -9,20 +9,36 @@ config.plugins.stream.set_default :max_following, 400
 module Termtter::Client
 
   class << self
-    def friends(max = 1/0.0)
-      Users.take(max).map{ |u| u.id}
+    if defined?(DB)
+      def friends(max = 1/0.0)
+        Status.group(:user_id).
+          select(:user_id, :screen_name).
+          join(:users, :id => :user_id).
+          order(:COUNT.sql_function.desc).
+          take(max)
+      end
+    else
+      def friends(max = 1/0.0)
+        friends = []
+        page    = 0
+        begin
+          friends += tmp = Termtter::API::twitter.friends(config.user_name, :page => page+=1)
+          p friends.length
+        rescue
+        end until (tmp.empty? or friends.length > max)
+        friends.take(max)
+      end
     end
   end
 
   register_command(:stream) do |arg|
-
-    stream = Thread.new do
+    config.plugins.stream.thread = Thread.new do
       begin
         max = config.plugins.stream.max_following
-        puts "streaming #{max} friends."
-        p User.take(max).map(&:id)
+        targets = friends(max).map(&id)
+        puts "streaming #{targets.length} friends."
         TweetStream::Client.new(config.user_name, config.password).
-          filter(:follow => User.take(max).map(&:id)) do |status|
+          filter(:follow => targets) do |status|
           output [Termtter::ActiveRubytter.new(status)], :stream_output
         end
       rescue => e
@@ -34,8 +50,12 @@ module Termtter::Client
     end
 
     at_exit do
-      stream.kill
+      config.plugins.stream.thread.kill
     end
+  end
+
+  register_command(:stop_stream) do |args|
+    config.plugins.stream.thread.kill
   end
 end
 
