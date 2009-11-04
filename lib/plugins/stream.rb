@@ -2,7 +2,7 @@
 
 require 'uri'
 require 'tweetstream'
-require 'lib/termtter/active_rubytter'
+require File.dirname(__FILE__) + '/../termtter/active_rubytter'
 
 config.plugins.stream.set_default :max_following, 400
 
