@@ -20,6 +20,7 @@ module Termtter::Client
         print "\e[0G" + "\e[K" unless win?
         @since_id = statuses[0].id
         output(statuses, :update_friends_timeline)
+        Readline.refresh_line if arg =~ /\-r/
       end
     }
   )
