@@ -8,7 +8,7 @@ config.plugins.irc_gw.set_default(:logger_level, Logger::ERROR)
 
 module Termtter::Client
   class << self
-    def friends
+    def following_friends
       user_name = config.user_name
 
       frinends = []
@@ -108,7 +108,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   def check_friends
     params = []
     max_params_count = 3
-    Termtter::Client.friends.each do |name|
+    Termtter::Client.following_friends.each do |name|
       prefix = Prefix.new("#{name}!#{name}@localhost")
       post prefix, JOIN, main_channel
       params << prefix.nick
