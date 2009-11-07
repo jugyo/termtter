@@ -3,6 +3,7 @@ require 'set'
 
 module Termtter::Client
   public_storage[:hashtags] ||= Set.new
+  public_storage[:orig_prompt] = config.prompt
 
   register_hook(:add_hashtags, :point => :modify_arg_for_update) do |cmd, arg|
     "#{arg} #{public_storage[:hashtags].to_a.join(' ')}"
@@ -12,6 +13,7 @@ module Termtter::Client
     args.split(/\s+/).each do |arg|
       hashtag = /^#/ =~ arg ? arg : "##{arg}"
       public_storage[:hashtags] << hashtag
+      config.prompt = "#{public_storage[:hashtags].to_a.join(', ')} #{public_storage[:orig_prompt]}"
     end
   end
 
