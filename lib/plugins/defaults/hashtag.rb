@@ -9,6 +9,13 @@ module Termtter::Client
     "#{arg} #{public_storage[:hashtags].to_a.join(' ')}"
   end
 
+  register_command(:raw_update) do |args|
+    temp = public_storage[:hashtags]
+    public_storage[:hashtags].clear
+    call_commands "update #{args}"
+    public_storage[:hashtags] = temp
+  end
+
   register_command('hashtag add') do |args|
     args.split(/\s+/).each do |arg|
       hashtag = /^#/ =~ arg ? arg : "##{arg}"
