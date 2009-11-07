@@ -26,10 +26,10 @@ module Termtter::Client
 
   register_command('hashtag clear') do |args|
     public_storage[:hashtags].clear
+    config.prompt = public_storage[:orig_prompt]
   end
 
   register_command('hashtag list') do |args|
     puts public_storage[:hashtags].to_a
-    config.prompt = public_storage[:orig_prompt]
   end
 end
