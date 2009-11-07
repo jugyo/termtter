@@ -39,7 +39,7 @@ module Termtter
     def complement(input)
       if match?(input) && input =~ /^[^\s]+\s/
         if completion_proc
-          command_str, command_arg = Command.split_command_line(input)
+          command_str, command_arg = split_command_line(input)
           [completion_proc.call(command_str, command_arg || '')].flatten.compact
         else
           []
@@ -87,9 +87,15 @@ module Termtter
       self.aliases = [a]
     end
 
+    def command_words
+      name.to_s.split(/\s+/)
+    end
+
     # split_command_line :: String -> (String, String)
-    def self.split_command_line(line)
-      line.strip.split(/\s+/, 2)
+    def split_command_line(line)
+      command_words_count = command_words.size
+      parts = line.strip.split(/\s+/, command_words_count + 1)
+      [parts[0...command_words_count].join(' '), parts[command_words_count]]
     end
   end
 end

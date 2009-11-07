@@ -186,7 +186,7 @@ module Termtter
           raise CommandNotFound, text if commands.empty?
 
           commands.each do |command|
-            command_str, command_arg = Command.split_command_line(text)
+            command_str, command_arg = command.split_command_line(text)
 
             modified_arg = command_arg
             # FIXME: This block can become Maybe Monad
