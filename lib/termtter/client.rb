@@ -112,6 +112,7 @@ module Termtter
         @commands.clear
       end
 
+      # MEMO: attr_reader :commands してるからこれいらない気もする
       def get_command(name)
         @commands[name]
       end
