@@ -18,4 +18,8 @@ module Termtter::Client
   register_command('hashtag clear') do |args|
     public_storage[:hashtags].clear
   end
+
+  register_command('hashtag list') do |args|
+    puts public_storage[:hashtags].to_a
+  end
 end
