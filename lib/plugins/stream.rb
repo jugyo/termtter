@@ -30,6 +30,36 @@ module Termtter::Client
     end
   end
 
+  register_command(:keyword_stream) do |arg|
+    break if arg.empty?
+    unless config.plugins.stream.keyword_stream.epmty?
+      break if config.plugins.stream.keyword_stream.alive?
+    end
+    args = arg.split
+    case args[0]
+    when :stop
+      config.plugins.stream.keyword_stream.kill
+    else
+      puts "streaming: #{arg}"
+      config.plugins.stream.keyword_stream = Thread.new do
+        TweetStream::Client.new(config.user_name, config.password).
+          filter(:track => arg) do |status|
+          output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
+          Readline.refresh_line
+        end
+      end
+    end
+
+    at_exit do
+      config.plugins.stream.keyword_stream.kill
+    end
+  end
+
+  register_command(:hash_stream) do |arg|
+    arg = "##{arg}" unless /^#/ =~ arg
+    call_command(:keyword_stream, arg)
+  end
+
   register_command(:stream) do |arg|
     catch(:exit) do
       args = arg.split
