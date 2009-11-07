@@ -5,7 +5,7 @@ Termtter::Client.plug 'defaults/standard_commands'
 
 module Termtter
   describe Client do
-    it 'shold return registerd commands' do
+    it 'should return registerd commands' do
       [
         [:update,  [:u]],  [:direct,  [:d]],
         [:profile, [:p]],  [:list,    [:l]],
