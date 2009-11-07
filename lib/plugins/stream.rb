@@ -97,6 +97,7 @@ module Termtter::Client
           TweetStream::Client.new(config.user_name, config.password).
             filter(:follow => current_targets) do |status|
             output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
+            Readline.refresh_line
           end
         rescue(NoMethodError) => e    # #<NoMethodError: private method `split' called for nil:NilClass>
           puts "stream seems broken (#{e.inspect})."
