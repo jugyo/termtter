@@ -57,7 +57,7 @@ module Termtter::Client
 
   register_command(:hash_stream) do |arg|
     arg = "##{arg}" unless /^#/ =~ arg
-    call_command(:keyword_stream, arg)
+    call_commands("keyword_stream #{arg}")
   end
 
   register_command(:stream) do |arg|
