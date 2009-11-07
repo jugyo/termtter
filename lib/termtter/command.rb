@@ -28,11 +28,11 @@ module Termtter
 
     # set :: Hash -> ()
     def set(cfg)
-      self.name            = cfg[:name].to_sym
-      self.aliases     = cfg[:aliases]
-      self.exec_proc       = cfg[:exec_proc]
-      self.completion_proc = cfg[:completion_proc]
-      self.help            = cfg[:help]
+      self.name             = cfg[:name].to_sym
+      self.aliases          = cfg[:aliases]
+      self.exec_proc        = cfg[:exec_proc]
+      self.completion_proc  = cfg[:completion_proc]
+      self.help             = cfg[:help]
     end
 
     # complement :: String -> [String]
