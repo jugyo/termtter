@@ -4,7 +4,7 @@ require 'set'
 module Termtter::Client
   public_storage[:hashtags] ||= Set.new
 
-  register_hook(:erb, :point => :modify_arg_for_update) do |cmd, arg|
+  register_hook(:add_hashtags, :point => :modify_arg_for_update) do |cmd, arg|
     "#{arg} #{public_storage[:hashtags].to_a.join(' ')}"
   end
 
