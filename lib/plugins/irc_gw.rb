@@ -8,7 +8,7 @@ config.plugins.irc_gw.set_default(:logger_level, Logger::ERROR)
 
 module Termtter::Client
   class << self
-    def friends
+    def following_friends
       user_name = config.user_name
 
       frinends = []
@@ -74,10 +74,12 @@ class TermtterIrcGateway < Net::IRC::Server::Session
 
   def on_message(m)
     termtter_command = m.command.downcase + ' ' + m.params.join(' ')
-    unless Termtter::Client.find_commands(termtter_command).empty?
-      post '#termtter', NOTICE, main_channel, '> ' + termtter_command
-      Termtter::Client.call_commands(termtter_command)
-    end
+    return if Termtter::Client.find_commands(termtter_command).empty?
+    post '#termtter', NOTICE, main_channel, '> ' + termtter_command
+    Termtter::Client.call_commands(termtter_command)
+  rescue Exception => e
+    post '#termtter', NOTICE, main_channel, "#{e.class.to_s}: #{e.message}"
+    Termtter::Client.handle_error(e)
   end
 
   def on_user(m)
@@ -92,6 +94,9 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     target, message = *m.params
     Termtter::Client.call_commands('update ' + message)
     post @prefix, TOPIC, main_channel, message
+  rescue Exception => e
+    post '#termtter', NOTICE, main_channel, "#{e.class.to_s}: #{e.message}"
+    Termtter::Client.handle_error(e)
   end
 
   def log(str)
@@ -103,7 +108,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   def check_friends
     params = []
     max_params_count = 3
-    Termtter::Client.friends.each do |name|
+    Termtter::Client.following_friends.each do |name|
       prefix = Prefix.new("#{name}!#{name}@localhost")
       post prefix, JOIN, main_channel
       params << prefix.nick

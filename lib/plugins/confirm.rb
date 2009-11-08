@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-config.plugins.confirm.set_default(:commands, [:update, :reply, :direct])
+config.plugins.confirm.set_default(:commands, [:update, :reply, :direct, :retweet])
 config.plugins.confirm.set_default(
   :conditions,
   [

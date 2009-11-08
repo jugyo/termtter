@@ -167,7 +167,8 @@ module Termtter::Client
   register_command(
     :name => :search, :aliases => [:s],
     :exec_proc => lambda {|arg|
-      statuses = Termtter::API.twitter.search(arg)
+      search_option = config.search.option.empty? ? {} : config.search.option
+      statuses = Termtter::API.twitter.search(arg, search_option)
       public_storage[:search_keywords] << arg
       output(statuses, SearchEvent.new(arg))
     },

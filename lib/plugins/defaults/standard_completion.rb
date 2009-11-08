@@ -51,19 +51,19 @@ module Termtter::Client
   # completion for hashtags
   #
 
-  public_storage[:hashtags] ||= Set.new
+  public_storage[:hashtags_for_completion] ||= Set.new
 
   register_hook(:collect_hashtags, :point => :pre_filter) do |statuses, event|
     statuses.each do |s|
-      public_storage[:hashtags] += s.text.scan(/#([^\s]+)/).flatten
+      public_storage[:hashtags_for_completion] += s.text.scan(/#([^\s]+)/).flatten
     end
   end
 
-  register_hook(:hashtagss_completion, :point => :completion) do |input|
+  register_hook(:hashtags_completion, :point => :completion) do |input|
     if /(.*)\s#([^\s]*)$/ =~ input
       command_str = $1
       part_of_hashtag = $2
-      ht = public_storage[:hashtags]
+      ht = public_storage[:hashtags_for_completion]
       (ht.grep(/^#{Regexp.quote(part_of_hashtag)}/) | # prior
        ht.grep(/^#{Regexp.quote(part_of_hashtag)}/i) ).
         map { |i| "#{command_str} ##{i}" }
