@@ -21,10 +21,11 @@ module Termtter::Client
         case RUBY_PLATFORM
         when /linux/; 'firefox'
         when /mswin(?!ce)|mingw|bccwin/; 'explorer'
+        when /cygwin/; 'cygstart -o'
         else; 'open'
         end
       end
-    system cmd, uri
+    system "#{cmd} #{uri}"
   end
 
   register_command(
