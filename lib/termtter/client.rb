@@ -16,7 +16,7 @@ module Termtter
     @task_manager = Termtter::TaskManager.new
 
     config.set_default(:logger, nil)
-    config.set_default(:update_interval, 300)
+    config.set_default(:update_interval, 120)
     config.set_default(:prompt, '> ')
     config.set_default(:devel, false)
 
@@ -112,6 +112,7 @@ module Termtter
         @commands.clear
       end
 
+      # MEMO: attr_reader :commands してるからこれいらない気もする
       def get_command(name)
         @commands[name]
       end
@@ -186,7 +187,7 @@ module Termtter
           raise CommandNotFound, text if commands.empty?
 
           commands.each do |command|
-            command_str, command_arg = Command.split_command_line(text)
+            command_str, command_arg = command.split_command_line(text)
 
             modified_arg = command_arg
             # FIXME: This block can become Maybe Monad
@@ -306,10 +307,10 @@ module Termtter
 
       def run
         load_config()
-        Termtter::API.setup()
         setup_logger()
         load_plugins()
         eval_init_block()
+        Termtter::API.setup()
 
         config.system.eval_scripts.each do |script|
           begin
@@ -350,7 +351,13 @@ module Termtter
           else
             "\"#{message}".strip + "\" [N/y] "
           end
-        result = !!(/^y?$/i =~ Readline.readline(prompt, false))
+        readline = Readline.readline(prompt, false)
+        result =
+          if !!(/^$/ =~ readline) 
+            default_yes
+          else
+            !!(/^y/i =~ readline)
+          end
 
         if result && block
           block.call

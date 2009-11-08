@@ -14,14 +14,11 @@ module Termtter
       attr_reader :connection, :twitter
       def setup
         @connection = Connection.new
-        if config.access_token.empty? && config.access_token_secret.empty?
-          @twitter = Rubytter.new(config.user_name, config.password, twitter_option)
-        else
-          consumer = OAuth::Consumer.new(CONSUMER_KEY, CONSUMER_SECRET, :site => 'http://twitter.com')
-          access_token = OAuth::AccessToken.new(consumer, config.access_token, config.access_token_secret)
-          @twitter = OAuthRubytter.new(access_token, twitter_option)
-          config.user_name = @twitter.verify_credentials[:screen_name]
-        end
+
+        ui = create_highline
+        config.user_name = ui.ask('Username: ') if config.user_name.empty?
+        config.password = ui.ask('Password: ') { |q| q.echo = false} if config.password.empty?
+        @twitter = Rubytter.new(config.user_name, config.password, twitter_option)
       end
 
       def restore_user

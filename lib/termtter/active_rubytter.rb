@@ -8,6 +8,14 @@ module Termtter
       self.attributes = data
     end
 
+    def id
+      @data[:id]
+    end
+
+    def [](key)
+      @data[key]
+    end
+
     def method_missing(name, *args)
       if @data.key?(name)
         return @data[name]
