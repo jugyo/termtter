@@ -39,7 +39,9 @@ module Termtter::Client
     args = arg.split
     case args[0]
     when ':stop'
-      config.plugins.stream.keyword_stream.kill
+      if config.plugins.stream.keyword_stream.alive?
+        config.plugins.stream.keyword_stream.kill
+      end
     else
       puts "streaming: #{arg}"
       config.plugins.stream.keyword_stream = Thread.new do
