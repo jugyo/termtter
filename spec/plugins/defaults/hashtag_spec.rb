@@ -12,17 +12,17 @@ describe 'plugin hashtag' do
 
     it 'should add hashtag "test"' do
       Termtter::Client.call_commands('hashtag add test')
-      Termtter::Client.public_storage[:hashtags].should == ['#test']
+      Termtter::Client.public_storage[:hashtags].should == Set.new('#test')
     end
 
     it 'should add hashtag "#test"' do
       Termtter::Client.call_commands('hashtag add #test')
-      Termtter::Client.public_storage[:hashtags].should == ['#test']
+      Termtter::Client.public_storage[:hashtags].should == Set.new('#test')
     end
 
     it 'should add hashtags "foo", "bar"' do
       Termtter::Client.call_commands('hashtag add foo bar')
-      Termtter::Client.public_storage[:hashtags].should == ["#foo", "#bar"]
+      Termtter::Client.public_storage[:hashtags].should == Set.new(["#foo", "#bar"])
     end
   end
 
