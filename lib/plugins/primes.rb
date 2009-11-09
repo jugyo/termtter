@@ -23,7 +23,7 @@ module Termtter::Client
     :name => :primes,
     :exec_proc => lambda {|arg|
       n = arg.to_i
-      text = "primes(#{n}) = {#{primes n}}}"
+      text = "primes(#{n}) = {#{primes n}}"
       puts "=> " << text
     }
   )
