@@ -29,7 +29,7 @@ module Termtter::Client
     :name => :update, :alias => :u,
     :exec => lambda {|arg|
       unless arg.empty?
-        params = 
+        params =
           if config.easy_reply && /^\s*(@\w+)/ =~ arg
             user_name = normalize_as_user_name($1)
             in_reply_to_status_id = Termtter::API.twitter.user(user_name).status.id rescue nil
@@ -406,16 +406,9 @@ module Termtter::Client
 
   ## plugin_list :: IO ()
   def self.plugin_list
-    plugin_list = (Dir["#{File.dirname(__FILE__)}/../*.rb"] + Dir["#{Termtter::CONF_DIR}/plugins/*.rb"]).
+    (Dir["#{File.dirname(__FILE__)}/../*.rb"] + Dir["#{Termtter::CONF_DIR}/plugins/*.rb"]).
       map {|f| File.basename(f).sub(/\.rb$/, '')}.
       sort
-    list = plugin_list
-    width = list.map {|i|i.size}.max + 2
-    a = []
-    list.sort.each_slice(4) {|i|
-      a << i.map {|j| j + (" " * (width - j.size))}.join
-    }
-    puts TermColor.parse('<green>' + TermColor.escape(a.join("\n")) + '</green>')
   end
 
   register_command(
