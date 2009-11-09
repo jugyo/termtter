@@ -33,7 +33,7 @@ module Termtter::Client
   help = ['keyword_stream KEYWORDS', 'Tracking keyword using Stream API']
   register_command(:keyword_stream, :help => help) do |arg|
     break if arg.empty?
-    unless config.plugins.stream.keyword_stream.epmty?
+    unless config.plugins.stream.keyword_stream.empty?
       break if config.plugins.stream.keyword_stream.alive?
     end
     args = arg.split
