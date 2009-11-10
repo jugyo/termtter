@@ -41,10 +41,10 @@ module Termtter::Client
     when :stop
       config.plugins.stream.keyword_stream.kill
     else
-      puts "streaming: #{arg}"
+      puts "streaming: #{args.join(', ')}"
       config.plugins.stream.keyword_stream = Thread.new do
         TweetStream::Client.new(config.user_name, config.password).
-          filter(:track => arg) do |status|
+          filter(:track => args) do |status|
           output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
           Readline.refresh_line
         end
