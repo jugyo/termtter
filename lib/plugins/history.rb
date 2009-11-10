@@ -21,6 +21,15 @@ module Termtter::Client
     if File.exist?(filename)
       begin
         history = Marshal.load Zlib::Inflate.inflate(File.read(filename))
+      rescue Zlib::BufError => e
+        ui = create_highline
+        delete = ui.ask("Unable to read #{filename}. Do you wish to remove it?")
+        if delete =~ /^y/i
+          if File.delete(filename) > 1
+            puts "Removed #{filename}"
+          end
+        end
+        history = nil
       end
       if history
         keys.each do |key|
