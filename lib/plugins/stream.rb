@@ -28,19 +28,24 @@ module Termtter::Client
         friends.take(max)
       end
     end
+
+    def kill_thread(name)
+      config.plugins.stream.__send__(name).kill rescue nil
+      config.plugins.stream.__assign__(name, nil)
+    end
+    private :kill_thread
   end
 
   help = ['keyword_stream KEYWORDS', 'Tracking keyword using Stream API']
   register_command(:keyword_stream, :help => help) do |arg|
-    break if arg.empty?
-    unless config.plugins.stream.keyword_stream.epmty?
-      break if config.plugins.stream.keyword_stream.alive?
-    end
+    next if arg.empty?
     args = arg.split
     case args[0]
-    when :stop
-      config.plugins.stream.keyword_stream.kill
+    when ':stop'
+      kill_thread :keyword_stream
+      puts 'stream is down'
     else
+      next if config.plugins.stream.keyword_stream.class == Thread
       puts "streaming: #{args.join(', ')}"
       config.plugins.stream.keyword_stream = Thread.new do
         TweetStream::Client.new(config.user_name, config.password).
@@ -52,7 +57,7 @@ module Termtter::Client
     end
 
     at_exit do
-      config.plugins.stream.keyword_stream.kill
+      kill_thread :keyword_stream
     end
   end
 
@@ -69,16 +74,12 @@ module Termtter::Client
 
       case args[0]
       when ':stop'
-        config.plugins.stream.followed_users = []
-        config.plugins.stream.thread.kill rescue nil
+        kill_thread :thread
         puts 'stream is down'
-        throw :exit
-      when ':followers'
-        p config.plugins.stream.followed_users
         throw :exit
       end
 
-      throw :exit unless config.plugins.stream.thread.empty?
+      throw :exit if config.plugins.stream.thread.class == Thread
 
       targets = args.map { |name|
         Termtter::API.twitter.user(name).id rescue nil
@@ -110,7 +111,7 @@ module Termtter::Client
       end
 
       at_exit do
-        config.plugins.stream.thread.kill
+        kill_thread :stream
       end
     end
   end
