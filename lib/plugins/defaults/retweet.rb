@@ -24,21 +24,20 @@ module Termtter::Client
     :help      => ['retweet,rt (ID|@USER)', 'Post a retweet message'],
     :exec_proc => lambda {|arg|
       arg, comment = arg.split(/\s/, 2)
-      txt = if public_storage[:typable_id] && s = typable_id_status(arg)
-              post_retweet(s, comment)
-            else
-              case arg
-              when /(\d+)/
-                post_retweet(Termtter::API.twitter.show(arg), comment)
-              when /@([A-Za-z0-9_]+)/
-                user = $1
-                statuses = Termtter::API.twitter.user_timeline(user)
-                return if statuses.empty?
-                post_retweet(statuses[0], comment)
-              end
-            end
 
-      return txt
+      if public_storage[:typable_id] && s = typable_id_status(arg)
+        post_retweet(s, comment)
+      else
+        case arg
+        when /(\d+)/
+          post_retweet(Termtter::API.twitter.show(arg), comment)
+        when /@([A-Za-z0-9_]+)/
+          user = $1
+          statuses = Termtter::API.twitter.user_timeline(user)
+          return if statuses.empty?
+          post_retweet(statuses[0], comment)
+        end
+      end
     }
   )
 end

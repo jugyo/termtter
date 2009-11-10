@@ -37,7 +37,7 @@ module Termtter::Storage
           }
         }
       end
-      Rubytter.json_to_struct(result)
+      Rubytter.structize(result)
     end
 
     def self.search_user(query)
@@ -60,7 +60,7 @@ module Termtter::Storage
           }
         }
       end
-      Rubytter.json_to_struct(result)
+      Rubytter.structize(result)
     end
 
     def self.insert(data)

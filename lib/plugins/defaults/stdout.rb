@@ -116,11 +116,18 @@ module Termtter
         end
 
       time = "#{Time.parse(s.created_at).strftime(time_format)}"
+      time = Client.get_hooks(:prepare_time).inject(time){|result, hook| hook.call(result, event)}
+
       source =
         case s.source
         when />(.*?)</ then $1
         when 'web' then 'web'
         end
+
+      source = Client.get_hooks(:prepare_source).inject(source){|result, hook| hook.call(result, event)}
+      screen_name = Client.get_hooks(:prepare_screenname).inject(s.user.screen_name){|result, hook|
+        hook.call(result, event)
+      }
 
       erbed_text = ERB.new(config.plugins.stdout.timeline_format).result(binding)
       indent_text = indent > 0 ? "#{'    ' * (indent - 1)} ┗ " : ''
