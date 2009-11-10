@@ -4,6 +4,8 @@ require File.dirname(__FILE__) + '/../spec_helper'
 module Termtter
   describe Client do
     before do
+      Client.hooks.clear
+      Client.commands.clear
       Client.setup_logger
     end
 
@@ -326,6 +328,7 @@ module Termtter
     end
 
     it 'gets default help' do
+      Client.plug 'defaults'
       $stdout, old_stdout = StringIO.new, $stdout # FIXME That suspends any debug informations!
       help_command = Client.get_command(:help)
       help_command.should_not be_nil
@@ -335,6 +338,7 @@ module Termtter
     end
 
     it 'gets an added help' do
+      Client.plug 'defaults'
       Client.register_command(
         :name => :foo,
         :help => [
