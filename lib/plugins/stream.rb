@@ -30,7 +30,8 @@ module Termtter::Client
     end
   end
 
-  register_command(:keyword_stream) do |arg|
+  help = ['keyword_stream KEYWORDS', 'Tracking keyword using Stream API']
+  register_command(:keyword_stream, :help => help) do |arg|
     break if arg.empty?
     unless config.plugins.stream.keyword_stream.epmty?
       break if config.plugins.stream.keyword_stream.alive?
@@ -55,12 +56,14 @@ module Termtter::Client
     end
   end
 
-  register_command(:hash_stream) do |arg|
+  help = ['hash_stream HASHTAG', 'Tracking hashtag using Stream API']
+  register_command(:hash_stream, :help => help) do |arg|
     arg = "##{arg}" unless /^#/ =~ arg
     call_commands("keyword_stream #{arg}")
   end
 
-  register_command(:stream) do |arg|
+  help = ['stream USERNAME', 'Tracking users using Stream API']
+  register_command(:stream, :help => help) do |arg|
     catch(:exit) do
       args = arg.split
 
