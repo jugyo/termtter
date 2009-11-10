@@ -51,7 +51,7 @@ def expand_url(host, path)
                                   config.proxy.user_name,
                                   config.proxy.password)
   end
-  res = http_class.new(host).head(path)
+  res = http_class.new(host).get(path)
   return nil unless res.code == "301" or res.code == "302"
   res['Location'].force_encoding(Encoding::UTF_8)
 rescue
