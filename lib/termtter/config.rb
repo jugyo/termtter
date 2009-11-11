@@ -54,8 +54,12 @@ module Termtter
       @store.dup
     end
 
-    def __clear__
-      @store.clear
+    def __clear__(name = nil)
+      if name
+        @store[name] = :undefined
+      else
+        @store.clear
+      end
     end
 
     __instance = self.new
