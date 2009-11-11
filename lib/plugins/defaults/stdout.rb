@@ -9,8 +9,9 @@ config.plugins.stdout.set_default(
   :timeline_format,
   [
     '<90><%=time%> [<%=status_id%>]</90> ',
-    '<%= indent_text %>',
-    '<<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ',
+    '||>',
+    '<<%=color%>><%=s.user.screen_name%></<%=color%>>: ',
+    '<%=text%> ',
     '<90>',
     '<%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%>',
     '<%=retweeted_status_id ? " (retweet_to [#{retweeted_status_id}]) " : ""%>',
@@ -98,17 +99,23 @@ module Termtter
       print_statuses(statuses, event)
     end
 
+    private
     def print_statuses(statuses, event, sort = true, time_format = nil)
       return unless statuses and statuses.first
       time_format ||= Termtter::Client.time_format_for statuses
 
-      output_text = ''
+      output = []
       statuses.each do |s|
-        output_text << status_line(s, time_format, event)
+        output << status_line(s, time_format, event)
       end
 
-      if config.plugins.stdout.enable_pager &&
-        ENV['LINES'] &&
+      justs = config.plugins.stdout.timeline_format.scan(/\|\|([><])/).map{|v|v == '<' ? :ljust : :rjust}
+      justs.unshift :ljust
+
+      format_column(output, justs)
+
+      if config.plugins.stdout.enable_pager && 
+        ENV['LINES'] && 
         statuses.size > ENV['LINES'].to_i
           file = Tempfile.new('termtter')
           file.print output_text
@@ -116,12 +123,42 @@ module Termtter
           system "#{config.plugins.stdout.pager} #{file.path}"
           file.close(true)
       else
-        print output_text
+        puts output
       end
     end
 
+    def uncolored(str)
+      str.gsub(/\e\[([0-9]+m)/, '')
+    end
+
+    def format_column(statuses, justs)
+      cols = statuses.first.first.size
+      ws = [0] * cols
+
+      ws = statuses.inject(ws) do |r, v|
+        [r, v.first].transpose.map{|max, col|[max, uncolored(col).size].max}
+      end
+
+      ws[-1] = 0
+
+      statuses.map! do |lines|
+        left = 0
+        [ws, lines.first, justs].transpose.map do |w, s, just|
+          left += w
+          s.inject([]) do |r, line|
+            adjusted = line.__send__(just, w + line.size - uncolored(line).size)
+            margin = r.empty? ? '' : ' ' * (left - w)
+            r << margin + adjusted
+          end
+        end
+      end
+
+      statuses.map!{|v|v.join}
+    end
+
+    # [status, in_reply_to...]
     def status_line(s, time_format, event, indent = 0)
-      return '' unless s
+      return [] unless s
       text = TermColor.escape(s.text)
       color = color_of_user(s.user)
       status_id = Termtter::Client.data_to_typable_id(s.id)
@@ -146,30 +183,44 @@ module Termtter
         when 'web' then 'web'
         end
 
-      text = colorize_users(text)
       text = Client.get_hooks(:pre_coloring).inject(text) {|result, hook|
         Termtter::Client.logger.debug "stdout status_line: call hook :pre_coloring #{hook.inspect}"
         hook.call(result, event)
       }
+      text = colorize_users(text)
+
       indent_text = indent > 0 ? eval(config.plugins.stdout.indent_format) : ''
-      erbed_text = ERB.new(config.plugins.stdout.timeline_format).result(binding)
-      erbed_text = Client.get_hooks(:pre_output).inject(erbed_text) {|result, hook|
-        Termtter::Client.logger.debug "stdout status_line: call hook :pre_output #{hook.inspect}"
-        hook.call(result, event)
-      }
-      text = TermColor.unescape(TermColor.parse(erbed_text) + "\n")
+
+      timeline_formats = config.plugins.stdout.timeline_format.split(/\|\|[><]/)
+
+      erbed_texts = timeline_formats.map do |timeline_format|
+        erbed_text  = ERB.new(timeline_format).result(binding)
+        erbed_text = Client.get_hooks(:pre_output).inject(erbed_text) {|result, hook|
+          Termtter::Client.logger.debug "stdout status_line: call hook :pre_output #{hook.inspect}"
+          hook.call(result, event)
+        }
+        TermColor.unescape(TermColor.parse(erbed_text))
+      end
+
+      if indent > 0
+        erbed_texts = [indent_text, erbed_texts.join.split(/[\r\n]/).join]
+      end
+
+      texts = [erbed_texts]
+
       if config.plugins.stdout.show_reply_chain && s.in_reply_to_status_id
         indent += 1
         unless indent > config.plugins.stdout.max_indent_level
           begin
             if status = Termtter::API.twitter.cached_status(s.in_reply_to_status_id)
-              text << status_line(status, time_format, event, indent)
+              texts.concat status_line(status, time_format, event, indent)
             end
           rescue Rubytter::APIError
           end
         end
       end
-      text
+
+      texts
     end
 
     def colorize_users(text)
