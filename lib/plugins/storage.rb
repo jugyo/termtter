@@ -44,7 +44,7 @@ module Termtter::Client
     :aliases => [:ssu],
     :exec_proc => lambda {|arg|
       unless arg.strip.empty?
-        key = arg.strip
+        key = arg.strip.gsub(/^@/, '')
         statuses = Termtter::Storage::Status.search_user({:user => key})
         output(statuses, :search)
       end
