@@ -15,10 +15,41 @@ module Termtter
       def setup
         @connection = Connection.new
 
+        auth = false
+        3.times do
+          if twitter = try_auth
+            @twitter = twitter
+            auth = true
+            break
+          end
+        end
+
+        exit! unless auth
+      end
+
+      def try_auth
+        if config.user_name.empty? || config.password.empty?
+          puts 'Please enter your Twitter login:'
+        end
+
         ui = create_highline
-        config.user_name = ui.ask('Username: ') if config.user_name.empty?
-        config.password = ui.ask('Password: ') { |q| q.echo = false} if config.password.empty?
-        @twitter = Rubytter.new(config.user_name, config.password, twitter_option)
+
+        if config.user_name.empty?
+          config.user_name = ui.ask('Username: ')
+        end
+        if config.password.empty?
+          config.password = ui.ask('Password: ') { |q| q.echo = false}
+        end
+
+        twitter = Rubytter.new(config.user_name, config.password, twitter_option)
+        begin
+          twitter.verify_credentials
+          return twitter
+        rescue Rubytter::APIError
+          config.__clear__(:user_name)
+          config.__clear__(:password)
+        end
+        return nil
       end
 
       def restore_user
