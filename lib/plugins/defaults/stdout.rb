@@ -112,10 +112,17 @@ module Termtter
       justs = config.plugins.stdout.timeline_format.scan(/\|\|([><])/).map{|v|v == '<' ? :ljust : :rjust}
       justs.unshift :ljust
 
-      format_column(output, justs)
+      output = format_column(output, justs)
 
-      if config.plugins.stdout.enable_pager && 
-        ENV['LINES'] && 
+      output.map! do |t|
+        t = Client.get_hooks(:pre_output).inject(t) {|result, hook|
+          Termtter::Client.logger.debug "stdout status_line: call hook :pre_output #{hook.inspect}"
+          hook.call(result, event)
+        }
+      end
+
+      if config.plugins.stdout.enable_pager &&
+        ENV['LINES'] &&
         statuses.size > ENV['LINES'].to_i
           file = Tempfile.new('termtter')
           file.print output_text
@@ -183,23 +190,19 @@ module Termtter
         when 'web' then 'web'
         end
 
-      text = Client.get_hooks(:pre_coloring).inject(text) {|result, hook|
-        Termtter::Client.logger.debug "stdout status_line: call hook :pre_coloring #{hook.inspect}"
-        hook.call(result, event)
-      }
       text = colorize_users(text)
 
       indent_text = indent > 0 ? eval(config.plugins.stdout.indent_format) : ''
 
       timeline_formats = config.plugins.stdout.timeline_format.split(/\|\|[><]/)
-
       erbed_texts = timeline_formats.map do |timeline_format|
-        erbed_text  = ERB.new(timeline_format).result(binding)
-        erbed_text = Client.get_hooks(:pre_output).inject(erbed_text) {|result, hook|
-          Termtter::Client.logger.debug "stdout status_line: call hook :pre_output #{hook.inspect}"
+        t = ERB.new(timeline_format).result(binding)
+        t = Client.get_hooks(:pre_coloring).inject(t) {|result, hook|
+          Termtter::Client.logger.debug "stdout status_line: call hook :pre_coloring #{hook.inspect}"
           hook.call(result, event)
         }
-        TermColor.unescape(TermColor.parse(erbed_text))
+        t = TermColor.parse(t)
+        TermColor.unescape(t)
       end
 
       if indent > 0
