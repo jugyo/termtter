@@ -3,7 +3,7 @@ module Termtter::Client
   register_command(
     :name => :list, :aliases => [:l],
     :exec_proc => lambda {|arg|
-      _, options, user = */((?:\-[a-z][= ]\S+\s*)+)?(\w+)?/.match(arg)
+      _, options, user = */((?:\-[a-z][= ]\S+\s*)+)?(?:@?(\w+))?/.match(arg)
       params = {}
       options.scan(/(\-[a-z])[= ](\S+)/).each do |k,v|
         v = v.sub(/^['"]/,'').sub(/['"]$/,'')
@@ -23,9 +23,6 @@ module Termtter::Client
         statuses = Termtter::API.twitter.user_timeline(user, params)
       end
       output(statuses, event)
-    },
-    :completion_proc => lambda {|cmd, arg|
-      find_user_candidates arg, "#{cmd} %s"
     },
     :help => ["list,l [USERNAME]", "List the posts"]
   )

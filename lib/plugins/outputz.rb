@@ -30,4 +30,4 @@ end
 #
 # settings (note: must this order)
 #   config.plugins.outputz.secret_key = 'your secret key'
-#   plugin 'outputz'
+#   t.plug 'outputz'

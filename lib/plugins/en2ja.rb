@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
 
-plugin 'translation'
+module Termtter::Client
+  plug 'translation'
 
-Termtter::Client.add_filter do |statuses, event|
-  statuses.each do |s|
-    if s.english?
-      s.text = translate(s.text, 'en|ja')
+  register_hook(:en2ja, :point => :filter_for_output) do |statuses, event|
+    statuses.each do |s|
+      if english?(s.text)
+        s.text = translate(s.text, 'en|ja')
+      end
     end
+  end
+
+  def self.english?(text)
+    /[一-龠]+|[ぁ-ん]+|[ァ-ヴー]+|[ａ-ｚＡ-Ｚ０-９]+/ !~ text
   end
 end

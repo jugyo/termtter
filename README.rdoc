@@ -1,20 +1,18 @@
-= termtter
-
-http://termtter.org/
-
-== DESCRIPTION:
+= Termtter
 
 Termtter is a terminal based Twitter client.
 
-== FEATURES/PROBLEMS:
+For more information, see http://termtter.org/ and http://lingr.com/room/termtter
 
-== SYNOPSIS:
+== INSTALL:
 
-=== Run:
+  % sudo gem install termtter
+
+== Run:
 
   % termtter
 
-=== Some Termtter Commands:
+== Commands:
 
 Show help
 
@@ -32,25 +30,7 @@ Search
 
   > search termtter
 
-== REQUIREMENTS:
-
-* json_pure or json
-* termcolor
-* rubytter
-
-== INSTALL:
-
-  % sudo gem install termtter
-
 == CONFIGURATION:
-
-Termtter generates a configuration file named '~/.termtter/config'.
-You can edit the file anytime.
-
-  % vim ~/.termtter/config
-
-  config.user_name = 'USERNAME'
-  config.password = 'PASSWORD'
 
 If you would like to use proxy server, add configurations like this:
 
@@ -68,9 +48,32 @@ You can to load plugins in this way:
 
 To update the config, just restart your termtter proccess.
 
-== FORUM:
+== ADVANCED USAGE:
 
-http://groups.google.co.jp/group/termtter
+  t.plug 'curry'
+
+Your termtter can curry commands.
+
+  > curry u
+  u > hi
+  updated => hi
+  u > curry @ujm
+  u @ujm > hi
+  updated => @ujm hi
+  u @ujm > uncurry
+  >
+
+You can also type `<` as curry.
+
+  > < u
+  u >
+
+== REQUIREMENTS:
+
+* json_pure or json
+* termcolor
+* rubytter
+* highline
 
 == TODO:
 

@@ -26,22 +26,22 @@ end
 
 module Termtter::Client
   register_command(
-                   :name => :delete_command,
-                   :exec_proc => lambda {|arg|
-                     Termtter::Client.delete_command(arg)
-                   },
-                   :completion_proc => lambda {|cmd, arg|
-                   },
-                   :help => ['delete_command command', 'delete command from command list (this command is experimental!)']
+    :name => :delete_command,
+    :exec_proc => lambda {|arg|
+    Termtter::Client.delete_command(arg)
+  },
+    :completion_proc => lambda {|cmd, arg|
+  },
+    :help => ['delete_command command', 'delete command from command list (this command is experimental!)']
   )
 
   register_command(
-                   :name => :alias_command,
-                   :exec_proc => lambda {|arg|
-                     Termtter::Client.alias_command(arg)
-                   },
-                   :completion_proc => lambda {|cmd, arg|
-                   },
-                   :help => ['alias_command A B', 'alias command A to B (this command is experimental!)']
+    :name => :alias_command,
+    :exec_proc => lambda {|arg|
+    Termtter::Client.alias_command(arg)
+  },
+    :completion_proc => lambda {|cmd, arg|
+  },
+    :help => ['alias_command A B', 'alias command A to B (this command is experimental!)']
   )
 end

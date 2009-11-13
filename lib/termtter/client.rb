@@ -4,7 +4,6 @@ require 'logger'
 require 'termcolor'
 
 module Termtter
-
   class CommandNotFound < StandardError; end
   class CommandCanceled < StandardError; end
 
@@ -14,16 +13,12 @@ module Termtter
     @commands = {}
     @filters = []
     @since_id = nil
-    @input_thread = nil
     @task_manager = Termtter::TaskManager.new
 
     config.set_default(:logger, nil)
-    config.set_default(:update_interval, 300)
+    config.set_default(:update_interval, 120)
     config.set_default(:prompt, '> ')
     config.set_default(:devel, false)
-    config.set_default(:stdout, true)
-    config.set_default(:standard_commands, true)
-    config.set_default(:auto_reload, true)
 
     Thread.abort_on_exception = true
 
@@ -31,11 +26,14 @@ module Termtter
 
       attr_reader :commands, :hooks
 
+      # plug :: Name -> (Hash) -> IO () where NAME = String | Symbol | [NAME]
       def plug(name, options = {})
-        unless options.empty?
-          options.each do |key, value|
-            config.plugins.__refer__(name.gsub(/-/, '_').to_sym).__assign__(key.to_sym, value)
-          end
+        if Array === name # Obviously `name.respond_to?(:each)` is better, but for 1.8.6 compatibility we cannot.
+          name.each {|i| plug(i, options) }
+          return
+        end
+        options.each do |key, value|
+          config.plugins.__refer__(name.gsub(/-/, '_').to_sym).__assign__(key.to_sym, value)
         end
         load "plugins/#{name}.rb"
       rescue Exception => e
@@ -55,14 +53,19 @@ module Termtter
         @filters.clear
       end
 
-      def register_hook(arg)
+      def register_hook(arg, opts = {}, &block)
         hook = case arg
           when Hook
             arg
           when Hash
             Hook.new(arg)
+          when String, Symbol
+            options = { :name => arg }
+            options.merge!(opts)
+            options[:exec_proc] = block
+            Hook.new(options)
           else
-            raise ArgumentError, 'must be given Termtter::Hook or Hash'
+            raise ArgumentError, 'must be given Termtter::Hook, Hash, String or Symbol'
           end
         @hooks[hook.name] = hook
       end
@@ -72,6 +75,7 @@ module Termtter
       end
 
       def get_hooks(point)
+        # TODO: sort by alphabet
         @hooks.values.select do |hook|
           hook.match?(point)
         end
@@ -83,13 +87,13 @@ module Termtter
             arg
           when Hash
             Command.new(arg)
-          when String
+          when String, Symbol
             options = { :name => arg }
             options.merge!(opts)
             options[:exec_proc] = block
             Command.new(options)
           else
-            raise ArgumentError, 'must be given Termtter::Command, Hash or String with block'
+            raise ArgumentError, 'must be given Termtter::Command, Hash or String(Symbol) with block'
           end
         @commands[command.name] = command
       end
@@ -108,6 +112,7 @@ module Termtter
         @commands.clear
       end
 
+      # MEMO: attr_reader :commands してるからこれいらない気もする
       def get_command(name)
         @commands[name]
       end
@@ -135,10 +140,10 @@ module Termtter
       def output(statuses, event)
         return if statuses.nil? || statuses.empty?
 
-        statuses = statuses.sort_by{|s|s.id}
+        statuses = statuses.sort_by(&:id)
         call_hooks(:pre_filter, statuses, event)
 
-        filtered = apply_filters_for_hook(:filter_for_output, statuses.map(&:dup), event)
+        filtered = apply_filters_for_hook(:filter_for_output, statuses.map(&:clone), event)
 
         @filters.each do |f|  # TODO: code for compatibility. delete someday.
           filtered = f.call(filtered, event)
@@ -154,10 +159,9 @@ module Termtter
       end
 
       def apply_filters_for_hook(hook_name, statuses, event)
-        get_hooks(hook_name).each do |hook|
-          statuses = hook.call(statuses, event)
-        end
-        statuses
+        get_hooks(hook_name).inject(statuses) {|s, hook|
+          hook.call(s, event)
+        }
       end
 
       # return last hook return value
@@ -171,37 +175,44 @@ module Termtter
       end
 
       def call_commands(text)
-        return if text.empty?
-
-        commands = find_commands(text)
-        raise CommandNotFound, text if commands.empty?
-
-        commands.each do |command|
-          command_found = true
-          command_str, command_arg = Command.split_command_line(text)
-
-          modified_arg = command_arg
-          get_hooks("modify_arg_for_#{command.name.to_s}").each {|hook|
-            break if modified_arg == false # interrupt if hook return false
-            modified_arg = hook.call(command_str, modified_arg)
+        @task_manager.invoke_and_wait do
+          # FIXME: This block can become Maybe Monad
+          get_hooks("pre_command").each {|hook|
+            break if text == nil # interrupt if hook returns nil
+            text = hook.call(text)
           }
+          return if text.empty?
 
-          @task_manager.invoke_and_wait do
+          commands = find_commands(text)
+          raise CommandNotFound, text if commands.empty?
+
+          commands.each do |command|
+            command_str, command_arg = command.split_command_line(text)
+
+            modified_arg = command_arg
+            # FIXME: This block can become Maybe Monad
+            get_hooks("modify_arg_for_#{command.name.to_s}").each {|hook|
+              break if modified_arg == false # interrupt if hook return false
+              modified_arg = hook.call(command_str, modified_arg)
+            }
+
             begin
               call_hooks("pre_exec_#{command.name.to_s}", command, modified_arg)
-              # exec command
-              result = command.call(command_str, modified_arg, text)
-              if result
-                call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
-              end
+              result = command.call(command_str, modified_arg, text) # exec command
+              call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
             rescue CommandCanceled
             end
           end
+          call_hooks("post_command", text)
         end
       end
 
+      def command_exists?(text)
+        @commands.values.any? {|command| command.match?(text) }
+      end
+
       def find_commands(text)
-        @commands.values.select { |command| command.match?(text) }
+        @commands.values.select {|command| command.match?(text) }
       end
 
       def pause
@@ -218,10 +229,8 @@ module Termtter
 
       def exit
         puts 'finalizing...'
-
         call_hooks(:exit)
         @task_manager.kill
-        @input_thread.kill if @input_thread
       end
 
       def load_config
@@ -252,56 +261,6 @@ module Termtter
           Termtter::CONF_FILE)
       end
 
-      def setup_readline
-        if Readline.respond_to?(:basic_word_break_characters=)
-          Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
-        end
-        Readline.completion_proc = lambda {|input|
-          begin
-            @commands.map {|name, command| command.complement(input) }.flatten.compact
-          rescue => e
-            handle_error(e)
-          end
-        }
-        vi_or_emacs = config.editing_mode
-        unless vi_or_emacs.empty?
-          Readline.__send__("#{vi_or_emacs}_editing_mode")
-        end
-      end
-
-      def trap_setting()
-        begin
-          stty_save = `stty -g`.chomp
-          trap("INT") do
-            begin
-              system "stty", stty_save
-            ensure
-              exit
-            end
-          end
-        rescue Errno::ENOENT
-        end
-      end
-
-      def start_input_thread
-        setup_readline()
-        trap_setting()
-        @input_thread = Thread.new do
-          while buf = Readline.readline(ERB.new(config.prompt).result(API.twitter.__send__(:binding)), true)
-            Readline::HISTORY.pop if buf.empty?
-            begin
-              call_commands(buf)
-            rescue CommandNotFound => e
-              warn "Unknown command \"#{e}\""
-              warn 'Enter "help" for instructions'
-            rescue => e
-              handle_error e
-            end
-          end
-        end
-        @input_thread.join
-      end
-
       def logger
         @logger
       end
@@ -312,7 +271,7 @@ module Termtter
 
       def default_logger
         logger = Logger.new(STDOUT)
-        logger.formatter = lambda { |severity, time, progname, message|
+        logger.formatter = lambda {|severity, time, progname, message|
           color =
             case severity
             when /^DEBUG/
@@ -337,21 +296,21 @@ module Termtter
         @init_block = block
       end
 
+      def load_plugins
+        plug 'defaults'
+        plug config.system.load_plugins
+      end
+
+      def eval_init_block
+        @init_block.call(self) if @init_block
+      end
+
       def run
         load_config()
-        Termtter::API.setup()
         setup_logger()
-
-        @init_block.call(self) if @init_block
-
-        plug 'stdout' if config.stdout
-        plug 'standard_commands' if config.standard_commands
-        plug 'auto_reload' if config.auto_reload
-        plug 'devel' if config.devel
-
-        config.system.load_plugins.each do |plugin|
-          plug plugin
-        end
+        load_plugins()
+        eval_init_block()
+        Termtter::API.setup()
 
         config.system.eval_scripts.each do |script|
           begin
@@ -361,12 +320,12 @@ module Termtter
           end
         end
 
-        config.system.run_commands.each { |cmd| call_commands(cmd) }
+        config.system.run_commands.each {|cmd| call_commands(cmd) }
 
         unless config.system.cmd_mode
-          call_hooks(:initialize)
           @task_manager.run()
-          start_input_thread()
+          call_hooks(:initialize)
+          call_hooks(:launched)
         end
       end
 
@@ -381,6 +340,32 @@ module Termtter
       rescue Exception => e
         puts "Error: #{e}"
         puts e.backtrace.join("\n")
+      end
+
+      def confirm(message, default_yes = true, &block)
+        pause # TODO: TaskManager から呼ばれるならこれいらないなぁ
+
+        prompt =
+          if default_yes
+            "\"#{message}".strip + "\" [Y/n] "
+          else
+            "\"#{message}".strip + "\" [N/y] "
+          end
+        readline = Readline.readline(prompt, false)
+        result =
+          if !!(/^$/ =~ readline) 
+            default_yes
+          else
+            !!(/^y/i =~ readline)
+          end
+
+        if result && block
+          block.call
+        end
+
+        result
+      ensure
+        resume # TODO: TaskManager から呼ばれるならこれいらないなぁ
       end
     end
   end

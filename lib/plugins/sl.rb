@@ -31,9 +31,6 @@ module Termtter
           call_commands("list #{arg.empty? ? public_storage[:current] : arg}")
         end
       },
-      :completion_proc => lambda {|cmd, args|
-        find_user_candidates args, "#{cmd} %s"
-      },
       :help => ['ls', 'Show list in current directory']
     )
 
@@ -41,11 +38,8 @@ module Termtter
       :name => :cd, :aliases => [],
       :exec_proc => lambda {|arg|
         public_storage[:current] =
-          (arg.nil? || /\~/ =~ arg) ? '' : arg
+          (arg.nil? || /\~/ =~ arg) ? '' : normalize_as_user_name(arg)
         config.prompt = "~/#{public_storage[:current]} #{public_storage[:orig_prompt]}"
-      },
-      :completion_proc => lambda {|cmd, args|
-        find_user_candidates args, "#{cmd} %s"
       },
       :help => ['cd USER', 'Change current directory']
     )

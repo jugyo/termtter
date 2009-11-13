@@ -10,7 +10,7 @@ OptionParser.new { |opt|
   end
 
   opt.on('-d', '--devel', 'Start in developer mode') do |flg|
-    config.system.__assign__(:devel, true) if flg
+    config.__assign__(:devel, true) if flg
   end
 
   config.system.cmd_mode = false
@@ -31,6 +31,19 @@ OptionParser.new { |opt|
   config.system.eval_scripts = []
   opt.on('-e', '--eval-script script', 'Eval script') do |script|
     config.system.eval_scripts << script
+  end
+
+  config.system.eval_scripts = []
+  opt.on('-m', '--monochrome', 'No shell escapes for color highlightings') do |script|
+    require 'termcolor'
+    module TermColor
+      class << self
+        alias parse_orig parse
+        def parse(o)
+          o.gsub(/<.+?>(.*?)<\/.+?>/, '\1')
+        end
+      end
+    end
   end
 
   opt.version = Termtter::VERSION

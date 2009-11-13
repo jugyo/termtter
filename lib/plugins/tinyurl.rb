@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 SHORTURL_MAKERS = [
-  { :host => "tinyurl.com", :format => '/api-create.php?url=%s' },
+  { :host => "api.bit.ly",
+    :format => '/shorten?version=2.0.1&longUrl=%s&login=termtter&apiKey=R_e7f22d523a803dbff7f67de18c109856' },
+  { :host => "to.ly", :format => '/api.php?longurl=%s' },
   { :host => "is.gd", :format => '/api.php?longurl=%s' },
+  { :host => "tinyurl.com", :format => '/api-create.php?url=%s' },
 ]
 TINYURL_HOOK_COMMANDS = [:update, :reply]
 URI_REGEXP = URI.regexp(%w(http https ftp))
@@ -27,6 +30,9 @@ Termtter::Client.register_hook(
         res = http_class.new(site[:host]).get(site[:format] % url_enc)
         if res.code == '200'
           result = res.body
+          if result =~ /"shortUrl": "(http.*)"/
+            result = $1
+          end
           break
         end
       end

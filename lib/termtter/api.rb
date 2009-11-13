@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-gem 'rubytter', '>= 0.6.5'
-require 'rubytter'
 
 config.set_default(:host, 'twitter.com')
 config.proxy.set_default(:port, '8080')
@@ -16,40 +14,72 @@ module Termtter
       attr_reader :connection, :twitter
       def setup
         @connection = Connection.new
-        @twitter = create_twitter(config.user_name, config.password)
+
+        auth = false
+        3.times do
+          if twitter = try_auth
+            @twitter = twitter
+            auth = true
+            break
+          end
+        end
+
+        exit! unless auth
+      end
+
+      def try_auth
+        if config.user_name.empty? || config.password.empty?
+          puts 'Please enter your Twitter login:'
+        end
+
+        ui = create_highline
+
+        if config.user_name.empty?
+          config.user_name = ui.ask('Username: ')
+        end
+        if config.password.empty?
+          config.password = ui.ask('Password: ') { |q| q.echo = false}
+        end
+
+        twitter = Rubytter.new(config.user_name, config.password, twitter_option)
+        begin
+          twitter.verify_credentials
+          return twitter
+        rescue Rubytter::APIError
+          config.__clear__(:user_name)
+          config.__clear__(:password)
+        end
+        return nil
       end
 
       def restore_user
-        @twitter = create_twitter(config.user_name, config.password)
+        setup
       end
 
       def switch_user(username = nil)
+        puts 'Please enter your Twitter login:'
         highline = create_highline
-        username = highline.ask('your twitter username: ') if username.nil? || username.empty?
-        password = highline.ask('your twitter password: ') { |q| q.echo = false }
-        @twitter = create_twitter(username, password)
+        config.user_name = highline.ask('Username: ') if username.nil? || username.empty?
+        config.password = highline.ask('Password: ') { |q| q.echo = false }
+        setup
       end
 
-      def create_twitter(user_name, password)
-        Rubytter.new(
-          user_name,
-          password,
-          {
-            :app_name => config.app_name.empty? ? Termtter::APP_NAME : config.app_name,
-            :host => config.host,
-            :header => {
-              'User-Agent' => 'Termtter http://github.com/jugyo/termtter',
-              'X-Twitter-Client' => 'Termtter',
-              'X-Twitter-Client-URL' => 'http://github.com/jugyo/termtter',
-              'X-Twitter-Client-Version' => Termtter::VERSION
-            },
-            :enable_ssl => config.enable_ssl,
-            :proxy_host => config.proxy.host,
-            :proxy_port => config.proxy.port,
-            :proxy_user_name => config.proxy.user_name,
-            :proxy_password => config.proxy.password
-          }
-        )
+      def twitter_option
+        {
+          :app_name => config.app_name.empty? ? Termtter::APP_NAME : config.app_name,
+          :host => config.host,
+          :header => {
+            'User-Agent' => 'Termtter http://github.com/jugyo/termtter',
+            'X-Twitter-Client' => 'Termtter',
+            'X-Twitter-Client-URL' => 'http://github.com/jugyo/termtter',
+            'X-Twitter-Client-Version' => Termtter::VERSION
+          },
+          :enable_ssl => config.enable_ssl,
+          :proxy_host => config.proxy.host,
+          :proxy_port => config.proxy.port,
+          :proxy_user_name => config.proxy.user_name,
+          :proxy_password => config.proxy.password
+        }
       end
     end
   end

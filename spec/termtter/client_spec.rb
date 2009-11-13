@@ -1,27 +1,26 @@
 # -*- coding: utf-8 -*-
-
 require File.dirname(__FILE__) + '/../spec_helper'
 
 module Termtter
-
   describe Client do
-
     before do
+      Client.hooks.clear
+      Client.commands.clear
       Client.setup_logger
     end
 
-    it 'should take command' do
+    it 'takes command' do
       command = Command.new(:name => :test)
       Client.register_command(command)
       Client.get_command(:test).should == command
     end
 
-    it 'should take command as Hash' do
+    it 'takes command as Hash' do
       Client.register_command(:name => :test)
       Client.get_command(:test).name.should == :test
     end
 
-    it 'should take register_command as block' do
+    it 'takes register_command as block' do
       process = lambda {}
       Client.register_command('test', &process)
       command = Client.get_command(:test)
@@ -29,7 +28,7 @@ module Termtter
       command.exec_proc.should == process
     end
 
-    it 'should take register_command as block with options' do
+    it 'takes register_command as block with options' do
       process = lambda {}
       Client.register_command('test', :help => 'help', &process)
       command = Client.get_command(:test)
@@ -38,7 +37,13 @@ module Termtter
       command.help.should == 'help'
     end
 
-    it 'should take add_command as block' do
+    it 'takes register command as block with symbol name' do
+      lambda {
+        Client.register_command(:name) {}
+      }.should_not raise_error
+    end
+
+    it 'takes add_command as block' do
       Client.add_command('test') do |c|
         c.aliases = ['t']
         c.help = 'test command is a test'
@@ -49,7 +54,7 @@ module Termtter
       command.help.should == 'test command is a test'
     end
 
-    it 'should take add_command as block without past config' do
+    it 'takes add_command as block without past config' do
       Client.add_command('past') do |c|
         c.help = 'past help'
       end
@@ -62,7 +67,7 @@ module Termtter
       lambda { Client.add_command('past') }.should raise_error(ArgumentError)
     end
 
-    it 'should call command' do
+    it 'calls command' do
       command_arg = nil
       command = Command.new(:name => :test, :exec_proc => lambda {|arg| command_arg = arg})
       Client.register_command(command)
@@ -79,18 +84,18 @@ module Termtter
       end
     end
 
-    it 'should take new_hook' do
+    it 'takes new_hook' do
       hook = Hook.new(:name => :test)
       Client.register_hook(hook)
       Client.get_hook(:test).should == hook
     end
 
-    it 'should take hook as Hash' do
+    it 'takes hook as Hash' do
       Client.register_hook(:name => :test)
       Client.get_hook(:test).name.should == :test
     end
 
-    it 'should call new_hook' do
+    it 'calls new_hook' do
       hook_called = false
       Client.register_hook(:name => :test1, :points => [:point1], :exec_proc => lambda {hook_called = true})
       hook_called.should == false
@@ -98,7 +103,7 @@ module Termtter
       hook_called.should == true
     end
 
-    it 'should call new_hook with args' do
+    it 'calls new_hook with args' do
       arg1 = nil
       arg2 = nil
       Client.register_hook(:name => :test1, :points => [:point1], :exec_proc => lambda {|a1, a2| arg1 = a1; arg2 = a2})
@@ -109,7 +114,7 @@ module Termtter
       arg2.should == 'bar'
     end
 
-    it 'should return hooks when call get_hooks' do
+    it 'return hooks when call get_hooks' do
       hook1 = Client.register_hook(:name => :test1, :points => [:point1])
       hook2 = Client.register_hook(:name => :test2, :points => [:point1])
       hook3 = Client.register_hook(:name => :test3, :points => [:point2])
@@ -121,7 +126,7 @@ module Termtter
       hooks.include?(hook3).should == false
     end
 
-    it 'should call decide_arg hooks' do
+    it 'calls decide_arg hooks' do
       input_command = nil
       input_arg = nil
       decided_arg = nil
@@ -131,7 +136,7 @@ module Termtter
       Client.register_hook( :name => :test2,
                             :points => [:pre_exec_update],
                             :exec_proc => lambda {|cmd, arg| decided_arg = arg})
-      Client.register_command(:name => :update, :aliases => [:u])
+      Client.register_command(:name => :update, :aliases => [:u], :exec => lambda{|arg|})
 
       input_command.should == nil
       input_arg.should == nil
@@ -142,31 +147,62 @@ module Termtter
       decided_arg.should == 'FOO'
     end
 
-    it 'should call pre_exec hooks' do
+    it 'calls pre_command hooks' do
+      hook_called = false
+      Client.register_hook( :name => :test,
+                            :points => [:pre_command],
+                            :exec_proc => lambda {|text| hook_called = true; text})
+      Client.register_command(:name => :update, :exec => lambda{|arg|})
+
+      hook_called.should == false
+      Client.call_commands('')
+      hook_called.should == true
+
+      hook_called = false
+      Client.call_commands('update foo')
+      hook_called.should == true
+    end
+
+    it 'calls post_command hooks' do
+      hook_called = false
+      Client.register_hook( :name => :test,
+                            :points => [:post_command],
+                            :exec_proc => lambda {|text| hook_called = true})
+      Client.register_command(:name => :update, :exec => lambda{|arg|})
+
+      hook_called.should == false
+      Client.call_commands('')
+      hook_called.should == false
+
+      Client.call_commands('update foo')
+      hook_called.should == true
+    end
+
+    it 'calls pre_exec hooks' do
       hook_called = false
       Client.register_hook( :name => :test,
                             :points => [:pre_exec_update],
                             :exec_proc => lambda {|cmd, arg| hook_called = true})
-      Client.register_command(:name => :update)
+      Client.register_command(:name => :update, :exec => lambda{|arg|})
 
       hook_called.should == false
       Client.call_commands('update foo')
       hook_called.should == true
     end
 
-    it 'should able to cancel exec command' do
+    it 'able to cancel exec command' do
       command_called = false
       Client.register_hook( :name => :test,
                             :points => [:pre_exec_update],
-                            :exec_proc => lambda {|cmd, arg| false})
-      Client.register_command(:name => :update, :exec_proc => lambda {|cmd, arg| command_called = true})
+                            :exec_proc => lambda {|cmd, arg| raise CommandCanceled})
+      Client.register_command(:name => :update, :exec_proc => lambda {|arg| command_called = true})
 
       command_called.should == false
       Client.call_commands('update foo')
       command_called.should == false
     end
 
-    it 'should call post_exec hooks' do
+    it 'calls post_exec hooks' do
       command_result = nil
       Client.register_hook( :name => :test,
                             :points => [:post_exec_update],
@@ -178,7 +214,7 @@ module Termtter
       command_result.should == 'foo'
     end
 
-    it 'should call exit hooks' do
+    it 'calls exit hooks' do
       hook_called = false
       Client.register_hook(
         :name => :test,
@@ -192,7 +228,7 @@ module Termtter
       hook_called.should == true
     end
 
-    it 'should call plural hooks' do
+    it 'calls plural hooks' do
       hook1_called = false
       hook2_called = false
       Client.register_hook(:name => :hook1, :points => [:exit], :exec_proc => lambda {hook1_called = true})
@@ -206,7 +242,7 @@ module Termtter
       hook2_called.should == true
     end
 
-    it 'should be able to override hooks' do
+    it 'is able to override hooks' do
       hook1_called = false
       hook2_called = false
       Client.register_hook(:name => :hook, :points => [:exit], :exec_proc => lambda {hook1_called = true})
@@ -220,7 +256,31 @@ module Termtter
       hook2_called.should == true
     end
 
-    it 'run' do
+    it 'takes register_hook as block' do
+      process = lambda {}
+      Client.register_hook('test', &process)
+      hook = Client.get_hook(:test)
+      hook.name.should == :test
+      hook.exec_proc.should == process
+    end
+
+    it 'takes register_hook as block with options' do
+      process = lambda {}
+      Client.register_hook('test', :point => :foo, &process)
+      hook = Client.get_hook(:test)
+      hook.name.should == :test
+      hook.exec_proc.should == process
+      hook.points.should == [:foo]
+    end
+
+    it 'takes register hook as block with symbol name' do
+      lambda {
+        Client.register_hook(:name) {}
+      }.should_not raise_error
+    end
+
+    it 'runs' do
+      pending
       Client.should_receive(:load_config)
       Termtter::API.should_receive(:setup)
       Client.should_receive(:start_input_thread)
@@ -234,31 +294,31 @@ module Termtter
       Client.load_config
     end
 
-    it 'should do nothing when ~/.termtter is directory' do
+    it 'does nothing when ~/.termtter is directory' do
       File.should_receive(:ftype).and_return('directory')
       Client.should_not_receive(:move_legacy_config_file)
       Client.legacy_config_support
     end
 
-    it 'should do "move_legacy_config_file" when ~/.termtter is file' do
+    it 'does "move_legacy_config_file" when ~/.termtter is file' do
       File.should_receive(:ftype).and_return('file')
       Client.should_receive(:move_legacy_config_file)
       Client.legacy_config_support
     end
 
-    it 'should move legacy config file' do
+    it 'moves legacy config file' do
       FileUtils.should_receive(:mv).twice
       Dir.should_receive(:mkdir)
       Client.move_legacy_config_file
     end
 
-    it 'should handle error' do
+    it 'handles error' do
       logger = Client.instance_eval{@logger}
       logger.should_receive(:error).with("StandardError: error")
       Client.handle_error StandardError.new('error')
     end
 
-    it 'should cancel command by hook' do
+    it 'cancels command by hook' do
       command = Command.new(:name => :test)
       Client.register_command(command)
       Client.register_hook(
@@ -272,7 +332,8 @@ module Termtter
       Client.call_commands('test')
     end
 
-    it 'should get default help' do
+    it 'gets default help' do
+      Client.plug 'defaults'
       $stdout, old_stdout = StringIO.new, $stdout # FIXME That suspends any debug informations!
       help_command = Client.get_command(:help)
       help_command.should_not be_nil
@@ -281,7 +342,8 @@ module Termtter
       $stdout = old_stdout
     end
 
-    it 'should get an added help' do
+    it 'gets an added help' do
+      Client.plug 'defaults'
       Client.register_command(
         :name => :foo,
         :help => [
@@ -309,13 +371,20 @@ module Termtter
         Client.commands.size.should == 3
       end
 
-      it 'should find a command' do
+      it 'finds a command' do
         Client.find_commands('foo1').size.should == 1
         Client.find_commands('foo1')[0].name.should == :foo1
         Client.find_commands('bar').size.should == 1
       end
 
-      it 'should find no command' do
+      it 'check command exists' do
+        Client.command_exists?('foo').should == false
+        Client.command_exists?('foo1').should == true
+        Client.command_exists?('bar').should == true
+        Client.command_exists?('foo1 bar').should == true
+      end
+
+      it 'finds no command' do
         Client.find_commands('foo').size.should == 0
       end
     end
@@ -325,8 +394,27 @@ module Termtter
         Client.clear_command
       end
 
-      it 'should no command' do
+      it 'no command' do
         Client.commands.size.should == 0
+      end
+    end
+
+    describe '.plug' do
+      it 'loads a plugin' do
+        Client.should_receive(:load).with('plugins/aaa.rb')
+        Client.plug 'aaa'
+      end
+
+      it 'loads a plugin with plugin name as Symbol' do
+        Client.should_receive(:load).with('plugins/aaa.rb')
+        Client.plug :aaa
+      end
+
+      it 'loads plugins' do
+        Client.should_receive(:load).with('plugins/aaa.rb')
+        Client.should_receive(:load).with('plugins/bbb.rb')
+        Client.should_receive(:load).with('plugins/ccc.rb')
+        Client.plug ['aaa', 'bbb', 'ccc']
       end
     end
   end

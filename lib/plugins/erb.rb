@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
-
 require 'erb'
-
-Termtter::Client.register_hook(
-  :name => :erb,
-  :point => :modify_arg_for_update,
-  :exec_proc => lambda {|cmd, arg|
+module Termtter::Client
+  register_hook(:erb, :point => :modify_arg_for_update) do |cmd, arg|
     ERB.new(arg).result(binding)
-  }
-)
+  end
+end
 
 # erb.rb
 #   enable to <%= %> in the command update

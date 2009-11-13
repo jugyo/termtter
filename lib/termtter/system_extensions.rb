@@ -108,8 +108,9 @@ if win?
     str.to_s.gsub("\xef\xbd\x9e", "\xe3\x80\x9c").split(/(\e\[\d*[a-zA-Z])/).each do |token|
       case token
       when /\e\[(\d+)m/
-        $wSetConsoleTextAttribute.call $hStdOut, $colorMap[$1.to_i].to_i
-	  when /\e\[\d*[a-zA-Z]/
+        color = $1.to_i > 90 ? ($1.to_i % 60) : $1.to_i
+        $wSetConsoleTextAttribute.call $hStdOut, $colorMap[color].to_i
+      when /\e\[\d*[a-zA-Z]/
         # do nothing
       else
         loop do
@@ -155,4 +156,15 @@ def create_highline
     end
   end
   HighLine.new($stdin)
+end
+
+def open_browser(url)
+  case RUBY_PLATFORM
+  when /linux/
+    system 'firefox', url
+  when /mswin(?!ce)|mingw|bccwin/
+    system 'explorer', url
+  else
+    system 'open', url
+  end
 end

@@ -107,5 +107,22 @@ module Termtter
       @config.plugins.set_default :only, 'after_value'
       @config.plugins.only.should == 'before_value'
     end
+
+    it 'should be called set_default with int multiple times' do
+      @config.set_default(:foo, 1)
+      @config.set_default(:foo, 2)
+    end
+
+    it 'should be called set_default with string multiple times' do
+      @config.set_default(:foo, 'foo')
+      @config.set_default(:foo, 'bar')
+    end
+
+    it 'should be called __clear__ with name' do
+      @config.foo = 'foo'
+      @config.foo.empty?.should be_false
+      @config.__clear__(:foo)
+      @config.foo.empty?.should be_true
+    end
   end
 end

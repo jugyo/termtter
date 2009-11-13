@@ -8,7 +8,6 @@ module Termtter
     def run
       ui = create_highline
       user_name = ui.ask('your twitter user name: ')
-      password = ui.ask('your twitter password: ') { |q| q.echo = false }
 
       plugins = Dir.glob(File.expand_path(File.dirname(__FILE__) + "/../plugins/*.rb")).map  {|f|
         f.match(%r|lib/plugins/(.*?).rb$|)[1]
@@ -24,7 +23,6 @@ module Termtter
       }
 
       puts "generated: ~/.termtter/config"
-      puts "enjoy!"
     end
   end
 end

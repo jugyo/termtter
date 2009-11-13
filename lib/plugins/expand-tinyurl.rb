@@ -5,6 +5,8 @@ URL_SHORTTERS = [
   { :host => "is.gd", :pattern => %r'(http://is\.gd(/[\w/]+))' },
   { :host => "bit.ly", :pattern => %r'(http://bit\.ly(/[\w/]+))' },
   { :host => "ff.im", :pattern => %r'(http://ff\.im(/[-\w/]+))'},
+  { :host => "to.ly", :pattern => %r'(http://to\.ly(/[-\w/]+))'},
+  { :host => "j.mp", :pattern => %r'(http://j\.mp(/[\w/]+))' },
 ]
 
 config.plugins.expand_tinyurl.set_default(:shortters, [])
@@ -49,7 +51,9 @@ def expand_url(host, path)
                                   config.proxy.user_name,
                                   config.proxy.password)
   end
-  res = http_class.new(host).head(path)
+  res = http_class.new(host).get(path, { 'User-Agent' => 'Mozilla' })
   return nil unless res.code == "301" or res.code == "302"
   res['Location'].force_encoding(Encoding::UTF_8)
+rescue
+  nil
 end

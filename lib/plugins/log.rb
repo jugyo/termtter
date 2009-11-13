@@ -34,8 +34,8 @@ module Termtter::Client
   )
 
   register_command(
-   :name => :log,
-   :exec_proc => lambda{|arg|
+    :name => :log,
+    :exec_proc => lambda{|arg|
      if arg.empty?
        # log
        statuses = public_storage[:log]
@@ -44,19 +44,16 @@ module Termtter::Client
        output(statuses[-print_max..-1], :search)
      else
        # log (user) (max)
-       vars = arg.split(' ')
+       vars = arg.split(/\s/).map{ |i| normalize_as_user_name(i) }
        print_max = vars.last =~ /^\d+$/ ? vars.pop.to_i : config.plugins.log.print_max_size
        id = vars
        statuses = id.first ? public_storage[:log].select{ |s| id.include? s.user.screen_name} : public_storage[:log]
        print_max = 0 if statuses.size < print_max
        output(statuses[-print_max..-1], :search)
      end
-   },
-   :completion_proc => lambda {|cmd, arg|
-     find_user_candidates arg, "#{cmd} %s"
-   },
-   :help => [ 'log (USER(S)) (MAX)', 'Show local log of the user(s)']
-   )
+    },
+    :help => [ 'log (USER(S)) (MAX)', 'Show local log of the user(s)']
+  )
 
   register_command(
    :name => :search_log, :aliases => [:sl],

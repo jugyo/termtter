@@ -19,7 +19,10 @@ module Termtter
           tmp.__assign__(last.to_sym, value)
         end
       else
-        __assign__(name.to_sym, value) if __refer__(name.to_sym).empty?
+        current_value = __refer__(name.to_sym)
+        if current_value.kind_of?(self.class) && current_value.empty?
+          __assign__(name.to_sym, value)
+        end
       end
     end
 
@@ -51,8 +54,12 @@ module Termtter
       @store.dup
     end
 
-    def __clear__
-      @store.clear
+    def __clear__(name = nil)
+      if name
+        @store[name] = :undefined
+      else
+        @store.clear
+      end
     end
 
     __instance = self.new
@@ -65,8 +72,3 @@ def config
   Termtter::Config.instance
 end
 
-def configatron
-  # remove this method until Termtter-1.2.0
-  warn "configatron method will be removed. Use config instead. (#{caller.first})"
-  Termtter::Config.instance
-end
