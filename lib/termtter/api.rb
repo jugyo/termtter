@@ -53,14 +53,14 @@ module Termtter
       end
 
       def restore_user
-        @twitter = create_twitter(config.user_name, config.password)
+	setup
       end
 
       def switch_user(username = nil)
         highline = create_highline
-        username = highline.ask('your twitter username: ') if username.nil? || username.empty?
-        password = highline.ask('your twitter password: ') { |q| q.echo = false }
-        @twitter = create_twitter(username, password)
+        config.user_name = highline.ask('your twitter username: ') if username.nil? || username.empty?
+        config.password = highline.ask('your twitter password: ') { |q| q.echo = false }
+	setup
       end
 
       def twitter_option
