@@ -53,14 +53,15 @@ module Termtter
       end
 
       def restore_user
-        @twitter = create_twitter(config.user_name, config.password)
+        @twitter = Rubytter.new(config.user_name, config.password, twitter_option)
       end
 
       def switch_user(username = nil)
+        puts 'Please enter your Twitter login:'
         highline = create_highline
-        username = highline.ask('your twitter username: ') if username.nil? || username.empty?
-        password = highline.ask('your twitter password: ') { |q| q.echo = false }
-        @twitter = create_twitter(username, password)
+        username = highline.ask('Username: ') if username.nil? || username.empty?
+        password = highline.ask('Password: ') { |q| q.echo = false }
+        @twitter = Rubytter.new(username, password, twitter_option)
       end
 
       def twitter_option
