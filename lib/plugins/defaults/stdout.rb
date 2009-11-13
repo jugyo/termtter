@@ -135,7 +135,7 @@ module Termtter
     end
 
     def uncolored(str)
-      str.gsub(/\e\[([0-9]+m)/, '')
+      str.gsub(/<\/?[^>]+>/, '')
     end
 
     def format_column(statuses, justs)
