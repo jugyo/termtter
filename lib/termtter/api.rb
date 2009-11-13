@@ -57,9 +57,10 @@ module Termtter
       end
 
       def switch_user(username = nil)
+        puts 'Please enter your Twitter login:'
         highline = create_highline
-        config.user_name = highline.ask('your twitter username: ') if username.nil? || username.empty?
-        config.password = highline.ask('your twitter password: ') { |q| q.echo = false }
+        config.user_name = highline.ask('Username: ') if username.nil? || username.empty?
+        config.password = highline.ask('Password: ') { |q| q.echo = false }
 	setup
       end
 
