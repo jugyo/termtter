@@ -227,7 +227,12 @@ module Termtter
       Client.run
     end
 
-    it 'load_config'
+    it 'load_config' do
+      Client.should_receive(:legacy_config_support)
+      File.should_receive(:exist?).twice.and_return(true)
+      require 'termtter/config_setup'
+      Client.load_config
+    end
 
     it 'should do nothing when ~/.termtter is directory' do
       File.should_receive(:ftype).and_return('directory')
