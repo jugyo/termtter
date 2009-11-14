@@ -10,14 +10,14 @@ module Termtter::Client
 
   class << self
     if defined?(DB)
-      def friends(max = 999999)
+      def friends(max)
         Status.group(:user_id).
           select(:user_id, :screen_name).
           join(:users, :id => :user_id).
           order(:COUNT.sql_function.desc).take(max)
       end
     else
-      def friends(max = 1/0.0)
+      def friends(max)
         friends = []
         page    = 0
         begin
