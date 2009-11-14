@@ -8,12 +8,7 @@ module Termtter::Client
     :name => :reduce_screenname,
     :point => :prepare_screenname,
     :exec => lambda {|n, event|
-      if @last_screen_name == n
-        ''
-      else
-        @last_screen_name = n
-        "#{n}: "
-      end
+      @last_screen_name == n ? '' : @last_screen_name = n
     }
   )
 

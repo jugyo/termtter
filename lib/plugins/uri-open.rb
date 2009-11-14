@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 
+require 'uri'
+
 module Termtter::Client
   public_storage[:uris] = []
 
-  def self.extract_uri(text)
-    text.scan(%r|https?://[^\s]+|)
-  end
+  PROTOCOLS = %w(http https)
 
   register_hook(
     :name => :uri_open,
     :points => [:output],
     :exec_proc => lambda {|statuses, event|
       statuses.each do |s|
-        public_storage[:uris].unshift *extract_uri(s[:text])
+        public_storage[:uris].unshift *URI.extract(s[:text], PROTOCOLS)
       end
     }
   )
@@ -58,7 +58,7 @@ module Termtter::Client
       when /^in\s+(.*)$/
         $1.split(/\s+/).each do |id|
           if s = Termtter::API.twitter.show(id) rescue nil
-            extract_uri(s.text).each do |uri| 
+            URI.extract(s.text, PROTOCOLS).each do |uri|
               open_uri(uri)
               public_storage[:uris].delete(uri)
             end
