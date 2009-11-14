@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 
+def multibyte_string(text)
+  text.unpack('U*')
+end
+
 def truncate(text, length = 140, omission = "...")
-  o = omission.unpack('U*')
+  o = multibyte_string(omission)
   l = length - o.length
-  chars = text.unpack 'U*'
+  chars = multibyte_string(text)
   chars.length > length ? (chars[0...l] + o).pack('U*') : text
 end
 
-TRUNCATE_HOOK_COMMANDS = [:update, :reply]
+TRUNCATE_HOOK_COMMANDS = [:update, :reply, :retweet]
 
 Termtter::Client::register_hook(
   :name => :truncate_status,
@@ -15,6 +19,12 @@ Termtter::Client::register_hook(
     "modify_arg_for_#{cmd.to_s}".to_sym
   },
   :exec_proc => lambda do |cmd, arg|
-    truncate(arg)
+    return arg if multibyte_string(arg).length <= 140
+    if Termtter::Client::confirm("You are status contents more than 140 characters. Do you want abbreviation status?", true)
+      truncate(arg)
+    else
+      puts 'canceled.'
+      raise Termtter::CommandCanceled
+    end
   end
 )
