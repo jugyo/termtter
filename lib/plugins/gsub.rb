@@ -10,10 +10,8 @@ Termtter::Client.register_hook(
   :point => :filter_for_output,
   :exec => lambda {|statuses, event|
     statuses.each do |s|
-      next unless s.methods.member?('text=')
       t = s.text
       config.plugins.gsub.table.each {|a, b| t.gsub!(a, b || '') }
-      s.text = t
     end
   }
 )
