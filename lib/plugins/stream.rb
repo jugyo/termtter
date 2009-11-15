@@ -4,6 +4,7 @@ require 'tweetstream'
 require File.dirname(__FILE__) + '/../termtter/active_rubytter'
 
 config.plugins.stream.set_default :max_following, 400
+config.plugins.stream.set_default :timeline_format, '<yellow>[S]</yellow> $orig'
 
 module Termtter::Client
 
@@ -60,7 +61,7 @@ module Termtter::Client
         TweetStream::Client.new(config.user_name, config.password).
           filter(:track => args) do |status|
           print "\e[0G" + "\e[K" unless win?
-          swap_timeline_format('<yellow>[STREAM]</yellow> $orig') do
+          swap_timeline_format(config.plugins.stream.timeline_format) do
             output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
           end
           Readline.refresh_line
@@ -113,7 +114,7 @@ module Termtter::Client
           TweetStream::Client.new(config.user_name, config.password).
             filter(:follow => current_targets) do |status|
             print "\e[0G" + "\e[K" unless win?
-            swap_timeline_format('[STREAM] $orig') do
+            swap_timeline_format(config.plugins.stream.timeline_format) do
               output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
             end
             Readline.refresh_line
