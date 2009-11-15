@@ -50,6 +50,7 @@ module Termtter::Client
       config.plugins.stream.keyword_stream = Thread.new do
         TweetStream::Client.new(config.user_name, config.password).
           filter(:track => args) do |status|
+          print "\e[0G" + "\e[K" unless win?
           output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
           Readline.refresh_line
         end
@@ -100,6 +101,7 @@ module Termtter::Client
           puts "streaming #{current_targets.length} friends."
           TweetStream::Client.new(config.user_name, config.password).
             filter(:follow => current_targets) do |status|
+            print "\e[0G" + "\e[K" unless win?
             output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
             Readline.refresh_line
           end
