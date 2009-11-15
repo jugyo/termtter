@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-require 'uri'
 require 'tweetstream'
 require File.dirname(__FILE__) + '/../termtter/active_rubytter'
 
@@ -29,6 +28,16 @@ module Termtter::Client
       end
     end
 
+    def swap_timeline_format(format)
+      original = config.plugins.stdout.timeline_format
+      if /\$orig/ =~ format
+        format.gsub!(/\$orig/, original)
+      end
+      config.plugins.stdout.timeline_format = format
+      yield
+      config.plugins.stdout.timeline_format = original
+    end
+
     def kill_thread(name)
       config.plugins.stream.__send__(name).kill rescue nil
       config.plugins.stream.__assign__(name, nil)
@@ -51,7 +60,9 @@ module Termtter::Client
         TweetStream::Client.new(config.user_name, config.password).
           filter(:track => args) do |status|
           print "\e[0G" + "\e[K" unless win?
-          output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
+          swap_timeline_format('<yellow>[STREAM]</yellow> $orig') do
+            output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
+          end
           Readline.refresh_line
         end
       end
@@ -102,7 +113,9 @@ module Termtter::Client
           TweetStream::Client.new(config.user_name, config.password).
             filter(:follow => current_targets) do |status|
             print "\e[0G" + "\e[K" unless win?
-            output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
+            swap_timeline_format('[STREAM] $orig') do
+              output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
+            end
             Readline.refresh_line
           end
         rescue(NoMethodError) => e    # #<NoMethodError: private method `split' called for nil:NilClass>
