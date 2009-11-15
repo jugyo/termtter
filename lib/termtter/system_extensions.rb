@@ -17,29 +17,30 @@ def filter(name, init = {})
   plugin(name, init)
 end
 
-require 'dl/import'
+require 'ffi'
 module Readline
-  begin
-    module LIBREADLINE
-      if DL.const_defined? :Importable
-        extend DL::Importable
-      else
-        extend DL::Importer
-      end
-      pathes = Array(ENV['TERMTTER_EXT_LIB'] || [
-        '/opt/local/lib/libreadline.dylib',
-        '/usr/lib/libreadline.so',
-        '/usr/local/lib/libreadline.so',
-        File.join(Gem.bindir, 'readline.dll')
-      ])
-      dlload(pathes.find { |path| File.exist?(path)})
-      extern 'int rl_refresh_line(int, int)'
+  extend FFI::Library
+
+  pathes = Array(ENV['TERMTTER_EXT_LIB'] || [
+    '/opt/local/lib/libreadline.dylib',
+    '/usr/lib/libreadline.so',
+    '/usr/local/lib/libreadline.so',
+    File.join(Gem.bindir, 'readline.dll')
+  ])
+
+  ffi_lib(pathes.find { |path| File.exist?(path) })
+
+  attach_function :rl_refresh_line, [:int, :int], :int
+  attach_variable :rl_line_buffer, :string
+
+  class << self
+    def refresh_line
+      rl_refresh_line(0, 0)
     end
-    def self.refresh_line
-      LIBREADLINE.rl_refresh_line(0, 0)
+
+    def line_buffer
+      rl_line_buffer
     end
-  rescue Exception
-    def self.refresh_line;end
   end
 end
 
