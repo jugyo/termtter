@@ -52,18 +52,6 @@ module Termtter
         return nil
       end
 
-      def restore_user
-        setup
-      end
-
-      def switch_user(username = nil)
-        puts 'Please enter your Twitter login:'
-        highline = create_highline
-        config.user_name = highline.ask('Username: ') if username.nil? || username.empty?
-        config.password = highline.ask('Password: ') { |q| q.echo = false }
-        setup
-      end
-
       def twitter_option
         {
           :app_name => config.app_name.empty? ? Termtter::APP_NAME : config.app_name,

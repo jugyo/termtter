@@ -7,7 +7,7 @@ require 'tempfile'
 config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
   :timeline_format,
-  '<90>(<%=time%>) [<%=status_id%>]</90> <<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ' +
+  '<90><%=time%> [<%=status_id%>]</90> <<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ' +
   '<90><%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%><%=source%><%=s.user.protected ? "[P]" : ""%></90>'
 )
 config.plugins.stdout.set_default(:time_format_today, '%H:%M:%S')
@@ -115,19 +115,12 @@ module Termtter
           Termtter::Client.data_to_typable_id(s.in_reply_to_status_id)
         end
 
-      time = "#{Time.parse(s.created_at).strftime(time_format)}"
-      time = Client.get_hooks(:prepare_time).inject(time){|result, hook| hook.call(result, event)}
-
+      time = "(#{Time.parse(s.created_at).strftime(time_format)})"
       source =
         case s.source
         when />(.*?)</ then $1
         when 'web' then 'web'
         end
-
-      source = Client.get_hooks(:prepare_source).inject(source){|result, hook| hook.call(result, event)}
-      screen_name = Client.get_hooks(:prepare_screenname).inject(s.user.screen_name){|result, hook|
-        hook.call(result, event)
-      }
 
       erbed_text = ERB.new(config.plugins.stdout.timeline_format).result(binding)
       indent_text = indent > 0 ? "#{'    ' * (indent - 1)} ┗ " : ''

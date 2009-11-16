@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-require 'uri'
 require 'tweetstream'
 require File.dirname(__FILE__) + '/../termtter/active_rubytter'
 
 config.plugins.stream.set_default :max_following, 400
+config.plugins.stream.set_default :timeline_format, '<yellow>[S]</yellow> $orig'
 
 module Termtter::Client
 
@@ -29,6 +29,16 @@ module Termtter::Client
       end
     end
 
+    def swap_timeline_format(format)
+      original = config.plugins.stdout.timeline_format
+      if /\$orig/ =~ format
+        format.gsub!(/\$orig/, original)
+      end
+      config.plugins.stdout.timeline_format = format
+      yield
+      config.plugins.stdout.timeline_format = original
+    end
+
     def kill_thread(name)
       config.plugins.stream.__send__(name).kill rescue nil
       config.plugins.stream.__assign__(name, nil)
@@ -50,7 +60,10 @@ module Termtter::Client
       config.plugins.stream.keyword_stream = Thread.new do
         TweetStream::Client.new(config.user_name, config.password).
           filter(:track => args) do |status|
-          output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
+          print "\e[0G" + "\e[K" unless win?
+          swap_timeline_format(config.plugins.stream.timeline_format) do
+            output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
+          end
           Readline.refresh_line
         end
       end
@@ -100,7 +113,10 @@ module Termtter::Client
           puts "streaming #{current_targets.length} friends."
           TweetStream::Client.new(config.user_name, config.password).
             filter(:follow => current_targets) do |status|
-            output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
+            print "\e[0G" + "\e[K" unless win?
+            swap_timeline_format(config.plugins.stream.timeline_format) do
+              output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
+            end
             Readline.refresh_line
           end
         rescue(NoMethodError) => e    # #<NoMethodError: private method `split' called for nil:NilClass>
