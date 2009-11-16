@@ -1,7 +1,7 @@
 def fibsub(n,i,j)n.times{j=i+i=j};i end
 @fibs = {}
 def fib(n)
-  m = @fibs.select{|k,v|k < n}.max_by{|k,v|k}
+  m = @fibs.select{|k,v|k < n}.sort_by{|k, v|-k}.first
   m.nil? ? fibsub(n,0,1) : fibsub(n-m[0],m[1][0],m[1][1])
 end
 step=100
