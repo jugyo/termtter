@@ -16,14 +16,17 @@ module Termtter::Plugins
     end
 
     def run(arg)
-      hamlified = haml(arg)
+      begin
+        hamlified = haml(arg)
+      rescue => e
+        @logger.error e
+        return
+      end
 
       return if hamlified.nil? || hamlified.empty?
 
       Termtter::API.twitter.update(hamlified)
       puts "=> #{hamlified}"
-    rescue Exception => e
-      @logger.error e
     end
 
     def haml(format)
