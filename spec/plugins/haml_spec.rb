@@ -1,8 +1,7 @@
 # coding: utf-8
 
 require File.dirname(__FILE__) + '/../spec_helper'
-
-Termtter::Client.plug 'haml'
+require 'plugins/haml'
 
 describe Termtter::Plugins::Haml do
   before do

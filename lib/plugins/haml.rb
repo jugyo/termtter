@@ -33,7 +33,7 @@ module Termtter::Plugins
       return unless input = editor(:haml)
 
       opts = plugin_config.options.merge(format.empty? ? {} : {:format => format.to_sym})
-      ::Haml::Engine.new(editor(:haml), opts).render(Termtter::Client).chomp
+      ::Haml::Engine.new(editor(:haml), opts).render.chomp
     end
 
     def editor(extname)
