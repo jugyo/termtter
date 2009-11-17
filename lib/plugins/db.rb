@@ -76,7 +76,7 @@ module Termtter
     end
 
     register_command(:db_clear) do |arg|
-      if confirm('Are you shure?')
+      if confirm('Are you sure?')
         User.delete
         Status.delete
       end

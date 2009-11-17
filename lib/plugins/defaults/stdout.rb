@@ -7,7 +7,7 @@ require 'tempfile'
 config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
   :timeline_format,
-  '<90>(<%=time%>) [<%=status_id%>]</90> <<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ' +
+  '<90><%=time%> [<%=status_id%>]</90> <<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ' +
   '<90><%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%><%=source%><%=s.user.protected ? "[P]" : ""%></90>'
 )
 config.plugins.stdout.set_default(:time_format_today, '%H:%M:%S')
@@ -115,7 +115,7 @@ module Termtter
           Termtter::Client.data_to_typable_id(s.in_reply_to_status_id)
         end
 
-      time = "#{Time.parse(s.created_at).strftime(time_format)}"
+      time = "(#{Time.parse(s.created_at).strftime(time_format)})"
       source =
         case s.source
         when />(.*?)</ then $1

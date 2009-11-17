@@ -64,7 +64,7 @@ module Termtter
 
     # match? :: String -> Boolean
     def match?(input)
-      !(pattern !~input)
+      pattern === input
     end
 
     # pattern :: Regexp

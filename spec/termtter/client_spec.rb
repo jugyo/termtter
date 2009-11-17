@@ -4,6 +4,8 @@ require File.dirname(__FILE__) + '/../spec_helper'
 module Termtter
   describe Client do
     before do
+      Client.hooks.clear
+      Client.commands.clear
       Client.setup_logger
     end
 
@@ -285,7 +287,12 @@ module Termtter
       Client.run
     end
 
-    it 'load_config'
+    it 'load_config' do
+      Client.should_receive(:legacy_config_support)
+      File.should_receive(:exist?).twice.and_return(true)
+      require 'termtter/config_setup'
+      Client.load_config
+    end
 
     it 'does nothing when ~/.termtter is directory' do
       File.should_receive(:ftype).and_return('directory')
@@ -326,6 +333,7 @@ module Termtter
     end
 
     it 'gets default help' do
+      Client.plug 'defaults'
       $stdout, old_stdout = StringIO.new, $stdout # FIXME That suspends any debug informations!
       help_command = Client.get_command(:help)
       help_command.should_not be_nil
@@ -335,6 +343,7 @@ module Termtter
     end
 
     it 'gets an added help' do
+      Client.plug 'defaults'
       Client.register_command(
         :name => :foo,
         :help => [

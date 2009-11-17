@@ -12,7 +12,6 @@ Termtter::Client.register_hook(
     statuses.each do |s|
       t = s.text
       config.plugins.gsub.table.each {|a, b| t.gsub!(a, b || '') }
-      s.text = t
     end
   }
 )

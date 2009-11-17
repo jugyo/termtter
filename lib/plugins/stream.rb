@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
 
-require 'uri'
 require 'tweetstream'
 require File.dirname(__FILE__) + '/../termtter/active_rubytter'
 
 config.plugins.stream.set_default :max_following, 400
+config.plugins.stream.set_default :timeline_format, '<yellow>[S]</yellow> $orig'
 
 module Termtter::Client
 
   class << self
     if defined?(DB)
-      def friends(max = 999999)
+      def friends(max)
         Status.group(:user_id).
           select(:user_id, :screen_name).
           join(:users, :id => :user_id).
           order(:COUNT.sql_function.desc).take(max)
       end
     else
-      def friends(max = 1/0.0)
+      def friends(max)
         friends = []
         page    = 0
         begin
@@ -28,29 +28,49 @@ module Termtter::Client
         friends.take(max)
       end
     end
+
+    def swap_timeline_format(format)
+      original = config.plugins.stdout.timeline_format
+      if /\$orig/ =~ format
+        format.gsub!(/\$orig/, original)
+      end
+      config.plugins.stdout.timeline_format = format
+      yield
+      config.plugins.stdout.timeline_format = original
+    end
+
+    def kill_thread(name)
+      config.plugins.stream.__send__(name).kill rescue nil
+      config.plugins.stream.__assign__(name, nil)
+    end
+    private :kill_thread
   end
 
   help = ['keyword_stream KEYWORDS', 'Tracking keyword using Stream API']
   register_command(:keyword_stream, :help => help) do |arg|
-    break if arg.empty?
+    next if arg.empty?
     args = arg.split
     case args[0]
     when ':stop'
-      break unless config.plugins.stream.keyword_stream.alive?
-      config.plugins.stream.keyword_stream.kill
+      kill_thread :keyword_stream
+      puts 'stream is down'
     else
-      puts "streaming: #{arg}"
+      next if config.plugins.stream.keyword_stream.class == Thread
+      puts "streaming: #{args.join(', ')}"
       config.plugins.stream.keyword_stream = Thread.new do
         TweetStream::Client.new(config.user_name, config.password).
-          filter(:track => arg) do |status|
-          output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
+          filter(:track => args) do |status|
+          print "\e[0G" + "\e[K" unless win?
+          swap_timeline_format(config.plugins.stream.timeline_format) do
+            output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
+          end
           Readline.refresh_line
         end
       end
     end
 
     at_exit do
-      config.plugins.stream.keyword_stream.kill
+      kill_thread :keyword_stream
     end
   end
 
@@ -67,16 +87,12 @@ module Termtter::Client
 
       case args[0]
       when ':stop'
-        config.plugins.stream.followed_users = []
-        config.plugins.stream.thread.kill rescue nil
+        kill_thread :thread
         puts 'stream is down'
-        throw :exit
-      when ':followers'
-        p config.plugins.stream.followed_users
         throw :exit
       end
 
-      throw :exit unless config.plugins.stream.thread.empty?
+      throw :exit if config.plugins.stream.thread.class == Thread
 
       targets = args.map { |name|
         Termtter::API.twitter.user(name).id rescue nil
@@ -97,7 +113,10 @@ module Termtter::Client
           puts "streaming #{current_targets.length} friends."
           TweetStream::Client.new(config.user_name, config.password).
             filter(:follow => current_targets) do |status|
-            output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
+            print "\e[0G" + "\e[K" unless win?
+            swap_timeline_format(config.plugins.stream.timeline_format) do
+              output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
+            end
             Readline.refresh_line
           end
         rescue(NoMethodError) => e    # #<NoMethodError: private method `split' called for nil:NilClass>
@@ -108,7 +127,7 @@ module Termtter::Client
       end
 
       at_exit do
-        config.plugins.stream.thread.kill
+        kill_thread :stream
       end
     end
   end

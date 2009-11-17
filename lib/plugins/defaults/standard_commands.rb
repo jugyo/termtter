@@ -28,8 +28,8 @@ module Termtter::Client
   register_command(
     :name => :update, :alias => :u,
     :exec => lambda {|arg|
-      unless arg.empty?
-        params = 
+      unless arg.rstrip.empty?
+        params =
           if config.easy_reply && /^\s*(@\w+)/ =~ arg
             user_name = normalize_as_user_name($1)
             in_reply_to_status_id = Termtter::API.twitter.user(user_name).status.id rescue nil
@@ -257,25 +257,25 @@ module Termtter::Client
   register_command(
     :name => :favorite, :aliases => [:fav],
     :exec_proc => lambda {|arg|
-      id = 0
-      case arg
-      when /^\d+/
-        id = arg.to_i
-      when /^@([A-Za-z0-9_]+)/
-        user_name = normalize_as_user_name($1)
-        statuses = Termtter::API.twitter.user_timeline(user_name)
-        return if statuses.empty?
-        id = statuses[0].id
-      when /^\/(.*)$/
-        word = $1
-        raise "Not implemented yet."
-      else
-        if public_storage[:typable_id] && typable_id?(arg)
-          id = typable_id_convert(arg)
+      id =
+        case arg
+        when /^\d+/
+          arg.to_i
+        when /^@([A-Za-z0-9_]+)/
+          user_name = normalize_as_user_name($1)
+          statuses = Termtter::API.twitter.user_timeline(user_name)
+          return if statuses.empty?
+          statuses[0].id
+        when /^\/(.*)$/
+          word = $1
+          raise "Not implemented yet."
         else
-          return
+          if public_storage[:typable_id] && typable_id?(arg)
+            typable_id_convert(arg)
+          else
+            return
+          end
         end
-      end
 
       r = Termtter::API.twitter.favorite id
       puts "Favorited status ##{r.id} on user @#{r.user.screen_name} #{r.text}"
@@ -406,16 +406,9 @@ module Termtter::Client
 
   ## plugin_list :: IO ()
   def self.plugin_list
-    plugin_list = (Dir["#{File.dirname(__FILE__)}/../*.rb"] + Dir["#{Termtter::CONF_DIR}/plugins/*.rb"]).
+    (Dir["#{File.dirname(__FILE__)}/../*.rb"] + Dir["#{Termtter::CONF_DIR}/plugins/*.rb"]).
       map {|f| File.basename(f).sub(/\.rb$/, '')}.
       sort
-    list = plugin_list
-    width = list.map {|i|i.size}.max + 2
-    a = []
-    list.sort.each_slice(4) {|i|
-      a << i.map {|j| j + (" " * (width - j.size))}.join
-    }
-    puts TermColor.parse('<green>' + TermColor.escape(a.join("\n")) + '</green>')
   end
 
   register_command(

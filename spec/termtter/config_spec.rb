@@ -117,5 +117,12 @@ module Termtter
       @config.set_default(:foo, 'foo')
       @config.set_default(:foo, 'bar')
     end
+
+    it 'should be called __clear__ with name' do
+      @config.foo = 'foo'
+      @config.foo.empty?.should be_false
+      @config.__clear__(:foo)
+      @config.foo.empty?.should be_true
+    end
   end
 end
