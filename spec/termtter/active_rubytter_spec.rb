@@ -67,13 +67,13 @@ module Termtter
       end
 
       it "Hashからクラス化して`.'で入れ子でもアクセスできる" do
-        @d.hage.foo.should == "foofoo"
+        @d.hoge.foo.should == "foofoo"
 
         #array.map{ |elem| ActiveRubytter.new(elem)})}
       end
 
       it "Hashからクラス化して`.'で入れ子の入れ子でもアクセスできる" do
-        @d.hage.bar.nest.should == "nestnest"
+        @d.hoge.bar.nest.should == "nestnest"
 
         #array.map{ |elem| ActiveRubytter.new(elem)})}
       end
