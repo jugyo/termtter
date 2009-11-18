@@ -23,6 +23,18 @@ module Termtter
       d.to_hash.should == data
     end
 
+    it 'idというkeyがあっても取得できる' do
+      data = { :id => 'test' }
+      d = ActiveRubytter.new(data)
+      d.id.should == 'test'
+    end
+
+    it '[]でもアクセス出来る' do
+      data = { :hoge => 'test' }
+      d = ActiveRubytter.new(data)
+      d[:hoge].should == 'test'
+    end
+
     describe '入れ子のHashの処理' do
 
       before(:all) do
