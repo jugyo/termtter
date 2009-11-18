@@ -11,12 +11,14 @@ describe Termtter do
   end
 
   it 'provides win?' do
-    original_ruby_platform = RUBY_PLATFORM
-    RUBY_PLATFORM = 'darwin'
-    win?.should == false
-    RUBY_PLATFORM = 'mswin'
-    win?.should == true
-    RUBY_PLATFORM = original_ruby_platform
+    be_quiet do
+      original_ruby_platform = RUBY_PLATFORM
+      RUBY_PLATFORM = 'darwin'
+      win?.should == false
+      RUBY_PLATFORM = 'mswin'
+      win?.should == true
+      RUBY_PLATFORM = original_ruby_platform
+    end
   end
 
   it 'Readline can refresh line' do
