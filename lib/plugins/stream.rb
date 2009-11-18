@@ -5,7 +5,8 @@ require File.dirname(__FILE__) + '/../termtter/active_rubytter'
 
 config.plugins.stream.set_default :max_following, 400
 config.plugins.stream.set_default :timeline_format, '<yellow>[S]</yellow> $orig'
-config.plugins.stream.set_default :retry_wait, 600
+config.plugins.stream.set_default :retry_wait_base, 60
+config.plugins.stream.set_default :retry_wait_max, 600
 
 module Termtter::Client
 
@@ -64,7 +65,7 @@ module Termtter::Client
       when ':stop'
         kill_thread :keyword_stream unless alive_thread? :keywor_stream
         throw :exit
-      when ':show'
+      when ':show?'
         puts "streaming alive" if alive_thread? :keyword_stream
         unless config.plugins.stream.keywords.empty?
           puts config.plugins.stream.keywords.join(',')
@@ -85,6 +86,7 @@ module Termtter::Client
   
       puts "streaming: #{keywords.join(',')}"
       config.plugins.stream.keyword_stream = Thread.new do
+        retry_wait = config.plugins.stream.retry_wait_base,
         begin
           TweetStream::Client.new(config.user_name, config.password).
             filter(:track => keywords) do |status|
@@ -98,8 +100,10 @@ module Termtter::Client
         rescue
           puts "stream is down"
           puts "wait #{config.plugins.stream.retry_wait}sec"
-          sleep config.plugins.stream.retry_wait
-          puts "stream is restart"
+          sleep retry_wait
+          retry_wait = retry_wait * 2;
+	  retry_wait = config.plugin.stream.retry_max unless
+		retry_max > config.plugin.stream.retry_max
           retry
         end
       end
