@@ -12,24 +12,16 @@ module Termtter
       d.age.should == 16
     end
 
+    it 'Hashのキーでもメソッドでもないものは呼べない' do
+      d = ActiveRubytter.new(:name => 'termtter')
+      lambda{ d.undefined_method }.should raise_error(NoMethodError)
+    end
+
     it '元のHashを得られること' do
       data = { :test => 'test' }
       d = ActiveRubytter.new(data)
       d.to_hash.should == data
     end
-
-    it 'idというkeyがあっても取得できる' do
-      data = { :id => 'test' }
-      d = ActiveRubytter.new(data)
-      d.id.should == 'test'
-    end
-
-    it '[]でもアクセス出来る' do
-      data = { :hoge => 'test' }
-      d = ActiveRubytter.new(data)
-      d[:hoge].should == 'test'
-    end
-
 
     describe '入れ子のHashの処理' do
 
