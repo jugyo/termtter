@@ -6,7 +6,7 @@ require File.dirname(__FILE__) + '/../termtter/active_rubytter'
 config.plugins.stream.set_default :max_following, 400
 config.plugins.stream.set_default :timeline_format, '<yellow>[S]</yellow> $orig'
 config.plugins.stream.set_default :retry_wait_base, 60
-config.plugins.stream.set_default :retry_wait_max, 600
+config.plugins.stream.set_default :retry_wait_max, 3600
 
 module Termtter::Client
 
