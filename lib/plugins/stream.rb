@@ -55,7 +55,7 @@ module Termtter::Client
   end
 
 
-  help = ['keyword_stream [:stop|:show|:add|:delete] [KEYWORDS]',
+  help = ['keyword_stream [:stop|:show?|:add|:delete] [KEYWORDS]',
           'Tracking keyword using Stream API']
   register_command(:keyword_stream, :help => help) do |arg|
     catch(:exit) do
@@ -78,6 +78,9 @@ module Termtter::Client
         args.shift
         config.plugins.stream.keywords.reject! {|keyword| args.include?(keyword)}
       when ':start'
+      when /^:*/
+        puts "Unknown keyword_stream options"
+        throw :exit
       else
         config.plugins.stream.keywords |= args
       end
