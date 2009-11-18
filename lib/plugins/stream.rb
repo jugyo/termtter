@@ -48,7 +48,7 @@ module Termtter::Client
       config.plugins.stream.__assign__(name, nil)
     end
     def alive_thread?(name)
-      config.plugins.stream.__send__(name).alive?
+      config.plugins.stream.__send__(name).alive? rescue false
     end
     private :kill_thread
     private :alive_thread?
