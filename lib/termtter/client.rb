@@ -152,7 +152,7 @@ module Termtter
         call_hooks(:post_filter, filtered, event)
         get_hooks(:output).each do |hook|
           hook.call(
-            apply_filters_for_hook("filter_for_#{hook.name}", filtered, event),
+            apply_filters_for_hook(:"filter_for_#{hook.name}", filtered, event),
             event
           )
         end
@@ -175,6 +175,11 @@ module Termtter
       end
 
       def call_commands(text)
+        # status
+        #   0: done
+        #   1: canceled
+        status = 0
+
         @task_manager.invoke_and_wait do
           # FIXME: This block can become Maybe Monad
           get_hooks("pre_command").each {|hook|
@@ -201,9 +206,11 @@ module Termtter
               result = command.call(command_str, modified_arg, text) # exec command
               call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
             rescue CommandCanceled
+              status = 1
             end
           end
           call_hooks("post_command", text)
+          status
         end
       end
 
@@ -338,8 +345,8 @@ module Termtter
         end
         get_hooks(:on_error).each {|hook| hook.call(e) }
       rescue Exception => e
-        puts "Error: #{e}"
-        puts e.backtrace.join("\n")
+        $stderr.puts "Error: #{e}"
+        $stderr.puts e.backtrace.join("\n")
       end
 
       def confirm(message, default_yes = true, &block)

@@ -4,6 +4,8 @@ require File.dirname(__FILE__) + '/../spec_helper'
 module Termtter
   describe Client do
     before do
+      Client.clear_filter
+      Client.clear_command
       Client.setup_logger
     end
 
@@ -405,7 +407,7 @@ module Termtter
     end
 
     it 'can create config file when load_config' do
-      File.should_receive(:exist?).and_return(false)
+      File.should_receive(:exist?).twice.and_return(false)
       require 'termtter/config_setup'
       ConfigSetup.should_receive(:run).and_return(false)
       Client.stub(:load).with(Termtter::CONF_FILE)
