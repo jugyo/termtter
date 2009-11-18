@@ -3,4 +3,5 @@
 
 require 'rubygems'
 require 'termtter'
+Termtter::OptParser.parse!(ARGV)
 Termtter::Client.run
