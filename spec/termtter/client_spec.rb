@@ -6,6 +6,7 @@ module Termtter
     before do
       Client.clear_filter
       Client.clear_command
+      Client.clear_hooks
       Client.setup_logger
     end
 
@@ -168,6 +169,13 @@ module Termtter
       end
     end
 
+    it 'can clear commands' do
+      Client.instance_variable_set(:@commands, {:hoge => 'piyo'})
+      Client.commands.should_not be_empty
+      Client.clear_command
+      Client.commands.should be_empty
+    end
+
     it 'takes new_hook' do
       hook = Hook.new(:name => :test)
       Client.register_hook(hook)
@@ -228,11 +236,11 @@ module Termtter
       Client.register_hook( :name => :test2,
                             :points => [:pre_exec_update],
                             :exec_proc => lambda {|cmd, arg| decided_arg = arg})
-      Client.register_command(:name => :update, :aliases => [:u], :exec => lambda{|arg|})
+      Client.register_command(:name => :update, :aliases => [:u], :exec => lambda{|_|})
 
-      input_command.should == nil
-      input_arg.should == nil
-      decided_arg.should == nil
+      input_command.should be_nil
+      input_arg.should be_nil
+      decided_arg.should be_nil
       Client.call_commands('u foo')
       input_command.should == 'u'
       input_arg.should == 'foo'
@@ -401,6 +409,13 @@ module Termtter
       Client.register_macro('greet', "update %s")
     end
 
+    it 'can clear hooks' do
+      Client.instance_variable_set(:@hooks, {:hoge => 'piyo'})
+      Client.hooks.should_not be_empty
+      Client.clear_hooks
+      Client.hooks.should be_empty
+    end
+
     it 'can load config' do
       Client.should_receive(:load).with(Termtter::CONF_FILE)
       Client.load_config
@@ -435,6 +450,13 @@ module Termtter
       hook.should_receive(:call).with(anything, event)
       Client.should_receive(:get_hooks).with(:output).and_return([hook])
       Client.output(statuses, event)
+    end
+
+    it 'can clear filters' do
+      Client.instance_variable_set(:@filters, [:hoge, :piyo])
+      Client.instance_variable_get(:@filters).should_not be_empty
+      Client.clear_filter
+      Client.instance_variable_get(:@filters).should be_empty
     end
 
     it 'handles error' do

@@ -81,6 +81,10 @@ module Termtter
         end
       end
 
+      def clear_hooks
+        @hooks.clear
+      end
+
       def register_command(arg, opts = {}, &block)
         command = case arg
           when Command
