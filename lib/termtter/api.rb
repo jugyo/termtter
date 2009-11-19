@@ -13,18 +13,17 @@ module Termtter
     class << self
       attr_reader :connection, :twitter
       def setup
-        @connection = Connection.new
 
-        auth = false
         3.times do
           if twitter = try_auth
             @twitter = twitter
-            auth = true
+            # NOTE: for compatible
+            @connection = twitter.instance_variable_get(:@connection)
             break
           end
         end
 
-        exit! unless auth
+        exit! unless twitter
       end
 
       def try_auth

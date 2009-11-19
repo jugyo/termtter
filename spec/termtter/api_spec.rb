@@ -6,15 +6,11 @@ module Termtter
 
   describe API do
 
-    before(:all) do
-      Connection.stub(:new => false)
-    end
-
     it 'tries authenticate 3 times' do
       API.should_receive(:try_auth).
         exactly(3).times.
         and_return(false)
-      API.stub(:exit! => false)
+      API.should_receive(:exit!)
       API.setup
     end
 
