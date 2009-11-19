@@ -6,13 +6,23 @@ module Termtter
 
   describe API do
 
-    it 'tries authenticate 3 times' do
+    before(:all) do
       Connection.stub(:new => false)
+    end
+
+    it 'tries authenticate 3 times' do
       API.should_receive(:try_auth).
         exactly(3).times.
         and_return(false)
       API.stub(:exit! => false)
       API.setup
+    end
+
+    it 'can get twitter when success authentication' do
+      twitter = mock('twitter')
+      API.should_receive(:try_auth).and_return(twitter)
+      API.setup
+      API.twitter.should == twitter
     end
 
     def it_should_examine_with(name, pass, options = {})
