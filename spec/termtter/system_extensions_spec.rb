@@ -39,5 +39,23 @@ describe Termtter do
     Readline::LIBREADLINE.should_not_receive(:rl_refresh_line)
     Readline.refresh_line
   end
+
+  it 'can open browser that suites platform' do
+    be_quiet(:stdout => false) do
+      url = 'example.com'
+      [
+        ['linux',   'firefox'],
+        ['mswin',   'explorer'],
+        ['mingw',   'explorer'],
+        ['bccwin',  'explorer'],
+        ['darwin',  'open'],
+        ['hogehog', 'open'],
+      ].each do |platform, browser|
+        RUBY_PLATFORM = platform
+        self.should_receive(:system).with(browser, url)
+        open_browser(url)
+      end
+    end
+  end
 end
 
