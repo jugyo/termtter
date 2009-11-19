@@ -79,10 +79,6 @@ end
 # ~/.termtter/config
 # t.plug 'uri-open'
 #
-# w3m options:
-# config.plugins.uri_open.browser = 'w3m'
-# config.plugins.uri_open.split = true or false    # use new splited screen
-#
 # see also: http://ujihisa.blogspot.com/2009/05/fixed-uri-open-of-termtter.html
 #
 # KNOWN BUG
