@@ -69,35 +69,39 @@ module Termtter
     end
 
     it 'should run (not pause)' do
-      counter = 0
-      TaskManager::INTERVAL = 0
-      @task_manager.stub(:step) { counter += 1 }
-      @task_manager.instance_variable_set(:@work, true)
-      @task_manager.run
-      100.times do
-        break if counter != 0
-        sleep 0.1
+      be_quiet do
+        counter = 0
+        TaskManager::INTERVAL = 0
+        @task_manager.stub(:step) { counter += 1 }
+        @task_manager.instance_variable_set(:@work, true)
+        @task_manager.run
+        100.times do
+          break if counter != 0
+          sleep 0.1
+        end
+        @task_manager.instance_variable_set(:@work, false)
+        counter.should > 0
       end
-      @task_manager.instance_variable_set(:@work, false)
-      counter.should > 0
     end
 
     it 'should run (pause)' do
-      counter = 0
-      TaskManager::INTERVAL = 0.1
-      @task_manager.stub(:step) { counter += 1 }
-      @task_manager.instance_variable_set(:@work, true)
-      @task_manager.instance_variable_set(:@pause, true)
-      @task_manager.run
-      sleep 0.1
-      counter.should == 0
-      @task_manager.instance_variable_set(:@pause, false)
-      100.times do
-        break if counter != 0
+      be_quiet do
+        counter = 0
+        TaskManager::INTERVAL = 0.1
+        @task_manager.stub(:step) { counter += 1 }
+        @task_manager.instance_variable_set(:@work, true)
+        @task_manager.instance_variable_set(:@pause, true)
+        @task_manager.run
         sleep 0.1
+        counter.should == 0
+        @task_manager.instance_variable_set(:@pause, false)
+        100.times do
+          break if counter != 0
+          sleep 0.1
+        end
+        @task_manager.instance_variable_set(:@work, false)
+        counter.should > 0
       end
-      @task_manager.instance_variable_set(:@work, false)
-      counter.should > 0
     end
 
     it 'should add task with :name' do
