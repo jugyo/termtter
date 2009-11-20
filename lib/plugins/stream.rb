@@ -63,7 +63,7 @@ module Termtter::Client
       args = arg.split /[, ]/
       case args[0]
       when ':stop'
-        kill_thread :keyword_stream unless alive_thread? :keywor_stream
+        kill_thread :keyword_stream if alive_thread? :keywor_stream
         throw :exit
       when ':show'
         puts "streaming alive" if alive_thread? :keyword_stream
