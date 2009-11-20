@@ -314,8 +314,10 @@ module Termtter
 
     it 'handles error' do
       logger = Client.instance_eval{@logger}
-      logger.should_receive(:error).with("StandardError: error")
-      Client.handle_error StandardError.new('error')
+      logger.should_receive(:error).with("StandardError: error").twice
+      error = StandardError.new('error')
+      error.should_receive(:backtrace).and_return(["StandardError: error"])
+      Client.handle_error error
     end
 
     it 'cancels command by hook' do
