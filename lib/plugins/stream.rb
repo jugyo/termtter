@@ -55,7 +55,7 @@ module Termtter::Client
   end
 
 
-  help = ['keyword_stream [:stop|:show?|:add|:delete] [KEYWORDS]',
+  help = ['keyword_stream [:stop|:show|:add|:delete] [KEYWORDS]',
           'Tracking keyword using Stream API']
   register_command(:keyword_stream, :help => help) do |arg|
     catch(:exit) do
@@ -65,7 +65,7 @@ module Termtter::Client
       when ':stop'
         kill_thread :keyword_stream unless alive_thread? :keywor_stream
         throw :exit
-      when ':show?'
+      when ':show'
         puts "streaming alive" if alive_thread? :keyword_stream
         unless config.plugins.stream.keywords.empty?
           puts config.plugins.stream.keywords.join(',')
