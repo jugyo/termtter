@@ -78,7 +78,7 @@ module Termtter::Client
         args.shift
         config.plugins.stream.keywords.reject! {|keyword| args.include?(keyword)}
       when ':start'
-      when /^:*/
+      when /^:.*/
         puts "Unknown keyword_stream options"
         throw :exit
       else
