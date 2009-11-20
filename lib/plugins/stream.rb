@@ -82,7 +82,7 @@ module Termtter::Client
         puts "Unknown keyword_stream options"
         throw :exit
       else
-        config.plugins.stream.keywords |= args
+        config.plugins.stream.keywords = args
       end
   
       kill_thread :keyword_stream if alive_thread? :keywor_stream
