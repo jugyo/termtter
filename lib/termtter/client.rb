@@ -343,7 +343,7 @@ module Termtter
       def handle_error(e)
         if logger
           logger.error("#{e.class.to_s}: #{e.message}")
-          logger.error(e.backtrace.join("\n")) if config.devel
+          logger.error(e.backtrace.join("\n")) if (e.backtrace and config.devel)
         else
           raise e
         end

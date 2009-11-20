@@ -470,7 +470,7 @@ module Termtter
       logger = Client.logger
       logger.should_receive(:error).with("StandardError: error").twice
       error = StandardError.new('error')
-      error.should_receive(:backtrace).and_return(["StandardError: error"])
+      error.stub(:backtrace).and_return(["StandardError: error"])
       Client.handle_error error
     end
 
