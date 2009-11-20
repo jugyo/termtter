@@ -114,6 +114,19 @@ module Termtter::Client
         value = user.__send__(attr.to_sym)
         puts "#{attr.gsub('_', ' ').rjust(label_width)}: #{value}"
       end
+
+      %x(which convert)
+      aa_profile = $?.success?
+      %x(which jp2a)
+      if aa_profile && $?.success?
+        require 'open-uri'
+        IO.popen("convert - -resize 30x30 \\( -clone 0 -edge 1 \\) -average jpeg:- | jp2a - --height=30", "r+") do |convert|
+          convert.write open(user.profile_image_url){|f|f.read}
+          convert.close_write
+          puts
+          puts convert.read
+        end
+      end
     },
     :help => ["profile,p [USERNAME]", "Show user's profile."]
   )
