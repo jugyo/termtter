@@ -77,6 +77,11 @@ module Termtter
       end
     end
 
+    it 'returns empty array as candidates when competition_proc is nil'do
+      command = Command.new(:name => :foo)
+      command.complement('foo bar').should == []
+    end
+
     it 'returns command_info when call method "match?"' do
       [
         ['update',       true],
@@ -122,14 +127,12 @@ module Termtter
       end
     end
 
-    describe 'spec for split_command_line' do
+    describe '.split_command_line' do
       before do
         @command = Command.new(:name => 'test')
       end
 
       it 'splits from a command line string to the command name and the arg' do
-        @command.split_command_line('test').
-          should == ['test', nil]
         @command.split_command_line('test foo bar').
           should == ['test', 'foo bar']
         @command.split_command_line('test   foo bar').
@@ -141,22 +144,22 @@ module Termtter
         @command.split_command_line(' test   foo  bar ').
           should == ['test', 'foo  bar']
       end
+    end
 
-      describe 'spec for split_command_line with sub command' do
-        before do
-          @command = Command.new(:name => 'foo bar')
-        end
+    describe 'spec for split_command_line with sub command' do
+      before do
+        @command = Command.new(:name => 'foo bar')
+      end
 
-        it 'splits from a command line string to the command name and the arg' do
-          @command.split_command_line('foo bar args').
-            should == ['foo bar', 'args']
-          @command.split_command_line('foo  bar args').
-            should == ['foo bar', 'args']
-          @command.split_command_line(' foo  bar  args ').
-            should == ['foo bar', 'args']
-          @command.split_command_line(' foo  foo  args ').
-            should == ['foo foo', 'args']
-        end
+      it 'splits from a command line string to the command name and the arg' do
+        @command.split_command_line('foo bar args').
+          should == ['foo bar', 'args']
+        @command.split_command_line('foo  bar args').
+          should == ['foo bar', 'args']
+        @command.split_command_line(' foo  bar  args ').
+          should == ['foo bar', 'args']
+        @command.split_command_line(' foo  foo  args ').
+          should == ['foo foo', 'args']
       end
     end
   end

@@ -3,13 +3,14 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Termtter::Client, 'when the plugin truncate is loaded' do
+
   it 'should add command truncate' do
     Termtter::Client.should_receive(:register_hook).once
-    Termtter::Client.plug 'truncate'
+    be_quiet { Termtter::Client.plug 'truncate' }
   end
 
   it 'should define truncate method' do
-    Termtter::Client.plug 'truncate'
+    be_quiet { Termtter::Client.plug 'truncate' }
 
     truncate('11111').should == '11111'
 

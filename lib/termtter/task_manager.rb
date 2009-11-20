@@ -43,9 +43,7 @@ module Termtter
 
     def invoke_later
       Thread.new do
-        invoke_and_wait do
-          yield
-        end
+        invoke_and_wait { yield }
       end
     end
 

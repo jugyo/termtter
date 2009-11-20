@@ -68,11 +68,69 @@ module Termtter
       @task_manager.instance_eval('@tasks').size.should == 1
     end
 
+    it 'should run (not pause)' do
+      be_quiet do
+        counter = 0
+        TaskManager::INTERVAL = 0
+        @task_manager.stub(:step) { counter += 1 }
+        @task_manager.instance_variable_set(:@work, true)
+        @task_manager.run
+        100.times do
+          break if counter != 0
+          sleep 0.1
+        end
+        @task_manager.instance_variable_set(:@work, false)
+        counter.should > 0
+      end
+    end
+
+    it 'should run (pause)' do
+      be_quiet do
+        counter = 0
+        TaskManager::INTERVAL = 0.1
+        @task_manager.stub(:step) { counter += 1 }
+        @task_manager.instance_variable_set(:@work, true)
+        @task_manager.instance_variable_set(:@pause, true)
+        @task_manager.run
+        sleep 0.1
+        counter.should == 0
+        @task_manager.instance_variable_set(:@pause, false)
+        100.times do
+          break if counter != 0
+          sleep 0.1
+        end
+        @task_manager.instance_variable_set(:@work, false)
+        counter.should > 0
+      end
+    end
+
     it 'should add task with :name' do
       @task_manager.add_task(:name => 'foo')
       @task_manager.get_task('foo').name.should == 'foo'
       @task_manager.delete_task('foo')
       @task_manager.get_task('foo').should == nil
+    end
+
+    it 'should be killed' do
+      @task_manager.instance_eval('@work').should == true
+      @task_manager.kill
+      @task_manager.instance_eval('@work').should == false
+    end
+
+    it 'should be paused or resumed' do
+      @task_manager.instance_eval('@pause').should == false
+      @task_manager.pause
+      @task_manager.instance_eval('@pause').should == true
+      @task_manager.resume
+      @task_manager.instance_eval('@pause').should == false
+    end
+
+    it 'invoke_later calls invoke_and_wait' do
+      called = false
+      block = lambda { called = true}
+      @task_manager.should_receive(:invoke_and_wait).with(&block)
+      @task_manager.invoke_later &block
+      called.should be_true
     end
   end
 end
