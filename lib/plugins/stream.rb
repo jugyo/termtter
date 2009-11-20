@@ -85,6 +85,8 @@ module Termtter::Client
         config.plugins.stream.keywords |= args
       end
   
+      kill_thread :keyword_stream if alive_thread? :keywor_stream
+
       keywords = config.plugins.stream.keywords
   
       puts "streaming: #{keywords.join(',')}"
