@@ -67,6 +67,7 @@ desc "Run all examples with RCov"
 
 Spec::Rake::SpecTask.new('rcov') do |t|
   t.spec_files = FileList['spec/**/*_spec.rb']
+  t.spec_files.sort!  # FIXME: Spec depends order.
   t.spec_opts = ['-c', '-fs']
   t.rcov = true
   t.rcov_opts = ['-x', 'spec', '--exclude', 'lib/plugins']
