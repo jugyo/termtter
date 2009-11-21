@@ -144,7 +144,10 @@ module Termtter::Client
         throw :exit
       end
 
-      throw :exit if config.plugins.stream.thread.class == Thread
+      if config.plugins.stream.thread.class == Thread
+        puts 'already streaming'
+        throw :exit
+      end
 
       targets = args.map { |name|
         Termtter::API.twitter.user(name).id rescue nil
@@ -162,7 +165,9 @@ module Termtter::Client
         begin
           current_targets = targets.take(max)
           targets = targets.take(max)
-          puts "streaming #{current_targets.length} friends."
+          message = "streaming #{current_targets.length} friend"
+          message << (current_targets.size == 1 ? '.' : 's.')
+          puts message
           TweetStream::Client.new(config.user_name, config.password).
             filter(:follow => current_targets) do |status|
             print "\e[0G" + "\e[K" unless win?
