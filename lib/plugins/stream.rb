@@ -64,11 +64,13 @@ module Termtter::Client
       case args[0]
       when ':stop'
         kill_thread :keyword_stream if alive_thread? :keywor_stream
+        config.plugins.stream.keywords.clear
+        puts 'keyword_stream has stopped'
         throw :exit
       when ':show'
-        puts "streaming alive" if alive_thread? :keyword_stream
+        puts alive_thread?(:keyword_stream) ? 'streaming alive' : 'not alive'
         unless config.plugins.stream.keywords.empty?
-          puts config.plugins.stream.keywords.join(',')
+          puts config.plugins.stream.keywords.join(', ')
         end
         throw :exit
       when ':add'
@@ -76,7 +78,12 @@ module Termtter::Client
         config.plugins.stream.keywords |= args
       when ':delete'
         args.shift
-        config.plugins.stream.keywords.reject! {|keyword| args.include?(keyword)}
+        config.plugins.stream.keywords -= args
+        if config.plugins.stream.keywords.empty?
+          kill_thread :keyword_stream if alive_thread? :keywor_stream
+          puts 'keyword_stream has stopped'
+          throw :exit
+        end
       when ':start'
       when /^:.*/
         puts "Unknown keyword_stream options"
@@ -84,12 +91,12 @@ module Termtter::Client
       else
         config.plugins.stream.keywords = args
       end
-  
+
       kill_thread :keyword_stream if alive_thread? :keywor_stream
 
       keywords = config.plugins.stream.keywords
-  
-      puts "streaming: #{keywords.join(',')}"
+
+      puts "streaming: #{keywords.join(', ')}"
       config.plugins.stream.keyword_stream = Thread.new do
         retry_wait = config.plugins.stream.retry_wait_base,
         begin
@@ -107,8 +114,8 @@ module Termtter::Client
           puts "wait #{config.plugins.stream.retry_wait}sec"
           sleep retry_wait
           retry_wait = retry_wait * 2;
-	  retry_wait = config.plugin.stream.retry_max unless
-		retry_max > config.plugin.stream.retry_max
+          retry_wait = config.plugin.stream.retry_max unless
+          retry_max > config.plugin.stream.retry_max
           retry
         end
       end
