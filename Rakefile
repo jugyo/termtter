@@ -60,6 +60,7 @@ end
 desc 'run all specs'
 Spec::Rake::SpecTask.new do |t|
   t.spec_files = FileList['spec/**/*_spec.rb']
+  t.spec_files.sort!  # FIXME: Spec depends order.
   t.spec_opts = ['-c']
 end
 desc "Run all examples with RCov"
