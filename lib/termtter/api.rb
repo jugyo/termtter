@@ -40,7 +40,7 @@ module Termtter
           config.password = ui.ask('Password: ') { |q| q.echo = false}
         end
 
-        twitter = Rubytter.new(config.user_name, config.password, twitter_option)
+        twitter = RubytterProxy.new(config.user_name, config.password, twitter_option)
         begin
           twitter.verify_credentials
           return twitter

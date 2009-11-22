@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 module Termtter
+  class HookCanceled < StandardError; end
+
   module Hookable
     def self.included(base)
       base.class_eval do
