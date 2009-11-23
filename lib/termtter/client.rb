@@ -9,7 +9,8 @@ module Termtter
 
   module Client
 
-    @hooks = {}
+    include Termtter::Hookable
+
     @commands = {}
     @filters = []
     @since_id = nil
@@ -24,7 +25,7 @@ module Termtter
 
     class << self
 
-      attr_reader :commands, :hooks
+      attr_reader :commands
 
       # plug :: Name -> (Hash) -> IO () where NAME = String | Symbol | [NAME]
       def plug(name, options = {})
@@ -51,38 +52,6 @@ module Termtter
 
       def clear_filter
         @filters.clear
-      end
-
-      def register_hook(arg, opts = {}, &block)
-        hook = case arg
-          when Hook
-            arg
-          when Hash
-            Hook.new(arg)
-          when String, Symbol
-            options = { :name => arg }
-            options.merge!(opts)
-            options[:exec_proc] = block
-            Hook.new(options)
-          else
-            raise ArgumentError, 'must be given Termtter::Hook, Hash, String or Symbol'
-          end
-        @hooks[hook.name] = hook
-      end
-
-      def get_hook(name)
-        @hooks[name]
-      end
-
-      def get_hooks(point)
-        # TODO: sort by alphabet
-        @hooks.values.select do |hook|
-          hook.match?(point)
-        end
-      end
-
-      def clear_hooks
-        @hooks.clear
       end
 
       def register_command(arg, opts = {}, &block)
@@ -166,16 +135,6 @@ module Termtter
         get_hooks(hook_name).inject(statuses) {|s, hook|
           hook.call(s, event)
         }
-      end
-
-      # return last hook return value
-      def call_hooks(point, *args)
-        result = nil
-        get_hooks(point).each {|hook|
-          break if result == false # interrupt if hook return false
-          result = hook.call(*args)
-        }
-        result
       end
 
       def call_commands(text)
