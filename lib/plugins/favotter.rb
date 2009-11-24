@@ -24,7 +24,7 @@ module Termtter::Client
       doc.css('div.entry').map do |entry|
         text   = entry.css('span.status_text').first.content
         amount = entry.css('div.info span.favotters').first.content
-        amount = amount.match(/(\d)/)[1].to_i
+        amount = amount.match(/(\d+)/)[1].to_i
         users  = entry.css('div.info span.favotters img').map {|u| u['title'] }
         [text, amount, users]
       end
