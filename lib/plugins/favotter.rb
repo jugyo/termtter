@@ -10,15 +10,18 @@ module Termtter::Client
 
   class << self
     def output_favorites(target, threshold)
-      url = "http://favotter.matope.com/user.php?user=#{target}&threshold=#{threshold}"
+      favorites = parse("http://favotter.matope.com/user.php?user=#{target}&threshold=#{threshold}")
+
       public_storage[:favorited_ids].clear
       alphabet = '$a'
-      parse(url).reverse.each do |id, text, amount, users|
+      max_amount_width = favorites.map {|f| now = f[2].to_s.size }.max
+      favorites.reverse.each do |id, text, amount, users|
         public_storage[:favorited_ids][alphabet] = id
         color = fav_color(amount)
-        fav = "fav#{amount == 1 ? '' : 's'}".rjust(4)
-        format = "<GREEN>%s #{fav} by #{alphabet}</GREEN> <YELLOW>%s</YELLOW>: <#{color}>%s</#{color}>"
-        values = [amount.to_s.rjust(3), users.join(', '), CGI.escape(text)]
+        fav   = "fav#{amount == 1 ? '' : 's'}"
+        favorites_info = "(#{amount} #{fav})".rjust(max_amount_width + 7)
+        format = "<GREEN>#{favorites_info} #{alphabet}</GREEN> <YELLOW>%s</YELLOW>: <#{color}>%s</#{color}>"
+        values = [users.join(', '), CGI.escape(text)]
         puts CGI.unescape(TermColor.parse(format % values ))
         alphabet.succ!
       end
