@@ -13,7 +13,7 @@ module Termtter::Client
       :points => [:pre_exec_update],
       :exec_proc => lambda {|cmd, arg|
         Thread.new do
-          Termtter::API.connection.start('outputz.com', 80) do |http|
+          Net::HTTP.start('outputz.com', 80) do |http|
               key  = CGI.escape key
               uri  = CGI.escape config.plugins.outputz.uri
               size = arg.split(//).size
