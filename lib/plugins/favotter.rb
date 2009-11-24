@@ -17,7 +17,7 @@ module Termtter::Client
         public_storage[:favorited_ids][alphabet] = id
         color = fav_color(amount)
         fav = "fav#{amount == 1 ? '' : 's'}".rjust(4)
-        format = "#{alphabet}<GREEN>%s #{fav} by</GREEN> <YELLOW>%s</YELLOW>: <#{color}>%s</#{color}>"
+        format = "<GREEN>%s #{fav} by #{alphabet}</GREEN> <YELLOW>%s</YELLOW>: <#{color}>%s</#{color}>"
         values = [amount.to_s.rjust(3), users.join(', '), CGI.escape(text)]
         puts CGI.unescape(TermColor.parse(format % values ))
         alphabet.succ!
