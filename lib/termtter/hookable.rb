@@ -48,6 +48,10 @@ module Termtter
             }
             result
           end
+
+          def clear_hooks
+            hooks.clear
+          end
         end
       end
     end
