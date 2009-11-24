@@ -44,7 +44,7 @@ module Termtter
           raise Rubytter::APIError.new('error')
         end
       end
-      Rubytter.stub(:new => twitter)
+      RubytterProxy.stub(:new => twitter)
 
       API.try_auth.should == yield(twitter)
 
