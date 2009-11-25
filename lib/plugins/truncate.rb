@@ -11,7 +11,9 @@ def truncate(text, length = 140, omission = "...")
   chars.length > length ? (chars[0...l] + o).pack('U*') : text
 end
 
-TRUNCATE_HOOK_COMMANDS = [:update, :reply, :retweet]
+unless Object.const_defined?(:TRUNCATE_HOOK_COMMANDS)
+  TRUNCATE_HOOK_COMMANDS = [:update, :reply, :retweet]
+end
 
 Termtter::Client::register_hook(
   :name => :truncate_status,

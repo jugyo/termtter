@@ -13,18 +13,17 @@ module Termtter
     class << self
       attr_reader :connection, :twitter
       def setup
-        @connection = Connection.new
 
-        auth = false
         3.times do
           if twitter = try_auth
             @twitter = twitter
-            auth = true
+            # NOTE: for compatible
+            @connection = twitter.instance_variable_get(:@connection)
             break
           end
         end
 
-        exit! unless auth
+        exit! unless twitter
       end
 
       def try_auth
@@ -41,7 +40,7 @@ module Termtter
           config.password = ui.ask('Password: ') { |q| q.echo = false}
         end
 
-        twitter = Rubytter.new(config.user_name, config.password, twitter_option)
+        twitter = RubytterProxy.new(config.user_name, config.password, twitter_option)
         begin
           twitter.verify_credentials
           return twitter

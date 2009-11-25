@@ -32,12 +32,12 @@ module Termtter::Client
         auth.authorize(req)
         title = nil
         tinyurl = nil
-        Termtter::API.connection.start('b.hatena.ne.jp', 80) do |http|
+        Net::HTTP.start('b.hatena.ne.jp', 80) do |http|
           res = http.request(req)
           title = Nokogiri::XML(res.body).search('link[title]').first['title'] rescue nil
         end
         if title
-          Termtter::API.connection.start('tinyurl.com', 80) do |http|
+          Net::HTTP.start('tinyurl.com', 80) do |http|
             tinyurl = http.get('/api-create.php?url=' + URI.escape(url)).body
           end
 

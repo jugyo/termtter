@@ -9,7 +9,8 @@ module Termtter
 
   module Client
 
-    @hooks = {}
+    include Termtter::Hookable
+
     @commands = {}
     @filters = []
     @since_id = nil
@@ -24,7 +25,7 @@ module Termtter
 
     class << self
 
-      attr_reader :commands, :hooks
+      attr_reader :commands
 
       # plug :: Name -> (Hash) -> IO () where NAME = String | Symbol | [NAME]
       def plug(name, options = {})
@@ -51,34 +52,6 @@ module Termtter
 
       def clear_filter
         @filters.clear
-      end
-
-      def register_hook(arg, opts = {}, &block)
-        hook = case arg
-          when Hook
-            arg
-          when Hash
-            Hook.new(arg)
-          when String, Symbol
-            options = { :name => arg }
-            options.merge!(opts)
-            options[:exec_proc] = block
-            Hook.new(options)
-          else
-            raise ArgumentError, 'must be given Termtter::Hook, Hash, String or Symbol'
-          end
-        @hooks[hook.name] = hook
-      end
-
-      def get_hook(name)
-        @hooks[name]
-      end
-
-      def get_hooks(point)
-        # TODO: sort by alphabet
-        @hooks.values.select do |hook|
-          hook.match?(point)
-        end
       end
 
       def register_command(arg, opts = {}, &block)
@@ -152,7 +125,7 @@ module Termtter
         call_hooks(:post_filter, filtered, event)
         get_hooks(:output).each do |hook|
           hook.call(
-            apply_filters_for_hook("filter_for_#{hook.name}", filtered, event),
+            apply_filters_for_hook(:"filter_for_#{hook.name}", filtered, event),
             event
           )
         end
@@ -164,17 +137,12 @@ module Termtter
         }
       end
 
-      # return last hook return value
-      def call_hooks(point, *args)
-        result = nil
-        get_hooks(point).each {|hook|
-          break if result == false # interrupt if hook return false
-          result = hook.call(*args)
-        }
-        result
-      end
-
       def call_commands(text)
+        # status
+        #   0: done
+        #   1: canceled
+        status = 0
+
         @task_manager.invoke_and_wait do
           # FIXME: This block can become Maybe Monad
           get_hooks("pre_command").each {|hook|
@@ -201,9 +169,11 @@ module Termtter
               result = command.call(command_str, modified_arg, text) # exec command
               call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
             rescue CommandCanceled
+              status = 1
             end
           end
           call_hooks("post_command", text)
+          status
         end
       end
 
@@ -332,14 +302,14 @@ module Termtter
       def handle_error(e)
         if logger
           logger.error("#{e.class.to_s}: #{e.message}")
-          logger.error(e.backtrace.join("\n")) if config.devel
+          logger.error(e.backtrace.join("\n")) if (e.backtrace and config.devel)
         else
           raise e
         end
         get_hooks(:on_error).each {|hook| hook.call(e) }
       rescue Exception => e
-        puts "Error: #{e}"
-        puts e.backtrace.join("\n")
+        $stderr.puts "Error: #{e}"
+        $stderr.puts e.backtrace.join("\n")
       end
 
       def confirm(message, default_yes = true, &block)
