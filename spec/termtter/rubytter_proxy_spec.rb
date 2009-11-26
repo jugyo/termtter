@@ -22,10 +22,10 @@ module Termtter
 
     it 'should call hooks' do
       pre_hook = RubytterProxy.register_hook(:pre, :point => :pre_update) {}
-      pre_hook.should_receive(:call).with('test')
+      pre_hook.should_receive(:call).with('test').and_return(["TEST"])
       post_hook = RubytterProxy.register_hook(:post, :point => :post_update) {}
       post_hook.should_receive(:call).with('test')
-      @rubytter_mock.stub!(:update)
+      @rubytter_mock.should_receive(:update).with("TEST")
 
       @twitter.update('test')
     end
@@ -34,7 +34,7 @@ module Termtter
       pre_hook = RubytterProxy.register_hook(:pre, :point => :pre_update) {raise HookCanceled}
       post_hook = RubytterProxy.register_hook(:post, :point => :post_update) {}
       post_hook.should_receive(:call).with('test').never
-      @rubytter_mock.stub!(:update)
+      @rubytter_mock.should_receive(:update).never
 
       @twitter.update('test')
     end

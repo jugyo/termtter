@@ -10,8 +10,14 @@ module Termtter
       if @rubytter.methods.include?(method.to_s)
         result = nil
         begin
-          self.class.call_hooks("pre_#{method}", *args)
-          result = @rubytter.__send__(method, *args, &block)
+          modified_args = args
+          hooks = self.class.get_hooks("pre_#{method}")
+          hooks.each do |hook|
+            modified_args = hook.call(*modified_args)
+          end
+
+          result = @rubytter.__send__(method, *modified_args)
+
           self.class.call_hooks("post_#{method}", *args)
         rescue HookCanceled
         end
