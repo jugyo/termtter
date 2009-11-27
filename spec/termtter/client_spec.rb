@@ -4,10 +4,11 @@ require File.dirname(__FILE__) + '/../spec_helper'
 module Termtter
   describe Client do
     before do
+      Client.setup_logger
+      Client.setup_task_manager
       Client.clear_filter
       Client.clear_command
       Client.clear_hooks
-      Client.setup_logger
     end
 
     # FIXME: Depends recent implement
@@ -46,7 +47,6 @@ module Termtter
 
       config.system.eval_scripts = []
       config.system.cmd_mode = false
-      Client.instance_variable_get(:@task_manager).should_receive(:run) {}
       Client.should_receive(:call_hooks).with(:initialize)
       Client.should_receive(:call_hooks).with(:launched)
       Client.run

@@ -14,12 +14,12 @@ module Termtter
     @commands = {}
     @filters = []
     @since_id = nil
-    @task_manager = Termtter::TaskManager.new
 
     config.set_default(:logger, nil)
     config.set_default(:update_interval, 120)
     config.set_default(:prompt, '> ')
     config.set_default(:devel, false)
+    config.set_default(:timeout, 5)
 
     Thread.abort_on_exception = true
 
@@ -275,9 +275,14 @@ module Termtter
         @init_block.call(self) if @init_block
       end
 
+      def setup_task_manager
+        @task_manager = Termtter::TaskManager.new(1, config.timeout)
+      end
+
       def run
         load_config()
         setup_logger()
+        setup_task_manager()
         load_plugins()
         eval_init_block()
         Termtter::API.setup()
