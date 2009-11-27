@@ -2,6 +2,7 @@ require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe 'plugin hashtag' do
   before do
+    Termtter::Client.setup_task_manager
     Termtter::Client.plug 'defaults'
   end
 

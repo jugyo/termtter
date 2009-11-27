@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
+require 'timeout'
 
 module Termtter
   class TaskManager
-
-    INTERVAL = 1
-
-    def initialize()
+    def initialize(interval = 1, timeout = 5)
+      @interval = interval
+      @timeout = timeout
       @tasks = {}
       @work = true
       @mutex = Mutex.new
@@ -28,7 +28,7 @@ module Termtter
       Thread.new do
         while @work
           step unless @pause
-          sleep INTERVAL
+          sleep @interval
         end
       end
     end
@@ -75,13 +75,15 @@ module Termtter
     private
 
     def synchronize
-      unless Thread.current == @thread_in_sync
-        @mutex.synchronize do
-          @thread_in_sync = Thread.current
+      timeout(@timeout) do
+        unless Thread.current == @thread_in_sync
+          @mutex.synchronize do
+            @thread_in_sync = Thread.current
+            yield
+          end
+        else
           yield
         end
-      else
-        yield
       end
     end
 
@@ -105,6 +107,5 @@ module Termtter
         return due_tasks
       end
     end
-
   end
 end
