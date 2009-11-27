@@ -32,6 +32,8 @@ module Termtter
         command_text = hook.call(command_text)
       }
       Client.call_commands(command_text)
+    rescue TimeoutError
+      puts TermColor.parse("<red>Time out :(</red>")
     end
 
     def prompt
