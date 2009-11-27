@@ -175,6 +175,8 @@ module Termtter
           call_hooks("post_command", text)
           status
         end
+      rescue TimeoutError
+        call_hooks("timeout", text)
       end
 
       def command_exists?(text)
