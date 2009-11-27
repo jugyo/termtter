@@ -177,6 +177,7 @@ module Termtter
         end
       rescue TimeoutError
         call_hooks("timeout", text)
+        raise
       end
 
       def command_exists?(text)
