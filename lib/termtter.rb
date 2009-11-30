@@ -16,6 +16,7 @@ require 'optparse'
 require 'readline'
 gem 'rubytter', '>= 0.9.2'
 require 'rubytter'
+require 'timeout'
 
 require 'termtter/config'
 require 'termtter/version'
