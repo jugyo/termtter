@@ -17,7 +17,7 @@ def filter(name, init = {})
   plugin(name, init)
 end
 
-require 'ffi'
+require 'ffi' unless defined? FFI
 module Readline
   extend FFI::Library
 
