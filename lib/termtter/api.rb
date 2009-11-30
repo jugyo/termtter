@@ -15,11 +15,16 @@ module Termtter
       def setup
 
         3.times do
-          if twitter = try_auth
-            @twitter = twitter
-            # NOTE: for compatible
-            @connection = twitter.instance_variable_get(:@connection)
-            break
+          begin
+            if twitter = try_auth
+              @twitter = twitter
+              # NOTE: for compatible
+              @connection = twitter.instance_variable_get(:@connection)
+              break
+            end
+          rescue Timeout::Error
+            puts TermColor.parse("<red>Time out :(</red>")
+            exit!
           end
         end
 
