@@ -279,7 +279,7 @@ module Termtter
       end
 
       def setup_task_manager
-        @task_manager = Termtter::TaskManager.new(1, config.timeout)
+        @task_manager = Termtter::TaskManager.new(1)
       end
 
       def run
