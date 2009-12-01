@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 self_file =
-  if File.ftype(__FILE__) == 'link'
-    File.readlink(__FILE__)
+  if File.symlink?(__FILE__)
+    require 'pathname'
+    Pathname.new(__FILE__).realpath
   else
     __FILE__
   end
