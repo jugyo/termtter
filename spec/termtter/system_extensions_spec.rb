@@ -21,23 +21,25 @@ describe Termtter do
     end
   end
 
-  it 'Readline can refresh line' do
-    Readline::LIBREADLINE.should_receive(:rl_refresh_line).with(0, 0)
-    Readline.refresh_line
-  end
+  if Readline.const_defined?(:LIBREADLINE)
+    it 'Readline can refresh line' do
+      Readline::LIBREADLINE.should_receive(:rl_refresh_line).with(0, 0)
+      Readline.refresh_line
+    end
 
-  it 'extend DL::Impoter when not be able to find DL::Importable' do
-    be_quiet { DL::Importer = mock(:importer) }
-    DL.stub(:const_defined?).with(:Importable).and_return(false)
-    Readline::LIBREADLINE.should_receive(:extend).with(DL::Importer)
-    load 'termtter/system_extensions.rb'
-  end
+    it 'extend DL::Impoter when not be able to find DL::Importable' do
+      be_quiet { DL::Importer = mock(:importer) }
+      DL.stub(:const_defined?).with(:Importable).and_return(false)
+      Readline::LIBREADLINE.should_receive(:extend).with(DL::Importer)
+      load 'termtter/system_extensions.rb'
+    end
 
-  it 'can handle error when difine LIBREADLINE' do
-    Readline::LIBREADLINE.stub(:extend) { raise }
-    load 'termtter/system_extensions.rb'
-    Readline::LIBREADLINE.should_not_receive(:rl_refresh_line)
-    Readline.refresh_line
+    it 'can handle error when difine LIBREADLINE' do
+      Readline::LIBREADLINE.stub(:extend) { raise }
+      load 'termtter/system_extensions.rb'
+      Readline::LIBREADLINE.should_not_receive(:rl_refresh_line)
+      Readline.refresh_line
+    end
   end
 
   it 'can open browser that suites platform' do
