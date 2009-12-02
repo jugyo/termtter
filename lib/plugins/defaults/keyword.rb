@@ -33,17 +33,26 @@ module Termtter::Client
     text
   end
 
-  register_command('keyword add') do |args|
+  register_command(
+    'keyword add',
+    :help => ['keyword add KEYWORD', 'Add a highlight keyword']
+  ) do |args|
     args.split(/\s+/).each do |arg|
       public_storage[:keywords] << arg
     end
   end
 
-  register_command('keyword clear') do |args|
+  register_command(
+    'keyword clear',
+    :help => ['keyword clear', 'Clear highlight keywords']
+  ) do |args|
     public_storage[:keywords].clear
   end
 
-  register_command('keyword list') do |args|
+  register_command(
+    'keyword list',
+    :help => ['keyword list', 'List highlight keywords']
+  ) do |args|
     p public_storage[:keywords].to_a
   end
 end
