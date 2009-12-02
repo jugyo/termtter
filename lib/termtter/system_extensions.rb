@@ -8,29 +8,36 @@ require 'termtter/system_extensions/windows' if win?
 require 'termtter/system_extensions/core_compatibles'
 require 'termtter/system_extensions/termtter_compatibles'
 
-require 'dl/import'
-module Readline
-  begin
-    module LIBREADLINE
-      if DL.const_defined? :Importable
-        extend DL::Importable
-      else
-        extend DL::Importer
+unless Readline.const_defined?(:NATIVE_REFRESH_LINE_METHOD)
+  # Latest 'readline.so' has native 'refresh_line' method.
+  Readline::NATIVE_REFRESH_LINE_METHOD = Readline.respond_to?(:refresh_line)
+end
+
+unless Readline::NATIVE_REFRESH_LINE_METHOD
+  require 'dl/import'
+  module Readline
+    begin
+      module LIBREADLINE
+        if DL.const_defined? :Importable
+          extend DL::Importable
+        else
+          extend DL::Importer
+        end
+        pathes = Array(ENV['TERMTTER_EXT_LIB'] || [
+          '/opt/local/lib/libreadline.dylib',
+          '/usr/lib/libreadline.so',
+          '/usr/local/lib/libreadline.so',
+          File.join(Gem.bindir, 'readline.dll')
+        ])
+        dlload(pathes.find { |path| File.exist?(path)})
+        extern 'int rl_refresh_line(int, int)'
       end
-      pathes = Array(ENV['TERMTTER_EXT_LIB'] || [
-        '/opt/local/lib/libreadline.dylib',
-        '/usr/lib/libreadline.so',
-        '/usr/local/lib/libreadline.so',
-        File.join(Gem.bindir, 'readline.dll')
-      ])
-      dlload(pathes.find { |path| File.exist?(path)})
-      extern 'int rl_refresh_line(int, int)'
+      def self.refresh_line
+        LIBREADLINE.rl_refresh_line(0, 0)
+      end
+    rescue Exception
+      def self.refresh_line;end
     end
-    def self.refresh_line
-      LIBREADLINE.rl_refresh_line(0, 0)
-    end
-  rescue Exception
-    def self.refresh_line;end
   end
 end
 
