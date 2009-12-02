@@ -12,12 +12,12 @@ describe Termtter do
 
   it 'provides win?' do
     be_quiet do
-      original_ruby_platform = RUBY_PLATFORM
-      RUBY_PLATFORM = 'darwin'
+      original_ruby_platform = ::RUBY_PLATFORM
+      ::RUBY_PLATFORM = 'darwin'
       win?.should == false
-      RUBY_PLATFORM = 'mswin'
+      ::RUBY_PLATFORM = 'mswin'
       win?.should == true
-      RUBY_PLATFORM = original_ruby_platform
+      ::RUBY_PLATFORM = original_ruby_platform
     end
   end
 
@@ -27,7 +27,7 @@ describe Termtter do
   end
 
   it 'extend DL::Impoter when not be able to find DL::Importable' do
-    DL::Importer = mock(:importer)
+    be_quiet { DL::Importer = mock(:importer) }
     DL.stub(:const_defined?).with(:Importable).and_return(false)
     Readline::LIBREADLINE.should_receive(:extend).with(DL::Importer)
     load 'termtter/system_extensions.rb'
@@ -51,7 +51,7 @@ describe Termtter do
         ['darwin',  'open'],
         ['hogehog', 'open'],
       ].each do |platform, browser|
-        RUBY_PLATFORM = platform
+        ::RUBY_PLATFORM = platform
         self.should_receive(:system).with(browser, url)
         open_browser(url)
       end
