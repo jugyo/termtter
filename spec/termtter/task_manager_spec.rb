@@ -129,7 +129,7 @@ module Termtter
       called = false
       block = lambda { called = true}
       @task_manager.should_receive(:invoke_and_wait).with(&block)
-      @task_manager.invoke_later &block
+      @task_manager.invoke_later(&block).join
       called.should be_true
     end
   end

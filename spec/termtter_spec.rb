@@ -30,10 +30,12 @@ end
 describe Termtter, 'when termtter is loaded' do
   it 'will add load path' do
     termtter_path = File.expand_path(File.dirname(__FILE__) + '/../lib/termtter.rb')
+    termtter_lib_path = File.dirname(termtter_path)
     original_load_path = $:.dup
-    $:.clear
+    $:.delete(termtter_lib_path)
+    $:.include?(termtter_lib_path).should == false
     be_quiet { load termtter_path }
-    $:.include?(File.dirname(termtter_path)).should == true
+    $:.include?(termtter_lib_path).should == true
     $:.concat(original_load_path)
   end
 end

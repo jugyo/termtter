@@ -5,19 +5,19 @@ require File.dirname(__FILE__) + '/../spec_helper'
 module Termtter
   describe 'Command#initialize' do
     it 'requires the name element in the argument hash' do
-      lambda { Command.new(:nama => 1) }.should raise_error(ArgumentError)
-      lambda { Command.new(:name => 1) }.should_not raise_error(ArgumentError)
+      lambda { Command.new(:nama => :a) }.should raise_error(ArgumentError)
+      lambda { Command.new(:name => :a) }.should_not raise_error(ArgumentError)
     end
 
     it 'does not destroy the argument hash' do
       hash = {
-        :name => 1,
+        :name => 'a',
         :exec => 3
       }
       Command.new hash
 
       hash.should eql(hash)
-      hash[:name].should == 1
+      hash[:name].should == 'a'
       hash[:exec].should == 3
       hash[:exec_proc].should be_nil
     end

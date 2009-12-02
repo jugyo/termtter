@@ -72,8 +72,8 @@ module Termtter
 
     it 'can raise error when add by prohibited name' do
       lambda {
-        @config.set_default('sub.aaa', :value)
-        @config.sub.aaa
+        @config.set_default('open.aaa', :value)
+        @config.open.aaa
       }.should raise_error
     end
 
