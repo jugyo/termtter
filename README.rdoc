@@ -32,14 +32,14 @@ Search
 
 == CONFIGURATION:
 
-If you would like to use proxy server, add configurations like this:
+If you would like to use a proxy server, add configurations like this:
 
   config.proxy.host = 'PROXYHOST'
   config.proxy.port = 'PROXYPORT'
   config.proxy.user_name = 'USERNAME'
   config.proxy.password = 'PASSWORD'
 
-You can to load plugins in this way:
+You can load plugins this way:
 
   Termtter::Client.init do |t|
     t.plug 'fib'
