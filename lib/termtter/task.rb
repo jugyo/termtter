@@ -11,7 +11,8 @@ module Termtter
       @work = true
     end
     def execute
-      exec_proc.call(self) if work
+      args = if exec_proc.arity.zero? then [] else [self] end
+      exec_proc.call(*args) if work
     end
   end
 end
