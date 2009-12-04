@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'set'
 
-config.keyword.set_default(
+config.plugins.keyword.set_default(
   :highlight_patterns,
   [
     ['on_cyan', 'white'],
@@ -15,14 +15,14 @@ config.keyword.set_default(
   ]
 )
 
-config.keyword.set_default(:keywords, [])
+config.plugins.keyword.set_default(:keywords, [])
 
 module Termtter::Client
-  public_storage[:keywords] ||= Set.new(config.keyword.keywords)
+  public_storage[:keywords] ||= Set.new(config.plugins.keyword.keywords)
 
   register_hook :highlight_keywords, :point => :pre_coloring do |text, event|
     public_storage[:keywords].each_with_index do |keyword, index|
-      highlight_pattern = config.keyword.highlight_patterns[index % config.keyword.highlight_patterns.size]
+      highlight_pattern = config.plugins.keyword.highlight_patterns[index % config.plugins.keyword.highlight_patterns.size]
       text = text.gsub(
                 /(#{Regexp.quote(keyword)})/i,
                 "<#{highlight_pattern[0]}><#{highlight_pattern[1]}>" +
