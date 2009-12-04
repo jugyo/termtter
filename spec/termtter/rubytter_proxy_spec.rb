@@ -38,5 +38,17 @@ module Termtter
 
       @twitter.update('test')
     end
+
+    it 'should retry to be success' do
+      config.retry = 3
+      @rubytter_mock.stub!(:update).exactly(1).times
+      @twitter.update('test')
+    end
+
+    it 'should retry when raise TimeoutError' do
+      config.retry = 3
+      @rubytter_mock.stub!(:update).exactly(config.retry).times.and_raise(TimeoutError)
+      @twitter.update('test')
+    end
   end
 end
