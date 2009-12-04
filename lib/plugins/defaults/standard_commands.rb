@@ -63,42 +63,39 @@ module Termtter::Client
     :help => ['delete,del [STATUS ID]', 'Delete a status']
   )
 
-  direct_message_struct = Struct.new(:id, :text, :user, :created_at)
-  direct_message_struct.class_eval do
-    def method_missing(*args, &block)
-      nil
+  unless defined? DirectMessage
+    class DirectMessage < Struct.new(:id, :text, :user, :created_at)
+      def method_missing(*args, &block)
+        nil
+      end
     end
   end
-  register_command(
-    :name => :direct, :aliases => [:d],
-    :exec_proc => lambda {|arg|
-      case arg
-      when /^([^\s]+)\s+?(.*)\s*$/
-        user, text = normalize_as_user_name($1), $2
-        Termtter::API.twitter.direct_message(user, text)
-        puts "=> to:#{user} message:#{text}"
-      when 'list'
-        output(
-          Termtter::API.twitter.direct_messages.map { |d|
-            direct_message_struct.new(d.id, "#{d.text} => #{d.recipient_screen_name}", d.sender, d.created_at)
-          },
-          :direct_messages
-        )
-      when 'sent_list'
-        output(
-          Termtter::API.twitter.sent_direct_messages.map { |d|
-            direct_message_struct.new(d.id, "#{d.text} => #{d.recipient_screen_name}", d.sender, d.created_at)
-          },
-          :direct_messages
-        )
-      end
-    },
-    :help => [
-      ["direct,d USERNAME TEXT", "Send direct message"],
-      ["direct,d list", 'List direct messages'],
-      ["direct,d sent_list", 'List sent direct messages']
-    ]
-  )
+
+  register_command(:direct, :alias => :d, :help => ["direct,d USERNAME TEXT", "Send direct message"]) do |arg|
+    if /^([^\s]+)\s+?(.*)\s*$/ =~ arg
+      user, text = normalize_as_user_name($1), $2
+      Termtter::API.twitter.direct_message(user, text)
+      puts "=> to:#{user} message:#{text}"
+    end
+  end
+
+  register_command('direct list', :help => ["direct,d list", 'List direct messages']) do |arg|
+    output(
+      Termtter::API.twitter.direct_messages.map { |d|
+        DirectMessage.new(d.id, "#{d.text} => #{d.recipient_screen_name}", d.sender, d.created_at)
+      },
+      :direct_messages
+    )
+  end
+
+  register_command('direct sent_list', :help => ["direct,d sent_list", 'List sent direct messages']) do |arg|
+    output(
+      Termtter::API.twitter.sent_direct_messages.map { |d|
+        DirectMessage.new(d.id, "#{d.text} => #{d.recipient_screen_name}", d.sender, d.created_at)
+      },
+      :direct_messages
+    )
+  end
 
   register_command(
     :name => :profile, :aliases => [:p],
