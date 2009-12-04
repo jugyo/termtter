@@ -7,7 +7,7 @@ require 'rake/rdoctask'
 require 'termtter/version'
 
 desc "default task"
-task :default => [:install, :spec]
+task :default => [:spec]
 
 name = 'termtter'
 version = Termtter::VERSION
