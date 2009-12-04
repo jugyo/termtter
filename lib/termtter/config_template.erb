@@ -2,11 +2,15 @@
 
 config.user_name = '<%= user_name %>'
 #config.update_interval = 120
+#config.timeout = 5
 #config.enable_ssl = true
 #config.proxy.host = 'proxy host'
 #config.proxy.port = '8080'
 #config.proxy.user_name = 'proxy user'
 #config.proxy.password = 'proxy password'
+
+#config.plugins.keyword.keywords = ["ruby", "termtter"]
+#config.plugins.stdout.colors = (31..36).to_a + (91..96).to_a
 
 Termtter::Client.init do |t|
   <%- (plugins - standard_plugins).each do |plugin| -%>
