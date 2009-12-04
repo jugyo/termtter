@@ -7,7 +7,7 @@ require 'tempfile'
 config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
   :timeline_format,
-  '<90><%=time%> [<%=status_id%>]</90> <<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ' +
+  '<90><%=time%> [<%=status_id%>]</90> <<%=color%>><%=s.user.screen_name%></<%=color%>>: <%=text%> ' +
   '<90><%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%><%=source%><%=s.user.protected ? "[P]" : ""%></90>'
 )
 config.plugins.stdout.set_default(:time_format_today, '%H:%M:%S')
@@ -106,7 +106,11 @@ module Termtter
     def status_line(s, time_format, event, indent = 0)
       return '' unless s
       text = TermColor.escape(s.text)
-      color = config.plugins.stdout.colors[s.user.id.to_i % config.plugins.stdout.colors.size]
+      text.gsub!(/@\w+/) do |i|
+        user_color = config.plugins.stdout.colors[i[1..-1].hash % config.plugins.stdout.colors.size]
+        "<#{user_color}>#{i}</#{user_color}>"
+      end
+      color = config.plugins.stdout.colors[s.user.screen_name.hash % config.plugins.stdout.colors.size]
       status_id = Termtter::Client.data_to_typable_id(s.id)
       reply_to_status_id =
         if s.in_reply_to_status_id.nil?
