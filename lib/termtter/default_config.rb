@@ -1,0 +1,5 @@
+config.set_default(:logger, nil)
+config.set_default(:update_interval, 120)
+config.set_default(:prompt, '> ')
+config.set_default(:devel, false)
+config.set_default(:timeout, 5)

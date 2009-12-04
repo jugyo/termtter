@@ -19,6 +19,7 @@ require 'rubytter'
 require 'timeout'
 
 require 'termtter/config'
+require 'termtter/default_config'
 require 'termtter/version'
 require 'termtter/optparse'
 require 'termtter/command'
