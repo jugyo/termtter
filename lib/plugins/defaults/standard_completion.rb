@@ -53,9 +53,18 @@ module Termtter::Client
 
   public_storage[:hashtags_for_completion] ||= Set.new
 
+  def self.collect_hashtags(text)
+    public_storage[:hashtags_for_completion] += text.scan(/#([0-9A-Za-z_]+)/u).flatten
+  end
+
+  Termtter::RubytterProxy.register_hook(:collect_hashtags, :point => :post_update) do |*args|
+    collect_hashtags(args.first)
+    args
+  end
+
   register_hook(:collect_hashtags, :point => :pre_filter) do |statuses, event|
     statuses.each do |s|
-      public_storage[:hashtags_for_completion] += s.text.scan(/#([^\s]+)/).flatten
+      collect_hashtags(s.text)
     end
   end
 
