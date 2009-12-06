@@ -25,6 +25,7 @@ module Termtter::Storage
       DB.instance.db.execute(sql,
                              query[:text]) do |created_at, screen_name, post_text, in_reply_to_status_id, post_id, user_id|
         created_at = Time.at(created_at).to_s
+        post_text.force_encoding('UTF-8') if post_text.respond_to?(:force_encoding)
         result << {
           :id => post_id,
           :created_at => created_at,
@@ -48,6 +49,7 @@ module Termtter::Storage
       sql += query[:user].split(' ').map!{|que| que.gsub(/(\w+)/, 'screen_name like \'%\1%\'')}.join(' or ')
       DB.instance.db.execute(sql) do |created_at, screen_name, post_text, in_reply_to_status_id, post_id, user_id|
         created_at = Time.at(created_at).to_s
+        post_text.force_encoding('UTF-8') if post_text.respond_to?(:force_encoding)
         result << {
           :id => post_id,
           :created_at => created_at,
