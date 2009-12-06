@@ -137,6 +137,8 @@ module Termtter
         #   1: canceled
         status = 0
 
+        text = text.strip
+
         @task_manager.invoke_and_wait do
           # FIXME: This block can become Maybe Monad
           get_hooks("pre_command").each {|hook|
