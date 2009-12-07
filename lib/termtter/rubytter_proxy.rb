@@ -17,7 +17,7 @@ module Termtter
           end
 
           success = false
-          config.retry.times.each do
+          config.retry.times do
             begin
               timeout(config.timeout) do
                 result = @rubytter.__send__(method, *modified_args)
