@@ -35,6 +35,8 @@ module Termtter
     it 'should not exec draft if index is wrong' do
       Client.should_not_receive(:call_commands)
       Client.get_command(:'draft exec').call('draft exec', '2')
+      Client.should_not_receive(:call_commands)
+      Client.get_command(:'draft exec').call('draft exec', 'a')
     end
 
     it 'should delete draft' do
@@ -49,6 +51,8 @@ module Termtter
 
     it 'should not delete draft if index is wrong' do
       Client.get_command(:'draft delete').call('draft delete', '2')
+      Client.public_storage[:drafts].should == ["foo", "bar"]
+      Client.get_command(:'draft delete').call('draft delete', 'a')
       Client.public_storage[:drafts].should == ["foo", "bar"]
     end
   end

@@ -6,6 +6,17 @@ def list_drafts(drafts)
   end
 end
 
+def get_draft_index(arg)
+  case arg
+  when /^\d+$/
+    arg.to_i
+  when ''
+    -1
+  else
+    nil
+  end
+end
+
 module Termtter::Client
   public_storage[:drafts] ||= []
 
@@ -22,29 +33,23 @@ module Termtter::Client
   end
 
   register_command('draft exec') do |arg|
-    case arg
-    when /^\d+$/
-      index = arg.to_i
-    when ''
-      index = -1
-    end
-    command = public_storage[:drafts][index]
-    if command
-      puts "exec => \"#{command}\""
-      call_commands(public_storage[:drafts][index])
-      public_storage[:drafts].delete_at(index)
+    index = get_draft_index(arg)
+    if index
+      command = public_storage[:drafts][index]
+      if command
+        puts "exec => \"#{command}\""
+        call_commands(public_storage[:drafts][index])
+        public_storage[:drafts].delete_at(index)
+      end
     end
   end
 
   register_command('draft delete') do |arg|
-    case arg
-    when /^\d+$/
-      index = arg.to_i
-    when ''
-      index = -1
+    index = get_draft_index(arg)
+    if index
+      deleted = public_storage[:drafts].delete_at(index)
+      puts "deleted => \"#{deleted}\"" if deleted
     end
-    deleted = public_storage[:drafts].delete_at(index)
-    puts "deleted => \"#{deleted}\"" if deleted
   end
 
   register_command('draft clear') do |arg|
