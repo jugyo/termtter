@@ -45,7 +45,7 @@ module Termtter
           []
         end
       else
-        [name.to_s, aliases.to_s].grep(/^#{Regexp.quote(input)}/)
+        ([name.to_s] + aliases.map(&:to_s)).grep(/^#{Regexp.quote(input)}/)
       end
     end
 
