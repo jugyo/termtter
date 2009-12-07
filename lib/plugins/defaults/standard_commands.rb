@@ -187,7 +187,14 @@ module Termtter::Client
   register_command(
     :name => :replies, :aliases => [:r],
     :exec_proc => lambda {|arg|
-      res = Termtter::API.twitter.replies
+      if arg =~ /\-([\d]+)/
+        options = {:count => $1}
+        arg = arg.gsub(/\-([\d]+)/, '')
+      else
+        options = {}
+      end
+
+      res = Termtter::API.twitter.replies(options)
       unless arg.empty?
         res = res.map {|e| e.user.screen_name == arg ? e : nil }.compact
       end
