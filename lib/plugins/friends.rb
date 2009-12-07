@@ -4,13 +4,14 @@ module Termtter::Client
   class << self
     def get_friends(user_name, max)
       friends = []
-      page = 0
+      cursor = -1
       begin
-        friends += tmp = Termtter::API::twitter.friends(user_name,
-            :page => page += 1)
+        tmp = Termtter::API::twitter.friends(user_name, :cursor => cursor)
+        cursor = tmp[:next_cursor]
+        friends += tmp[:users]
         puts "#{friends.length}/#{max}"
       rescue
-      end until (tmp.empty? or friends.length > max)
+      end until (cursor.zero? or friends.length > max)
       friends.take(max)
     end
   end

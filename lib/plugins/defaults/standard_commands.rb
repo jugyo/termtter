@@ -122,10 +122,12 @@ module Termtter::Client
       user_name = config.user_name if user_name.empty?
 
       followers = []
-      page = 0
+      cursor = -1
       begin
-        followers += tmp = Termtter::API.twitter.followers(user_name, :page => page+=1)
-      end until tmp.empty?
+        tmp = Termtter::API.twitter.followers(user_name, :cursor => cursor)
+        cursor = tmp[:next_cursor]
+        followers += tmp[:users]
+      end until cursor.zero?
       Termtter::Client.public_storage[:followers] = followers
       public_storage[:users] += followers.map(&:screen_name)
       puts followers.map(&:screen_name).join(' ')
