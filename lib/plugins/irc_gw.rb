@@ -10,12 +10,16 @@ module Termtter::Client
   class << self
     def following_friends
       user_name = config.user_name
-
-      frinends = []
-      page = 0
+      frinends  = []
+      last = nil
       begin
-        frinends += tmp = Termtter::API::twitter.friends(user_name, :page => page+=1)
-      end until tmp.empty?
+        puts "collecting friends (#{frinends.length})"
+        last = Termtter::API::twitter.friends(user_name, :cursor => last ? last.next_cursor : -1)
+	frinends += last.users
+      rescue Timeout::Error, StandardError # XXX
+        break
+      end until last.next_cursor == 0
+      puts "You have #{frinends.length} friends."
       frinends.map(&:screen_name)
     end
   end
