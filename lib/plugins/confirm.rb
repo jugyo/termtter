@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+warn '"confirm" plugin is deprecated. You can use "config.confirm" option instead it.'
+
 config.plugins.confirm.set_default(:commands, [:update, :reply, :direct, :retweet])
 config.plugins.confirm.set_default(
   :conditions,
