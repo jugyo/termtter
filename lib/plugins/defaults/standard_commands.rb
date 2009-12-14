@@ -260,6 +260,11 @@ module Termtter::Client
     :help => ['leave USER', 'Leave user']
   )
 
+  help = ['favorite_list USERNAME', 'show user favorites']
+  register_command(:favorites, :alias => :favlist, :help => help) do |arg|
+    output Termtter::API.twitter.favorites(arg), :user_timeline
+  end
+
   register_command(
     :name => :favorite, :aliases => [:fav],
     :exec_proc => lambda {|arg|
