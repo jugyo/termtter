@@ -47,6 +47,7 @@ module Readline
     def self.refresh_line;end
   end
 end
+Readline.rl_parse_and_bind('TAB: menu-complete')
 
 require 'highline'
 def create_highline
