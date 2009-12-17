@@ -31,7 +31,6 @@ module Readline
       dlload(pathes.find { |path| File.exist?(path)})
       extern 'int rl_parse_and_bind (char *)'
     end
-    # Readline.readline('TAB: menu-complete')
     def self.rl_parse_and_bind(str)
       LIBREADLINE.rl_parse_and_bind(str.to_s)
     end
