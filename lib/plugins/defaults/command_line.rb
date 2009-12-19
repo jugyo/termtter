@@ -86,6 +86,7 @@ module Termtter
       unless vi_or_emacs.empty?
         Readline.__send__("#{vi_or_emacs}_editing_mode")
       end
+      Readline.rl_parse_and_bind('TAB: menu-complete')
     end
 
     def trap_setting()
