@@ -14,5 +14,12 @@ module Termtter
     end
     args
   end
-end
 
+  RubytterProxy.register_hook(:confirm_retweet, :point => :pre_retweet) do |*args|
+    status = Termtter::API.twitter.show(args.first)
+    if config.confirm && !Client.confirm("retweet #{status.text}")
+      raise CommandCanceled
+    end
+    args
+  end
+end
