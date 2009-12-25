@@ -19,7 +19,7 @@ Termtter::RubytterProxy.register_hook(
     return args if args.length < 1
     status = args[0]
     return args if multibyte_string(status).length <= 140
-    if Termtter::Client::confirm("You are status contents more than 140 characters. do end endyou want abbreviation status?", true)
+    if Termtter::Client::confirm("Your status is longer than 140 characters. Is it OK to abbreviate it?", true)
       args[0] = truncate(status)
     else
       puts 'canceled.'
