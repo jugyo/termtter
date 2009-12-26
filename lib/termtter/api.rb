@@ -13,6 +13,7 @@ module Termtter
     class << self
       attr_reader :connection, :twitter
       def setup
+        config.user_name = config.specified_user_name unless config.specified_user_name.empty?
 
         3.times do
           begin
