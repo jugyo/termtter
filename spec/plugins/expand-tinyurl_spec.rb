@@ -13,8 +13,6 @@ describe Termtter::Client, 'when the plugin expand-tinyurl is loaded' do
 
     expand_url('is.gd', '/5oDxw').should == 'http://example.com/'
 
-    expand_url('to.ly', '/H0H').should == 'http://termtter.org/'
-
     expand_url('goo.gl', '/e').should == 'http://www.google.com/'
   end
 end
