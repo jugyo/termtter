@@ -22,10 +22,10 @@ module Termtter::Client
   end
 
   register_command(
-    :name      => :retweet,
-    :aliases   => [:rt],
-    :help      => ['retweet,rt (ID|@USER)', 'Post a retweet message'],
-    :exec_proc => lambda {|arg|
+    :name  => :retweet,
+    :alias => :rt,
+    :help  => ['retweet,rt (ID|@USER)', 'Post a retweet message'],
+    :exec  => lambda {|arg|
       arg, comment = arg.split(/\s/, 2)
 
       case arg
@@ -37,6 +37,42 @@ module Termtter::Client
         return if statuses.empty?
         post_retweet(statuses[0], comment)
       end
+    }
+  )
+
+  register_command(
+    :name => :retweets,
+    :help => ['retweets ID', 'Show retweets of a tweet'],
+    :exec => lambda {|arg|
+      statuses = Termtter::API.twitter.retweets(arg)
+      output(statuses, :retweets)
+    }
+  )
+
+  register_command(
+    :name => :retweeted_by_me,
+    :help => ['retweeted_by_me', 'Show retweets posted by you.'],
+    :exec => lambda {|arg|
+      statuses = Termtter::API.twitter.retweeted_by_me
+      output(statuses, :retweeted_by_me)
+    }
+  )
+
+  register_command(
+    :name => :retweeted_to_me,
+    :help => ['retweeted_to_me', 'Show retweets posted by friends.'],
+    :exec => lambda {|arg|
+      statuses = Termtter::API.twitter.retweeted_to_me
+      output(statuses, :retweeted_to_me)
+    }
+  )
+
+  register_command(
+    :name => :retweets_of_me,
+    :help => ['retweets_of_me', 'Show tweets of you that have been retweeted by others.'],
+    :exec => lambda {|arg|
+      statuses = Termtter::API.twitter.retweets_of_me
+      output(statuses, :retweets_of_me)
     }
   )
 end
