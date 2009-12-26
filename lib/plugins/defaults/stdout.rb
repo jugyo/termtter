@@ -7,8 +7,15 @@ require 'tempfile'
 config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
   :timeline_format,
-  '<90><%=time%> [<%=status_id%>]</90> <<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ' +
-  '<90><%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%><%=source%><%=s.user.protected ? "[P]" : ""%></90>'
+  [
+    '<90><%=time%> [<%=status_id%>]</90> ',
+    '<<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ',
+    '<90>',
+    '<%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%>',
+    '<%=retweeted_status_id ? " (retweet_to [#{retweeted_status_id}]) " : ""%>',
+    '<%=source%><%=s.user.protected ? "[P]" : ""%>',
+    '</90>'
+  ].join('')
 )
 config.plugins.stdout.set_default(:time_format_today, '%H:%M:%S')
 config.plugins.stdout.set_default(:time_format_not_today, '%y/%m/%d %H:%M')
@@ -109,10 +116,17 @@ module Termtter
       color = config.plugins.stdout.colors[s.user.id.to_i % config.plugins.stdout.colors.size]
       status_id = Termtter::Client.data_to_typable_id(s.id)
       reply_to_status_id =
-        if s.in_reply_to_status_id.nil?
-          nil
-        else
+        if s.in_reply_to_status_id
           Termtter::Client.data_to_typable_id(s.in_reply_to_status_id)
+        else
+          nil
+        end
+
+      retweeted_status_id =
+        if s.retweeted_status
+          Termtter::Client.data_to_typable_id(s.retweeted_status.id)
+        else
+          nil
         end
 
       time = "(#{Time.parse(s.created_at).strftime(time_format)})"
