@@ -40,6 +40,8 @@ module Termtter
 
         if config.user_name.empty?
           config.user_name = ui.ask('Username: ')
+        else
+          puts "Username: #{config.user_name}"
         end
         if config.password.empty?
           config.password = ui.ask('Password: ') { |q| q.echo = false}
