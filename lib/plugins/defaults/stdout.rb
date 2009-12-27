@@ -9,6 +9,7 @@ config.plugins.stdout.set_default(
   :timeline_format,
   [
     '<90><%=time%> [<%=status_id%>]</90> ',
+    '<%= indent_text %>',
     '<<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ',
     '<90>',
     '<%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%>',
@@ -25,6 +26,7 @@ config.plugins.stdout.set_default(:window_height, 50)
 config.plugins.stdout.set_default(:typable_ids, ('aa'..'zz').to_a)
 config.plugins.stdout.set_default(:typable_id_prefix, '$')
 config.plugins.stdout.set_default(:show_as_thread, false) # db plugin is required
+config.plugins.stdout.set_default(:indent_format, %q("#{'    ' * (indent - 1)}  ↑ "))
 
 module Termtter
   class TypableIdGenerator
@@ -136,15 +138,16 @@ module Termtter
         when 'web' then 'web'
         end
 
+      indent_text = indent > 0 ? eval(config.plugins.stdout.indent_format) : ''
       erbed_text = ERB.new(config.plugins.stdout.timeline_format).result(binding)
-      indent_text = indent > 0 ? "#{'    ' * (indent - 1)} ┗ " : ''
 
       erbed_text = Client.get_hooks(:pre_coloring).inject(erbed_text){|result, hook| hook.call(result, event)}
 
-      text = TermColor.parse(indent_text + erbed_text) + "\n"
+      text = TermColor.parse(erbed_text) + "\n"
       text = TermColor.unescape(text)
       if config.plugins.stdout.show_as_thread && s.in_reply_to_status_id
-        text << status_line(Status[s.in_reply_to_status_id], time_format, event, indent + 1)
+        status = Termtter::API.twitter.show(s.in_reply_to_status_id)
+        text << status_line(status, time_format, event, indent + 1)
       end
       text
     end
