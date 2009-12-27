@@ -129,7 +129,7 @@ module Termtter::Client
 
       if arg.empty?
         event = :list_friends_timeline
-        statuses = Termtter::API.twitter.friends_timeline(options)
+        statuses = Termtter::API.twitter.home_timeline(options)
       else
         event = :list_user_timeline
         statuses = []
