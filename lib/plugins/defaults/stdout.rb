@@ -26,7 +26,7 @@ config.plugins.stdout.set_default(:window_height, 50)
 config.plugins.stdout.set_default(:typable_ids, ('aa'..'zz').to_a)
 config.plugins.stdout.set_default(:typable_id_prefix, '$')
 config.plugins.stdout.set_default(:show_as_thread, false) # db plugin is required
-config.plugins.stdout.set_default(:indent_format, %q("#{'    ' * (indent - 1)}  ↑ "))
+config.plugins.stdout.set_default(:indent_format, %q("#{'    ' * (indent - 1)}  → "))
 
 module Termtter
   class TypableIdGenerator
