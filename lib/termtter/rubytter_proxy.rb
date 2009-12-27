@@ -2,6 +2,8 @@ module Termtter
   class RubytterProxy
     include Hookable
 
+    attr_reader :rubytter
+
     def initialize(*args)
       @rubytter = Rubytter.new(*args)
     end
@@ -16,18 +18,7 @@ module Termtter
             modified_args = hook.call(*modified_args)
           end
 
-          success = false
-          config.retry.times do
-            begin
-              timeout(config.timeout) do
-                result = @rubytter.__send__(method, *modified_args)
-              end
-              success = true
-              break
-            rescue TimeoutError
-            end
-          end
-          raise TimeoutError, 'execution expired' unless success
+          result = call_rubytter(method, *modified_args, &block)
 
           self.class.call_hooks("post_#{method}", *args)
         rescue HookCanceled
@@ -36,6 +27,18 @@ module Termtter
       else
         super
       end
+    end
+
+    def call_rubytter(method, *args, &block)
+      config.retry.times do
+        begin
+          timeout(config.timeout) do
+            return @rubytter.__send__(method, *args, &block)
+          end
+        rescue TimeoutError
+        end
+      end
+      raise TimeoutError, 'execution expired'
     end
   end
 end
