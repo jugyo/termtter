@@ -43,5 +43,9 @@ module Termtter
         memo
       end
     end
+
+    def retweeted_status
+      nil
+    end
   end
 end

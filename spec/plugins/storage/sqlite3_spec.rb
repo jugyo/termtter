@@ -1,9 +1,10 @@
+require 'tmpdir'
 require File.dirname(__FILE__) + '/../../spec_helper'
 require File.dirname(__FILE__) + '/../../../lib/plugins/storage/sqlite3'
 
 module Termtter::Storage
   describe "sqlite3" do
-    DB_FILE = '/tmp/test.db'
+    DB_FILE = File.join(Dir.tmpdir, 'test.db')
     before(:each) do
       File.delete(DB_FILE) if File.exists?(DB_FILE)
       @db = Termtter::Storage::SQLite3.new(DB_FILE)

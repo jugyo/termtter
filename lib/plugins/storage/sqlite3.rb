@@ -37,8 +37,33 @@ CREATE TABLE IF NOT EXISTS post (
     end
 
     def update(status)
-      return nil if find_id(status[:post_id])
-      insert(status)
+      @db.transaction
+      begin
+        return nil if find_id(status[:post_id])
+        insert(status)
+      ensure
+        @db.commit
+      end
+    end
+
+    def update_user(user_id, screen_name)
+      return nil if find_user_id(user_id)
+      @db.execute(
+        "insert into user values(?,?)",
+        status[:user_id],
+        status[:screen_name])
+    end
+
+    FIND_USER_ID = <<-EOS
+select id, screen_name
+ from user where id = ?
+EOS
+    def find_user_id(user_id)
+      result = nil
+      @db.execute(FIND_USER_ID, user_id) do |id, screen_name|
+        result = { :id => id, :screen_name => screen_name}
+      end
+      result
     end
 
     def insert(status)
@@ -51,10 +76,7 @@ CREATE TABLE IF NOT EXISTS post (
         status[:in_reply_to_user_id],
         status[:text],
         status[:user_id])
-      @db.execute(
-        "insert into user values(?,?)",
-        status[:user_id],
-        status[:screen_name])
+      update_user(status[:user_id], status[:screen_name])
     end
 
     FIND_ID = <<-EOS
@@ -63,7 +85,7 @@ select created_at, screen_name, post_text, in_reply_to_status_id, post_id, user_
 EOS
     def find_id(id)
       result = nil
-      @db.execute(FIND, id) do |created_at, screen_name, post_text, in_reply_to_status_id, post_id, user_id|
+      @db.execute(FIND_ID, id) do |created_at, screen_name, post_text, in_reply_to_status_id, post_id, user_id|
         result = Termtter::ActiveRubytter.new({
             :id => post_id,
             :created_at => created_at,
