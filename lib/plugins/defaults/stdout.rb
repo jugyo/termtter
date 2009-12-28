@@ -146,8 +146,11 @@ module Termtter
       text = TermColor.parse(erbed_text) + "\n"
       text = TermColor.unescape(text)
       if config.plugins.stdout.show_as_thread && s.in_reply_to_status_id
-        status = Termtter::API.twitter.show(s.in_reply_to_status_id)
-        text << status_line(status, time_format, event, indent + 1)
+        begin
+          status = Termtter::API.twitter.show(s.in_reply_to_status_id)
+          text << status_line(status, time_format, event, indent + 1)
+        rescue Rubytter::APIError
+        end
       end
       text
     end
