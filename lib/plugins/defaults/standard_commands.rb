@@ -15,7 +15,7 @@ module Termtter::Client
     :name => :reload,
     :exec => lambda {|arg|
       args = @since_id ? [{:since_id => @since_id}] : []
-      statuses = Termtter::API.twitter.friends_timeline(*args)
+      statuses = Termtter::API.twitter.home_timeline(*args)
       unless statuses.empty?
         print "\e[0G" + "\e[K" unless win?
         @since_id = statuses[0].id
@@ -98,24 +98,6 @@ module Termtter::Client
   end
 
   register_command(
-    :name => :profile, :aliases => [:p],
-    :exec_proc => lambda {|arg|
-      user_name = arg.empty? ? config.user_name : arg
-      user = Termtter::API.twitter.user(user_name)
-      attrs = %w[ name screen_name url description profile_image_url location protected following
-        friends_count followers_count statuses_count favourites_count
-        id time_zone created_at utc_offset notifications
-      ]
-      label_width = attrs.map(&:size).max
-      attrs.each do |attr|
-        value = user.__send__(attr.to_sym)
-        puts "#{attr.gsub('_', ' ').rjust(label_width)}: #{value}"
-      end
-    },
-    :help => ["profile,p [USERNAME]", "Show user's profile."]
-  )
-
-  register_command(
     :name => :followers,
     :exec_proc => lambda {|arg|
       user_name = normalize_as_user_name(arg)
@@ -147,7 +129,7 @@ module Termtter::Client
 
       if arg.empty?
         event = :list_friends_timeline
-        statuses = Termtter::API.twitter.friends_timeline(options)
+        statuses = Termtter::API.twitter.home_timeline(options)
       else
         event = :list_user_timeline
         statuses = []

@@ -26,7 +26,7 @@ def get_icon_path(s)
         rimage = Magick::Image.from_blob(image).first
         rimage = rimage.resize_to_fill(48, 48)
         f << rimage.to_blob
-      rescue Net::ProtocolError
+      rescue Net::ProtocolError, Magick::ImageMagickError
         return nil
       end
     end
