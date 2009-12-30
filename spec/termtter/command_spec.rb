@@ -143,6 +143,8 @@ module Termtter
           should == ['test', 'foo  bar']
         @command.split_command_line(' test   foo  bar ').
           should == ['test', 'foo  bar']
+        @command.split_command_line('test ').
+          should == ['test', '']
       end
     end
 

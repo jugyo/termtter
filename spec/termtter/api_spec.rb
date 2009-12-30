@@ -61,7 +61,7 @@ module Termtter
         it_should_examine_with('test', nil) { nil }
       }
       result[:stdout].should ==
-        "Please enter your Twitter login:\nPassword: \n"
+        "Please enter your Twitter login:\nUsername: test\nPassword: \n"
     end
 
     it 'can examine username and password (only pass)' do

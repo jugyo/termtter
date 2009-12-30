@@ -95,7 +95,7 @@ module Termtter
     def split_command_line(line)
       command_words_count = command_words.size
       parts = line.strip.split(/\s+/, command_words_count + 1)
-      [parts[0...command_words_count].join(' '), parts[command_words_count]]
+      [parts[0...command_words_count].join(' '), parts[command_words_count] || '']
     end
   end
 end
