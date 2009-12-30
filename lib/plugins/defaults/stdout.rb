@@ -25,7 +25,7 @@ config.plugins.stdout.set_default(:pager, 'less -R -f +G')
 config.plugins.stdout.set_default(:window_height, 50)
 config.plugins.stdout.set_default(:typable_ids, ('aa'..'zz').to_a)
 config.plugins.stdout.set_default(:typable_id_prefix, '$')
-config.plugins.stdout.set_default(:show_as_thread, false) # db plugin is required
+config.plugins.stdout.set_default(:show_reply_chain, true)
 config.plugins.stdout.set_default(:indent_format, %q("#{'    ' * (indent - 1)}  → "))
 config.plugins.stdout.set_default(:max_indent_level, 5)
 
@@ -145,7 +145,7 @@ module Termtter
       erbed_text = Client.get_hooks(:pre_coloring).inject(erbed_text){|result, hook| hook.call(result, event)}
 
       text = TermColor.unescape(TermColor.parse(erbed_text) + "\n")
-      if config.plugins.stdout.show_as_thread && s.in_reply_to_status_id
+      if config.plugins.stdout.show_reply_chain && s.in_reply_to_status_id
         indent += 1
         unless indent > config.plugins.stdout.max_indent_level
           begin
