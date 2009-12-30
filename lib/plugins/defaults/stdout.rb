@@ -27,7 +27,7 @@ config.plugins.stdout.set_default(:typable_ids, ('aa'..'zz').to_a)
 config.plugins.stdout.set_default(:typable_id_prefix, '$')
 config.plugins.stdout.set_default(:show_reply_chain, true)
 config.plugins.stdout.set_default(:indent_format, %q("#{'    ' * (indent - 1)}  → "))
-config.plugins.stdout.set_default(:max_indent_level, 5)
+config.plugins.stdout.set_default(:max_indent_level, 3)
 
 module Termtter
   class TypableIdGenerator
