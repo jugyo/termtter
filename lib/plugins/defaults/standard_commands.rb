@@ -28,7 +28,7 @@ module Termtter::Client
   register_command(
     :name => :update, :alias => :u,
     :exec => lambda {|arg|
-      unless arg.rstrip.empty?
+      unless arg.empty?
         params =
           if config.easy_reply && /^\s*(@\w+)/ =~ arg
             user_name = normalize_as_user_name($1)

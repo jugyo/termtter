@@ -151,14 +151,16 @@ module Termtter
           raise CommandNotFound, text if commands.empty?
 
           commands.each do |command|
-            command_str, command_arg = command.split_command_line(text)
+            command_str, modified_arg = command.split_command_line(text)
+            command_str.strip!
 
-            modified_arg = command_arg
             # FIXME: This block can become Maybe Monad
             get_hooks("modify_arg_for_#{command.name.to_s}").each {|hook|
               break if modified_arg == false # interrupt if hook return false
-              modified_arg = hook.call(command_str, modified_arg)
+              modified_arg.strip!
+              modified_arg = hook.call(command_str, modified_arg) || ''
             }
+            modified_arg.strip!
 
             begin
               call_hooks("pre_exec_#{command.name.to_s}", command, modified_arg)
