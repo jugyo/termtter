@@ -54,6 +54,7 @@ def expand_url(host, path)
   res = http_class.new(host).get(path, { 'User-Agent' => 'Mozilla' })
   return nil unless res.code == "301" or res.code == "302"
   res['Location'].force_encoding(Encoding::UTF_8)
-rescue
+rescue Exception => e
+  Termtter::Client.handle_error(e)
   nil
 end
