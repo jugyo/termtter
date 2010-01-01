@@ -14,20 +14,13 @@ Termtter::Client::register_hook(
   :name => :hugeurl,
   :point => :filter_for_output,
   :exec_proc => lambda do |statuses, event|
-    http_class = Net::HTTP
-    unless config.proxy.host.nil? or config.proxy.host.empty?
-      http_class = Net::HTTP::Proxy(config.proxy.host,
-                                    config.proxy.port,
-                                    config.proxy.user_name,
-                                    config.proxy.password)
-    end
-    http_class.start('search.twitter.com') do |http|
-      statuses.each do |s|
-        config.plugins.hugeurl.skip_users.include?(s.user.screen_name) and next
-        s.text.gsub!(HUGEURL_TARGET_PATTERN) do |m|
-          res = http.get('/hugeurl?url=' + m)
-          res.code == '200' && res.body !~ /^</ ? res.body : m
+    statuses.each do |s|
+      config.plugins.hugeurl.skip_users.include?(s.user.screen_name) and next
+      s.text.gsub!(HUGEURL_TARGET_PATTERN) do |m|
+        res = Termtter::HTTPpool.start('search.twitter.com') do |h|
+          h.get('/hugeurl?url=' + m)
         end
+        res.code == '200' && res.body !~ /^</ ? res.body : m
       end
     end
     statuses
