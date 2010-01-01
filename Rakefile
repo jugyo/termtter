@@ -1,3 +1,4 @@
+## -*- coding: utf-8; mode: ruby -*-
 $:.unshift File.dirname(__FILE__) + '/lib'
 
 require 'spec/rake/spectask'
