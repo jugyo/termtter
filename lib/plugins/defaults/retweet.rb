@@ -11,14 +11,17 @@ module Termtter::Client
     end
 
     if comment.nil?
-      Termtter::API.twitter.retweet(s.id)
-      puts "=> RT #{s.text}"
-    else
-      comment += ' ' unless comment.nil?
-      text = ERB.new(config.plugins.retweet.format).result(binding)
-      Termtter::API.twitter.update(text)
-      puts "=> #{text}"
+      begin
+        Termtter::API.twitter.retweet(s.id)
+        puts "=> RT #{s.text}"
+        return
+      rescue Rubytter::APIError  # XXX: just for transition period
+      end
     end
+    comment += ' ' unless comment.nil?
+    text = ERB.new(config.plugins.retweet.format).result(binding)
+    Termtter::API.twitter.update(text)
+    puts "=> #{text}"
   end
 
   register_command(
