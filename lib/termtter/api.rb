@@ -1,9 +1,26 @@
 # -*- coding: utf-8 -*-
 
 config.set_default(:host, 'twitter.com')
-config.proxy.set_default(:port, '8080')
-config.proxy.set_default(:host, nil)
-config.proxy.set_default(:port, nil)
+if ENV.has_key?('HTTP_PROXY')
+  require 'uri'
+  proxy = ENV['HTTP_PROXY']
+  proxy = "http://" + proxy if proxy !~ /^http:\/\//
+  u = URI.parse(proxy)
+  config.proxy.set_default(:host, u.host)
+  config.proxy.set_default(:port, u.port.to_s)
+
+  if u.userinfo.nil?
+    config.proxy.set_default(:host, nil)
+    config.proxy.set_default(:port, nil)
+  else
+    user_name,password = u.userinfo.split(/:/)
+    config.proxy.set_default(:user_name, user_name)
+    config.proxy.set_default(:password, password)
+  end
+else
+  config.proxy.set_default(:host, nil)
+  config.proxy.set_default(:port, nil)
+end
 config.proxy.set_default(:user_name, nil)
 config.proxy.set_default(:password, nil)
 config.set_default(:enable_ssl, false)
