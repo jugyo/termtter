@@ -10,6 +10,8 @@ module Termtter::Client
       !confirm("#{s.user.screen_name} is protected! Are you sure?", false) and
       return
 
+    # NOTE: If it's possible, this plugin tries to
+    #   use the default RT feature twitter provides.
     if comment.nil?
       begin
         Termtter::API.twitter.retweet(s.id)
