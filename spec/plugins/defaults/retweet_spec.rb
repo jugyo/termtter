@@ -31,9 +31,9 @@ describe 'Termtter::Client.post_retweet' do
         end
 
         Termtter::API.should_receive(:twitter).and_return(mock3)
-        $stdout = StringIO.new
-        Termtter::Client.post_retweet(mock, 'my comment')
-        $stdout = STDOUT
+        be_quiet do
+          Termtter::Client.post_retweet(mock, 'my comment')
+        end
       end
     end
   end
