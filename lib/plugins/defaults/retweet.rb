@@ -17,7 +17,8 @@ module Termtter::Client
     if comment.nil?
       begin
         Termtter::API.twitter.retweet(s.id)
-        puts "=> RT #{s.text}"
+        # TODO: Vimshell support
+        puts TermColor.parse("<blue>=&gt; RT @#{s.user.screen_name}: #{s.text}</blue>")
         return
       rescue Rubytter::APIError  # XXX: just for transition period
       end
