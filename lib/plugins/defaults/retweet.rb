@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
-config.plugins.retweet.set_default(:format, '<%= comment %>RT @<%=s.user.screen_name%>: <%=s.text%>')
-config.plugins.retweet.set_default(:confirm_protected, true)
+config.plugins.retweet.set_default(
+  :format, '<%= comment %>RT @<%=s.user.screen_name%>: <%=s.text%>')
+config.plugins.retweet.set_default(
+  :confirm_protected, true)
 
 module Termtter::Client
   def self.post_retweet(s, comment = nil)
@@ -74,7 +76,8 @@ module Termtter::Client
 
   register_command(
     :name => :retweets_of_me,
-    :help => ['retweets_of_me', 'Show tweets of you that have been retweeted by others.'],
+    :help => ['retweets_of_me',
+      'Show tweets of you that have been retweeted by others.'],
     :exec => lambda {|arg|
       statuses = Termtter::API.twitter.retweets_of_me
       output(statuses, :retweets_of_me)
