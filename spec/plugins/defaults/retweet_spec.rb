@@ -27,7 +27,7 @@ describe 'Termtter::Client.post_retweet' do
 
         mock3 = Object.new
         def mock3.update(text)
-          text
+          text.should == 'my comment RT @ujihisa: hi'
         end
 
         Termtter::API.should_receive(:twitter).and_return(mock3)
