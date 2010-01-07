@@ -1,19 +1,16 @@
 # -*- coding: utf-8 -*-
 
-require 'pp'
 require 'time'
-
-require File.dirname(__FILE__) + '/storage/status'
+require File.dirname(__FILE__) + '/storage/db'
 
 module Termtter::Client
-  public_storage[:log] = []
-
+  @db = Termtter::Storage::DB.new
   register_hook(
     :name => :storage,
     :points => [:pre_filter],
     :exec_proc => lambda {|statuses, event|
       statuses.each do |s|
-        Termtter::Storage::Status.insert(
+        @db.update(
           :post_id => s.id,
           :created_at => Time.parse(s.created_at).to_i,
           :in_reply_to_status_id => s.in_reply_to_status_id,
@@ -31,8 +28,8 @@ module Termtter::Client
     :aliases => [:ss],
     :exec_proc => lambda {|arg|
       unless arg.strip.empty?
-        key = arg.strip
-        statuses = Termtter::Storage::Status.search({:text => key})
+        text = arg.strip
+        statuses = @db.find_text(text)
         output(statuses, :search)
       end
     },
@@ -44,8 +41,8 @@ module Termtter::Client
     :aliases => [:ssu],
     :exec_proc => lambda {|arg|
       unless arg.strip.empty?
-        key = arg.strip.gsub(/^@/, '')
-        statuses = Termtter::Storage::Status.search_user({:user => key})
+        user = arg.strip.gsub(/^@/, '')
+        statuses = @db.find_user(user)
         output(statuses, :search)
       end
     },
