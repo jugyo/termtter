@@ -46,4 +46,21 @@ module Termtter::Client
     },
     :help => ["remove_from_list SLUG USERNAME", "Remove user(s) from the list"]
     )
+
+  register_command(
+    :name => :create_list,
+    :exec => lambda { |arg|
+      slug, *options = arg.split(' ')
+      param = { }
+
+      OptionParser.new {|opt|
+        opt.on('--description VALUE') {|v| param[:description] = v }
+        opt.on('--private') {|v| param[:mode] = 'private' }
+        opt.parse(options)
+      }
+      list = Termtter::API.twitter.create_list(slug, param).full_name
+      p [list.full_name, param]
+    },
+    :help => ["create_list SLUG [--description VALUE] [--private]", "Create list"]
+    )
 end
