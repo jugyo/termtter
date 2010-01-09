@@ -8,7 +8,7 @@ module Termtter::Client
         user_name = config.user_name
       end
       # TODO: show more information of lists
-      puts Termtter::API.twitter.lists(user_name).lists.map{|i| i.slug}
+      puts Termtter::API.twitter.lists(user_name).lists.map{|i| i.full_name}
     }
   )
 end
