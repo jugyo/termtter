@@ -10,7 +10,7 @@ config.plugins.stdout.set_default(
   [
     '<90><%=time%> [<%=status_id%>]</90> ',
     '<%= indent_text %>',
-    '<<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ',
+    '<<%=color%>><%=s.user.screen_name%>: <%=colorize_users(text)%></<%=color%>> ',
     '<90>',
     '<%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%>',
     '<%=retweeted_status_id ? " (retweet_to [#{retweeted_status_id}]) " : ""%>',
@@ -156,6 +156,22 @@ module Termtter
         end
       end
       text
+    end
+
+    def colorize_users(text)
+      text.gsub(/@(\w+)/) do |i|
+        user = Termtter::API.twitter.cached_user($1)
+        if user
+          color = user_color(user)
+          "<#{color}>#{i}</#{color}>"
+        else
+          i
+        end
+      end
+    end
+
+    def user_color(user)
+      config.plugins.stdout.colors[user.id.to_i % config.plugins.stdout.colors.size]
     end
   end
 
