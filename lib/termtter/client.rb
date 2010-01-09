@@ -27,6 +27,9 @@ module Termtter
           name.each {|i| plug(i, options) }
           return
         end
+
+        return if config.system.disable_plugins.include?(name.gsub('defaults/', ''))
+
         options.each do |key, value|
           config.plugins.__refer__(name.gsub(/-/, '_').to_sym).__assign__(key.to_sym, value)
         end

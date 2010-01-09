@@ -37,6 +37,11 @@ module Termtter
         config.system.load_plugins << plugin
       end
 
+      config.system.disable_plugins = []
+      opt.on('-n', '--disable-plugin plugin', 'Disable plugin') do |plugin|
+        config.system.disable_plugins << plugin
+      end
+
       config.system.eval_scripts = []
       opt.on('-e', '--eval-script script', 'Eval script') do |script|
         config.system.eval_scripts << script
