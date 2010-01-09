@@ -1,3 +1,6 @@
+# XXX: db plugin is required.
+Termtter::Client.plug 'db'
+
 module Termtter::Client
   register_command(
     :name => :lists,
