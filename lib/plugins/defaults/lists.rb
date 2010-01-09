@@ -63,4 +63,19 @@ module Termtter::Client
     },
     :help => ["create_list SLUG [--description VALUE] [--private]", "Create list"]
     )
+
+  register_command(
+    :name => :delete_list,
+    :exec => lambda { |arg|
+      arg.split(' ').each{ |slug|
+        begin
+          list = Termtter::API.twitter.delete_list(slug)
+          puts "#{list.full_name} deleted"
+        rescue => e
+          handle_error(e)
+        end
+      }
+    },
+    :help => ["delete_list SLUG", "Delete list"]
+    )
 end
