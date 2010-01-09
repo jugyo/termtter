@@ -50,5 +50,31 @@ module Termtter
       @rubytter_mock.stub!(:update).exactly(config.retry).times.and_raise(TimeoutError)
       @twitter.update('test')
     end
+
+    it 'should store cache when call "show"' do
+      status = "status"
+      @rubytter_mock.should_receive(:show).exactly(1).and_return(status)
+      @twitter.should_receive(:store_status_cache).with(status)
+      @twitter.show(1)
+    end
+
+    it 'should store cache when call "home_timeline"' do
+      statuses = ["1", "2"]
+      @rubytter_mock.should_receive(:home_timeline).exactly(1).and_return(statuses)
+      @twitter.should_receive(:store_status_cache).exactly(2)
+      @twitter.home_timeline
+    end
+
+    it 'should store cache when call "store_status_cache"' do
+      user = "user"
+      @twitter.should_receive(:store_user_cache).with(user)
+      @twitter.store_status_cache(Rubytter.structize({:user => user}))
+    end
+
+    it 'should not call rubytter if cache exists' do
+      @twitter.status_cache_store[1] = "status"
+      @rubytter_mock.should_receive(:show).exactly(0)
+      @twitter.show(1).should == "status"
+    end
   end
 end
