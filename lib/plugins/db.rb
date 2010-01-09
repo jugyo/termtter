@@ -31,6 +31,20 @@ end
 
 class User < Sequel::Model(:users)
   one_to_many :statuses
+
+  def self.find_or_fetch(args)
+    record = self.find(args)
+    return record if record
+    if key = (args[:id] || args[:screen_name])
+      fetched = Termtter::API.twitter.user(key) # XXX: throws Rubytter::APIError
+      User << {
+        :id => fetched.id,
+        :screen_name => fetched.screen_name,
+        :protected => fetched.protected
+      }
+      self.find(args)
+    end
+  end
 end
 
 module Termtter
