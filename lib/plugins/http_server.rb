@@ -66,7 +66,7 @@ module Termtter::Client
       @http_server_output = ''
       begin
         command = req.path.sub(/^\//, '')
-        call_commands(command)
+        execute(command)
         res['Content-Type'] = 'text/javascript; charset=utf-8';
         res.body = @http_server_output
       rescue Termtter::CommandNotFound => e

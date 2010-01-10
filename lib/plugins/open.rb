@@ -8,7 +8,7 @@ module Termtter
       :exec_proc => proc {|arg|
         sid, n = arg.split(/ +/)
         if sid.nil?
-          call_commands "uri-open"
+          execute "uri-open"
         else
           target = (n || 1).to_i
           target_uri = nil

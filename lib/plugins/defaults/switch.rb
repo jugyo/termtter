@@ -23,7 +23,7 @@ module Termtter::Client
       end
 
       Termtter::API.setup
-      call_commands('reload')
+      execute('reload')
     },
     :help => ["switch USERNAME", "Switch twitter account."]
   )

@@ -163,7 +163,7 @@ module Termtter
         ['test  foo bar ',  'foo bar'],
         ['test  foo  bar ', 'foo  bar'],
       ].each do |input, args|
-        status = Client.call_commands(input)
+        status = Client.execute(input)
         command_arg.should == args
         status.should == 0
       end
@@ -191,7 +191,7 @@ module Termtter
       input_command.should be_nil
       input_arg.should be_nil
       decided_arg.should be_nil
-      Client.call_commands('u foo')
+      Client.execute('u foo')
       input_command.should == 'u'
       input_arg.should == 'foo'
       decided_arg.should == 'FOO'
@@ -205,11 +205,11 @@ module Termtter
       Client.register_command(:name => :update, :exec => lambda{|arg|})
 
       hook_called.should == false
-      Client.call_commands('')
+      Client.execute('')
       hook_called.should == true
 
       hook_called = false
-      Client.call_commands('update foo')
+      Client.execute('update foo')
       hook_called.should == true
     end
 
@@ -221,10 +221,10 @@ module Termtter
       Client.register_command(:name => :update, :exec => lambda{|arg|})
 
       hook_called.should == false
-      Client.call_commands('')
+      Client.execute('')
       hook_called.should == false
 
-      Client.call_commands('update foo')
+      Client.execute('update foo')
       hook_called.should == true
     end
 
@@ -236,7 +236,7 @@ module Termtter
       Client.register_command(:name => :update, :exec => lambda{|arg|})
 
       hook_called.should == false
-      Client.call_commands('update foo')
+      Client.execute('update foo')
       hook_called.should == true
     end
 
@@ -248,7 +248,7 @@ module Termtter
       Client.register_command(:name => :update, :exec_proc => lambda {|arg| command_called = true})
 
       command_called.should == false
-      Client.call_commands('update foo')
+      Client.execute('update foo')
       command_called.should == false
     end
 
@@ -260,7 +260,7 @@ module Termtter
       Client.register_command(:name => :update, :exec_proc => lambda {|arg| 'foo'})
 
       command_result.should == nil
-      Client.call_commands('update foo')
+      Client.execute('update foo')
       command_result.should == 'foo'
     end
 
@@ -444,7 +444,7 @@ module Termtter
         }
       )
       command.should_not_receive(:call)
-      Client.call_commands('test')
+      Client.execute('test')
     end
 
     it 'gets default help' do
@@ -535,7 +535,7 @@ module Termtter
       command.stub(:call) { raise CommandCanceled }
       Client.stub(:find_command).with(text).and_return(command)
       lambda {
-        Client.call_commands(text).should == 1
+        Client.execute(text).should == 1
       }.should_not raise_error
     end
 

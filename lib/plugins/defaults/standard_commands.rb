@@ -122,6 +122,10 @@ module Termtter::Client
     :help => ["followers", "Show followers"]
   )
 
+  register_command('list foo') do
+    puts 'foo'
+  end
+
   register_command(:list, :alias => :l) do |arg|
     warn '"list" is deprecated. You can use "timeline" instead.'
   end
@@ -479,7 +483,7 @@ module Termtter::Client
         return if i <= 0
       end while input == "redo" or input == "."
       begin
-        Termtter::Client.call_commands(input)
+        Termtter::Client.execute(input)
       rescue CommandNotFound => e
         warn "Unknown command \"#{e}\""
         warn 'Enter "help" for instructions'

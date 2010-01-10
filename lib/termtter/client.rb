@@ -92,7 +92,7 @@ module Termtter
       def register_macro(name, macro, options = {})
         command = {
           :name => name.to_sym,
-          :exec_proc => lambda {|arg| call_commands(macro % arg)}
+          :exec_proc => lambda {|arg| execute(macro % arg)}
         }.merge(options)
         register_command(command)
       end
@@ -136,7 +136,7 @@ module Termtter
         }
       end
 
-      def call_commands(text)
+      def execute(text)
         # status
         #   0: done
         #   1: canceled
@@ -305,7 +305,7 @@ module Termtter
           end
         end
 
-        config.system.run_commands.each {|cmd| call_commands(cmd) }
+        config.system.run_commands.each {|cmd| execute(cmd) }
 
         unless config.system.cmd_mode
           @task_manager.run()

@@ -23,13 +23,13 @@ config.plugins.another_prompt.
                     sub(/^\d+\s(\d+)$/, '\\1').to_i
                 end,
                 'q' => lambda do
-                  Termtter::Client.call_commands('quit')
+                  Termtter::Client.execute('quit')
                 end,
                 'r' => lambda do
-                  Termtter::Client.call_commands('replies')
+                  Termtter::Client.execute('replies')
                 end,
                 '?' => lambda do
-                  Termtter::Client.call_commands('help')
+                  Termtter::Client.execute('help')
                 end,
                 "\e" => lambda do
                   system('screen', '-X', 'eval', 'copy')
@@ -43,7 +43,7 @@ module Termtter::Client
            :interval => config.update_interval,
            :after => config.update_interval) do
     begin
-      call_commands('reload')
+      execute('reload')
     rescue Exception => e
       handle_error(e)
     end
@@ -54,7 +54,7 @@ module Termtter::Client
     :point => :initialize,
     :exec => lambda {
       begin
-        call_commands('reload')
+        execute('reload')
       rescue Exception => e
         handle_error(e)
       end
@@ -91,7 +91,7 @@ module Termtter
     end
 
     def call_prompt(command)
-      Client.call_commands("curry #{command}")
+      Client.execute("curry #{command}")
       if buf = Readline.readline(ERB.new(prompt).result(Termtter::API.twitter.__send__(:binding)), true)
         Readline::HISTORY.pop if buf.empty?
         begin
@@ -103,7 +103,7 @@ module Termtter
         puts
       end
     ensure
-      Client.call_commands('uncurry')
+      Client.execute('uncurry')
     end
 
     def wait_keypress
@@ -120,7 +120,7 @@ module Termtter
           begin
             system "stty", STTY_ORIGIN
           ensure
-            Client.call_commands('exit')
+            Client.execute('exit')
           end
         end
       rescue ArgumentError
