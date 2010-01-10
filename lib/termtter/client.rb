@@ -158,6 +158,7 @@ module Termtter
           commands.each do |command|
             command_str, modified_arg = command.split_command_line(text)
             command_str.strip!
+            modified_arg ||= ''
 
             # FIXME: This block can become Maybe Monad
             get_hooks("modify_arg_for_#{command.name.to_s}").each {|hook|
