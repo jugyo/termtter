@@ -122,16 +122,34 @@ module Termtter::Client
     :help => ["followers", "Show followers"]
   )
 
-  register_command('list foo') do
-    puts 'foo'
-  end
-
-  register_command(:list, :alias => :l) do |arg|
-    warn '"list" is deprecated. You can use "timeline" instead.'
-  end
-
   register_command(
     :name => :timeline, :aliases => [:tl],
+    :exec_proc => lambda {|arg|
+      if arg =~ /\-([\d]+)/
+        options = {:count => $1}
+        arg = arg.gsub(/\-([\d]+)/, '')
+      else
+        options = {}
+      end
+
+      if arg.empty?
+        event = :list_friends_timeline
+        statuses = Termtter::API.twitter.home_timeline(options)
+      else
+        event = :list_user_timeline
+        statuses = []
+        Array(arg.split).each do |user|
+          user_name = normalize_as_user_name(user)
+          statuses += Termtter::API.twitter.user_timeline(user_name, options)
+        end
+      end
+      output(statuses, event)
+    },
+    :help => ["timeline,tl [USERNAME]/[SLUG] [-COUNT]", "List the posts"]
+  )
+
+  register_command(
+    :name => :list, :aliases => [:l],
     :exec_proc => lambda {|arg|
       if arg =~ /\-([\d]+)/
         options = {:count => $1}
@@ -159,7 +177,7 @@ module Termtter::Client
       end
       output(statuses, event)
     },
-    :help => ["timeline,tl [USERNAME]/[SLUG] [-COUNT]", "List the posts"]
+    :help => ["list,l [USERNAME]/[SLUG] [-COUNT]", "List the posts"]
   )
 
   class SearchEvent; attr_reader :query; def initialize(query); @query = query end; end
