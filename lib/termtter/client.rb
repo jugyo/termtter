@@ -283,8 +283,13 @@ module Termtter
         @task_manager = Termtter::TaskManager.new(1)
       end
 
+      def parse_options
+        Termtter::OptParser.parse!(ARGV)
+      end
+
       def run
         load_config()
+        parse_options()
         setup_logger()
         setup_task_manager()
         load_plugins()

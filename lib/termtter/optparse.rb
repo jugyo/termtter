@@ -21,32 +21,26 @@ module Termtter
         config.__assign__(:devel, true) if flg
       end
 
-      config.system.cmd_mode = false
       opt.on('-c', '--command-mode', 'Run as command mode') do |flg|
         config.system.cmd_mode = flg
       end
 
-      config.system.run_commands = []
       opt.on('-r', '--run-command command', 'Run command') do |cmd|
         config.system.run_commands << cmd
       end
 
-      config.system.load_plugins = []
       opt.on('-p', '--plugin plugin', 'Load plugin') do |plugin|
         config.system.load_plugins << plugin
       end
 
-      config.system.disable_plugins = []
       opt.on('-n', '--disable-plugin plugin', 'Disable plugin') do |plugin|
         config.system.disable_plugins << plugin
       end
 
-      config.system.eval_scripts = []
       opt.on('-e', '--eval-script script', 'Eval script') do |script|
         config.system.eval_scripts << script
       end
 
-      config.system.eval_scripts = []
       opt.on('-m', '--monochrome', 'No shell escapes for color highlightings') do |script|
         require 'termcolor'
         module ::TermColor
@@ -60,12 +54,11 @@ module Termtter
       end
 
       opt.on('-u', '--user user', 'Login username') do |val|
-        config.specified_user_name = val
+        config.user_name = val
       end
 
       opt.version = Termtter::VERSION
     }
-
   end
 end
 
