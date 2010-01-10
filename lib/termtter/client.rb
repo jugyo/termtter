@@ -152,30 +152,29 @@ module Termtter
           }
           return if text.empty?
 
-          commands = find_commands(text)
-          raise CommandNotFound, text if commands.empty?
+          command = find_command(text)
+          raise CommandNotFound, text unless command
 
-          commands.each do |command|
-            command_str, modified_arg = command.split_command_line(text)
-            command_str.strip!
-            modified_arg ||= ''
+          command_str, modified_arg = command.split_command_line(text)
+          command_str.strip!
+          modified_arg ||= ''
 
-            # FIXME: This block can become Maybe Monad
-            get_hooks("modify_arg_for_#{command.name.to_s}").each {|hook|
-              break if modified_arg == false # interrupt if hook return false
-              modified_arg.strip!
-              modified_arg = hook.call(command_str, modified_arg) || ''
-            }
+          # FIXME: This block can become Maybe Monad
+          get_hooks("modify_arg_for_#{command.name.to_s}").each {|hook|
+            break if modified_arg == false # interrupt if hook return false
             modified_arg.strip!
+            modified_arg = hook.call(command_str, modified_arg) || ''
+          }
+          modified_arg.strip!
 
-            begin
-              call_hooks("pre_exec_#{command.name.to_s}", command, modified_arg)
-              result = command.call(command_str, modified_arg, text) # exec command
-              call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
-            rescue CommandCanceled
-              status = 1
-            end
+          begin
+            call_hooks("pre_exec_#{command.name.to_s}", command, modified_arg)
+            result = command.call(command_str, modified_arg, text) # exec command
+            call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
+          rescue CommandCanceled
+            status = 1
           end
+
           call_hooks("post_command", text)
           status
         end
@@ -188,8 +187,12 @@ module Termtter
         @commands.values.any? {|command| command.match?(text) }
       end
 
-      def find_commands(text)
-        @commands.values.select {|command| command.match?(text) }
+      def find_command(text)
+        @commands.
+          values.
+          select {|command| command.match?(text) }.
+          sort_by {|command| command.name.to_s.split(' ').size }.
+          last
       end
 
       def pause

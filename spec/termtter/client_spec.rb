@@ -533,7 +533,7 @@ module Termtter
       text = 'text'
       command = mock('command', :null_object => true)
       command.stub(:call) { raise CommandCanceled }
-      Client.stub(:find_commands).with(text).and_return([command])
+      Client.stub(:find_command).with(text).and_return(command)
       lambda {
         Client.call_commands(text).should == 1
       }.should_not raise_error
@@ -545,16 +545,17 @@ module Termtter
         Client.register_command(:name => :foo1)
         Client.register_command(:name => :foo2)
         Client.register_command(:name => :bar)
+        Client.register_command(:name => 'bar xxx')
       end
 
       it 'commands number is 3' do
-        Client.commands.size.should == 3
+        Client.commands.size.should == 4
       end
 
       it 'finds a command' do
-        Client.find_commands('foo1').size.should == 1
-        Client.find_commands('foo1')[0].name.should == :foo1
-        Client.find_commands('bar').size.should == 1
+        Client.find_command('foo1').name.should == :foo1
+        Client.find_command('bar').name.should == :bar
+        Client.find_command('bar xxx').name.should == :'bar xxx'
       end
 
       it 'check command exists' do
@@ -565,7 +566,7 @@ module Termtter
       end
 
       it 'finds no command' do
-        Client.find_commands('foo').size.should == 0
+        Client.find_command('foo').should be_nil
       end
     end
 
