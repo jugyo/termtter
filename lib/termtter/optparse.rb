@@ -1,4 +1,3 @@
-
 module Termtter
   module OptParser
     class << self
