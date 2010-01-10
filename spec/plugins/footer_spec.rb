@@ -2,18 +2,19 @@
 require File.dirname(__FILE__) + '/../spec_helper.rb'
 
 describe Termtter::Client, 'when the plugin footer is loaded' do
-  before do
+  @r = nil
+  before(:all) do
+    @r = nil
+    Termtter::Client.setup_task_manager
+
     config.footer = "[termtter]"
-    Termtter::Client.register_hook(
-      :name => :test,
-      :points => [:pre_exec_update],
-      :exec_proc => lambda {|cmd, arg| @decided_arg = arg}
-    )
-    Termtter::Client.register_command(:name => :update, :aliases => [:u], :exec => lambda{|_|})
+
   end
 
-  before(:each) do
-    @decided_arg = nil
+  before do
+    @r = nil
+    Termtter::Client.register_command(:name => :update, :aliases => [:u], :exec => lambda{|arg| @r = arg })
+    Termtter::Client.plug 'footer'
   end
 
   it 'should add hook add_footer and command footer' do
@@ -23,26 +24,26 @@ describe Termtter::Client, 'when the plugin footer is loaded' do
   end
 
   it 'should add footer at update' do
-    @decided_arg.should be_nil
+    @r.should be_nil
     Termtter::Client.call_commands('update foo')
     config.footer.should == '[termtter]'
-    @decided_arg.should == 'foo [termtter]'
+    @r.should == 'foo [termtter]'
   end
 
   it 'should call footer command to change config.footer' do
     Termtter::Client.call_commands('footer #termtter')
     config.footer.should == '#termtter'
-    @decided_arg.should be_nil
+    @r.should be_nil
     Termtter::Client.call_commands('update bar')
-    @decided_arg.should == 'bar #termtter'
+    @r.should == 'bar #termtter'
   end
 
   it 'should call footer no argument to set config.footer to nil' do
     Termtter::Client.call_commands('footer')
     config.footer.should == nil
-    @decided_arg.should be_nil
+    @r.should be_nil
     Termtter::Client.call_commands('update hoge')
-    @decided_arg.should == 'hoge'
+    @r.should == 'hoge'
   end
 end
 
