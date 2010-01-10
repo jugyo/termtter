@@ -1,6 +1,3 @@
-# XXX: db plugin is required.
-Termtter::Client.plug 'db'
-
 module Termtter::Client
   register_command(
     :name => :lists,
@@ -21,7 +18,8 @@ module Termtter::Client
       slug, *users = arg.split(' ')
       users.each{ |screen_name|
         begin
-          Termtter::API.twitter.add_member_to_list(slug, User.find_or_fetch(:screen_name => screen_name).id)
+          user = Termtter::API.twitter.cached_user(screen_name) || Termtter::API.twitter.user(screen_name)
+          Termtter::API.twitter.add_member_to_list(slug, user.id)
           puts "#{slug} + #{screen_name}"
         rescue => e
           handle_error(e)
@@ -37,7 +35,8 @@ module Termtter::Client
       slug, *users = arg.split(' ')
       users.each{ |screen_name|
         begin
-          Termtter::API.twitter.remove_member_from_list(slug, User.find_or_fetch(:screen_name => screen_name).id)
+          user = Termtter::API.twitter.cached_user(screen_name) || Termtter::API.twitter.user(screen_name)
+          Termtter::API.twitter.remove_member_from_list(slug, user.id)
           puts "#{slug} - #{screen_name}"
         rescue => e
           handle_error(e)
