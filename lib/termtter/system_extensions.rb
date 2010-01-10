@@ -71,3 +71,7 @@ def open_browser(url)
   end
 end
 
+begin
+  # temporary measure for Readline stops other threads problem.
+  Readline.input = STDIN
+rescue; end
