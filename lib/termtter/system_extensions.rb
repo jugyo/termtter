@@ -65,7 +65,7 @@ def open_browser(url)
   when /linux/
     system 'firefox', url
   when /mswin(?!ce)|mingw|bccwin/
-    system 'explorer', url
+    system 'start', url
   else
     system 'open', url
   end
