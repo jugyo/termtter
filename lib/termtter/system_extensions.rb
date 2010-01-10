@@ -67,7 +67,7 @@ def open_browser(url)
   when /mswin(?!ce)|mingw|bccwin/
     system 'explorer', url
   else
-    system 'start', url
+    system 'open', url
   end
 end
 
