@@ -7,7 +7,7 @@ module Termtter::Client
     :name => :screen_notify,
     :points => [:output],
     :exec_proc => lambda{|statuses, event|
-      return unless event = :update_friends_timeline
+      return unless event == :update_friends_timeline
       Thread.new(statuses) do |ss|
         ss.each do |s|
           msg = config.screen_notify.format % s.user.screen_name
