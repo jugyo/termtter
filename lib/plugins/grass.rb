@@ -12,7 +12,7 @@ module Termtter
         rate ||= config.plugins.grass.rate
         grow = (count * rate.to_i).quo(100).round
         grasses = ('w' * (count-grow) + 'W' * grow).split(//).shuffle.join
-        call_commands("update #{grasses}")
+        execute("update #{grasses}")
       },
       :help => ['grass, w', 'Grass it!']
     )

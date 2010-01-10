@@ -38,7 +38,7 @@ module Termtter::Client
       command = public_storage[:drafts][index]
       if command
         puts "exec => \"#{command}\""
-        call_commands(public_storage[:drafts][index])
+        execute(public_storage[:drafts][index])
         public_storage[:drafts].delete_at(index)
       end
     end

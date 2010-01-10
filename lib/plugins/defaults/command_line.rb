@@ -31,7 +31,7 @@ module Termtter
       Client.get_hooks('prepare_command').each {|hook|
         command_text = hook.call(command_text)
       }
-      Client.call_commands(command_text)
+      Client.execute(command_text)
     rescue TimeoutError
       puts TermColor.parse("<red>Time out :(</red>")
     end
@@ -96,7 +96,7 @@ module Termtter
           begin
             system "stty", stty_save
           ensure
-            Client.call_commands('exit')
+            Client.execute('exit')
           end
         end
         trap("CONT") do

@@ -14,28 +14,28 @@ module Termtter
     it 'should puts drafts' do
       Client.should_receive(:puts).with("0: foo")
       Client.should_receive(:puts).with("1: bar")
-      Client.call_commands('draft list')
+      Client.execute('draft list')
     end
 
     it 'should clear drafts' do
-      Client.call_commands('draft clear')
+      Client.execute('draft clear')
       Client.public_storage[:drafts].size.should == 0
     end
 
     it 'should exec last draft' do
-      Client.should_receive(:call_commands).with('bar')
+      Client.should_receive(:execute).with('bar')
       Client.get_command(:'draft exec').call('draft exec')
     end
 
     it 'should exec specified draft' do
-      Client.should_receive(:call_commands).with('foo')
+      Client.should_receive(:execute).with('foo')
       Client.get_command(:'draft exec').call('draft exec', '0')
     end
 
     it 'should not exec draft if index is wrong' do
-      Client.should_not_receive(:call_commands)
+      Client.should_not_receive(:execute)
       Client.get_command(:'draft exec').call('draft exec', '2')
-      Client.should_not_receive(:call_commands)
+      Client.should_not_receive(:execute)
       Client.get_command(:'draft exec').call('draft exec', 'a')
     end
 

@@ -80,7 +80,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     termtter_command = m.command.downcase + ' ' + m.params.join(' ')
     return if Termtter::Client.find_commands(termtter_command).empty?
     post '#termtter', NOTICE, main_channel, '> ' + termtter_command
-    Termtter::Client.call_commands(termtter_command)
+    Termtter::Client.execute(termtter_command)
   rescue Exception => e
     post '#termtter', NOTICE, main_channel, "#{e.class.to_s}: #{e.message}"
     Termtter::Client.handle_error(e)
@@ -100,9 +100,9 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       termtter_command = message.gsub(/ +\//, '')
       return if Termtter::Client.find_commands(termtter_command).empty?
       post '#termtter', NOTICE, main_channel, '> ' + termtter_command
-      Termtter::Client.call_commands(termtter_command)
+      Termtter::Client.execute(termtter_command)
     else
-      Termtter::Client.call_commands('update ' + message)
+      Termtter::Client.execute('update ' + message)
       post @prefix, TOPIC, main_channel, message
     end
   rescue Exception => e

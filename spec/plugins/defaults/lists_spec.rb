@@ -21,14 +21,14 @@ describe 'plugin lists' do
       response = Object.new
       response.stub!(:lists).and_return({})
       @twitter_stub.should_receive(:lists).with('jugyo').and_return(response)
-      Termtter::Client.call_commands('lists')
+      Termtter::Client.execute('lists')
     end
 
     it 'should call with user_name' do
       response = Object.new
       response.stub!(:lists).and_return({})
       @twitter_stub.should_receive(:lists).with('termtter').and_return(response)
-      Termtter::Client.call_commands('lists termtter')
+      Termtter::Client.execute('lists termtter')
     end
   end
 end

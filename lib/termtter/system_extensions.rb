@@ -23,6 +23,8 @@ module Readline
         extend DL::Importer
       end
       pathes = Array(ENV['TERMTTER_EXT_LIB'] || [
+        '/usr/lib64/libreadline.so',
+        '/usr/local/lib64/libreadline.so',
         '/opt/local/lib/libreadline.dylib',
         '/usr/lib/libreadline.so',
         '/usr/local/lib/libreadline.so',
@@ -43,6 +45,7 @@ module Readline
       end
     end
   rescue Exception
+    def self.rl_parse_and_bind(str);end
     def self.refresh_line;end
   end
 end

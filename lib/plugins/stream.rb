@@ -129,7 +129,7 @@ module Termtter::Client
   help = ['hash_stream HASHTAG', 'Tracking hashtag using Stream API']
   register_command(:hash_stream, :help => help) do |arg|
     arg = "##{arg}" unless /^#/ =~ arg
-    call_commands("keyword_stream #{arg}")
+    execute("keyword_stream #{arg}")
   end
 
   help = ['stream USERNAME', 'Tracking users using Stream API']

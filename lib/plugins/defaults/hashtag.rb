@@ -12,7 +12,7 @@ module Termtter::Client
   register_command(:raw_update) do |args|
     temp = public_storage[:hashtags]
     public_storage[:hashtags].clear
-    call_commands "update #{args}"
+    execute "update #{args}"
     public_storage[:hashtags] = temp
   end
 

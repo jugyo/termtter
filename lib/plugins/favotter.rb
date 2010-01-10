@@ -70,7 +70,7 @@ module Termtter::Client
   register_command('favotter_fav', :alias => :ffav, :help => help) do |arg|
     raise 'need favorited_id' if arg.empty?
     if id = public_storage[:favorited_ids][arg]
-      call_commands("favorite #{id}")
+      execute("favorite #{id}")
     end
   end
 end

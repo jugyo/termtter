@@ -123,7 +123,7 @@ module Termtter::Client
   )
 
   register_command(
-    :name => :list, :aliases => [:l],
+    :name => :timeline, :aliases => [:tl],
     :exec_proc => lambda {|arg|
       if arg =~ /\-([\d]+)/
         options = {:count => $1}
@@ -145,7 +145,7 @@ module Termtter::Client
       end
       output(statuses, event)
     },
-    :help => ["list,l [USERNAME] [-COUNT]", "List the posts"]
+    :help => ["timeline,tl [USERNAME]/[SLUG] [-COUNT]", "List the posts"]
   )
 
   class SearchEvent; attr_reader :query; def initialize(query); @query = query end; end
@@ -469,7 +469,7 @@ module Termtter::Client
         return if i <= 0
       end while input == "redo" or input == "."
       begin
-        Termtter::Client.call_commands(input)
+        Termtter::Client.execute(input)
       rescue CommandNotFound => e
         warn "Unknown command \"#{e}\""
         warn 'Enter "help" for instructions'

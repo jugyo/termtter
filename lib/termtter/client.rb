@@ -28,6 +28,8 @@ module Termtter
           return
         end
 
+        name = name.to_s
+
         return if config.system.disable_plugins.include?(name.gsub('defaults/', ''))
 
         options.each do |key, value|
@@ -90,7 +92,7 @@ module Termtter
       def register_macro(name, macro, options = {})
         command = {
           :name => name.to_sym,
-          :exec_proc => lambda {|arg| call_commands(macro % arg)}
+          :exec_proc => lambda {|arg| execute(macro % arg)}
         }.merge(options)
         register_command(command)
       end
@@ -134,12 +136,7 @@ module Termtter
         }
       end
 
-      def call_commands(text)
-        # status
-        #   0: done
-        #   1: canceled
-        status = 0
-
+      def execute(text)
         text = text.strip
 
         @task_manager.invoke_and_wait do
@@ -150,31 +147,30 @@ module Termtter
           }
           return if text.empty?
 
-          commands = find_commands(text)
-          raise CommandNotFound, text if commands.empty?
+          command = find_command(text)
+          raise CommandNotFound, text unless command
 
-          commands.each do |command|
-            command_str, modified_arg = command.split_command_line(text)
-            command_str.strip!
+          command_str, modified_arg = command.split_command_line(text)
+          command_str.strip!
+          modified_arg ||= ''
 
-            # FIXME: This block can become Maybe Monad
-            get_hooks("modify_arg_for_#{command.name.to_s}").each {|hook|
-              break if modified_arg == false # interrupt if hook return false
-              modified_arg.strip!
-              modified_arg = hook.call(command_str, modified_arg) || ''
-            }
+          # FIXME: This block can become Maybe Monad
+          get_hooks("modify_arg_for_#{command.name.to_s}").each {|hook|
+            break if modified_arg == false # interrupt if hook return false
             modified_arg.strip!
+            modified_arg = hook.call(command_str, modified_arg) || ''
+          }
+          modified_arg.strip!
 
-            begin
-              call_hooks("pre_exec_#{command.name.to_s}", command, modified_arg)
-              result = command.call(command_str, modified_arg, text) # exec command
-              call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
-            rescue CommandCanceled
-              status = 1
-            end
+          begin
+            call_hooks("pre_exec_#{command.name.to_s}", command, modified_arg)
+            result = command.call(command_str, modified_arg, text) # exec command
+            call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
+            call_hooks("post_command", text)
+          rescue CommandCanceled
+            return false
           end
-          call_hooks("post_command", text)
-          status
+          return true
         end
       rescue TimeoutError
         call_hooks("timeout", text)
@@ -185,8 +181,12 @@ module Termtter
         @commands.values.any? {|command| command.match?(text) }
       end
 
-      def find_commands(text)
-        @commands.values.select {|command| command.match?(text) }
+      def find_command(text)
+        @commands.
+          values.
+          select {|command| command.match?(text) }.
+          sort_by {|command| command.name.to_s.split(' ').size }.
+          last
       end
 
       def pause
@@ -299,7 +299,7 @@ module Termtter
           end
         end
 
-        config.system.run_commands.each {|cmd| call_commands(cmd) }
+        config.system.run_commands.each {|cmd| execute(cmd) }
 
         unless config.system.cmd_mode
           @task_manager.run()

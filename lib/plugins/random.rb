@@ -15,7 +15,7 @@ module Termtter::Client
         return
       end
 
-      call_commands("update #{status.text}")
+      execute("update #{status.text}")
 
     },
     :help => ['random', 'random post']

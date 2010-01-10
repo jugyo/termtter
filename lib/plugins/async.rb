@@ -12,7 +12,7 @@ module Termtter::Client
     :exec => lambda {|arg|
       @task_manager.invoke_later do
         begin
-          call_commands(arg)
+          execute(arg)
         rescue Exception => e
           handle_error(e)
         end

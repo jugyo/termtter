@@ -9,7 +9,11 @@ module Termtter::Client
     else
       case RUBY_PLATFORM
       when /linux/
-        system 'firefox', uri
+        if %x{echo $BROWSER}.strip.empty?
+          system 'firefox', uri
+        else
+          system '$BROWSER', uri
+        end
       when /mswin(?!ce)|mingw|bccwin/
         system 'explorer', uri
       else

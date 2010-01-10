@@ -12,7 +12,7 @@ Thread.new do
   loop do
     statement = pool.take([:statement, nil])
     print 'pool: '
-    Termtter::Client.call_commands("update #{statement[1]}")
+    Termtter::Client.execute("update #{statement[1]}")
     STDOUT.flush
   end
 end
