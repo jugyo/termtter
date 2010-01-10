@@ -28,6 +28,8 @@ module Termtter
           return
         end
 
+        name = name.to_s
+
         return if config.system.disable_plugins.include?(name.gsub('defaults/', ''))
 
         options.each do |key, value|
