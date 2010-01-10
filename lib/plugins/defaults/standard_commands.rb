@@ -155,7 +155,7 @@ module Termtter::Client
       end
       output(statuses, event)
     },
-    :help => ["list,l [USERNAME]/[SLUG] [-COUNT]", "List the posts"]
+    :help => ["timeline,tl [USERNAME]/[SLUG] [-COUNT]", "List the posts"]
   )
 
   class SearchEvent; attr_reader :query; def initialize(query); @query = query end; end
