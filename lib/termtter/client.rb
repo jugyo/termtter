@@ -137,11 +137,6 @@ module Termtter
       end
 
       def execute(text)
-        # status
-        #   0: done
-        #   1: canceled
-        status = 0
-
         text = text.strip
 
         @task_manager.invoke_and_wait do
@@ -171,12 +166,11 @@ module Termtter
             call_hooks("pre_exec_#{command.name.to_s}", command, modified_arg)
             result = command.call(command_str, modified_arg, text) # exec command
             call_hooks("post_exec_#{command.name.to_s}", command_str, modified_arg, result)
+            call_hooks("post_command", text)
           rescue CommandCanceled
-            status = 1
+            return false
           end
-
-          call_hooks("post_command", text)
-          status
+          return true
         end
       rescue TimeoutError
         call_hooks("timeout", text)

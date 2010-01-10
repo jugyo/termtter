@@ -165,7 +165,7 @@ module Termtter
       ].each do |input, args|
         status = Client.execute(input)
         command_arg.should == args
-        status.should == 0
+        status.should == true
       end
     end
 
@@ -534,9 +534,7 @@ module Termtter
       command = mock('command', :null_object => true)
       command.stub(:call) { raise CommandCanceled }
       Client.stub(:find_command).with(text).and_return(command)
-      lambda {
-        Client.execute(text).should == 1
-      }.should_not raise_error
+      Client.execute(text).should == false
     end
 
     describe 'add commands' do
