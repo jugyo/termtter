@@ -287,7 +287,13 @@ module Termtter
         Termtter::OptParser.parse!(ARGV)
       end
 
+      def show_splash
+        puts TermColor.parse(config.splash)
+      end
+
       def run
+        show_splash
+
         load_config()
         parse_options()
         setup_logger()
