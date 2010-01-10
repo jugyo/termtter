@@ -71,7 +71,7 @@ def open_browser(url)
   end
 end
 
-begin
+if Readline.respond_to?(:input)
   # temporary measure for Readline stops other threads problem.
   Readline.input = STDIN
-rescue; end
+end
