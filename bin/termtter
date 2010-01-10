@@ -10,7 +10,5 @@ self_file =
   end
 $:.unshift(File.dirname(self_file) + "/../lib")
 
-require 'rubygems'
 require 'termtter'
-Termtter::OptParser.parse!(ARGV)
 Termtter::Client.run
