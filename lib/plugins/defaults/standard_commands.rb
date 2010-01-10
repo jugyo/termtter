@@ -122,8 +122,12 @@ module Termtter::Client
     :help => ["followers", "Show followers"]
   )
 
+  register_command(:list, :alias => :l) do |arg|
+    warn '"list" is deprecated. You can use "timeline" instead.'
+  end
+
   register_command(
-    :name => :list, :aliases => [:l],
+    :name => :timeline, :aliases => [:tl],
     :exec_proc => lambda {|arg|
       if arg =~ /\-([\d]+)/
         options = {:count => $1}
