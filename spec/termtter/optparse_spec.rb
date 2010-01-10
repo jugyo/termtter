@@ -13,7 +13,7 @@ module Termtter
     end
 
     def run_termtter(opt)
-      `./run_termtter.rb #{opt}`
+      `./bin/termtter #{opt}`
     end
 
     it 'accepts -h option' do
