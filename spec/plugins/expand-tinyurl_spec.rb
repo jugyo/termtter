@@ -3,9 +3,12 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Termtter::Client, 'when the plugin expand-tinyurl is loaded' do
+  before do
+    be_quiet { Termtter::Client.plug 'expand-tinyurl' }
+  end
 
   it 'should define expand_url method' do
-    be_quiet { Termtter::Client.plug 'expand-tinyurl' }
+    # TODO: 直接ネットにアクセスしに行かないようにしたい。 fakeweb?
 
     expand_url('tinyurl.com', '/kotu').should == 'http://example.com/'
 
