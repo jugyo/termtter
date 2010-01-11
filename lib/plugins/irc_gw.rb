@@ -46,7 +46,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   if Termtter::Client.respond_to? :register_output
     Termtter::Client.register_output(:irc) do |message|
       @@listners.each do |listener|
-        listener.log(message.gsub(/\e\[\d+m/, '')) # remove escape sequence
+        listener.log(message.to_s.gsub(/\e\[\d+m/, '')) # remove escape sequence
       end
     end
   end
