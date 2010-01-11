@@ -5,18 +5,6 @@ require 'set'
 module Termtter::Client
 
   #
-  # completion for command names
-  #
-
-  register_hook(:command_names_completion, :point => :completion) do |input|
-    commands.
-      values.
-      inject([]) {|array, command| array + [command.name] + command.aliases}.
-      map(&:to_s).
-      grep(/^\s*#{Regexp.quote(input)}/)
-  end
-
-  #
   # completion for user names
   #
 

@@ -62,31 +62,44 @@ module Termtter
       @input_thread.join
     end
 
+    def do_completion(input)
+      words = []
+
+      words = Client.commands.values.
+                inject([]) {|array, command| array + [command.name] + command.aliases}.
+                map(&:to_s).
+                grep(/^\s*#{Regexp.quote(input)}/)
+
+      if words.empty?
+        command = Client.find_command(input)
+        words = command ? command.complement(input) : []
+      end
+
+      if words.empty?
+        Client.get_hooks(:completion).each do |hook|
+          words << hook.call(input) rescue nil
+        end
+      end
+
+      words.flatten.compact
+    rescue Exception => e
+      Client.handle_error(e)
+    end
+
     def setup_readline
       if Readline.respond_to?(:basic_word_break_characters=)
         Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
       end
+
       Readline.completion_case_fold = true
-      Readline.completion_proc = lambda {|input|
-        begin
-          command = Client.find_command(input)
-          words = command ? command.complement(input) : []
 
-          if words.empty?
-            Client.get_hooks(:completion).each do |hook|
-              words << hook.call(input) rescue nil
-            end
-          end
+      Readline.completion_proc = lambda {|input| do_completion(input) }
 
-          words.flatten.compact
-        rescue Exception => e
-          Client.handle_error(e)
-        end
-      }
       vi_or_emacs = config.editing_mode
       unless vi_or_emacs.empty?
         Readline.__send__("#{vi_or_emacs}_editing_mode")
       end
+
       Readline.rl_parse_and_bind('TAB: menu-complete')
     end
 
