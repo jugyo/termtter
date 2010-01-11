@@ -78,7 +78,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
 
   def on_message(m)
     termtter_command = m.command.downcase + ' ' + m.params.join(' ')
-    return if Termtter::Client.find_commands(termtter_command).empty?
+    return unless Termtter::Client.find_command(termtter_command)
     post '#termtter', NOTICE, main_channel, '> ' + termtter_command
     Termtter::Client.execute(termtter_command)
   rescue Exception => e
@@ -98,7 +98,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     target, message = *m.params
     if message =~ / +\//
       termtter_command = message.gsub(/ +\//, '')
-      return if Termtter::Client.find_commands(termtter_command).empty?
+      return unless Termtter::Client.find_command(termtter_command)
       post '#termtter', NOTICE, main_channel, '> ' + termtter_command
       Termtter::Client.execute(termtter_command)
     else
