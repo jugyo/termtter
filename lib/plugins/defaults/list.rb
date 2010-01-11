@@ -1,4 +1,6 @@
 module Termtter::Client
+  public_storage[:lists] = []
+
   register_command(
     :name => :list, :aliases => [:l],
     :exec_proc => lambda {|arg|
@@ -16,20 +18,24 @@ module Termtter::Client
         event = :list_user_timeline
         statuses = []
         Array(arg.split).each do |user|
-          if user =~ /\//
+          if user =~ /\/\w+/
             user_name, slug = *user.split('/')
             user_name = config.user_name if user_name.empty?
             user_name = normalize_as_user_name(user_name)
             statuses += Termtter::API.twitter.list_statuses(user_name, slug, options)
           else
-            user_name = normalize_as_user_name(user)
+            user_name = normalize_as_user_name(user.sub(/\/$/, ''))
             statuses += Termtter::API.twitter.user_timeline(user_name, options)
           end
         end
       end
       output(statuses, event)
     },
-    :help => ["list,l [USERNAME]/[SLUG] [-COUNT]", "List the posts"]
+    :help => ["list,l [USERNAME]/[SLUG] [-COUNT]", "List the posts"],
+    :completion => lambda {|cmd, arg|
+      candidates = public_storage[:lists].grep(/#{Regexp.quote(arg)}/)
+      candidates.map {|i| "#{cmd} #{i}"}
+    }
   )
 
   register_command(
@@ -41,10 +47,12 @@ module Termtter::Client
         user_name = config.user_name
       end
       # TODO: show more information of lists
-      puts Termtter::API.twitter.lists(user_name).lists.map{|i| i.full_name}
+      lists = Termtter::API.twitter.lists(user_name).lists
+      public_storage[:lists] += lists.map(&:full_name)
+      puts lists.map{|i| i.full_name}
     },
     :help => ["lists [USERNAME]", "Show Lists"]
-    )
+  )
 
   register_command(
     :name => %s{list follow},
