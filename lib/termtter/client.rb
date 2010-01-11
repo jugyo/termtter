@@ -315,7 +315,10 @@ module Termtter
         unless config.system.cmd_mode
           @task_manager.run()
           call_hooks(:initialize)
-          call_hooks(:launched)
+          add_task(:name => :call_hooks_after_launched, :after => 1) do
+            call_hooks(:launched)
+          end
+          call_hooks(:init_command_line)
         end
       end
 

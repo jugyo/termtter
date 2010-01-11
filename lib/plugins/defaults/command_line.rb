@@ -122,7 +122,7 @@ module Termtter
     end
   end
 
-  Client.register_hook(:initialize_command_line, :point => :launched) do
+  Client.register_hook(:initialize_command_line, :point => :init_command_line) do
     CommandLine.start
   end
 
