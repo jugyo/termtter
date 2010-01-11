@@ -63,6 +63,8 @@ module Termtter
     end
 
     def do_completion(input)
+      input = input.sub(/^\s*/, '')
+
       words = []
 
       words = Client.commands.values.
