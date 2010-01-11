@@ -2,8 +2,14 @@ module Termtter::Client
   public_storage[:lists] = []
 
   register_hook(:fetch_my_lists, :point => :launched) do
-    public_storage[:lists] +=
-      Termtter::API.twitter.lists(config.user_name).lists.map(&:full_name)
+    begin
+      public_storage[:lists] +=
+        Termtter::API.twitter.lists(config.user_name).lists.map(&:full_name)
+    rescue TimeoutError
+      # do nothing
+    rescue Exception => e
+      Termtter::Client.handle_error(e)
+    end
   end
 
   register_command(
