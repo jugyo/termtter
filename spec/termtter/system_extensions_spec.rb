@@ -47,9 +47,9 @@ describe Termtter do
       url = 'example.com'
       [
         ['linux',   'firefox'],
-        ['mswin',   'explorer'],
-        ['mingw',   'explorer'],
-        ['bccwin',  'explorer'],
+        ['mswin',   'start'],
+        ['mingw',   'start'],
+        ['bccwin',  'start'],
         ['darwin',  'open'],
         ['hogehog', 'open'],
       ].each do |platform, browser|

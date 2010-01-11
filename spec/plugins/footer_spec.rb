@@ -5,6 +5,7 @@ describe Termtter::Client, 'when the plugin footer is loaded' do
   @r = nil
   before(:all) do
     @r = nil
+    Termtter::Client.clear_hooks
     Termtter::Client.setup_task_manager
 
     config.footer = "[termtter]"
@@ -25,24 +26,24 @@ describe Termtter::Client, 'when the plugin footer is loaded' do
 
   it 'should add footer at update' do
     @r.should be_nil
-    Termtter::Client.call_commands('update foo')
+    Termtter::Client.execute('update foo')
     config.footer.should == '[termtter]'
     @r.should == 'foo [termtter]'
   end
 
   it 'should call footer command to change config.footer' do
-    Termtter::Client.call_commands('footer #termtter')
+    Termtter::Client.execute('footer #termtter')
     config.footer.should == '#termtter'
     @r.should be_nil
-    Termtter::Client.call_commands('update bar')
+    Termtter::Client.execute('update bar')
     @r.should == 'bar #termtter'
   end
 
   it 'should call footer no argument to set config.footer to nil' do
-    Termtter::Client.call_commands('footer')
+    Termtter::Client.execute('footer')
     config.footer.should == nil
     @r.should be_nil
-    Termtter::Client.call_commands('update hoge')
+    Termtter::Client.execute('update hoge')
     @r.should == 'hoge'
   end
 end
