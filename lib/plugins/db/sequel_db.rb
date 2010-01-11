@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 require 'sequel'
 
-config.plugins.db.set_default(:path, Termtter::CONF_DIR + '/termtter.db')
-
 DB = Sequel.sqlite(config.plugins.db.path) unless defined? DB
 
 unless DB.table_exists?(:statuses)
