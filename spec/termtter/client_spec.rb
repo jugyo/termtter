@@ -48,7 +48,8 @@ module Termtter
       config.system.eval_scripts = []
       config.system.cmd_mode = false
       Client.should_receive(:call_hooks).with(:initialize)
-      Client.should_receive(:call_hooks).with(:launched)
+      Client.should_receive(:call_hooks).with(:init_command_line)
+      # NOTE: :launched も呼ばれるはず
       Client.run
     end
 
