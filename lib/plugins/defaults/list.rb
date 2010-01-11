@@ -1,6 +1,11 @@
 module Termtter::Client
   public_storage[:lists] = []
 
+  register_hook(:fetch_my_lists, :point => :launched) do
+    public_storage[:lists] +=
+      Termtter::API.twitter.lists(config.user_name).lists.map(&:full_name)
+  end
+
   register_command(
     :name => :list, :aliases => [:l],
     :exec_proc => lambda {|arg|
