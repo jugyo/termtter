@@ -18,6 +18,7 @@ module Termtter::Client
         Array(arg.split).each do |user|
           if user =~ /\//
             user_name, slug = *user.split('/')
+            user_name = config.user_name if user_name.empty?
             user_name = normalize_as_user_name(user_name)
             statuses += Termtter::API.twitter.list_statuses(user_name, slug, options)
           else
