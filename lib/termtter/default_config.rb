@@ -5,10 +5,10 @@ config.set_default(:devel, false)
 config.set_default(:timeout, 5)
 config.set_default(:retry, 1)
 config.set_default(:splash, <<SPLASH)
-<cyan>
-   &lt;(@)//_ . . <underline>Termtter</underline> <red>#{Termtter::VERSION}</red> . . . .
-      \\\\
-</cyan>
+
+   <cyan>&lt;(@)//_</cyan>  .  .      <on_red> Termtter <underline>#{Termtter::VERSION}</underline> </on_red>
+      <cyan>\\\\</cyan>           <on_red> http://termtter.org/ </on_red>
+
 SPLASH
 
 config.system.set_default :conf_dir, File.expand_path('~/.termtter')
