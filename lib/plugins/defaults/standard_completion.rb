@@ -76,4 +76,21 @@ module Termtter::Client
         map { |i| "#{command_str} ##{i}" }
     end
   end
+
+  #
+  # completion for lists
+  #
+
+  register_hook(:lists_completion, :point => :completion) do |input|
+    if /(.*)\s([^\s]*)$/ =~ input
+      command_str = $1
+      part_of_user_name = $2.gsub(/^@/, '')
+
+      if !part_of_user_name.nil? && !part_of_user_name.empty?
+        public_storage[:lists].
+          grep(/^@#{Regexp.quote(part_of_user_name)}/i).
+          map {|u| "#{command_str} %s" % u }
+      end
+    end
+  end
 end

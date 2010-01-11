@@ -31,11 +31,7 @@ module Termtter::Client
       end
       output(statuses, event)
     },
-    :help => ["list,l [USERNAME]/[SLUG] [-COUNT]", "List the posts"],
-    :completion => lambda {|cmd, arg|
-      candidates = public_storage[:lists].grep(/#{Regexp.quote(arg)}/)
-      candidates.map {|i| "#{cmd} #{i}"}
-    }
+    :help => ["list,l [USERNAME]/[SLUG] [-COUNT]", "List the posts"]
   )
 
   register_command(
