@@ -66,11 +66,9 @@ module Termtter
     it 'returns candidates for completion' do
       # complement
       [
-        ['upd',       ['update']],
-        [' upd',      []],
-        [' upd ',     []],
+        ['update  ', ['complete1', 'complete2']],
+        [' update  ', ['complete1', 'complete2']],
         ['update a',  ['complete1', 'complete2']],
-        [' update  ', []],
         ['u foo',     ['complete1', 'complete2']],
       ].each do |input, comp|
         @command.complement(input).should == comp
