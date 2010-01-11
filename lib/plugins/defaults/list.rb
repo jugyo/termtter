@@ -33,7 +33,7 @@ module Termtter::Client
   )
 
   register_command(
-    :name => :lists,
+    :name => 'list list',
     :exec => lambda {|arg|
       unless arg.empty?
         user_name = normalize_as_user_name(arg)
