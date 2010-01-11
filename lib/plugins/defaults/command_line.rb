@@ -69,7 +69,8 @@ module Termtter
       Readline.completion_case_fold = true
       Readline.completion_proc = lambda {|input|
         begin
-          words = Client.commands.map {|name, command| command.complement(input) }.flatten.compact
+          command = Client.find_command(input)
+          words = command ? command.complement(input) : []
 
           if words.empty?
             Client.get_hooks(:completion).each do |hook|

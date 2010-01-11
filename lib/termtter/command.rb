@@ -37,15 +37,11 @@ module Termtter
 
     # complement :: String -> [String]
     def complement(input)
-      if match?(input) && input =~ /^[^\s]+\s/
-        if completion_proc
-          command_str, command_arg = split_command_line(input)
-          [completion_proc.call(command_str, command_arg || '')].flatten.compact
-        else
-          []
-        end
+      if completion_proc
+        command_str, command_arg = split_command_line(input)
+        [completion_proc.call(command_str, command_arg || '')].flatten.compact
       else
-        ([name.to_s] + aliases.map(&:to_s)).grep(/^#{Regexp.quote(input)}/)
+        []
       end
     end
 
