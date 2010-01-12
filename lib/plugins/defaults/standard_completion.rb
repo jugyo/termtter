@@ -40,6 +40,7 @@ module Termtter::Client
   public_storage[:hashtags_for_completion] ||= Set.new
 
   def self.collect_hashtags(text)
+    text.force_encoding("UTF-8") if text.respond_to?(:force_encoding)
     public_storage[:hashtags_for_completion] += text.scan(/#([0-9A-Za-z_]+)/u).flatten
   end
 
