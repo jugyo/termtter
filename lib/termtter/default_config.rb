@@ -6,8 +6,8 @@ config.set_default(:timeout, 5)
 config.set_default(:retry, 1)
 config.set_default(:splash, <<SPLASH)
 
-   <cyan>&lt;(@)//_</cyan>  .  .      <on_red> Termtter <underline>#{Termtter::VERSION}</underline> </on_red>
-      <cyan>\\\\</cyan>           <on_red> http://termtter.org/ </on_red>
+   <cyan>&lt;(@)//_</cyan>  .  .      <on_green> Termtter <underline>#{Termtter::VERSION}</underline> </on_green>
+      <cyan>\\\\</cyan>           <on_green> http://termtter.org/ </on_green>
 
 SPLASH
 

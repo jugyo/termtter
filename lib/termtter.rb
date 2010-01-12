@@ -32,6 +32,7 @@ require 'termtter/rubytter_proxy'
 require 'termtter/client'
 require 'termtter/api'
 require 'termtter/system_extensions'
+require 'termtter/httppool'
 
 module Termtter
   APP_NAME = 'termtter'
