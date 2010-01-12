@@ -3,7 +3,7 @@ require 'active_record'
 ActiveRecord::Base.logger=Logger.new(nil)
 ActiveRecord::Base.establish_connection(
   :adapter  => "sqlite3",
-  :dbfile => config.plugins.db.path
+  :database => config.plugins.db.path
 )
 
 class Status < ActiveRecord::Base
@@ -82,7 +82,7 @@ module Termtter
     register_command(:db_list) do |arg|
       user_name = normalize_as_user_name(arg)
       statuses = Status.find(:all,
-                             :joins      => "LEFT OUTER JOIN users ON users.user_id = users.id",
+#                             :joins      => "LEFT OUTER JOIN statuses ON users.uid = statuses.user_id",
                              :conditions => ['users.screen_name = :u',{:u => user_name}],
                              :limit      => 20)
       output(statuses, :db_search)
