@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module Termtter::Client
   register_command('plugin edit') do |arg|
     if /\-s/ =~ arg
@@ -23,7 +25,16 @@ module Termtter::Client
   end
 
   register_command('plugin create') do |arg|
-    raise 'Not implement!'
+    path = "#{Termtter::CONF_DIR}/plugins/#{arg}.rb"
+    unless File.exists?(path)
+      FileUtils.mkdir_p(File.dirname(path))
+      # TODO: insert plugin template to plugin file
+      open_editor(path)
+      plug(arg)
+      puts "load => #{arg}"
+    else
+      puts TermColor.parse('<red>The plugin already exists :(</red>')
+    end
   end
 
   def self.open_editor(path)
