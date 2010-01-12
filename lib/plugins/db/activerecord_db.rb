@@ -20,6 +20,8 @@ unless Status.table_exists?()
     t.column :created_at, :string
     t.column :in_reply_to_status_id, :integer
     t.column :in_reply_to_user_id, :integer
+    t.column :retweeted_status, :boolean
+    t.column :source, :string
   end
 end
 
