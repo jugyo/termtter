@@ -21,5 +21,10 @@ module IRB
 end
 
 Termtter::Client.register_command(:irb) do |arg|
-  IRB.start_session(binding)
+  begin
+    completion_proc = Readline.completion_proc
+    IRB.start_session(binding)
+  ensure
+    Readline.completion_proc = completion_proc
+  end
 end
