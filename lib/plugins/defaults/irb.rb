@@ -20,6 +20,6 @@ module IRB
   end
 end
 
-Termtter::Client.register_command(:irb) do |args|
+Termtter::Client.register_command(:irb) do |arg|
   IRB.start_session(binding)
 end
