@@ -68,7 +68,6 @@ module Termtter
           twitter.verify_credentials
           return twitter
         rescue Rubytter::APIError
-          config.__clear__(:user_name)
           config.__clear__(:password)
         end
         return nil
