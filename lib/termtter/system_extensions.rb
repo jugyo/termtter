@@ -62,12 +62,12 @@ end
 
 def open_browser(url)
   if ENV['KDE_FULL_SESSION'] == 'true'
-    system 'kfmclient', 'exec', path
+    system 'kfmclient', 'exec', url
   elsif ENV['GNOME_DESKTOP_SESSION_ID']
-    system 'gnome-open', path
+    system 'gnome-open', url
   elsif !(/not found/ ~= `which exo-open`)
     # FIXME: is fungible system('exo-open').nil? for lambda {...}
-    system 'exo-open', path
+    system 'exo-open', url
   else
     case RUBY_PLATFORM
     when /linux/
