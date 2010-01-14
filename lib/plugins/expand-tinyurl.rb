@@ -44,14 +44,9 @@ Termtter::Client::register_hook(
 )
 
 def expand_url(host, path)
-  http_class = Net::HTTP
-  unless config.proxy.host.nil? or config.proxy.host.empty?
-    http_class = Net::HTTP::Proxy(config.proxy.host,
-                                  config.proxy.port,
-                                  config.proxy.user_name,
-                                  config.proxy.password)
+  res = Termtter::HTTPpool.start(host) do |h|
+    h.get(path, { 'User-Agent' => 'Mozilla' })
   end
-  res = http_class.new(host).get(path, { 'User-Agent' => 'Mozilla' })
   return nil unless res.code == "301" or res.code == "302"
   res['Location'].force_encoding(Encoding::UTF_8)
 rescue Exception => e
