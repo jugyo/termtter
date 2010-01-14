@@ -69,7 +69,7 @@ def open_browser(url)
     # FIXME: is fungible system('exo-open').nil? for lambda {...}
     system 'exo-open', url
   else
-    case RUBY_PLATFORM
+    case RUBY_PLATFORM.downcase
     when /linux/
       system 'firefox', url
     when /darwin/
