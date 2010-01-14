@@ -72,10 +72,12 @@ def open_browser(url)
     case RUBY_PLATFORM
     when /linux/
       system 'firefox', url
+    when /darwin/
+      system 'open', url
     when /mswin(?!ce)|mingw|bccwin/
       system 'start', url
     else
-      system 'open', url
+      system 'firefox', url
     end
   end
 end
