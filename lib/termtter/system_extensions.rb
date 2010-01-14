@@ -65,7 +65,7 @@ def open_browser(url)
     system 'kfmclient', 'exec', url
   elsif ENV['GNOME_DESKTOP_SESSION_ID']
     system 'gnome-open', url
-  elsif !(/not found/ ~= `which exo-open`)
+  elsif !(/not found/ =~ `which exo-open`)
     # FIXME: is fungible system('exo-open').nil? for lambda {...}
     system 'exo-open', url
   else
