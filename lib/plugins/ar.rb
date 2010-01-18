@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'active_record'
+config.plugins.db.set_default(:path, Termtter::CONF_DIR + '/termtter.db')
+1
 ActiveRecord::Base.logger=Logger.new(nil)
 ActiveRecord::Base.establish_connection(
   :adapter  => "sqlite3",
