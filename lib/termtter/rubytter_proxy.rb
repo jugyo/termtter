@@ -20,7 +20,9 @@ module Termtter
             modified_args = hook.call(*modified_args)
           end
 
+          from = Time.now
           result = call_rubytter_or_use_cache(method, *modified_args, &block)
+          Termtter::Client.logger.debug "rubytter_proxy: #{method}(#{modified_args.inspect[1...-1]}), #{(Time.now - from)}sec"
 
           self.class.call_hooks("post_#{method}", *args)
         rescue HookCanceled
