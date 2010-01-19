@@ -35,7 +35,7 @@ module Termtter::Client
       end
     end
     comment += ' ' unless comment.nil?
-    rt_or_qt = (config.plugins.retweet.quotetweet and !comment.nil) ? 'QT' : 'RT'
+    rt_or_qt = (config.plugins.retweet.quotetweet and !comment.nil?) ? 'QT' : 'RT'
     text = ERB.new(config.plugins.retweet.format).result(binding)
     Termtter::API.twitter.update(text)
     puts "=> #{text}"
