@@ -236,12 +236,13 @@ module Termtter
       end
 
       def logger
-        @logger
+        @logger || setup_logger
       end
 
       def setup_logger
         @logger = config.logger || default_logger
         @logger.level = config.devel ? Logger::DEBUG : Logger::INFO
+        @logger
       end
 
       def default_logger
@@ -297,7 +298,6 @@ module Termtter
 
         load_config()
         parse_options()
-        setup_logger()
         setup_task_manager()
         load_plugins()
         eval_init_block()
