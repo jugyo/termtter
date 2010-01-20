@@ -56,7 +56,7 @@ module Termtter::Client
       # TODO: show more information of lists
       lists = Termtter::API.twitter.lists(user_name).lists
       public_storage[:lists] += lists.map(&:full_name)
-      puts lists.map{|i| i.full_name}
+      puts lists.map{|i| i.full_name}.join("\n")
     },
     :help => ["lists [USERNAME]", "Show Lists"]
   )
