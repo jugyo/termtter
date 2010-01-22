@@ -26,16 +26,12 @@ module Termtter::Client
         return
       rescue Rubytter::APIError  # XXX: just for transition period
         if $!.to_s == 'Not found'
-          puts TermColor.parse(<<-EOM)
-<orange>[WARNING]: Failed official retweet. Set twitter langage to English in https://twitter.com/account/settings or set config.plugins.retweet.official_retweet to false.</orange>
-          EOM
-        else
-          puts TermColor.parse("<red>[ERROR]: #{$!.inspect}</red>")
+          Termtter::Client.logger.warn "Failed official retweet. Set twitter langage to English in https://twitter.com/account/settings or set config.plugins.retweet.official_retweet to false."
         end
       end
     end
     comment += ' ' unless comment.nil?
-    rt_or_qt = (config.plugins.retweet.quotetweet and !comment.nil?) ? 'QT' : 'RT'
+    rt_or_qt = (config.plugins.retweet.quotetweet and comment) ? 'QT' : 'RT'
     text = ERB.new(config.plugins.retweet.format).result(binding)
     Termtter::API.twitter.update(text)
     puts "=> #{text}"
