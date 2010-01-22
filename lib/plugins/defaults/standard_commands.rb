@@ -22,7 +22,8 @@ module Termtter::Client
         output(statuses, :update_friends_timeline)
         Readline.refresh_line if arg =~ /\-r/
       end
-    }
+    },
+    :help => ['reload', 'Reload time line']
   )
 
   register_command(
