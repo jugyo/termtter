@@ -22,6 +22,7 @@ module Termtter::Client
         options = {}
       end
 
+      last_error = nil
       if arg.empty?
         event = :list_friends_timeline
         statuses = Termtter::API.twitter.home_timeline(options)
@@ -35,12 +36,17 @@ module Termtter::Client
             user_name = normalize_as_user_name(user_name)
             statuses += Termtter::API.twitter.list_statuses(user_name, slug, options)
           else
-            user_name = normalize_as_user_name(user.sub(/\/$/, ''))
-            statuses += Termtter::API.twitter.user_timeline(user_name, options)
+            begin
+              user_name = normalize_as_user_name(user.sub(/\/$/, ''))
+              statuses += Termtter::API.twitter.user_timeline(user_name, options)
+            rescue Rubytter::APIError => e
+              last_error = e
+            end
           end
         end
       end
       output(statuses, event)
+      raise last_error if last_error
     },
     :help => ["list,l [USERNAME]/[SLUG] [-COUNT]", "List the posts"]
   )
