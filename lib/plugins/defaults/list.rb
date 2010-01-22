@@ -37,6 +37,13 @@ module Termtter::Client
             statuses += Termtter::API.twitter.list_statuses(user_name, slug, options)
           else
             begin
+              if user =~ /^\d+$/
+                profile = Termtter::API.twitter.user(nil, :screen_name => user) rescue nil
+                unless profile
+                  status  = Termtter::API.twitter.show(user) rescue nil
+                  user    = status.user.screen_name if status
+                end
+              end
               user_name = normalize_as_user_name(user.sub(/\/$/, ''))
               statuses += Termtter::API.twitter.user_timeline(user_name, options)
             rescue Rubytter::APIError => e
