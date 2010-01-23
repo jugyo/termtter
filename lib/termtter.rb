@@ -18,7 +18,11 @@ gem 'rubytter', '>= 0.9.2'
 require 'rubytter'
 require 'timeout'
 
-require 'termtter/version'
+module Termtter
+  VERSION = File.read(File.join(File.dirname(__FILE__), '../VERSION'))
+  APP_NAME = 'termtter'
+end
+
 require 'termtter/config'
 require 'termtter/default_config'
 require 'termtter/optparse'
@@ -34,9 +38,6 @@ require 'termtter/api'
 require 'termtter/system_extensions'
 require 'termtter/httppool'
 
-module Termtter
-  APP_NAME = 'termtter'
-  CONF_DIR = config.system.conf_dir
-  CONF_FILE = config.system.conf_file
-  $:.unshift(Termtter::CONF_DIR)
-end
+Termtter::CONF_DIR = config.system.conf_dir
+Termtter::CONF_FILE = config.system.conf_file
+$:.unshift(Termtter::CONF_DIR)
