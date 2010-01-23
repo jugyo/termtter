@@ -7,7 +7,7 @@ begin
     gem.name = 'termtter'
     gem.summary = "Terminal based Twitter client."
     gem.description = "Termtter is a terminal based Twitter client."
-    gem.executables = ["kill_termtter", "termtter"]
+    gem.executables = ["termtter"]
     gem.add_dependency("json_pure", ">= 1.1.3")
     gem.add_dependency("highline", ">= 1.5.0")
     gem.add_dependency("termcolor", ">= 1.0.0")
