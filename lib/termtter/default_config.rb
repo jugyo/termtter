@@ -11,8 +11,6 @@ config.set_default(:splash, <<SPLASH)
 
 SPLASH
 
-config.system.set_default :conf_dir, File.expand_path('~/.termtter')
-config.system.set_default :conf_file, config.system.conf_dir + '/config'
 config.system.set_default :cmd_mode, false
 config.system.set_default :run_commands, []
 config.system.set_default :load_plugins, []

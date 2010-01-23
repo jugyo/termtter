@@ -295,9 +295,8 @@ module Termtter
 
       def run
         show_splash
-
-        load_config()
         parse_options()
+        load_config()
         setup_task_manager()
         load_plugins()
         eval_init_block()

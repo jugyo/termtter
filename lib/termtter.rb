@@ -21,23 +21,22 @@ require 'timeout'
 module Termtter
   VERSION = File.read(File.join(File.dirname(__FILE__), '../VERSION'))
   APP_NAME = 'termtter'
+  CONF_DIR = File.expand_path('~/.termtter')
+  CONF_FILE = File.join(Termtter::CONF_DIR, 'config')
+  $:.unshift(CONF_DIR)
+
+  require 'termtter/config'
+  require 'termtter/default_config'
+  require 'termtter/optparse'
+  require 'termtter/command'
+  require 'termtter/hook'
+  require 'termtter/task'
+  require 'termtter/task_manager'
+  require 'termtter/hookable'
+  require 'termtter/memory_cache'
+  require 'termtter/rubytter_proxy'
+  require 'termtter/client'
+  require 'termtter/api'
+  require 'termtter/system_extensions'
+  require 'termtter/httppool'
 end
-
-require 'termtter/config'
-require 'termtter/default_config'
-require 'termtter/optparse'
-require 'termtter/command'
-require 'termtter/hook'
-require 'termtter/task'
-require 'termtter/task_manager'
-require 'termtter/hookable'
-require 'termtter/memory_cache'
-require 'termtter/rubytter_proxy'
-require 'termtter/client'
-require 'termtter/api'
-require 'termtter/system_extensions'
-require 'termtter/httppool'
-
-Termtter::CONF_DIR = config.system.conf_dir
-Termtter::CONF_FILE = config.system.conf_file
-$:.unshift(Termtter::CONF_DIR)
