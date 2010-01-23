@@ -19,7 +19,7 @@ require 'rubytter'
 require 'timeout'
 
 module Termtter
-  VERSION = File.read(File.join(File.dirname(__FILE__), '../VERSION'))
+  VERSION = File.read(File.join(File.dirname(__FILE__), '../VERSION')).strip
   APP_NAME = 'termtter'
   CONF_DIR = File.expand_path('~/.termtter')
   CONF_FILE = File.join(Termtter::CONF_DIR, 'config')
