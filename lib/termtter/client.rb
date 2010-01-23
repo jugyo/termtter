@@ -294,13 +294,13 @@ module Termtter
       end
 
       def run
+        parse_options
         show_splash
-        parse_options()
-        load_config()
-        setup_task_manager()
-        load_plugins()
-        eval_init_block()
-        Termtter::API.setup()
+        load_config
+        setup_task_manager
+        load_plugins
+        eval_init_block
+        Termtter::API.setup
 
         config.system.eval_scripts.each do |script|
           begin
