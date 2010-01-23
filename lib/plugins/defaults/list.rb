@@ -34,6 +34,8 @@ module Termtter::Client
             user_name, slug = *user.split('/')
             user_name = config.user_name if user_name.empty?
             user_name = normalize_as_user_name(user_name)
+            options[:per_page] = options[:count]
+            options.delete(:count)
             statuses += Termtter::API.twitter.list_statuses(user_name, slug, options)
           else
             begin
@@ -76,8 +78,10 @@ module Termtter::Client
 
   register_command(
     :name => %s{list follow},
+    :alias => %s{list add},
     :exec => lambda { |arg|
-      slug, *users = arg.split(' ')
+      list_name, *users = arg.split(' ')
+      slug = list_name_to_slug(list_name)
       users.each{ |screen_name|
         begin
           user = Termtter::API.twitter.cached_user(screen_name) || Termtter::API.twitter.user(screen_name)
@@ -94,7 +98,8 @@ module Termtter::Client
   register_command(
     :name => %s{list remove},
     :exec => lambda { |arg|
-      slug, *users = arg.split(' ')
+      list_name, *users = arg.split(' ')
+      slug = list_name_to_slug(list_name)
       users.each{ |screen_name|
         begin
           user = Termtter::API.twitter.cached_user(screen_name) || Termtter::API.twitter.user(screen_name)
@@ -120,6 +125,7 @@ module Termtter::Client
         opt.parse(options)
       }
       list = Termtter::API.twitter.create_list(slug, param)
+      public_storage[:lists] << list.full_name
       p [list.full_name, param]
     },
     :help => ["list create SLUG [--description VALUE] [--private]", "Create list"]
@@ -128,9 +134,12 @@ module Termtter::Client
   register_command(
     :name => %s{list delete},
     :exec => lambda { |arg|
-      arg.split(' ').each{ |slug|
+      return unless confirm("Are you sure?")
+      arg.split(' ').each{ |list_name|
         begin
+          slug = list_name_to_slug(list_name)
           list = Termtter::API.twitter.delete_list(slug)
+          public_storage[:lists].delete(list.full_name)
           puts "#{list.full_name} deleted"
         rescue => e
           handle_error(e)
@@ -138,5 +147,9 @@ module Termtter::Client
       }
     },
     :help => ["list delete SLUG", "Delete list"]
-    )
+  )
+
+  def self.list_name_to_slug(list_name)
+    list_name[/([^\/]*)$/]
+  end
 end
