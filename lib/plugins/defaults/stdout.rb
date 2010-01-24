@@ -149,8 +149,9 @@ module Termtter
         indent += 1
         unless indent > config.plugins.stdout.max_indent_level
           begin
-            status = Termtter::API.twitter.show(s.in_reply_to_status_id)
-            text << status_line(status, time_format, event, indent)
+            if status = Termtter::API.twitter.cached_status(s.in_reply_to_status_id)
+              text << status_line(status, time_format, event, indent)
+            end
           rescue Rubytter::APIError
           end
         end
