@@ -14,7 +14,7 @@ require 'net/https'
 require 'open-uri'
 require 'optparse'
 require 'readline'
-gem 'rubytter', '>= 0.9.2'
+gem 'rubytter', '>= 0.11.0'
 require 'rubytter'
 require 'timeout'
 
