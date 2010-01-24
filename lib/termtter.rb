@@ -21,9 +21,6 @@ require 'timeout'
 module Termtter
   VERSION = File.read(File.join(File.dirname(__FILE__), '../VERSION')).strip
   APP_NAME = 'termtter'
-  CONF_DIR = File.expand_path('~/.termtter')
-  CONF_FILE = File.join(Termtter::CONF_DIR, 'config')
-  $:.unshift(CONF_DIR)
 
   require 'termtter/config'
   require 'termtter/default_config'
@@ -39,4 +36,9 @@ module Termtter
   require 'termtter/api'
   require 'termtter/system_extensions'
   require 'termtter/httppool'
+
+  OptParser.parse!(ARGV)
+  CONF_DIR = File.expand_path('~/.termtter') unless defined? CONF_DIR
+  CONF_FILE = File.join(Termtter::CONF_DIR, 'config') unless defined? CONF_FILE
+  $:.unshift(CONF_DIR)
 end

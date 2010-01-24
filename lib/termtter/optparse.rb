@@ -9,6 +9,14 @@ module Termtter
     @optionparser = OptionParser.new { |opt|
       opt.program_name = 'Termtter'
 
+      opt.on('-f', '--config-file file', 'Set path to configfile') do |val|
+        Termtter::CONF_FILE = val
+      end
+
+      opt.on('-t', '--termtter-directory directory', 'Set termtter directory') do |val|
+        Termtter::CONF_DIR = val
+      end
+
       opt.on('-d', '--devel', 'Start in developer mode') do |flg|
         config.__assign__(:devel, true) if flg
       end
