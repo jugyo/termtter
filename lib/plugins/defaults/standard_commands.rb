@@ -372,15 +372,15 @@ module Termtter::Client
       end
     },
     :completion_proc => lambda {|cmd, args|
-      plugin_list.grep(/^#{Regexp.quote(args)}/).map {|i| "#{cmd} #{i}"}
+      plugin_list.grep(/#{Regexp.quote(args)}/).map {|i| "#{cmd} #{i}"}
     },
     :help => ['plug FILE', 'Load a plugin']
   )
 
   ## plugin_list :: IO ()
   def self.plugin_list
-    (Dir["#{File.dirname(__FILE__)}/../*.rb"] + Dir["#{Termtter::CONF_DIR}/plugins/*.rb"]).
-      map {|f| File.basename(f).sub(/\.rb$/, '')}.
+    (Dir["#{File.dirname(__FILE__)}/../**/*.rb"] + Dir["#{Termtter::CONF_DIR}/plugins/**/*.rb"]).
+      map {|f| File.expand_path(f).scan(/.*plugins\/(.*)\.rb/).flatten[0] }.
       sort
   end
 
