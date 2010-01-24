@@ -116,7 +116,7 @@ module Termtter
     def status_line(s, time_format, event, indent = 0)
       return '' unless s
       text = TermColor.escape(s.text)
-      color = config.plugins.stdout.colors[s.user.id.to_i % config.plugins.stdout.colors.size]
+      color = user_color(s.user)
       status_id = Termtter::Client.data_to_typable_id(s.id)
       reply_to_status_id =
         if s.in_reply_to_status_id
