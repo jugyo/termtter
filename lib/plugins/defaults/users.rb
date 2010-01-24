@@ -1,11 +1,12 @@
 module Termtter::Client
   register_command(
-    :profile,
-    :aliases => [:p],
+    %s{user show},
+    :aliases => [:p, :profile],
     :help => ["user show USERNAME/[SLUG]", "Show user's profile."]
   ) do |arg|
     user_name = arg.empty? ? config.user_name : arg
     if user_name =~ /\//
+      # TODO: move to the command "list show"
       user_name, slug = *user_name.split('/')
       user_name = normalize_as_user_name(user_name)
       list = Termtter::API.twitter.list(user_name, slug)
