@@ -24,19 +24,11 @@ module Termtter::Client
     :help => ["user search QUERY", "search users"]
   ) do |arg|
     search_option = config.user_search.option.empty? ? {} : config.user_search.option
-    statuses = Termtter::API.twitter.search_user(arg, search_option)
-    results = []
-    statuses.select{|s| s.status != nil }.map do |s|
-      result = {
-        :id => s.status.id,
-        :text => s.status.text,
-        :in_reply_to_status_id => s.in_reply_to_status_id,
-        :created_at => s.created_at,
-        :user => {:id => s.id, :name => s.name, :screen_name => s.screen_name}
-      }
-      results << Rubytter.structize(result)
+    users = Termtter::API.twitter.search_user(arg, search_option)
+    users.each do |user|
+      puts "#{user.name} (@#{user.screen_name})"
+      puts "    \"#{user.status.text}\""
     end
-    output(results, UserSearchEvent.new(arg))
   end
 
   register_hook(:highlight_for_user_search, :point => :pre_coloring) do |text, event|
