@@ -73,7 +73,7 @@ module Termtter::Client
       public_storage[:lists] += lists.map(&:full_name)
       puts lists.map{|i| i.full_name}.join("\n")
     },
-    :help => ["lists [USERNAME]", "Show Lists"]
+    :help => ["list list [USERNAME]", "Show Lists"]
   )
 
   register_command(
@@ -92,7 +92,7 @@ module Termtter::Client
         end
       }
     },
-    :help => ["list follow SLUG USERNAME", "Follow users to the list"]
+    :help => ["list follow|add LISTNAME USERNAME", "Follow users to the list"]
     )
 
   register_command(
@@ -110,7 +110,7 @@ module Termtter::Client
         end
       }
     },
-    :help => ["list remove SLUG USERNAME", "Remove user(s) from the list"]
+    :help => ["list remove LISTNAME USERNAME", "Remove user(s) from the list"]
     )
 
   register_command(
@@ -146,7 +146,7 @@ module Termtter::Client
         end
       }
     },
-    :help => ["list delete SLUG", "Delete list"]
+    :help => ["list delete LISTNAME", "Delete list"]
   )
 
   def self.list_name_to_slug(list_name)
