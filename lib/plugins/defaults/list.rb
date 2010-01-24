@@ -149,6 +149,24 @@ module Termtter::Client
     :help => ["list delete LISTNAME", "Delete list"]
   )
 
+  register_command(
+    :name => %s{list show},
+    :exec => lambda { |arg|
+      raise ArgumentError unless /([^\s]*\/[^\s]+)/ =~ arg
+      user_name, slug = *arg.split('/')
+      user_name = config.user_name if user_name.empty?
+      user_name = normalize_as_user_name(user_name)
+      list = Termtter::API.twitter.list(user_name, slug)
+      attrs = %w[ full_name slug description mode id member_count subscriber_count]
+      label_width = attrs.map(&:size).max
+      attrs.each do |attr|
+        value = list.__send__(attr.to_sym)
+        puts "#{attr.gsub('_', ' ').rjust(label_width)}: #{value}"
+      end
+    },
+    :help => ["list show LISTNAME", "Show the detail of list"]
+  )
+
   def self.list_name_to_slug(list_name)
     list_name[/([^\/]*)$/]
   end

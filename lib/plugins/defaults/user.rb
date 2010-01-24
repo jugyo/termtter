@@ -2,31 +2,18 @@ module Termtter::Client
   register_command(
     %s{user show},
     :aliases => [:p, :profile],
-    :help => ["user show USERNAME/[SLUG]", "Show user's profile."]
+    :help => ["user show USERNAME", "Show user's profile."]
   ) do |arg|
     user_name = arg.empty? ? config.user_name : arg
-    if user_name =~ /\//
-      # TODO: move to the command "list show"
-      user_name, slug = *user_name.split('/')
-      user_name = normalize_as_user_name(user_name)
-      list = Termtter::API.twitter.list(user_name, slug)
-      attrs = %w[ full_name slug description mode id member_count subscriber_count]
-      label_width = attrs.map(&:size).max
-      attrs.each do |attr|
-        value = list.__send__(attr.to_sym)
-        puts "#{attr.gsub('_', ' ').rjust(label_width)}: #{value}"
-      end
-    else
-      user = Termtter::API.twitter.user(user_name)
-      attrs = %w[ name screen_name url description profile_image_url location protected following
-      friends_count followers_count statuses_count favourites_count
-      id time_zone created_at utc_offset notifications
-      ]
-      label_width = attrs.map(&:size).max
-      attrs.each do |attr|
-        value = user.__send__(attr.to_sym)
-        puts "#{attr.gsub('_', ' ').rjust(label_width)}: #{value}"
-      end
+    user = Termtter::API.twitter.user(user_name)
+    attrs = %w[ name screen_name url description profile_image_url location protected following
+    friends_count followers_count statuses_count favourites_count
+    id time_zone created_at utc_offset notifications
+    ]
+    label_width = attrs.map(&:size).max
+    attrs.each do |attr|
+      value = user.__send__(attr.to_sym)
+      puts "#{attr.gsub('_', ' ').rjust(label_width)}: #{value}"
     end
   end
 
