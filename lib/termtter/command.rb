@@ -65,13 +65,13 @@ module Termtter
 
     # match? :: String -> Boolean
     def match?(input)
-      pattern === input
+      !!pattern.match(input)
     end
 
     # pattern :: Regexp
     def pattern
-      commands_regex = commands.map {|name| Regexp.quote(name.to_s) }.join('|')
-      /^((#{commands_regex})|(#{commands_regex})\s+(.*?))\s*$/
+      commands_regex = commands.map {|name| name.to_s.split(' ').map {|i| Regexp.quote(i)}.join('\s+') }.join('|')
+      /^\s*((#{commands_regex})|(#{commands_regex})\s+(.*?))\s*$/
     end
 
     # commands :: [Symbol]
@@ -94,9 +94,16 @@ module Termtter
 
     # split_command_line :: String -> (String, String)
     def split_command_line(line)
-      command_words_count = command_words.size
-      parts = line.strip.split(/\s+/, command_words_count + 1)
-      [parts[0...command_words_count].join(' '), parts[command_words_count] || '']
+      m = pattern.match(line)
+      if m
+        unless m[2].nil?
+          [m[2], '']
+        else
+          [m[3], m[4]]
+        end
+      else
+        []
+      end
     end
   end
 end

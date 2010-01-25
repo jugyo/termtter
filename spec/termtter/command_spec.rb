@@ -38,7 +38,7 @@ module Termtter
     describe '#pattern' do
       it 'returns command regex' do
         @command.pattern.
-          should == /^((update|u|up)|(update|u|up)\s+(.*?))\s*$/
+          should == /^\s*((update|u|up)|(update|u|up)\s+(.*?))\s*$/
       end
     end
 
@@ -86,10 +86,10 @@ module Termtter
         ['up',           true],
         ['u',            true],
         ['update ',      true],
-        [' update ',     false],
+        [' update ',     true],
         ['update foo',   true],
-        [' update foo',  false],
-        [' update foo ', false],
+        [' update foo',  true],
+        [' update foo ', true],
         ['u foo',        true],
         ['up foo',       true],
         ['upd foo',      false],
@@ -148,18 +148,27 @@ module Termtter
 
     describe 'spec for split_command_line with sub command' do
       before do
-        @command = Command.new(:name => 'foo bar')
+        @command = Command.new(:name => 'foo bar', :alias => 'f')
+      end
+
+      describe '#pattern' do
+        it 'returns command regex' do
+          @command.pattern.
+            should == /^\s*((foo\s+bar|f)|(foo\s+bar|f)\s+(.*?))\s*$/
+        end
       end
 
       it 'splits from a command line string to the command name and the arg' do
         @command.split_command_line('foo bar args').
           should == ['foo bar', 'args']
         @command.split_command_line('foo  bar args').
-          should == ['foo bar', 'args']
+          should == ['foo  bar', 'args']
         @command.split_command_line(' foo  bar  args ').
-          should == ['foo bar', 'args']
+          should == ['foo  bar', 'args']
         @command.split_command_line(' foo  foo  args ').
-          should == ['foo foo', 'args']
+          should == []
+        @command.split_command_line('f args').
+          should == ['f', 'args']
       end
     end
   end
