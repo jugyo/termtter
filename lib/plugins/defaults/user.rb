@@ -1,8 +1,8 @@
 module Termtter::Client
   register_command(
-    :profile,
-    :aliases => [:p],
-    :help => ["profile USERNAME", "Show user's profile."]
+    'user show',
+    :aliases => [:p, :profile],
+    :help => ["user show USERNAME", "Show user's profile."]
   ) do |arg|
     user_name = arg.empty? ? config.user_name : arg
     user = Termtter::API.twitter.user(user_name)
