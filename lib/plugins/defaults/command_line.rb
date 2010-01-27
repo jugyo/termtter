@@ -32,6 +32,12 @@ module Termtter
         command_text = hook.call(command_text)
       }
       Client.execute(command_text)
+    rescue CommandNotFound => e
+      hooks = Client.get_hooks('command_not_found')
+      raise e if hooks.empty?
+      hooks.each {|hook|
+        hook.call(command_text)
+      }
     rescue TimeoutError
       puts TermColor.parse("<red>Time out :(</red>")
     end
