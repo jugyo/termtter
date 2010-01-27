@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 
 config.plugins.retweet.set_default(
-  :format, '<%= comment %>RT @<%=s.user.screen_name%>: <%=s.text%>')
+  :format, '<%= comment %><%= rt_or_qt %> @<%=s.user.screen_name%>: <%=s.text%>')
 config.plugins.retweet.set_default(
   :confirm_protected, true)
+config.plugins.retweet.set_default(
+  :official_retweet, true)
+config.plugins.retweet.set_default(
+  :quotetweet, false)
 
 module Termtter::Client
   def self.post_retweet(s, comment = nil)
@@ -14,16 +18,20 @@ module Termtter::Client
 
     # NOTE: If it's possible, this plugin tries to
     #   use the default RT feature twitter provides.
-    if comment.nil?
+    if comment.nil? && config.plugins.retweet.official_retweet
       begin
         Termtter::API.twitter.retweet(s.id)
         # TODO: Vimshell support
         puts TermColor.parse("<blue>=&gt; RT @#{s.user.screen_name}: #{s.text}</blue>")
         return
       rescue Rubytter::APIError  # XXX: just for transition period
+        if $!.to_s == 'Not found'
+          Termtter::Client.logger.warn "Failed official retweet. Set twitter langage to English in https://twitter.com/account/settings or set config.plugins.retweet.official_retweet to false."
+        end
       end
     end
     comment += ' ' unless comment.nil?
+    rt_or_qt = (config.plugins.retweet.quotetweet and comment) ? 'QT' : 'RT'
     text = ERB.new(config.plugins.retweet.format).result(binding)
     Termtter::API.twitter.update(text)
     puts "=> #{text}"

@@ -17,9 +17,14 @@ Termtter::Client.register_hook(
         cs = line.unpack 'U*'
         while cs.size > 0
           sz = 0
-          l = cs.take_while{|c| sz += c < 0x100 ? 1 : 2; sz < width}
+          l = cs.take_while do |c|
+            sz2 = c < 0x100 ? 1 : 2
+            sz += sz2
+            sz < width || (sz2 == 1 && c != 32)
+          end
           ocs += l
           cs = cs.drop(l.size)
+          cs = cs.drop(1) if cs[0] == 32
           ocs += [0x0a]
         end
       end

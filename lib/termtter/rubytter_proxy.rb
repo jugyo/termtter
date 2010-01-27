@@ -20,7 +20,9 @@ module Termtter
             modified_args = hook.call(*modified_args)
           end
 
+          from = Time.now
           result = call_rubytter_or_use_cache(method, *modified_args, &block)
+          Termtter::Client.logger.debug "rubytter_proxy: #{method}(#{modified_args.inspect[1...-1]}), %.2fsec" % (Time.now - from)
 
           self.class.call_hooks("post_#{method}", *args)
         rescue HookCanceled
@@ -44,16 +46,18 @@ module Termtter
       users_cache_store[screen_name]
     end
 
+    def cached_status(id)
+      status_cache_store[id.to_i]
+    end
+
     def call_rubytter_or_use_cache(method, *args, &block)
       case method
       when :show
-        if status_cache_store.key?(args[0].to_i)
-          status_cache_store[args[0].to_i]
-        else
+        unless status = cached_status(args[0])
           status = call_rubytter(method, *args, &block)
           store_status_cache(status)
-          status
         end
+        status
       when :home_timeline, :user_timeline, :friends_timeline, :search
         statuses = call_rubytter(method, *args, &block)
         statuses.each do |status|

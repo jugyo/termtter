@@ -27,7 +27,7 @@ config.plugins.stdout.set_default(:typable_ids, ('aa'..'zz').to_a)
 config.plugins.stdout.set_default(:typable_id_prefix, '$')
 config.plugins.stdout.set_default(:show_reply_chain, true)
 config.plugins.stdout.set_default(:indent_format, %q("#{'    ' * (indent - 1)}  → "))
-config.plugins.stdout.set_default(:max_indent_level, 3)
+config.plugins.stdout.set_default(:max_indent_level, 1)
 
 module Termtter
   class TypableIdGenerator
@@ -116,7 +116,7 @@ module Termtter
     def status_line(s, time_format, event, indent = 0)
       return '' unless s
       text = TermColor.escape(s.text)
-      color = config.plugins.stdout.colors[s.user.id.to_i % config.plugins.stdout.colors.size]
+      color = user_color(s.user)
       status_id = Termtter::Client.data_to_typable_id(s.id)
       reply_to_status_id =
         if s.in_reply_to_status_id
@@ -149,8 +149,9 @@ module Termtter
         indent += 1
         unless indent > config.plugins.stdout.max_indent_level
           begin
-            status = Termtter::API.twitter.show(s.in_reply_to_status_id)
-            text << status_line(status, time_format, event, indent)
+            if status = Termtter::API.twitter.cached_status(s.in_reply_to_status_id)
+              text << status_line(status, time_format, event, indent)
+            end
           rescue Rubytter::APIError
           end
         end

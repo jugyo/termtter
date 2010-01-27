@@ -10,11 +10,11 @@ module Termtter
       opt.program_name = 'Termtter'
 
       opt.on('-f', '--config-file file', 'Set path to configfile') do |val|
-        config.system.__assign__(:conf_file, val)
+        Termtter::CONF_FILE = val
       end
 
       opt.on('-t', '--termtter-directory directory', 'Set termtter directory') do |val|
-        config.system.__assign__(:conf_dir, val)
+        Termtter::CONF_DIR = val
       end
 
       opt.on('-d', '--devel', 'Start in developer mode') do |flg|

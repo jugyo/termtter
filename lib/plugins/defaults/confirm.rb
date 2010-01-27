@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-config.set_default(:confirm, false)
+config.set_default(:confirm, true)
 
 def confirm(message)
   if config.confirm && !Termtter::Client.confirm(message)

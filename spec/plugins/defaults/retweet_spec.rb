@@ -74,6 +74,40 @@ describe 'Termtter::Client.post_retweet' do
         end
       end
 
+      it 'and use QT if config.plugins.retweet.quotetweet is true' do
+        config.plugins.retweet.quotetweet = true
+        Termtter::Client.plug 'defaults/retweet'
+
+        mock = Object.new
+        def mock.user
+          mock2 = Object.new
+          def mock2.protected
+            false
+          end
+
+          def mock2.screen_name
+            'ujihisa'
+          end
+          mock2
+        end
+
+        def mock.text
+          'hi'
+        end
+
+        mock3 = Object.new
+        def mock3.update(text)
+          text.should == 'my comment QT @ujihisa: hi'
+        end
+
+        Termtter::API.should_receive(:twitter).and_return(mock3)
+        be_quiet do
+          Termtter::Client.post_retweet(mock, 'my comment')
+        end
+        config.plugins.retweet.quotetweet = false
+      end
+
+
       it 'and with confirming in the original post being protected' do
         completely_same_as_the_following.call
       end
@@ -113,6 +147,47 @@ describe 'Termtter::Client.post_retweet' do
         be_quiet do
           Termtter::Client.post_retweet(mock)
         end
+      end
+
+      it 'and don\'t use QT if config.plugins.retweet.quotetweet is true' do
+        config.plugins.retweet.quotetweet = true
+        Termtter::Client.plug 'defaults/retweet'
+
+        mock = Object.new
+        def mock.user
+          mock2 = Object.new
+          def mock2.protected
+            false
+          end
+
+          def mock2.screen_name
+            'ujihisa'
+          end
+          mock2
+        end
+
+        def mock.text
+          'hi'
+        end
+
+        def mock.id
+          123
+        end
+
+        mock3 = Object.new
+        def mock3.retweet(id)
+          id.should == 123
+        end
+
+        def mock3.update(text)
+          text.should == 'RT @ujihisa: hi'
+        end
+
+        Termtter::API.should_receive(:twitter).and_return(mock3)
+        be_quiet do
+          Termtter::Client.post_retweet(mock)
+        end
+        config.plugins.retweet.quotetweet = false
       end
 
       it 'and with confirming in the original post being protected' do

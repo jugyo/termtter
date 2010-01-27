@@ -236,11 +236,13 @@ module Termtter
       end
 
       def logger
-        @logger
+        @logger || setup_logger
       end
 
       def setup_logger
         @logger = config.logger || default_logger
+        @logger.level = config.devel ? Logger::DEBUG : Logger::INFO
+        @logger
       end
 
       def default_logger
@@ -292,14 +294,13 @@ module Termtter
       end
 
       def run
-        load_config()
-        parse_options()
-        show_splash()
-        setup_logger()
-        setup_task_manager()
-        load_plugins()
-        eval_init_block()
-        Termtter::API.setup()
+        parse_options
+        show_splash
+        load_config
+        setup_task_manager
+        load_plugins
+        eval_init_block
+        Termtter::API.setup
 
         config.system.eval_scripts.each do |script|
           begin
