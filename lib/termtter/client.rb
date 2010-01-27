@@ -292,10 +292,9 @@ module Termtter
       end
 
       def run
-        show_splash
-
         load_config()
         parse_options()
+        show_splash()
         setup_logger()
         setup_task_manager()
         load_plugins()
