@@ -47,7 +47,9 @@ module Termtter
           class << self
             alias parse_orig parse
             def parse(o)
-              o.gsub(/<.+?>(.*?)<\/.+?>/, '\1')
+              o.gsub(/<\/?.+?>/, '').
+                gsub('&lt;', '<').
+                gsub('&gt;', '>')
             end
           end
         end
