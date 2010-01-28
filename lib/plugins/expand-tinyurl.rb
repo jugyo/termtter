@@ -12,19 +12,6 @@ URL_SHORTTERS = [
 config.plugins.expand_tinyurl.set_default(:shortters, [])
 config.plugins.expand_tinyurl.set_default(:skip_users, [])
 
-# for Ruby 1.8
-unless String.public_method_defined?(:force_encoding)
-  class String
-    def force_encoding(enc)
-      self
-    end
-  end
-
-  module Encoding
-    UTF_8 = nil
-  end
-end
-
 Termtter::Client::register_hook(
   :name => :expand_tinyurl,
   :point => :filter_for_output,
@@ -48,7 +35,8 @@ def expand_url(host, path)
     h.get(path, { 'User-Agent' => 'Mozilla' })
   end
   return nil unless res.code == "301" or res.code == "302"
-  res['Location'].force_encoding(Encoding::UTF_8)
+  newurl = res['Location']
+  newurl.force_encoding(Encoding::UTF_8) if newurl.respond_to?(:force_encoding)
 rescue Exception => e
   Termtter::Client.handle_error(e)
   nil
