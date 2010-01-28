@@ -7,6 +7,11 @@ URL_SHORTTERS = [
   {:host => "ff.im", :pattern => %r'(http://ff\.im(/[-\w/]+))'},
   {:host => "j.mp", :pattern => %r'(http://j\.mp(/[\w/]+))'},
   {:host => "goo.gl", :pattern => %r'(http://goo\.gl(/[\w/]+))'},
+  {:host => "tr.im", :pattern => %r'(http://tr\.im(/[\w/]+))'},
+  {:host => "short.to", :pattern => %r'(http://short\.to(/[\w/]+))'},
+  {:host => "ow.ly", :pattern => %r'(http://ow\.ly(/[\w/]+))'},
+  {:host => "u.nu", :pattern => %r'(http://u\.nu(/[\w/]+))'},
+  {:host => "twurl.nl", :pattern => %r'(http://twurl\.nl(/\w+))'},
 ]
 
 config.plugins.expand_tinyurl.set_default(:shortters, [])
