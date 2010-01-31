@@ -85,7 +85,7 @@ module Termtter::Client
     end
   end
 
-  register_command('direct list', :help => ["direct,d list", 'List direct messages']) do |arg|
+  register_command('direct list', :help => ["direct list", 'List direct messages']) do |arg|
     output(
       Termtter::API.twitter.direct_messages.map { |d|
         DirectMessage.new(d.id, "#{d.text} => #{d.recipient_screen_name}", d.sender, d.created_at)
@@ -94,7 +94,7 @@ module Termtter::Client
     )
   end
 
-  register_command('direct sent_list', :help => ["direct,d sent_list", 'List sent direct messages']) do |arg|
+  register_command('direct sent_list', :help => ["direct sent_list", 'List sent direct messages']) do |arg|
     output(
       Termtter::API.twitter.sent_direct_messages.map { |d|
         DirectMessage.new(d.id, "#{d.text} => #{d.recipient_screen_name}", d.sender, d.created_at)
