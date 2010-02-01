@@ -22,12 +22,12 @@ module Termtter
 
     it 'accepts -f option' do
       Termtter::OptParser::parse!(%w{-f ~/config})
-      config.system.conf_file.should == '~/config'
+      Termtter::CONF_FILE.should == '~/config'
     end
 
     it 'accepts -t option' do
       Termtter::OptParser::parse!(%w{-t ~/termtter_directory})
-      config.system.conf_dir.should == '~/termtter_directory'
+      Termtter::CONF_DIR.should == '~/termtter_directory'
     end
 
     it 'accepts -d option' do
