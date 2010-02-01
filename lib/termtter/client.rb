@@ -327,16 +327,9 @@ module Termtter
       end
 
       def handle_error(e)
-        if logger
-          logger.error("#{e.class.to_s}: #{e.message}")
-          logger.error(e.backtrace.join("\n")) if (e.backtrace and config.devel)
-        else
-          raise e
-        end
+        logger.error("#{e.class.to_s}: #{e.message}")
+        logger.error(e.backtrace.join("\n")) if (e.backtrace and config.devel)
         get_hooks(:on_error).each {|hook| hook.call(e) }
-      rescue Exception => e
-        $stderr.puts "Error: #{e}"
-        $stderr.puts e.backtrace.join("\n")
       end
 
       def confirm(message, default_yes = true, &block)

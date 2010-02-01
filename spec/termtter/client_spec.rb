@@ -15,7 +15,6 @@ module Termtter
     it 'can run' do
       Client.should_receive(:load_config) {}
       Termtter::API.should_receive(:setup) {}
-      Client.should_receive(:setup_logger) {}
       Client.should_receive(:load_plugins) {}
       Client.should_receive(:eval_init_block) {}
 
@@ -27,7 +26,6 @@ module Termtter
     it 'can run (eval script cannot eval)' do
       Client.stub(:load_config) {}
       Termtter::API.stub(:setup) {}
-      Client.stub(:setup_logger) {}
       Client.stub(:load_plugins) {}
       Client.stub(:eval_init_block) {}
 
@@ -41,7 +39,6 @@ module Termtter
     it 'can run (eval script cannot eval)' do
       Client.stub(:load_config) {}
       Termtter::API.stub(:setup) {}
-      Client.stub(:setup_logger) {}
       Client.stub(:load_plugins) {}
       Client.stub(:eval_init_block) {}
 
@@ -425,13 +422,9 @@ module Termtter
       Client.handle_error error
     end
 
-    it 'handle_error raise error when logger is nothing' do
-      Client.instance_variable_set(:@logger, nil)
-      $stderr, old = StringIO.new, $stderr
+    it 'handle_error raise error' do
+      Client.logger.should_receive(:error).with('StandardError: error')
       Client.handle_error(StandardError.new('error'))
-      $stderr.rewind
-      $stderr.gets.should match(/\AError: error/)
-      $stderr = old
     end
 
     it 'cancels command by hook' do
