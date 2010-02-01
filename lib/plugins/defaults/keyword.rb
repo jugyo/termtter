@@ -33,6 +33,16 @@ module Termtter::Client
     text
   end
 
+  register_hook :notify_for_keywords, :point => :output do |statuses, event|
+    if event == :update_friends_timeline
+      statuses.select { |status|
+        /#{Regexp.union(public_storage[:keywords].map(&:to_s))}/ =~ status.text
+      }.each do |status|
+        notify(status.user.screen_name, status.text)
+      end
+    end
+  end
+
   register_command(
     'keyword add',
     :help => ['keyword add KEYWORD', 'Add a highlight keyword']
