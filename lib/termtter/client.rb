@@ -130,6 +130,10 @@ module Termtter
         end
       end
 
+      def notify(*args)
+        ::Notify.notify(*args)
+      end
+
       def apply_filters_for_hook(hook_name, statuses, event)
         get_hooks(hook_name).inject(statuses) {|s, hook|
           hook.call(s, event)
