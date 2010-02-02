@@ -35,8 +35,9 @@ module Termtter::Client
 
   register_hook :notify_for_keywords, :point => :output do |statuses, event|
     if event == :update_friends_timeline
+      regexp = Regexp.union(*public_storage[:keywords].map(&:to_s))
       statuses.select { |status|
-        /#{Regexp.union(public_storage[:keywords].map(&:to_s))}/ =~ status.text
+        /#{regexp}/ =~ status.text
       }.each do |status|
         notify(status.user.screen_name, status.text)
       end
