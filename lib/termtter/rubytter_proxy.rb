@@ -23,12 +23,12 @@ module Termtter
           from = Time.now
           Termtter::Client.logger.debug "rubytter_proxy: #{method}(#{modified_args.inspect[1...-1]})"
           result = call_rubytter_or_use_cache(method, *modified_args, &block)
-          Termtter::Client.logger.debug "rubytter_proxy: #{method}(#{modified_args.inspect[1...-1]}) %.2fsec" % (Time.now - from)
+          Termtter::Client.logger.debug "rubytter_proxy: #{method}(#{modified_args.inspect[1...-1]}) #{'%.2fsec' % (Time.now - from)}"
 
           self.class.call_hooks("post_#{method}", *args)
         rescue HookCanceled
         rescue => e
-          Termtter::Client.logger.debug "rubytter_proxy: #{method}(#{modified_args.inspect[1...-1]}) #{e.message} %.2fsec" % (Time.now - from)
+          Termtter::Client.logger.debug "rubytter_proxy: #{method}(#{modified_args.inspect[1...-1]}) #{e.message} #{'%.2fsec' % (Time.now - from)}"
           raise e
         end
         result
