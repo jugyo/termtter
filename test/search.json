@@ -1,8 +1,0 @@
-{
-"results":[
-{"text":"texttext 2","to_user_id":202,"to_user":"to_user2","from_user":"test2","id":10002,"from_user_id":102,"iso_language_code":"en","profile_image_url":"http:\/\/s3.amazonaws.com\/twitter_production\/profile_images\/xxx\/102.jpg","created_at":"Sat, 03 Jan 2009 12:49:09 +0000"},
-{"text":"texttext 1","to_user_id":101,"to_user":"to_user1","from_user":"test1","id":10001,"from_user_id":101,"iso_language_code":"en","profile_image_url":"http:\/\/s3.amazonaws.com\/twitter_production\/profile_images\/xxx\/101.jpg","created_at":"Sat, 03 Jan 2009 12:49:09 +0000"},
-{"text":"texttext 0","to_user_id":100,"to_user":"to_user0","from_user":"test0","id":10000,"from_user_id":100,"iso_language_code":"en","profile_image_url":"http:\/\/s3.amazonaws.com\/twitter_production\/profile_images\/xxx\/100.jpg","created_at":"Sat, 03 Jan 2009 12:49:09 +0000"}
-],
-"since_id":0,"max_id":1093328763,"refresh_url":"?since_id=1093328763&q=ruby","results_per_page":15,"next_page":"?page=2&max_id=1093328763&q=ruby","completed_in":0.019603,"page":1,"query":"ruby"
-}
