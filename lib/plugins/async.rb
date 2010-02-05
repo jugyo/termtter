@@ -4,10 +4,11 @@ module Termtter::Client
     :alias => :a,
     :help => ['async COMMAND', 'asynchronously execute the command'],
     :completion => lambda {|cmd, arg|
-      commands.map{|name, command| command.complement(arg)}.
+      commands.
+        map {|name, command| command.complement(arg) }.
         flatten.
         compact.
-        map{|i| "#{cmd} #{i}"}
+        map {|i| "#{cmd} #{i}" }
     },
     :exec => lambda {|arg|
       @task_manager.invoke_later do
