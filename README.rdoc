@@ -74,6 +74,7 @@ You can also type `<` as curry.
 * termcolor
 * rubytter
 * highline
+* notify
 
 == TODO:
 
