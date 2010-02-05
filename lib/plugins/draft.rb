@@ -34,22 +34,19 @@ module Termtter::Client
 
   register_command('draft exec') do |arg|
     index = get_draft_index(arg)
-    if index
-      command = public_storage[:drafts][index]
-      if command
-        puts "exec => \"#{command}\""
-        execute(public_storage[:drafts][index])
-        public_storage[:drafts].delete_at(index)
-      end
-    end
+    break unless index
+    command = public_storage[:drafts][index]
+    break unless command
+    puts "exec => \"#{command}\""
+    execute(public_storage[:drafts][index])
+    public_storage[:drafts].delete_at(index)
   end
 
   register_command('draft delete') do |arg|
     index = get_draft_index(arg)
-    if index
-      deleted = public_storage[:drafts].delete_at(index)
-      puts "deleted => \"#{deleted}\"" if deleted
-    end
+    break unless index
+    deleted = public_storage[:drafts].delete_at(index)
+    puts "deleted => \"#{deleted}\"" if deleted
   end
 
   register_command('draft clear') do |arg|
