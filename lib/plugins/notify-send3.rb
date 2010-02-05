@@ -49,7 +49,7 @@ Termtter::Client.register_hook(
         text = %Q{"#{text}"} if text =~ /^-/
         text.gsub!(URI.regexp,'<a href="\0">\0</a>')
         begin
-          system 'notify-send', '-i', get_icon_path(s), '--', s.user.screen_name, text
+          Termtter::Client.notify s.user.screen_name, text
           sleep 0.05
         rescue
         end
