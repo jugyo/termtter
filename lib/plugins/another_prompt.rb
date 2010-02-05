@@ -1,53 +1,55 @@
 # -*- coding: utf-8 -*-
-
 config.plugins.another_prompt.
-  set_default(:shortcut_setting,
-              { ':' => '',
-                'd' => 'direct',
-                'D' => 'delete',
-                'f' => 'fib',
-                'F' => 'favorite',
-                'l' => 'list',
-                'o' => 'open',
-                'p' => 'profile',
-                'R' => 'reply',
-                's' => 'search',
-                't' => 'retweet',
-                'u' => 'update',
-                'c' => lambda do
-                  system('clear')
-                end,
-                'L' => lambda do
-                  puts '-' *
-                    `stty size`.chomp.
-                    sub(/^\d+\s(\d+)$/, '\\1').to_i
-                end,
-                'q' => lambda do
-                  Termtter::Client.execute('quit')
-                end,
-                'r' => lambda do
-                  Termtter::Client.execute('replies')
-                end,
-                '?' => lambda do
-                  Termtter::Client.execute('help')
-                end,
-                "\e" => lambda do
-                  system('screen', '-X', 'eval', 'copy')
-                end
-              })
+  set_default(
+    :shortcut_setting,
+    {
+      ':' => '',
+      'd' => 'direct',
+      'D' => 'delete',
+      'f' => 'fib',
+      'F' => 'favorite',
+      'l' => 'list',
+      'o' => 'open',
+      'p' => 'profile',
+      'R' => 'reply',
+      's' => 'search',
+      't' => 'retweet',
+      'u' => 'update',
+      'c' => lambda do
+        system('clear')
+      end,
+      'L' => lambda do
+        puts '-' *
+          `stty size`.chomp.
+          sub(/^\d+\s(\d+)$/, '\\1').to_i
+      end,
+      'q' => lambda do
+        Termtter::Client.execute('quit')
+      end,
+      'r' => lambda do
+        Termtter::Client.execute('replies')
+      end,
+      '?' => lambda do
+        Termtter::Client.execute('help')
+      end,
+      "\e" => lambda do
+        system('screen', '-X', 'eval', 'copy')
+      end
+    })
 
 Termtter::Client.plug 'curry'
 
 module Termtter::Client
-  add_task(:name => :auto_reload,
-           :interval => config.update_interval,
-           :after => config.update_interval) do
+  add_task(
+    :name => :auto_reload,
+    :interval => config.update_interval,
+    :after => config.update_interval) do
     begin
       execute('reload')
     rescue Exception => e
       handle_error(e)
     end
-  end
+    end
 
   register_hook(
     :name => :auto_reload_init,
@@ -58,8 +60,7 @@ module Termtter::Client
       rescue Exception => e
         handle_error(e)
       end
-    }
-  )
+    })
 end
 
 module Termtter
