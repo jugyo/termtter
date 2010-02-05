@@ -130,6 +130,10 @@ module Termtter
         end
       end
 
+      def notify(*args)
+        ::Notify.notify(*args)
+      end
+
       def apply_filters_for_hook(hook_name, statuses, event)
         get_hooks(hook_name).inject(statuses) {|s, hook|
           hook.call(s, event)
@@ -323,16 +327,9 @@ module Termtter
       end
 
       def handle_error(e)
-        if logger
-          logger.error("#{e.class.to_s}: #{e.message}")
-          logger.error(e.backtrace.join("\n")) if (e.backtrace and config.devel)
-        else
-          raise e
-        end
+        logger.error("#{e.class.to_s}: #{e.message}")
+        logger.error(e.backtrace.join("\n")) if (e.backtrace and config.devel)
         get_hooks(:on_error).each {|hook| hook.call(e) }
-      rescue Exception => e
-        $stderr.puts "Error: #{e}"
-        $stderr.puts e.backtrace.join("\n")
       end
 
       def confirm(message, default_yes = true, &block)

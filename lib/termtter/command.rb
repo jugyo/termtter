@@ -60,7 +60,13 @@ module Termtter
         else
           raise ArgumentError, 'arg should be String or nil'
         end
+      from = Time.now
+      Termtter::Client.logger.debug "command: #{cmd} #{arg}"
       exec_proc.call(arg)
+      Termtter::Client.logger.debug "command: #{cmd} #{arg} #{'%.2fsec' % (Time.now - from)}"
+    rescue => e
+      Termtter::Client.logger.debug "command: #{cmd} #{arg} #{e.message} #{'%.2fsec' % (Time.now - from)}"
+      raise e
     end
 
     # match? :: String -> Boolean

@@ -12,6 +12,7 @@ begin
     gem.add_dependency("highline", ">= 1.5.0")
     gem.add_dependency("termcolor", ">= 1.0.0")
     gem.add_dependency("rubytter", ">= 0.11.0")
+    gem.add_dependency("notify", ">= 0.2.1")
     gem.authors = %w(jugyo ujihisa)
     gem.email = 'jugyo.org@gmail.com'
     gem.homepage = 'http://termtter.org/'

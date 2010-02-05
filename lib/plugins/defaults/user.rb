@@ -30,14 +30,4 @@ module Termtter::Client
       puts "    \"#{user.status.text}\""
     end
   end
-
-  register_hook(:highlight_for_user_search, :point => :pre_coloring) do |text, event|
-    case event
-    when UserSearchEvent
-      query = event.query.split(/\s/).map {|q|Regexp.quote(q)}.join("|")
-      text.gsub(/(#{query})(.*:)/i, '<on_magenta><white>\1</white></on_magenta>\2')
-    else
-      text
-    end
-  end
 end

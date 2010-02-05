@@ -10,7 +10,7 @@ config.plugins.stdout.set_default(
   [
     '<90><%=time%> [<%=status_id%>]</90> ',
     '<%= indent_text %>',
-    '<<%=color%>><%=s.user.screen_name%>: <%=colorize_users(text)%></<%=color%>> ',
+    '<<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ',
     '<90>',
     '<%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%>',
     '<%=retweeted_status_id ? " (retweet_to [#{retweeted_status_id}]) " : ""%>',
@@ -139,10 +139,10 @@ module Termtter
         when 'web' then 'web'
         end
 
+      text = colorize_users(text)
+      text = Client.get_hooks(:pre_coloring).inject(text){|result, hook| hook.call(result, event)}
       indent_text = indent > 0 ? eval(config.plugins.stdout.indent_format) : ''
       erbed_text = ERB.new(config.plugins.stdout.timeline_format).result(binding)
-
-      erbed_text = Client.get_hooks(:pre_coloring).inject(erbed_text){|result, hook| hook.call(result, event)}
 
       text = TermColor.unescape(TermColor.parse(erbed_text) + "\n")
       if config.plugins.stdout.show_reply_chain && s.in_reply_to_status_id
