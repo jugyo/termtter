@@ -70,10 +70,12 @@ module Termtter
     end
 
     register_command(:db_search, :alias => :ds) do |arg|
-      statuses = Status.find(:all,
-                             :conditions => ['text LIKE :l',
-                                             {:l => "%" + arg + "%"}],
-                             :limit      => 20)
+      statuses = Status.find(
+        :all,
+        :conditions => [
+          'text LIKE :l',
+          {:l => "%" + arg + "%"}],
+        :limit => 20)
       output(statuses, :db_search)
     end
 
@@ -86,10 +88,11 @@ module Termtter
 
     register_command(:db_list) do |arg|
       user_name = normalize_as_user_name(arg)
-      statuses = Status.find(:all,
-                             :joins      => "LEFT OUTER JOIN users ON users.uid = statuses.user_id",
-                             :conditions => ['users.screen_name = :u',{:u => user_name}],
-                             :limit      => 20)
+      statuses = Status.find(
+        :all,
+        :joins      => "LEFT OUTER JOIN users ON users.uid = statuses.user_id",
+        :conditions => ['users.screen_name = :u',{:u => user_name}],
+        :limit      => 20)
       output(statuses, :db_search)
     end
 
