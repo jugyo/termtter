@@ -3,9 +3,8 @@ module Termtter::Client
   register_command(
     :name => :random, :aliases => [:rand],
     :exec_proc => lambda {|_|
-
       unless public_storage[:log]
-        puts 'Error: You should load "log" plugin!'
+        puts 'Error: You need to load "log" plugin!'
         return
       end
 
@@ -14,10 +13,7 @@ module Termtter::Client
         puts 'No status.'
         return
       end
-
       execute("update #{status.text}")
-
     },
-    :help => ['random', 'random post']
-  )
+    :help => ['random', 'post randomly'])
 end

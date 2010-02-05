@@ -15,7 +15,7 @@ module Termtter::Client
       begin
         puts "collecting friends (#{frinends.length})"
         last = Termtter::API::twitter.friends(user_name, :cursor => last ? last.next_cursor : -1)
-	frinends += last.users
+        frinends += last.users
       rescue Timeout::Error, StandardError # XXX
         break
       end until last.next_cursor == 0

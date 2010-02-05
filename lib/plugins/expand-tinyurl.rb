@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 URL_SHORTTERS = [
-  { :host => "tinyurl.com", :pattern => %r'(http://tinyurl\.com(/[\w/]+))' },
-  { :host => "is.gd", :pattern => %r'(http://is\.gd(/[\w/]+))' },
-  { :host => "bit.ly", :pattern => %r'(http://bit\.ly(/[\w/]+))' },
-  { :host => "ff.im", :pattern => %r'(http://ff\.im(/[-\w/]+))'},
-  { :host => "j.mp", :pattern => %r'(http://j\.mp(/[\w/]+))' },
-  { :host => "goo.gl", :pattern => %r'(http://goo\.gl(/[\w/]+))' },
+  {:host => "tinyurl.com", :pattern => %r'(http://tinyurl\.com(/[\w/]+))'},
+  {:host => "is.gd", :pattern => %r'(http://is\.gd(/[\w/]+))'},
+  {:host => "bit.ly", :pattern => %r'(http://bit\.ly(/[\w/]+))'},
+  {:host => "ff.im", :pattern => %r'(http://ff\.im(/[-\w/]+))'},
+  {:host => "j.mp", :pattern => %r'(http://j\.mp(/[\w/]+))'},
+  {:host => "goo.gl", :pattern => %r'(http://goo\.gl(/[\w/]+))'},
 ]
 
 config.plugins.expand_tinyurl.set_default(:shortters, [])

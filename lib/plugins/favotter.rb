@@ -5,7 +5,6 @@ require 'nokogiri'
 require 'open-uri'
 
 module Termtter::Client
-
   public_storage[:favorited_ids] = {}
 
   class << self
@@ -28,6 +27,7 @@ module Termtter::Client
     end
 
     private
+
     def parse(url)
       doc = Nokogiri(open(url).read)
       doc.css('div.entry').map do |entry|
@@ -53,13 +53,14 @@ module Termtter::Client
 
   help = ['favotter [USERNAME] [THRESHOLD]', 'Show info from favotter']
   register_command('favotter', :help => help) do |arg|
-    target = if arg.empty?
+    target =
+      if arg.empty?
        config.user_name
-     else
-       args = arg.split
-       threshold = args.size == 1 ? 1 : args[1]
-       args[0]
-    end
+      else
+        args = arg.split
+        threshold = args.size == 1 ? 1 : args[1]
+        args[0]
+      end
     if /@(.*)/ =~ target
       target = $1
     end
@@ -74,4 +75,3 @@ module Termtter::Client
     end
   end
 end
-

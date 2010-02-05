@@ -47,7 +47,7 @@ module Termtter::Client
 
   @http_server.mount_proc('/reload.html') do |req, res|
     # MEMO: ブラウザで画面を二つ開いてるとデータの取り合いになっておかしな感じになる。。。
-    res['Content-Type'] = 'text/javascript; charset=utf-8';
+    res['Content-Type'] = 'text/javascript; charset=utf-8'
     res.body = @http_server_statuses_store.to_json
     @http_server_statuses_store.clear
   end
@@ -67,7 +67,7 @@ module Termtter::Client
       begin
         command = req.path.sub(/^\//, '')
         execute(command)
-        res['Content-Type'] = 'text/javascript; charset=utf-8';
+        res['Content-Type'] = 'text/javascript; charset=utf-8'
         res.body = @http_server_output
       rescue Termtter::CommandNotFound => e
         res.status = 404
@@ -80,3 +80,4 @@ module Termtter::Client
     @http_server.start
   end
 end
+# vim: fileencoding=utf8
