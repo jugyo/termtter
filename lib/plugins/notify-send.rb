@@ -15,7 +15,7 @@ Termtter::Client.register_hook(
 
       text << %Q|\n<a href="http://twitter.com/">more...</a>| if statuses.size > max
 
-      system 'notify-send', '-t', '60000', '--', 'Termtter', text unless text.empty?
+      Termtter::Client.notify 'timeline', text unless text.empty?
     end
   }
 )
