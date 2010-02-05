@@ -53,8 +53,7 @@ Termtter::Client.register_hook(
         text.gsub!(
           %r{https?://[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+},
           '<a href="\0">\0</a>')
-        system(
-          'notify-send', '-i', get_icon_path(s), '--', s.user.screen_name, text)
+        Termtter::Client.notify(s.user.screen_name, text)
         sleep 0.1
       end
     end
