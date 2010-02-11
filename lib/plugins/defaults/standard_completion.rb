@@ -5,6 +5,20 @@ require 'set'
 module Termtter::Client
 
   #
+  # completion for status ids
+  # (I want to delete)
+  #
+
+  public_storage[:status_ids] ||= Set.new
+
+  register_hook(:collect_status_ids, :point => :pre_filter) do |statuses, event|
+    statuses.each do |s|
+      public_storage[:status_ids].add(s.id)
+      public_storage[:status_ids].add(s.in_reply_to_status_id) if s.in_reply_to_status_id
+    end
+  end
+
+  #
   # completion for user names
   #
 
