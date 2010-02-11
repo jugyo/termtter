@@ -31,10 +31,14 @@ module Termtter
 
           self.class.call_hooks("post_#{method}", *args)
         rescue HookCanceled
-        rescue => e
+        rescue TimeoutError => e
           Termtter::Client.logger.debug(
             "rubytter_proxy: #{method}(#{modified_args.inspect[1...-1]}) " +
             "#{e.message} #{'%.2fsec' % (Time.now - from)}")
+          raise e
+        rescue => e
+          Termtter::Client.logger.debug(
+            "rubytter_proxy: #{method}(#{modified_args.inspect[1...-1]}) #{e.message}")
           raise e
         end
         result
