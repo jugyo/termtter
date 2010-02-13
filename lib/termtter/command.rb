@@ -21,7 +21,7 @@ module Termtter
         :aliases        => [],
         :exec_proc      => lambda {|arg| },
         :comletion_proc => lambda {|command, arg| [] }
-      }.merge(args)
+      }.merge(args){|k, v1, v2| v2 ? v2 : v1 }
 
       set cfg
     end
