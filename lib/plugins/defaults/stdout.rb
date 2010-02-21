@@ -28,7 +28,8 @@ config.plugins.stdout.set_default(:typable_id_prefix, '$')
 config.plugins.stdout.set_default(:show_reply_chain, true)
 config.plugins.stdout.set_default(:indent_format, %q("#{'    ' * (indent - 1)}  → "))
 config.plugins.stdout.set_default(:max_indent_level, 1)
-config.plugins.stdout.set_default(:screen_name_to_hash_proc, lambda { |screen_name| screen_name.to_i(36) })
+config.plugins.stdout.set_default(
+  :screen_name_to_hash_proc, lambda { |screen_name| screen_name.to_i(36) })
 
 module Termtter
   class TypableIdGenerator
@@ -65,7 +66,8 @@ module Termtter
     @typable_id_generator = TypableIdGenerator.new(config.plugins.stdout.typable_ids)
 
     def self.data_to_typable_id(data)
-      id = config.plugins.stdout.typable_id_prefix + @typable_id_generator.get_id(data)
+      id = config.plugins.stdout.typable_id_prefix +
+        @typable_id_generator.get_id(data)
     end
 
     def self.typable_id_to_data(id)
@@ -103,12 +105,14 @@ module Termtter
         output_text << status_line(s, time_format, event)
       end
 
-      if config.plugins.stdout.enable_pager && ENV['LINES'] && statuses.size > ENV['LINES'].to_i
-        file = Tempfile.new('termtter')
-        file.print output_text
-        file.close
-        system "#{config.plugins.stdout.pager} #{file.path}"
-        file.close(true)
+      if config.plugins.stdout.enable_pager &&
+        ENV['LINES'] &&
+        statuses.size > ENV['LINES'].to_i
+          file = Tempfile.new('termtter')
+          file.print output_text
+          file.close
+          system "#{config.plugins.stdout.pager} #{file.path}"
+          file.close(true)
       else
         print output_text
       end
@@ -172,15 +176,18 @@ module Termtter
     end
 
     def color_of_screen_name(screen_name)
-      return color_of_screen_name_cache[screen_name] if color_of_screen_name_cache.key?(screen_name)
+      return color_of_screen_name_cache[screen_name] if
+        color_of_screen_name_cache.key?(screen_name)
       num = screen_name_to_hash(screen_name)
-      color = config.plugins.stdout.colors[num % config.plugins.stdout.colors.size]
+      color = config.plugins.stdout.colors[
+        num % config.plugins.stdout.colors.size]
       color_of_screen_name_cache[screen_name] = color
       color_of_screen_name_cache[screen_name]
     end
 
     def screen_name_to_hash(screen_name)
-      config.plugins.stdout.screen_name_to_hash_proc.call(screen_name)
+      config.plugins.stdout.screen_name_to_hash_proc.
+        call(screen_name)
     end
 
     def color_of_screen_name_cache
@@ -209,6 +216,8 @@ end
 # stdout.rb
 #   output statuses to stdout
 # example config
-#   config.plugins.stdout.colors = [:none, :red, :green, :yellow, :blue, :magenta, :cyan]
-#   config.plugins.stdout.timeline_format = '<90><%=time%> [<%=status_id%>]</90> <<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ' +
-#                                           '<90><%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%><%=source%></90>'
+#   config.plugins.stdout.colors =
+#     [:none, :red, :green, :yellow, :blue, :magenta, :cyan]
+#   config.plugins.stdout.timeline_format =
+#     '<90><%=time%> [<%=status_id%>]</90> <<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ' +
+#     '<90><%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%><%=source%></90>'
