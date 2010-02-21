@@ -3,6 +3,7 @@
 require 'termcolor'
 require 'erb'
 require 'tempfile'
+require 'digest/md5'
 
 config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
@@ -116,7 +117,7 @@ module Termtter
     def status_line(s, time_format, event, indent = 0)
       return '' unless s
       text = TermColor.escape(s.text)
-      color = user_color(s.user)
+      color = color_of_user(s.user)
       status_id = Termtter::Client.data_to_typable_id(s.id)
       reply_to_status_id =
         if s.in_reply_to_status_id
@@ -161,18 +162,26 @@ module Termtter
 
     def colorize_users(text)
       text.gsub(/@(\w+)/) do |i|
-        user = Termtter::API.twitter.cached_user($1)
-        if user
-          color = user_color(user)
-          "<#{color}>#{i}</#{color}>"
-        else
-          i
-        end
+        color = color_of_screen_name($1)
+        "<#{color}>#{i}</#{color}>"
       end
     end
 
-    def user_color(user)
-      config.plugins.stdout.colors[user.id.to_i % config.plugins.stdout.colors.size]
+    def color_of_user(user)
+      color_of_screen_name(user.screen_name)
+    end
+
+    def color_of_screen_name(screen_name)
+      unless color_of_screen_name_cache.key?(screen_name)
+        num = Digest::MD5.hexdigest(screen_name).to_i(16)
+        color = config.plugins.stdout.colors[num % config.plugins.stdout.colors.size]
+        color_of_screen_name_cache[screen_name] = color
+      end
+      color_of_screen_name_cache[screen_name]
+    end
+
+    def color_of_screen_name_cache
+      @color_of_screen_name_cache ||= {}
     end
   end
 
