@@ -28,6 +28,7 @@ config.plugins.stdout.set_default(:typable_id_prefix, '$')
 config.plugins.stdout.set_default(:show_reply_chain, true)
 config.plugins.stdout.set_default(:indent_format, %q("#{'    ' * (indent - 1)}  → "))
 config.plugins.stdout.set_default(:max_indent_level, 1)
+config.plugins.stdout.set_default(:screen_name_to_hash_proc, lambda { |screen_name| screen_name.to_i(36) })
 
 module Termtter
   class TypableIdGenerator
@@ -116,7 +117,7 @@ module Termtter
     def status_line(s, time_format, event, indent = 0)
       return '' unless s
       text = TermColor.escape(s.text)
-      color = user_color(s.user)
+      color = color_of_user(s.user)
       status_id = Termtter::Client.data_to_typable_id(s.id)
       reply_to_status_id =
         if s.in_reply_to_status_id
@@ -161,18 +162,30 @@ module Termtter
 
     def colorize_users(text)
       text.gsub(/@(\w+)/) do |i|
-        user = Termtter::API.twitter.cached_user($1)
-        if user
-          color = user_color(user)
-          "<#{color}>#{i}</#{color}>"
-        else
-          i
-        end
+        color = color_of_screen_name($1)
+        "<#{color}>#{i}</#{color}>"
       end
     end
 
-    def user_color(user)
-      config.plugins.stdout.colors[user.id.to_i % config.plugins.stdout.colors.size]
+    def color_of_user(user)
+      color_of_screen_name(user.screen_name)
+    end
+
+    def color_of_screen_name(screen_name)
+      unless color_of_screen_name_cache.key?(screen_name)
+        num = screen_name_to_hash(screen_name)
+        color = config.plugins.stdout.colors[num % config.plugins.stdout.colors.size]
+        color_of_screen_name_cache[screen_name] = color
+      end
+      color_of_screen_name_cache[screen_name]
+    end
+
+    def screen_name_to_hash(screen_name)
+      config.plugins.stdout.screen_name_to_hash_proc.call(screen_name)
+    end
+
+    def color_of_screen_name_cache
+      @color_of_screen_name_cache ||= {}
     end
   end
 

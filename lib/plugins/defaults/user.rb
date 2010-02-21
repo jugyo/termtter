@@ -26,8 +26,7 @@ module Termtter::Client
     search_option = config.user_search.option.empty? ? {} : config.user_search.option
     users = Termtter::API.twitter.search_user(arg, search_option)
     users.each do |user|
-      puts "#{user.name} (@#{user.screen_name})"
-      puts "    \"#{user.status.text}\""
+      puts "@#{user.screen_name} (#{user.name}) : #{user.description}"
     end
   end
 end

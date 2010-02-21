@@ -4,13 +4,16 @@ require 'net/http'
 module Termtter
   module HTTPpool
     @@connections = {}
+    @@http_class = nil
 
     def self.start(host, port = 80)
+      count = 3
       begin
         yield(connection(host, port))
       rescue EOFError
         finish(host, port)
-        retry
+        retry if (count -= 1) > 0
+        raise
       end
     end
 
@@ -30,13 +33,14 @@ module Termtter
     end
 
     def self.http_class
-      if config.proxy.host.nil? or config.proxy.host.empty?
-        Net::HTTP
-      else
-        Net::HTTP::Proxy(config.proxy.host,
-                         config.proxy.port,
-                         config.proxy.user_name,
-                         config.proxy.password)
+      @@http_class ||=
+        if config.proxy.host.nil? or config.proxy.host.empty?
+          Net::HTTP
+        else
+          Net::HTTP::Proxy(config.proxy.host,
+                           config.proxy.port,
+                           config.proxy.user_name,
+                           config.proxy.password)
       end
     end
 

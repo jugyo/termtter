@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 #
+require 'set'
+
 module Termtter
   class Config
     def initialize
       @store = Hash.new(:undefined)
+      @freezes = Set.new
     end
 
     def inspect
@@ -40,8 +43,17 @@ module Termtter
       end
     end
 
+    def __freeze__(name)
+      @freezes << name.to_sym
+    end
+
+    def __unfreeze__(name)
+      @freezes.delete(name.to_sym)
+    end
+
     # __assign__ :: Symbol -> a -> IO ()
     def __assign__(name, value)
+      return if @freezes.include?(name)
       @store[name] = value
     end
 
@@ -55,6 +67,7 @@ module Termtter
     end
 
     def __clear__(name = nil)
+      return if name && @freezes.include?(name)
       if name
         @store[name] = :undefined
       else

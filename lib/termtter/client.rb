@@ -299,11 +299,13 @@ module Termtter
 
       def run
         parse_options
+        config.__freeze__(:user_name) unless config.user_name.empty?
         show_splash
         load_config
         setup_task_manager
         load_plugins
         eval_init_block
+        config.__unfreeze__(:user_name)
         Termtter::API.setup
 
         config.system.eval_scripts.each do |script|

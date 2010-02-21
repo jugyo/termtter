@@ -8,6 +8,29 @@ module Termtter
       @config = Config.new
     end
 
+    describe 'freeze' do
+      before do
+        @config.foo = 'foo'
+        @config.__freeze__(:foo)
+      end
+
+      it 'can not change value' do
+        @config.foo = 'bar'
+        @config.foo.should == 'foo'
+      end
+
+      it 'can not clear value' do
+        @config.__clear__(:foo)
+        @config.foo.should == 'foo'
+      end
+
+      it 'can unfreeze' do
+        @config.__unfreeze__(:foo)
+        @config.foo = 'bar'
+        @config.foo.should == 'bar'
+      end
+    end
+
     it 'can store value to new storage' do
       @config.new_storage = :value
       @config.new_storage.should == :value
