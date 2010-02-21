@@ -173,11 +173,15 @@ module Termtter
 
     def color_of_screen_name(screen_name)
       unless color_of_screen_name_cache.key?(screen_name)
-        num = Digest::MD5.hexdigest(screen_name).to_i(16)
+        num = screen_name_to_hash(screen_name)
         color = config.plugins.stdout.colors[num % config.plugins.stdout.colors.size]
         color_of_screen_name_cache[screen_name] = color
       end
       color_of_screen_name_cache[screen_name]
+    end
+
+    def screen_name_to_hash(screen_name)
+      Digest::MD5.hexdigest(screen_name).to_i(16)
     end
 
     def color_of_screen_name_cache
