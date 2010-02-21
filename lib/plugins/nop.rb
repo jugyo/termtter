@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 Termtter::Client::register_command(
-  :name => :nop, :aliases =>['//', ';'],
+  :name => :nop, :aliases =>['//', ';', '-- '],
   :help => ['nop', 'do nothing']
 )
 
