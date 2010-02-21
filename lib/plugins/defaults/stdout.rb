@@ -3,7 +3,6 @@
 require 'termcolor'
 require 'erb'
 require 'tempfile'
-require 'digest/md5'
 
 config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
@@ -29,6 +28,7 @@ config.plugins.stdout.set_default(:typable_id_prefix, '$')
 config.plugins.stdout.set_default(:show_reply_chain, true)
 config.plugins.stdout.set_default(:indent_format, %q("#{'    ' * (indent - 1)}  → "))
 config.plugins.stdout.set_default(:max_indent_level, 1)
+config.plugins.stdout.set_default(:screen_name_to_hash_proc, lambda { |screen_name| screen_name.to_i(36) })
 
 module Termtter
   class TypableIdGenerator
@@ -181,7 +181,7 @@ module Termtter
     end
 
     def screen_name_to_hash(screen_name)
-      Digest::MD5.hexdigest(screen_name).to_i(16)
+      config.plugins.stdout.screen_name_to_hash_proc.call(screen_name)
     end
 
     def color_of_screen_name_cache
