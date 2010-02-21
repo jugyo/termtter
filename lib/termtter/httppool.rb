@@ -37,11 +37,12 @@ module Termtter
         if config.proxy.host.nil? or config.proxy.host.empty?
           Net::HTTP
         else
-          Net::HTTP::Proxy(config.proxy.host,
-                           config.proxy.port,
-                           config.proxy.user_name,
-                           config.proxy.password)
-      end
+          Net::HTTP::Proxy(
+            config.proxy.host,
+            config.proxy.port,
+            config.proxy.user_name,
+            config.proxy.password)
+        end
     end
 
   end
