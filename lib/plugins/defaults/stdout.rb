@@ -18,6 +18,8 @@ config.plugins.stdout.set_default(
     '</90>'
   ].join('')
 )
+config.plugins.stdout.set_default(:sweets, %w[jugyo ujm])
+config.plugins.stdout.set_default(:sweet_color, 'red')
 config.plugins.stdout.set_default(:time_format_today, '%H:%M:%S')
 config.plugins.stdout.set_default(:time_format_not_today, '%y/%m/%d %H:%M')
 config.plugins.stdout.set_default(:enable_pager, false)
@@ -181,6 +183,9 @@ module Termtter
       num = screen_name_to_hash(screen_name)
       color = config.plugins.stdout.colors[
         num % config.plugins.stdout.colors.size]
+      if config.plugins.stdout.sweet.include?(screen_name)
+        color = config.plugins.stdout.sweet_color
+      end
       color_of_screen_name_cache[screen_name] = color
       color_of_screen_name_cache[screen_name]
     end
