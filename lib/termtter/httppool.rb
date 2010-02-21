@@ -7,7 +7,7 @@ module Termtter
     @@http_class = nil
 
     def self.start(host, port = 80)
-      count = 3
+      count = config.retry || 3
       begin
         yield(connection(host, port))
       rescue EOFError
