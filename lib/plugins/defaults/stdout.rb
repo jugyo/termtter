@@ -183,7 +183,7 @@ module Termtter
       num = screen_name_to_hash(screen_name)
       color = config.plugins.stdout.colors[
         num % config.plugins.stdout.colors.size]
-      if config.plugins.stdout.sweet.include?(screen_name)
+      if config.plugins.stdout.sweets.include?(screen_name)
         color = config.plugins.stdout.sweet_color
       end
       color_of_screen_name_cache[screen_name] = color
