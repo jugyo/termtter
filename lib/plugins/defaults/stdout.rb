@@ -181,11 +181,11 @@ module Termtter
       return color_of_screen_name_cache[screen_name] if
         color_of_screen_name_cache.key?(screen_name)
       num = screen_name_to_hash(screen_name)
-      color = config.plugins.stdout.colors[
-        num % config.plugins.stdout.colors.size]
-      if config.plugins.stdout.sweets.include?(screen_name)
-        color = config.plugins.stdout.sweet_color
-      end
+      color =
+        config.plugins.stdout.sweets.include?(screen_name) ?
+          config.plugins.stdout.sweet_color :
+          config.plugins.stdout.colors[
+            num % config.plugins.stdout.colors.size]
       color_of_screen_name_cache[screen_name] = color
       color_of_screen_name_cache[screen_name]
     end
