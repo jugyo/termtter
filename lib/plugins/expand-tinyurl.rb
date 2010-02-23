@@ -41,7 +41,7 @@ def expand_url(host, path)
   end
   return nil unless res.code == "301" or res.code == "302"
   newurl = res['Location']
-  newurl.force_encoding(Encoding::UTF_8) if newurl.respond_to?(:force_encoding)
+  newurl.respond_to?(:force_encoding) ? newurl.force_encoding(Encoding::UTF_8) : newurl
 rescue Exception => e
   Termtter::Client.handle_error(e)
   nil
