@@ -167,7 +167,7 @@ module Termtter
     end
 
     def colorize_users(text)
-      text.gsub(/@(\w+)/) do |i|
+      text.gsub(/@([0-9A-Za-z_]+)/) do |i|
         color = color_of_screen_name($1)
         "<#{color}>#{i}</#{color}>"
       end
