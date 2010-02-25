@@ -167,7 +167,7 @@ module Termtter
     end
 
     def colorize_users(text)
-      text.gsub(/@(\w+)/) do |i|
+      text.gsub(/@([0-9A-Za-z_]+)/) do |i|
         color = color_of_screen_name($1)
         "<#{color}>#{i}</#{color}>"
       end
@@ -181,9 +181,9 @@ module Termtter
       return color_of_screen_name_cache[screen_name] if
         color_of_screen_name_cache.key?(screen_name)
       num = screen_name_to_hash(screen_name)
-      color = config.plugins.stdout.instance_eval {|i|
-        i.sweets.include?(screen_name) ?
-          i.sweet_color : i.colors[num % i.colors.size]
+      color = config.plugins.stdout.instance_eval {
+        sweets.include?(screen_name) ?
+          sweet_color : colors[num % colors.size]
       }
       color_of_screen_name_cache[screen_name] = color
       color_of_screen_name_cache[screen_name]
