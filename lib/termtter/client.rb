@@ -337,13 +337,8 @@ module Termtter
       def confirm(message, default_yes = true, &block)
         pause # TODO: TaskManager から呼ばれるならこれいらないなぁ
 
-        prompt =
-          if default_yes
-            "\"#{message}".strip + "\" [Y/n] "
-          else
-            "\"#{message}".strip + "\" [N/y] "
-          end
-        readline = Readline.readline(prompt, false)
+        print "\"#{message.strip}\" "
+        readline = Readline.readline(default_yes ? "[Y/n] " : "[N/y] ", false)
         result =
           if !!(/^$/ =~ readline) 
             default_yes
