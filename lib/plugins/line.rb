@@ -3,7 +3,7 @@ Termtter::Client.register_command(
   :help => 'Draws a line without any side effect on Twitter.',
   #:aliases => [:l],
   :exec_proc => lambda {|arg|
-    window_width = `stty size`[/\d+\s+(\d+)/, 1].to_i
+    window_width = (ENV['COLUMNS'] || `stty size`[/\d+\s+(\d+)/, 1]).to_i
     text = '<dark>' + (' ' * window_width) + '</dark>'
     puts TermColor.parse(text)
   }
