@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-raise 'say.rb runs only in OSX Leopard' if /darwin9/ !~ RUBY_PLATFORM
+raise 'say.rb runs only in OSX Leopard or Snow Leopard' if /darwin(9|10)/ !~ RUBY_PLATFORM
 
 # say :: String -> String -> IO ()
 def say(who, what)
@@ -23,4 +23,4 @@ module Termtter::Client
 end
 
 # KNOWN BUG:
-# * exit or <C-c> doen't work quickly.
+# * exit or <C-c> doesn't work quickly.
