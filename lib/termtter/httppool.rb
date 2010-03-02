@@ -12,7 +12,10 @@ module Termtter
         yield(connection(host, port))
       rescue EOFError
         finish(host, port)
-        retry if (count -= 1) > 0
+        if count > 0
+          count -= 1
+          retry
+        end
         raise
       end
     end
