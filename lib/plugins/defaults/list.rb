@@ -54,7 +54,7 @@ module Termtter::Client
           end
         end
       end
-      output(statuses, event)
+      output(statuses, event, arg.to_sym)
       raise last_error if last_error
     },
     :help => ["list,l [USERNAME]/[SLUG] [-COUNT]", "List the posts"]

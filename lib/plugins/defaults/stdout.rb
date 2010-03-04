@@ -8,7 +8,7 @@ config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
   :timeline_format,
   [
-    '<90><%=time%> [<%=status_id%>]</90> ',
+    '<90><%=time%> (<%=channel.to_s%>) [<%=status_id%>]</90> ',
     '<%= indent_text %>',
     '<<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ',
     '<90>',
@@ -94,17 +94,17 @@ module Termtter
       super(:name => :stdout, :points => [:output])
     end
 
-    def call(statuses, event)
-      print_statuses(statuses, event)
+    def call(statuses, event, channel=:main)
+      print_statuses(statuses, event, true, nil, channel)
     end
 
-    def print_statuses(statuses, event, sort = true, time_format = nil)
+    def print_statuses(statuses, event, sort = true, time_format = nil, channel=:main)
       return unless statuses and statuses.first
       time_format ||= Termtter::Client.time_format_for statuses
 
       output_text = ''
       statuses.each do |s|
-        output_text << status_line(s, time_format, event)
+        output_text << status_line(s, time_format, event, 0, channel)
       end
 
       if config.plugins.stdout.enable_pager &&
@@ -120,7 +120,7 @@ module Termtter
       end
     end
 
-    def status_line(s, time_format, event, indent = 0)
+    def status_line(s, time_format, event, indent = 0, channel=:main)
       return '' unless s
       text = TermColor.escape(s.text)
       color = color_of_user(s.user)

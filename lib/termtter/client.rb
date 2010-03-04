@@ -109,23 +109,23 @@ module Termtter
       #             :text => status,
       #             :original_data => original data,
       #           }
-      def output(statuses, event)
+      def output(statuses, event, channel=:main)
         return if statuses.nil? || statuses.empty?
 
         statuses = statuses.sort_by(&:id)
-        call_hooks(:pre_filter, statuses, event)
+        call_hooks(:pre_filter, statuses, event, channel)
 
-        filtered = apply_filters_for_hook(:filter_for_output, statuses.map(&:clone), event)
+        filtered = apply_filters_for_hook(:filter_for_output, statuses.map(&:clone), event, channel)
 
         @filters.each do |f|  # TODO: code for compatibility. delete someday.
-          filtered = f.call(filtered, event)
+          filtered = f.call(filtered, event, channel)
         end
 
-        call_hooks(:post_filter, filtered, event)
+        call_hooks(:post_filter, filtered, event, channel)
         get_hooks(:output).each do |hook|
           hook.call(
-            apply_filters_for_hook(:"filter_for_#{hook.name}", filtered, event),
-            event
+            apply_filters_for_hook(:"filter_for_#{hook.name}", filtered, event, channel),
+            event, channel
           )
         end
       end
@@ -134,9 +134,9 @@ module Termtter
         ::Notify.notify(*args)
       end
 
-      def apply_filters_for_hook(hook_name, statuses, event)
+      def apply_filters_for_hook(hook_name, statuses, event, channel=:main)
         get_hooks(hook_name).inject(statuses) {|s, hook|
-          hook.call(s, event)
+          hook.call(s, event, channel)
         }
       end
 

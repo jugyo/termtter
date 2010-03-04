@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+config.set_default(:auto_reload_channels,{})
 auto_reload_proc = lambda do
   begin
     Termtter::Client.execute('reload -r')
@@ -21,3 +22,16 @@ Termtter::Client.register_hook(
   :point => :initialize,
   :exec => auto_reload_proc
 )
+
+config.auto_reload_channels.each do |c,i|
+  Termtter::Client.add_task(:name => "auto_reload_#{c}".to_sym, :interval => i) do
+    begin
+      Termtter::Client.execute("list #{c}")
+      Readline.refresh_line
+    rescue TimeoutError
+      # do nothing
+    rescue Exception => e
+      Termtter::Client.handle_error(e)
+    end
+  end
+end
