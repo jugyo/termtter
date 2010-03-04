@@ -5,6 +5,7 @@ require 'net/irc'
 config.plugins.irc_gw.set_default(:port, 16669)
 config.plugins.irc_gw.set_default(:last_statuses_count, 100)
 config.plugins.irc_gw.set_default(:logger_level, Logger::ERROR)
+config.plugins.irc_gw.set_default(:check_friends_interval, 3600)
 
 module Termtter::Client
   class << self
@@ -58,6 +59,11 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   def initialize(*args)
     super
     @@listners << self
+    @friends = []
+    Termtter::Client.add_task(:interval => config.plugins.irc_gw.check_friends_interval,
+                              :after => config.plugins.irc_gw.check_friends_interval) do
+      check_friends
+    end
   end
 
   def call(statuses, event)
@@ -119,7 +125,9 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   def check_friends
     params = []
     max_params_count = 3
-    Termtter::Client.following_friends.each do |name|
+    previous_friends = @friends
+    new_friends = Termtter::Client.following_friends
+    (new_friends - previous_friends).each do |name|
       prefix = Prefix.new("#{name}!#{name}@localhost")
       post prefix, JOIN, main_channel
       params << prefix.nick
@@ -129,7 +137,9 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       params = []
     end
     post server_name, MODE, main_channel, "+#{"v" * params.size}", *params unless params.empty?
+    @friends = new_friends
   end
+
 end
 
 unless defined? IRC_SERVER
