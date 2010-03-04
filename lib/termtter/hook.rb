@@ -25,7 +25,12 @@ module Termtter
     end
 
     def call(*args)
+      begin
       self.exec_proc.call(*args)
+      rescue ArgumentError
+        args.pop
+        call(*args)
+      end
     end
   end
 end
