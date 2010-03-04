@@ -27,14 +27,7 @@ config.auto_reload_channels.each do |c,i|
   Termtter::Client.add_task(:name => "auto_reload_#{c}".to_sym, :interval => i) do
     begin
       print "\e[0G" + "\e[K" unless win?
-      Termtter::Client.execute(
-        case c
-        when :replies
-          "replies"
-        else
-          "list #{c}"
-        end
-      )
+      Termtter::Client.execute(Termtter::Client.channel_to_command(c))
       Readline.refresh_line
     rescue TimeoutError
       # do nothing

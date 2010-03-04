@@ -10,16 +10,32 @@ config.plugins.standard.set_default(
 config.set_default(:easy_reply, false)
 
 module Termtter::Client
+  @now_channel = :main
+
+  register_command(
+    :name => :channel,
+    :aliases => [:c],
+    :help => ['channel','Change channel / show channel'],
+    :exec => lambda {|arg|
+      if arg.empty?
+        puts "Now channel => #{@now_channel.to_s}"
+      else
+        old = @now_channel
+        @now_channel = arg.to_sym
+        puts "Channel switched. #{old} -> #{@now_channel}"
+      end
+    }
+  )
 
   register_command(
     :name => :reload,
     :exec => lambda {|arg|
       args = @since_id ? [{:since_id => @since_id}] : []
-      statuses = Termtter::API.twitter.home_timeline(*args)
+      statuses = Termtter::API.call_by_channel(@now_channel, *args)
       unless statuses.empty?
         print "\e[0G" + "\e[K" unless win?
         @since_id = statuses[0].id
-        output(statuses, :update_friends_timeline)
+        output(statuses, :update_friends_timeline, @now_channel)
         Readline.refresh_line if arg =~ /\-r/
       end
     },

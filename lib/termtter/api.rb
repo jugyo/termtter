@@ -73,6 +73,27 @@ module Termtter
         return nil
       end
 
+      def call_by_channel(c,*opt)
+        case c.to_s
+        when "main"
+          Termtter::API.twitter.home_timeline(*opt)
+        when "replies"
+          Termtter::API.twitter.replies()
+        when /^\/(.+)/
+          slug = $1
+          user_name = config.user_name
+          user_name = Termtter::Client.normalize_as_user_name(user_name)
+          Termtter::API.twitter.list_statuses(user_name, slug, *opt)
+        when /^s_(.+)/
+          Termtter::API.twitter.search($1, *opt)
+        else
+          user_name, slug = *$1.split('/')
+          user_name = config.user_name if user_name.empty?
+          user_name = Termtter::Client.normalize_as_user_name(user_name)
+          Termtter::API.twitter.list_statuses(user_name, slug, *opt)
+        end
+      end
+
       def twitter_option
         {
           :app_name => config.app_name.empty? ? Termtter::APP_NAME : config.app_name,
