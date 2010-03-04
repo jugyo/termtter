@@ -8,7 +8,7 @@ config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
   :timeline_format,
   [
-    '<90><%=channel.to_s.length > 6 ? channel.to_s[0,6] : channel.to_s.rjust(6)%>| <%=time%> [<%=status_id%>]</90> ',
+    '<%=colorize_channels(channel,channel.to_s.length > 6 ? channel.to_s[0,6] : channel.to_s.rjust(6))%><90>| <%=time%> [<%=status_id%>]</90> ',
     '<%= indent_text %>',
     '<<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ',
     '<90>',
@@ -30,6 +30,7 @@ config.plugins.stdout.set_default(:typable_id_prefix, '$')
 config.plugins.stdout.set_default(:show_reply_chain, true)
 config.plugins.stdout.set_default(:indent_format, %q("#{'    ' * (indent - 1)}  → "))
 config.plugins.stdout.set_default(:max_indent_level, 1)
+config.plugins.stdout.set_default(:channel_color, true)
 config.plugins.stdout.set_default(
   :screen_name_to_hash_proc, lambda { |screen_name| screen_name.to_i(36) })
 
@@ -166,6 +167,20 @@ module Termtter
       text
     end
 
+    def colorize_channels(channel,t)
+      color = color_of_channel(channel)
+      "<#{color}>#{t}</#{color}>"
+    end
+
+    def color_of_channel(channel)
+      if color_of_channel_cache.key?(channel)
+        color_of_channel_cache[channel]
+      else
+        color = config.plugins.stdout.colors[screen_name_to_hash(channel.to_s) % config.plugins.stdout.colors.size]
+        color_of_channel_cache[channel] = color
+      end
+    end
+
     def colorize_users(text)
       text.gsub(/@([0-9A-Za-z_]+)/) do |i|
         color = color_of_screen_name($1)
@@ -196,6 +211,10 @@ module Termtter
 
     def color_of_screen_name_cache
       @color_of_screen_name_cache ||= {}
+    end
+
+    def color_of_channel_cache
+      @color_of_channel_cache ||= {}
     end
   end
 
