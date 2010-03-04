@@ -6,6 +6,7 @@ config.plugins.irc_gw.set_default(:port, 16669)
 config.plugins.irc_gw.set_default(:last_statuses_count, 100)
 config.plugins.irc_gw.set_default(:logger_level, Logger::ERROR)
 config.plugins.irc_gw.set_default(:check_friends_interval, 3600)
+config.plugins.irc_gw.set_default(:command_regexps, [/^(.+): *(.*)/])
 
 module Termtter::Client
   class << self
@@ -110,10 +111,20 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       return unless Termtter::Client.find_command(termtter_command)
       post '#termtter', NOTICE, main_channel, '> ' + termtter_command
       Termtter::Client.execute(termtter_command)
-    else
-      Termtter::Client.execute('update ' + message)
-      post @prefix, TOPIC, main_channel, message
+      return
     end
+    config.plugins.irc_gw.command_regexps and
+    config.plugins.irc_gw.command_regexps.each do |rule|
+      if message =~ rule
+        command = message.scan(rule).first.join(' ')
+        next unless Termtter::Client.find_command(command)
+        post '#termtter', NOTICE, main_channel, '> ' + command
+        Termtter::Client.execute(command)
+        return
+      end
+    end
+    Termtter::Client.execute('update ' + message)
+    post @prefix, TOPIC, main_channel, message
   rescue Exception => e
     post '#termtter', NOTICE, main_channel, "#{e.class.to_s}: #{e.message}"
     Termtter::Client.handle_error(e)
