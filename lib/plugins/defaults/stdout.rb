@@ -176,7 +176,7 @@ module Termtter
       if color_of_channel_cache.key?(channel)
         color_of_channel_cache[channel]
       else
-        color = config.plugins.stdout.colors[screen_name_to_hash(channel.to_s) % config.plugins.stdout.colors.size]
+        color = config.plugins.stdout.colors[screen_name_to_hash(channel.to_s.gsub(/^\//,'')) % config.plugins.stdout.colors.size]
         color_of_channel_cache[channel] = color
       end
     end
