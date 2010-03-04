@@ -8,7 +8,7 @@ config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
   :timeline_format,
   [
-    '<90><%=time%> (<%=channel.to_s%>) [<%=status_id%>]</90> ',
+    '<90><%=channel.to_s.length > 6 ? channel.to_s[0,6] : channel.to_s.rjust(6)%>| <%=time%> [<%=status_id%>]</90> ',
     '<%= indent_text %>',
     '<<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ',
     '<90>',
