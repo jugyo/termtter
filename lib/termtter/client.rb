@@ -334,6 +334,21 @@ module Termtter
         get_hooks(:on_error).each {|hook| hook.call(e) }
       end
 
+      def channel_to_command(c)
+        case c.to_s
+        when "main"
+          "reload -r"
+        when "replies"
+          "replies"
+        when /^\/(.+)/
+          "list /#{$1}"
+        when /^(.+)_search$/
+          "search #{$1}"
+        else
+          "list #{c}"
+        end
+      end
+
       def confirm(message, default_yes = true, &block)
         pause # TODO: TaskManager から呼ばれるならこれいらないなぁ
 
