@@ -60,9 +60,11 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     super
     @@listners << self
     @friends = []
+    @commands = []
     Termtter::Client.add_task(:interval => config.plugins.irc_gw.check_friends_interval,
                               :after => config.plugins.irc_gw.check_friends_interval) do
       check_friends
+      check_commands
     end
   end
 
@@ -97,6 +99,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     post @prefix, JOIN, main_channel
     post server_name, MODE, main_channel, "+o", @prefix.nick
     check_friends
+    check_commands
     self.call(@@last_statuses || [], :update_friends_timeline)
   end
 
@@ -138,6 +141,24 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     end
     post server_name, MODE, main_channel, "+#{"v" * params.size}", *params unless params.empty?
     @friends = new_friends
+  end
+
+  def check_commands
+    params = []
+    max_params_count = 3
+    previous_commands = @commands
+    new_commands = Termtter::Client.commands.keys.map{|s| s.to_s.split(' ')}.flatten.uniq
+    (new_commands - previous_commands).each do |command|
+      prefix = Prefix.new("#{command}!#{command}@localhost")
+      post prefix, JOIN, main_channel
+      params << prefix.nick
+      next if params.size < max_params_count
+
+      post server_name, MODE, main_channel, "+#{"v" * params.size}", *params
+      params = []
+    end
+    post server_name, MODE, main_channel, "+#{"v" * params.size}", *params unless params.empty?
+    @commands = new_commands
   end
 
 end
