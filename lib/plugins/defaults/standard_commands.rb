@@ -131,7 +131,7 @@ module Termtter::Client
       search_option = config.search.option.empty? ? {} : config.search.option
       statuses = Termtter::API.twitter.search(arg, search_option)
       public_storage[:search_keywords] << arg
-      output(statuses, SearchEvent.new(arg))
+      output(statuses, SearchEvent.new(arg), :"#{arg}_search")
     },
     :completion_proc => lambda {|cmd, arg|
       public_storage[:search_keywords].grep(/^#{Regexp.quote(arg)}/).map { |i| "#{cmd} #{i}" }
@@ -162,7 +162,7 @@ module Termtter::Client
       unless arg.empty?
         res = res.map {|e| e.user.screen_name == arg ? e : nil }.compact
       end
-      output(res, :replies)
+      output(res, :replies, :replies)
     },
     :help => ["replies,r", "List the replies"]
   )
@@ -171,7 +171,7 @@ module Termtter::Client
     :name => :show,
     :exec_proc => lambda {|arg|
       id = arg.gsub(/.*:\s*/, '')
-      output([Termtter::API.twitter.show(id)], :show)
+      output([Termtter::API.twitter.show(id)], :show, :show)
     },
     :completion_proc => lambda {|cmd, arg|
       case arg
