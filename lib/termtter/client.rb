@@ -19,7 +19,7 @@ module Termtter
 
     class << self
 
-      attr_reader :commands
+      attr_reader :commands,:now_channel
 
       # plug :: Name -> (Hash) -> IO () where NAME = String | Symbol | [NAME]
       def plug(name, options = {})
