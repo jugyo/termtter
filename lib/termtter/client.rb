@@ -335,6 +335,7 @@ module Termtter
       end
 
       def channel_to_command(c)
+        return "reload -r" unless config.channel
         case c.to_s
         when "main"
           "reload -r"

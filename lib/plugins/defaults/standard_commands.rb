@@ -8,6 +8,7 @@ config.plugins.standard.set_default(
  '<<%=remaining_color%>><%=limit.remaining_hits%></<%=remaining_color%>>/<%=limit.hourly_limit%> until <%=Time.parse(limit.reset_time).getlocal%> (<%=remaining_time%> remaining)')
 
 config.set_default(:easy_reply, false)
+config.set_default(:channel, false)
 
 module Termtter::Client
   @now_channel = :main
@@ -17,12 +18,16 @@ module Termtter::Client
     :aliases => [:c],
     :help => ['channel','Change channel / show channel'],
     :exec => lambda {|arg|
-      if arg.empty?
-        puts "Now channel => #{@now_channel.to_s}"
+      if config.channel
+        if arg.empty?
+          puts "Now channel => #{@now_channel.to_s}"
+        else
+          old = @now_channel
+          @now_channel = arg.to_sym
+          puts "Channel switched. #{old} -> #{@now_channel}"
+        end
       else
-        old = @now_channel
-        @now_channel = arg.to_sym
-        puts "Channel switched. #{old} -> #{@now_channel}"
+        puts 'Channel feature is disabled. put "config.channel = true" to ~/.termtter/config .'
       end
     }
   )
