@@ -74,6 +74,7 @@ module Termtter
       end
 
       def call_by_channel(c,*opt)
+        return Termtter::API.twitter.home_timeline(*opt) unless config.channel
         case c.to_s
         when "main"
           Termtter::API.twitter.home_timeline(*opt)

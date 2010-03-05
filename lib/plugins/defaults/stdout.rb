@@ -9,7 +9,7 @@ config.plugins.stdout.set_default(:channel_length, 6)
 config.plugins.stdout.set_default(
   :timeline_format,
   [
-    '<%=colorize_channels(channel,channel.to_s.length > config.plugins.stdout.channel_length ? channel.to_s[0,config.plugins.stdout.channel_length] : channel.to_s.rjust(config.plugins.stdout.channel_length))%><90>| <%=time%> [<%=status_id%>]</90> ',
+    '<90><% if config.channel %><%=colorize_channels(channel,channel.to_s.length > config.plugins.stdout.channel_length ? channel.to_s[0,config.plugins.stdout.channel_length] : channel.to_s.rjust(config.plugins.stdout.channel_length))%>| <% end %><%=time%> [<%=status_id%>]</90> ',
     '<%= indent_text %>',
     '<<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ',
     '<90>',
