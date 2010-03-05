@@ -11,9 +11,9 @@ reply_sound_cache = nil
 Termtter::Client.add_task(:name => :reply_sound,
                           :interval => config.plugins.reply_sound.interval) do
   replies = Termtter::API.twitter.replies
-  if !reply_sound_cache.nil? && replies[-1] != reply_sound_cache[-1]
+  if !reply_sound_cache.nil? && (replies - reply_sound_cache).size > 0
     system 'afplay "'+config.plugins.reply_sound.sound_file+'" 2>/dev/null &'
-    Termtter::Client.output(reply_sound_cache - replies,:new_replies)
+    Termtter::Client.output(replies - reply_sound_cache,:new_replies,:replies)
   end
   reply_sound_cache = replies
 end
