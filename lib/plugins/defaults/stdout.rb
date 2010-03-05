@@ -9,7 +9,13 @@ config.plugins.stdout.set_default(:channel_length, 6)
 config.plugins.stdout.set_default(
   :timeline_format,
   [
-    '<90><% if config.channel %><%=colorize_channels(channel,channel.to_s.length > config.plugins.stdout.channel_length ? channel.to_s[0,config.plugins.stdout.channel_length] : channel.to_s.rjust(config.plugins.stdout.channel_length))%>| <% end %><%=time%> [<%=status_id%>]</90> ',
+    '<90><% if config.channel %>',
+    '<%=colorize_channels(channel,channel.to_s.length > config.plugins.stdout.channel_length ? ',
+    '(config.plugins.stdout.channel_short_name.key?(channel) ? ',
+    'config.plugins.stdout.channel_short_name[channel] : channel).to_s[0,config.plugins.stdout.channel_length] : ',
+    '(config.plugins.stdout.channel_short_name.key?(channel) ? ',
+    'config.plugins.stdout.channel_short_name[channel] : channel).to_s.rjust(config.plugins.stdout.channel_length))%>| ',
+    '<% end %><%=time%> [<%=status_id%>]</90> ',
     '<%= indent_text %>',
     '<<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ',
     '<90>',
@@ -32,6 +38,7 @@ config.plugins.stdout.set_default(:show_reply_chain, true)
 config.plugins.stdout.set_default(:indent_format, %q("#{'    ' * (indent - 1)}  → "))
 config.plugins.stdout.set_default(:max_indent_level, 1)
 config.plugins.stdout.set_default(:channel_color, true)
+config.plugins.stdout.set_default(:channel_short_name, {})
 config.plugins.stdout.set_default(
   :screen_name_to_hash_proc, lambda { |screen_name| screen_name.to_i(36) })
 
