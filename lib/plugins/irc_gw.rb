@@ -6,7 +6,7 @@ require 'set'
 config.plugins.irc_gw.set_default(:port, 16669)
 config.plugins.irc_gw.set_default(:last_statuses_count, 100)
 config.plugins.irc_gw.set_default(:logger_level, Logger::ERROR)
-config.plugins.irc_gw.set_default(:sync_members_interval, 3600)
+config.plugins.irc_gw.set_default(:sync_commands_interval, 60)
 config.plugins.irc_gw.set_default(:command_regexps, [/^(.+): *(.*)/])
 
 module Termtter::Client
@@ -63,9 +63,8 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     @@listners << self
     @friends = Set.new
     @commands = []
-    Termtter::Client.add_task(:interval => config.plugins.irc_gw.sync_members_interval,
-                              :after => config.plugins.irc_gw.sync_members_interval) do
-      sync_friends
+    Termtter::Client.add_task(:interval => config.plugins.irc_gw.sync_commands_interval,
+                              :after => config.plugins.irc_gw.sync_commands_interval) do
       sync_commands
     end
     Termtter::Client.register_hook(:collect_user_names_for_irc_gw, :point => :pre_filter) do |statuses, event|
@@ -79,6 +78,13 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       end
       join_members(new_users)
     end
+
+    Termtter::Client.register_command(
+      :name => :collect_friends,
+      :help => 'Collect friends for IRC.',
+      :exec => lambda {|arg|
+        sync_friends
+      })
   end
 
   def call(statuses, event)
@@ -112,7 +118,6 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     @user = m.params.first
     post @prefix, JOIN, main_channel
     post server_name, MODE, main_channel, "+o", @prefix.nick
-    sync_friends
     sync_commands
     self.call(@@last_statuses || [], :update_friends_timeline)
   end
