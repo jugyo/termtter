@@ -9,6 +9,8 @@ config.plugins.irc_gw.set_default(:logger_level, Logger::ERROR)
 config.plugins.irc_gw.set_default(:sync_commands_interval, 60)
 config.plugins.irc_gw.set_default(:command_regexps, [/^(.+): *(.*)/])
 
+Termtter::Client.plug 'multi_output'
+
 module Termtter::Client
   class << self
     def following_friends
