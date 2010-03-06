@@ -115,6 +115,8 @@ module Termtter::Client
         tmp = Termtter::API.twitter.followers(user_name, :cursor => cursor)
         cursor = tmp[:next_cursor]
         followers += tmp[:users]
+      rescue
+        break
       end until cursor.zero?
       Termtter::Client.public_storage[:followers] = followers
       public_storage[:users] += followers.map(&:screen_name)
