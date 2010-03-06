@@ -11,6 +11,7 @@ module Termtter::Client
         friends += tmp[:users]
         puts "#{friends.length}/#{max}"
       rescue
+        break
       end until (cursor.zero? or friends.length > max)
       friends.take(max)
     end

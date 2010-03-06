@@ -1,31 +1,13 @@
 # -*- coding: utf-8 -*-
 
 require 'net/irc'
+require 'set'
 
 config.plugins.irc_gw.set_default(:port, 16669)
 config.plugins.irc_gw.set_default(:last_statuses_count, 100)
 config.plugins.irc_gw.set_default(:logger_level, Logger::ERROR)
-config.plugins.irc_gw.set_default(:sync_members_interval, 3600)
+config.plugins.irc_gw.set_default(:sync_command_interval, 60)
 config.plugins.irc_gw.set_default(:command_regexps, [/^(.+): *(.*)/])
-
-module Termtter::Client
-  class << self
-    def following_friends
-      user_name = config.user_name
-      frinends  = []
-      last = nil
-      begin
-        puts "collecting friends (#{frinends.length})"
-        last = Termtter::API::twitter.friends(user_name, :cursor => last ? last.next_cursor : -1)
-        frinends += last.users
-      rescue Timeout::Error, StandardError # XXX
-        break
-      end until last.next_cursor == 0
-      puts "You have #{frinends.length} friends."
-      frinends.map(&:screen_name)
-    end
-  end
-end
 
 class TermtterIrcGateway < Net::IRC::Server::Session
   @@listners = []
@@ -60,12 +42,22 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   def initialize(*args)
     super
     @@listners << self
-    @friends = []
+    @friends = Set.new
     @commands = []
-    Termtter::Client.add_task(:interval => config.plugins.irc_gw.sync_members_interval,
-                              :after => config.plugins.irc_gw.sync_members_interval) do
-      sync_friends
+    Termtter::Client.add_task(:interval => config.plugins.irc_gw.sync_command_interval,
+                              :after => config.plugins.irc_gw.sync_command_interval) do
       sync_commands
+    end
+    Termtter::Client.register_hook(:collect_user_names_for_irc_gw, :point => :pre_filter) do |statuses, event|
+      new_users = []
+      statuses.each do |s|
+        screen_name = s.user.screen_name
+        next if screen_name == @user # XXX
+        next if @friends.include? screen_name
+        @friends << screen_name
+        new_users << screen_name
+      end
+      join_members(new_users)
     end
   end
 
@@ -97,9 +89,9 @@ class TermtterIrcGateway < Net::IRC::Server::Session
 
   def on_user(m)
     super
+    @user = m.params.first
     post @prefix, JOIN, main_channel
     post server_name, MODE, main_channel, "+o", @prefix.nick
-    sync_friends
     sync_commands
     self.call(@@last_statuses || [], :update_friends_timeline)
   end
@@ -134,13 +126,6 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     str.each_line do |line|
       post server_name, NOTICE, main_channel, line
     end
-  end
-
-  def sync_friends
-    previous_friends = @friends
-    new_friends = Termtter::Client.following_friends
-    join_members(new_friends - previous_friends)
-    @friends = new_friends
   end
 
   def sync_commands
