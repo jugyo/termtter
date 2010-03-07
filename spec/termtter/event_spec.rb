@@ -11,7 +11,7 @@ module Termtter
       event.should be_kind_of Event
     end
 
-    it 'shouldnot be created with wrong arguments' do
+    it 'should not be created with wrong arguments' do
       lambda{ Event.new }.should raise_error
       lambda{ Event.new(1) }.should raise_error
       lambda{ Event.new('hello') }.should raise_error
