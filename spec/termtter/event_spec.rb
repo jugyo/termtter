@@ -87,7 +87,7 @@ module Termtter
       event.has_key?(:c).should be_false
     end
 
-   it 'provides []= ' do
+    it 'provides []= ' do
       event = Event.new(:foo)
       event[:a] = 'alpha'
       event.a.should == 'alpha'
