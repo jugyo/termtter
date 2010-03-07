@@ -6,12 +6,12 @@ require 'termtter/event'
 module Termtter
   describe Event do
 
-    it 'should can created with name' do
+    it 'should created with name' do
       event = Event.new(:foo)
       event.should be_kind_of Event
     end
 
-    it 'should cannot be created with wrong arguments' do
+    it 'shouldnot be created with wrong arguments' do
       lambda{ Event.new }.should raise_error
       lambda{ Event.new(1) }.should raise_error
       lambda{ Event.new('hello') }.should raise_error
@@ -19,7 +19,7 @@ module Termtter
       lambda{ Event.new(:hello, :goodbye) }.should raise_error
     end
 
-    it 'should can be created with name and params' do
+    it 'should be created with name and params' do
       event = Event.new(:bar, :a => 'alpha', :b => 'bravo')
       event.should be_kind_of Event
     end
@@ -29,17 +29,17 @@ module Termtter
       event.name.should == :foo
     end
 
-    it 'should can compare with symbol' do
+    it 'should compare with symbol' do
       event = Event.new(:foo)
       event.should == :foo
     end
 
-    it 'should can compare with itself' do
+    it 'should compare with itself' do
       event = Event.new(:foo)
       event.should == event
     end
 
-    it 'should can compare with other events' do
+    it 'should compare with other events' do
       a = Event.new(:foo)
       b1 = Event.new(:bar)
       b2 = Event.new(:bar, :a => 'alpha', :b => 'bravo')
@@ -48,7 +48,7 @@ module Termtter
       b1.should == b2
     end
 
-    it 'should can compare with other objects' do
+    it 'should compare with other objects' do
       event = Event.new(:foo)
       event.should_not == 'hello'
       event.should_not == 33
