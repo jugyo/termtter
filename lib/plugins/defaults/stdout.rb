@@ -150,7 +150,7 @@ module Termtter
       text = Client.get_hooks(:pre_coloring).inject(text){|result, hook| hook.call(result, event, additional)}
       indent_text = indent > 0 ? eval(config.plugins.stdout.indent_format) : ''
       erbed_text = ERB.new(config.plugins.stdout.timeline_format).result(binding)
-      erbed_text = Client.get_hooks(:pre_output).inject(text){|result, hook| hook.call(result, event, additional)}
+      erbed_text = Client.get_hooks(:pre_output).inject(erbed_text){|result, hook| hook.call(result, event, additional)}
       text = TermColor.unescape(TermColor.parse(erbed_text) + "\n")
       if config.plugins.stdout.show_reply_chain && s.in_reply_to_status_id
         indent += 1
