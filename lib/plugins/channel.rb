@@ -87,7 +87,7 @@ Termtter::Client.register_hook(
           :"#{e[:list_user] == config.user_name ?
               "" : e[:list_user]}/#{e[:list_slug]}"
         when :user
-          :"@#{e[user_name]}"
+          :"@#{e[:user_name]}"
         when :home_timeline, :main, :friends_timeline
           :main
         when :direct_message, :direct
