@@ -61,7 +61,7 @@ module Termtter
       lambda { event.c }.should raise_error(NoMethodError)
       event[:a].should == 'alpha'
       event[:b].should == 'bravo'
-      event[:c].should == nil
+      event[:c].should be_nil
 
       event.to_hash.should == {:a => 'alpha', :b => 'bravo'}
 
