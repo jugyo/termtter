@@ -71,7 +71,7 @@ Termtter::Client.register_command(
     unless statuses.empty?
       print "\e[0G" + "\e[K" unless win?
       @since_id = statuses[0].id
-      Termtter::Client.output(statuses, :update_friends_timeline, :type => :home_timeline)
+      Termtter::Client.output(statuses, Termtter::Event.new(:update_friends_timeline, :type => :main))
       Readline.refresh_line if arg =~ /\-r/
     end
   },
@@ -80,30 +80,30 @@ Termtter::Client.register_command(
 colorize_channel_cache = {}
 Termtter::Client.register_hook(
   :name => :add_channel_line, :point => :pre_output,
-  :exec => lambda {|t,e,a|
+  :exec => lambda {|t,e|
     # Additional to channel
-    c = case a[:type]
-        when :list
-          :"#{a[:list_user] == config.username ?
-              "" : a[:list_user]}/#{a[:list_slug]}"
+    c = case e[:type]
+        when :list, :lists
+          :"#{e[:list_user] == config.user_name ?
+              "" : e[:list_user]}/#{e[:list_slug]}"
         when :user
-          :"@#{a[user_name]}"
-        when :home_timeline, :main
+          :"@#{e[user_name]}"
+        when :home_timeline, :main, :friends_timeline
           :main
-        when :direct_message
+        when :direct_message, :direct
           :direct
         when :search
-          :"#{a[:search_keyword]}_search"
-        when :reply
+          :"#{e[:search_keyword]}_search"
+        when :reply, :replies
           :replies
         when :show
           :show
-        when :favorite
+        when :favorite, :favorites
           :favorite
         when :multiple
           :multiple
         when :channel
-          a[:channel]
+          e[:channel]
         else
           :unknown
         end
@@ -130,7 +130,7 @@ config.plugins.channel.auto_reload_channels.each do |c,i|
         unless statuses.empty?
           print "\e[0G" + "\e[K" unless win?
           since_ids[c] = statuses[0].id
-          Termtter::Client.output(statuses, :"update_#{c}", :type => :channel, :channel => c)
+          Termtter::Client.output(statuses, Termtter::Event.new(:"update_#{c}", :type => :channel, :channel => c))
           Readline.refresh_line
         end
       end

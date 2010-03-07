@@ -61,8 +61,8 @@ module Termtter::Client
           end
         end
       end
-      a[:type] = :multiple if arg.length > 1
-      output(statuses, event, a)
+      a[:type] = :multiple if arg.split.length > 1
+      output(statuses, Termtter::Event.new(event, a))
       raise last_error if last_error
     },
     :help => ["list,l [USERNAME]/[SLUG] [-COUNT]", "List the posts"]
