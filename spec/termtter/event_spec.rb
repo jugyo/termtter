@@ -24,7 +24,7 @@ module Termtter
       event.should be_kind_of Event
     end
 
-    it 'should has name' do
+    it 'should have name' do
       event = Event.new(:foo)
       event.name.should == :foo
     end
