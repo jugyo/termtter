@@ -37,6 +37,7 @@ module Termtter
   require 'termtter/api'
   require 'termtter/system_extensions'
   require 'termtter/httppool'
+  require 'termtter/event'
 
   OptParser.parse!(ARGV)
   CONF_DIR = File.expand_path('~/.termtter') unless defined? CONF_DIR
