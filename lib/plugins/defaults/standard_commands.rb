@@ -172,7 +172,7 @@ module Termtter::Client
       end
       output(res, :replies)
     },
-    :help => ["replies,r", "List the replies"]
+    :help => ["replies,r [username]", "List the replies (from the user)"]
   )
 
   register_command(
