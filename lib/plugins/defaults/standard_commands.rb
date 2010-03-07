@@ -159,7 +159,7 @@ module Termtter::Client
   register_command(
     :name => :replies, :aliases => [:r],
     :exec_proc => lambda {|arg|
-      if arg =~ /\-([\d]+)/
+      if /\-([\d]+)/ =~ arg
         options = {:count => $1}
         arg = arg.gsub(/\-([\d]+)/, '')
       else
