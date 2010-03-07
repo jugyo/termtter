@@ -56,7 +56,8 @@ Termtter::Client.register_command(
     else
       old = now_channel
       now_channel = arg.to_sym
-      puts "Channel is tuned. #{old} => #{now}"
+      puts "Channel is tuned. #{old} => #{now_channel}"
+      @since_id = nil
     end
   }
 )
@@ -109,11 +110,11 @@ Termtter::Client.register_hook(
     # Add channel text to output text
     otc = config.plugins.channel.short_names.key?(c) ?
             config.plugins.channel.short_names[c] : c
-    ccolor = colorize_channel_cache.key?(otc) ? color_of_channel_cache[otc] :
-               config.plugins.stdout.colors[config.plugins.channel.channel_to_hash_proc.call(otc.to_s.gsub!(/^\//,"")) % config.plugins.stdout.colors.size]
-    th = "#{config.plugin.channe.colorize ? "<#{ccolor}>":""}#{channel.to_s.length > config.plugins.channel.output_length ?
+    ccolor = colorize_channel_cache.key?(otc) ? colorize_channel_cache[otc] : config.plugins.stdout.colors[config.plugins.channel.channel_to_hash_proc.call(otc.to_s.gsub(/^\//,"")) % config.plugins.stdout.colors.size]
+    colorize_channel_cache[otc] = ccolor
+    th = "#{config.plugin.channel.colorize ? "<#{ccolor}>":""}#{c.to_s.length > config.plugins.channel.output_length ?
             otc.to_s[0,config.plugins.channel.output_length] : otc.to_s.rjust(config.plugins.channel.output_length)}#{config.plugin.channe.colorize ? "</#{ccolor}>":""}<90>| </90>"
-    th+nt
+    th+t
   }
 )
 
