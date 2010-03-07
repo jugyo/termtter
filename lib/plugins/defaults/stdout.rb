@@ -94,17 +94,17 @@ module Termtter
       super(:name => :stdout, :points => [:output])
     end
 
-    def call(statuses, event)
-      print_statuses(statuses, event)
+    def call(statuses, event, additional = {})
+      print_statuses(statuses, event, true, nil, additional)
     end
 
-    def print_statuses(statuses, event, sort = true, time_format = nil)
+    def print_statuses(statuses, event, sort = true, time_format = nil, additional = {})
       return unless statuses and statuses.first
       time_format ||= Termtter::Client.time_format_for statuses
 
       output_text = ''
       statuses.each do |s|
-        output_text << status_line(s, time_format, event)
+        output_text << status_line(s, time_format, event, 0, additional)
       end
 
       if config.plugins.stdout.enable_pager &&
@@ -120,7 +120,7 @@ module Termtter
       end
     end
 
-    def status_line(s, time_format, event, indent = 0)
+    def status_line(s, time_format, event, indent = 0, additional = {})
       return '' unless s
       text = TermColor.escape(s.text)
       color = color_of_user(s.user)
@@ -147,7 +147,7 @@ module Termtter
         end
 
       text = colorize_users(text)
-      text = Client.get_hooks(:pre_coloring).inject(text){|result, hook| hook.call(result, event)}
+      text = Client.get_hooks(:pre_coloring).inject(text){|result, hook| hook.call(result, event, additional)}
       indent_text = indent > 0 ? eval(config.plugins.stdout.indent_format) : ''
       erbed_text = ERB.new(config.plugins.stdout.timeline_format).result(binding)
 
@@ -157,7 +157,7 @@ module Termtter
         unless indent > config.plugins.stdout.max_indent_level
           begin
             if status = Termtter::API.twitter.cached_status(s.in_reply_to_status_id)
-              text << status_line(status, time_format, event, indent)
+              text << status_line(status, time_format, event, indent, additional)
             end
           rescue Rubytter::APIError
           end

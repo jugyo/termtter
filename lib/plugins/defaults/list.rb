@@ -15,6 +15,7 @@ module Termtter::Client
   register_command(
     :name => :list, :aliases => [:l],
     :exec_proc => lambda {|arg|
+      a = {}
       if /\-([\d]+)/ =~ arg
         options = {:count => $1}
         arg = arg.gsub(/\-([\d]+)/, '')
@@ -26,14 +27,18 @@ module Termtter::Client
       if arg.empty?
         event = :list_friends_timeline
         statuses = Termtter::API.twitter.home_timeline(options)
+        a[:type] = :home_timeline
       else
         event = :list_user_timeline
         statuses = []
         Array(arg.split).each do |user|
           if user =~ /\/\w+/
             user_name, slug = *user.split('/')
+            a[:type] = :list
             user_name = config.user_name if user_name.empty?
             user_name = normalize_as_user_name(user_name)
+            a[:list_user] = user_name
+            a[:list_slug] = slug
             options[:per_page] = options[:count]
             options.delete(:count)
             statuses += Termtter::API.twitter.list_statuses(user_name, slug, options)
@@ -47,6 +52,8 @@ module Termtter::Client
                 end
               end
               user_name = normalize_as_user_name(user.sub(/\/$/, ''))
+              a[:type] = :user
+              a[:user_name] = user_name
               statuses += Termtter::API.twitter.user_timeline(user_name, options)
             rescue Rubytter::APIError => e
               last_error = e
@@ -54,7 +61,8 @@ module Termtter::Client
           end
         end
       end
-      output(statuses, event)
+      a[:type] = :multiple if arg.length > 1
+      output(statuses, event, a)
       raise last_error if last_error
     },
     :help => ["list,l [USERNAME]/[SLUG] [-COUNT]", "List the posts"]

@@ -109,24 +109,26 @@ module Termtter
       #             :text => status,
       #             :original_data => original data,
       #           }
-      def output(statuses, event)
+      def output(statuses, event, additional={})
+        # NOTE: "additional" parameter will be substitute to event someday.
         return if statuses.nil? || statuses.empty?
         event = Termtter::Event.new(event) unless event.kind_of? Termtter::Event
 
         statuses = statuses.sort_by(&:id)
         call_hooks(:pre_filter, statuses, event)
 
-        filtered = apply_filters_for_hook(:filter_for_output, statuses.map(&:clone), event)
+        filtered = apply_filters_for_hook(:filter_for_output, statuses.map(&:clone), event, additional)
 
         @filters.each do |f|  # TODO: code for compatibility. delete someday.
-          filtered = f.call(filtered, event)
+          filtered = f.call(filtered, event, additional)
         end
 
         call_hooks(:post_filter, filtered, event)
         get_hooks(:output).each do |hook|
           hook.call(
-            apply_filters_for_hook(:"filter_for_#{hook.name}", filtered, event),
-            event
+            apply_filters_for_hook(:"filter_for_#{hook.name}", filtered, event, additional),
+            event,
+            additional
           )
         end
       end
@@ -135,9 +137,10 @@ module Termtter
         ::Notify.notify(*args)
       end
 
-      def apply_filters_for_hook(hook_name, statuses, event)
+      def apply_filters_for_hook(hook_name, statuses, event, additional={})
+        # NOTE: "additional" parameter will be substitute to event someday.
         get_hooks(hook_name).inject(statuses) {|s, hook|
-          hook.call(s, event)
+          hook.call(s, event, additional)
         }
       end
 
