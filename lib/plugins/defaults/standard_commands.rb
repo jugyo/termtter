@@ -10,7 +10,6 @@ config.plugins.standard.set_default(
 config.set_default(:easy_reply, false)
 
 module Termtter::Client
-
   register_command(
     :name => :reload,
     :exec => lambda {|arg|
@@ -33,8 +32,10 @@ module Termtter::Client
         params =
           if config.easy_reply && /^\s*(@\w+)/ =~ arg
             user_name = normalize_as_user_name($1)
-            in_reply_to_status_id = Termtter::API.twitter.user(user_name).status.id rescue nil
-            in_reply_to_status_id ? {:in_reply_to_status_id => in_reply_to_status_id} : {}
+            in_reply_to_status_id =
+              Termtter::API.twitter.user(user_name).status.id rescue nil
+            in_reply_to_status_id ?
+              {:in_reply_to_status_id => in_reply_to_status_id} : {}
           else
             {}
           end
@@ -77,7 +78,9 @@ module Termtter::Client
     end
   end
 
-  register_command(:direct, :alias => :d, :help => ["direct,d USERNAME TEXT", "Send direct message"]) do |arg|
+  register_command(
+    :direct, :alias => :d,
+    :help => ["direct,d USERNAME TEXT", "Send direct message"]) do |arg|
     if /^([^\s]+)\s+?(.*)\s*$/ =~ arg
       user, text = normalize_as_user_name($1), $2
       Termtter::API.twitter.direct_message(user, text)
@@ -85,19 +88,22 @@ module Termtter::Client
     end
   end
 
-  register_command('direct list', :help => ["direct list", 'List direct messages']) do |arg|
+  register_command(
+    'direct list', :help => ["direct list", 'List direct messages']) do |arg|
     output(
       Termtter::API.twitter.direct_messages.map { |d|
         DirectMessage.new(d.id, "#{d.text} => #{d.recipient_screen_name}", d.sender, d.created_at)
       },
-      :direct_messages
-    )
+      :direct_messages)
   end
 
-  register_command('direct sent_list', :help => ["direct sent_list", 'List sent direct messages']) do |arg|
+  register_command(
+    'direct sent_list',
+    :help => ["direct sent_list", 'List sent direct messages']) do |arg|
     output(
       Termtter::API.twitter.sent_direct_messages.map { |d|
-        DirectMessage.new(d.id, "#{d.text} => #{d.recipient_screen_name}", d.sender, d.created_at)
+      DirectMessage.new(
+        d.id, "#{d.text} => #{d.recipient_screen_name}", d.sender, d.created_at)
       },
       :direct_messages
     )
@@ -134,7 +140,7 @@ module Termtter::Client
       output(statuses, SearchEvent.new(arg))
     },
     :completion_proc => lambda {|cmd, arg|
-      public_storage[:search_keywords].grep(/^#{Regexp.quote(arg)}/).map { |i| "#{cmd} #{i}" }
+      public_storage[:search_keywords].grep(/^#{Regexp.quote(arg)}/).map {|i| "#{cmd} #{i}" }
     },
     :help => ["search,s TEXT", "Search for Twitter"]
   )
@@ -142,7 +148,7 @@ module Termtter::Client
     case event
     when SearchEvent
       query = event.query.split(/\s/).map {|q|Regexp.quote(q)}.join("|")
-      text.gsub(/(#{query})/i, '<on_magenta><white>\1</white></on_magenta>')
+      text.gsub(/#{query}/i, '<on_magenta><white>\0</white></on_magenta>')
     else
       text
     end
@@ -160,7 +166,7 @@ module Termtter::Client
 
       res = Termtter::API.twitter.replies(options)
       unless arg.empty?
-        res = res.map {|e| e.user.screen_name == arg ? e : nil }.compact
+        res = res.select {|e| e.user.screen_name == arg }
       end
       output(res, :replies)
     },
@@ -455,21 +461,23 @@ module Termtter::Client
     :help => ["redo,.", "Execute previous command"]
   )
 
-  def self.update_with_user_and_id(text, username, id)
-    text = "@#{username} #{text}"
-    result = Termtter::API.twitter.update(text, {'in_reply_to_status_id' => id})
-    puts "replied => #{result.text}"
-  end
+  class << self
+    def update_with_user_and_id(text, username, id)
+      text = "@#{username} #{text}"
+      result = Termtter::API.twitter.update(text, {'in_reply_to_status_id' => id })
+      puts "replied => #{result.text}"
+    end
 
-  def self.normalize_as_user_name(text)
-    text.strip.sub(/^@/, '')
-  end
+    def normalize_as_user_name(text)
+      text.strip.sub(/^@/, '')
+    end
 
-  def self.find_status_ids(text)
-    public_storage[:status_ids].select {|id| /#{Regexp.quote(text)}/ =~ id.to_s}
-  end
+    def find_status_ids(text)
+      public_storage[:status_ids].select {|id| /#{Regexp.quote(text)}/ =~ id.to_s }
+    end
 
-  def self.find_users(text)
-    public_storage[:users].select {|user| /^#{Regexp.quote(text)}/ =~ user}
+    def find_users(text)
+      public_storage[:users].select {|user| /^#{Regexp.quote(text)}/ =~ user }
+    end
   end
 end
