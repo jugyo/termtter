@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 
 require 'net/irc'
+require 'set'
 
 config.plugins.irc_gw.set_default(:port, 16669)
 config.plugins.irc_gw.set_default(:last_statuses_count, 100)
 config.plugins.irc_gw.set_default(:logger_level, Logger::ERROR)
+config.plugins.irc_gw.set_default(:command_regexps, [/^(.+): *(.*)/])
+
+Termtter::Client.plug 'multi_output'
 
 module Termtter::Client
   class << self
@@ -20,7 +24,7 @@ module Termtter::Client
         break
       end until last.next_cursor == 0
       puts "You have #{frinends.length} friends."
-      frinends.map(&:screen_name)
+      Set.new(frinends.map(&:screen_name))
     end
   end
 end
@@ -58,6 +62,31 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   def initialize(*args)
     super
     @@listners << self
+    @friends = Set.new
+    @commands = []
+
+    Termtter::Client.register_hook(:collect_user_names_for_irc_gw, :point => :pre_filter) do |statuses, event|
+      new_users = []
+      statuses.each do |s|
+        screen_name = s.user.screen_name
+        next if screen_name == @user # XXX
+        next if @friends.include? screen_name
+        @friends << screen_name
+        new_users << screen_name
+      end
+      join_members(new_users)
+    end
+
+    Termtter::Client.register_command(
+      :name => :collect_friends,
+      :help => 'Collect friends for IRC.',
+      :exec => lambda {|arg|
+        sync_friends
+      })
+
+    Termtter::Client.register_hook(:collect_commands_for_irc_gw, :point => :post_command) do |text|
+      sync_commands if text =~ /plug/
+    end
   end
 
   def call(statuses, event)
@@ -88,9 +117,10 @@ class TermtterIrcGateway < Net::IRC::Server::Session
 
   def on_user(m)
     super
+    @user = m.params.first
     post @prefix, JOIN, main_channel
     post server_name, MODE, main_channel, "+o", @prefix.nick
-    check_friends
+    sync_commands
     self.call(@@last_statuses || [], :update_friends_timeline)
   end
 
@@ -101,10 +131,20 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       return unless Termtter::Client.find_command(termtter_command)
       post '#termtter', NOTICE, main_channel, '> ' + termtter_command
       Termtter::Client.execute(termtter_command)
-    else
-      Termtter::Client.execute('update ' + message)
-      post @prefix, TOPIC, main_channel, message
+      return
     end
+    config.plugins.irc_gw.command_regexps and
+    config.plugins.irc_gw.command_regexps.each do |rule|
+      if message =~ rule
+        command = message.scan(rule).first.join(' ')
+        next unless Termtter::Client.find_command(command)
+        post '#termtter', NOTICE, main_channel, '> ' + command
+        Termtter::Client.execute(command)
+        return
+      end
+    end
+    Termtter::Client.execute('update ' + message)
+    post @prefix, TOPIC, main_channel, message
   rescue Exception => e
     post '#termtter', NOTICE, main_channel, "#{e.class.to_s}: #{e.message}"
     Termtter::Client.handle_error(e)
@@ -116,11 +156,26 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     end
   end
 
-  def check_friends
+  def sync_friends
+    previous_friends = @friends
+    new_friends = Termtter::Client.following_friends
+    diff = new_friends - previous_friends
+    join_members(diff)
+    @friends += diff
+  end
+
+  def sync_commands
+    previous_commands = @commands
+    new_commands = Termtter::Client.commands.keys.map{|s| s.to_s.split(' ')}.flatten.uniq
+    join_members(new_commands - previous_commands)
+    @commands = new_commands
+  end
+
+  def join_members(members)
     params = []
     max_params_count = 3
-    Termtter::Client.following_friends.each do |name|
-      prefix = Prefix.new("#{name}!#{name}@localhost")
+    members.each do |member|
+      prefix = Prefix.new("#{member}!#{member}@localhost")
       post prefix, JOIN, main_channel
       params << prefix.nick
       next if params.size < max_params_count
@@ -130,6 +185,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     end
     post server_name, MODE, main_channel, "+#{"v" * params.size}", *params unless params.empty?
   end
+
 end
 
 unless defined? IRC_SERVER
