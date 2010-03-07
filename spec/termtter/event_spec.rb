@@ -6,7 +6,7 @@ require 'termtter/event'
 module Termtter
   describe Event do
 
-    it 'should created with name' do
+    it 'should create with name' do
       event = Event.new(:foo)
       event.should be_kind_of Event
     end
