@@ -13,6 +13,7 @@ module Termtter::Client
   register_command(
     :name => :reload,
     :exec => lambda {|arg|
+      # NOTE: If edit this command, please check and edit lib/plugins/channel.rb too, please.
       args = @since_id ? [{:since_id => @since_id}] : []
       statuses = Termtter::API.twitter.home_timeline(*args)
       unless statuses.empty?
