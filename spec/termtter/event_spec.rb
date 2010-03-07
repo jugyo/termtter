@@ -6,12 +6,12 @@ require 'termtter/event'
 module Termtter
   describe Event do
 
-    it 'should create with name' do
+    it 'creates with name' do
       event = Event.new(:foo)
       event.should be_kind_of Event
     end
 
-    it 'should not be created with wrong arguments' do
+    it 'in not created with wrong arguments' do
       lambda{ Event.new }.should raise_error
       lambda{ Event.new(1) }.should raise_error
       lambda{ Event.new('hello') }.should raise_error
@@ -19,27 +19,27 @@ module Termtter
       lambda{ Event.new(:hello, :goodbye) }.should raise_error
     end
 
-    it 'should be created with name and params' do
+    it 'bes created with name and params' do
       event = Event.new(:bar, :a => 'alpha', :b => 'bravo')
       event.should be_kind_of Event
     end
 
-    it 'should have name' do
+    it 'has name' do
       event = Event.new(:foo)
       event.name.should == :foo
     end
 
-    it 'should compare with symbol' do
+    it 'compares with symbol' do
       event = Event.new(:foo)
       event.should == :foo
     end
 
-    it 'should compare with itself' do
+    it 'compares with itself' do
       event = Event.new(:foo)
       event.should == event
     end
 
-    it 'should compare with other events' do
+    it 'compares with other events' do
       a = Event.new(:foo)
       b1 = Event.new(:bar)
       b2 = Event.new(:bar, :a => 'alpha', :b => 'bravo')
@@ -48,13 +48,13 @@ module Termtter
       b1.should == b2
     end
 
-    it 'should compare with other objects' do
+    it 'compares with other objects' do
       event = Event.new(:foo)
       event.should_not == 'hello'
       event.should_not == 33
     end
 
-    it 'should delegate to ActiveRubytter' do
+    it 'delegates to ActiveRubytter' do
       event = Event.new(:bar, :a => 'alpha', :b => 'bravo')
       event.a.should == 'alpha'
       event.b.should == 'bravo'
@@ -72,7 +72,7 @@ module Termtter
       event.to_hash.should == {:c => 'charlie', :d => 'delta'}
     end
 
-    it 'should delegate to Symbol' do
+    it 'delegates to Symbol' do
       a = Event.new(:foo, :a => 'alpha', :b => 'bravo')
       a.to_sym.should == a.name.to_sym
       a.id2name.should == a.name.id2name
@@ -80,14 +80,14 @@ module Termtter
       a.to_i.should == a.name.to_i
     end
 
-    it 'should provide has_key?' do
+    it 'provides has_key?' do
       event = Event.new(:foo, :a => 'alpha', :b => 'bravo')
       event.has_key?(:a).should be_true
       event.has_key?(:b).should be_true
       event.has_key?(:c).should be_false
     end
 
-    it 'should provide []= ' do
+   it 'provides []= ' do
       event = Event.new(:foo)
       event[:a] = 'alpha'
       event.a.should == 'alpha'
