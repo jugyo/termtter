@@ -111,6 +111,7 @@ module Termtter
       #           }
       def output(statuses, event)
         return if statuses.nil? || statuses.empty?
+        event = Termtter::Event.new(event) unless event.kind_of? Termtter::Event
 
         statuses = statuses.sort_by(&:id)
         call_hooks(:pre_filter, statuses, event)
