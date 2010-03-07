@@ -109,8 +109,8 @@ register_hook(
             config.plugins.channel.short_names[c] : c
     ccolor = colorize_channel_cache.key?(otc) ? color_of_channel_cache[otc] :
                config.plugins.stdout.colors.size[(otc.to_s.gsub!(/^\//,"") % config.plugins.stdout.colors.size]
-    th = "<#{ccolor}>#{channel.to_s.length > config.plugins.channel.output_length ?
-            otc.to_s[0,config.plugins.channel.output_length] : otc.to_s.rjust(config.plugins.channel.output_length)}</#{ccolor}><90>| </90>"
+    th = "#{config.plugin.channe.colorize ? "<#{ccolor}>":""}#{channel.to_s.length > config.plugins.channel.output_length ?
+            otc.to_s[0,config.plugins.channel.output_length] : otc.to_s.rjust(config.plugins.channel.output_length)}#{config.plugin.channe.colorize ? "</#{ccolor}>":""}<90>| </90>"
     th+nt
   }
 )
