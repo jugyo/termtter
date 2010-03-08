@@ -131,7 +131,7 @@ module Termtter::Client
     :help => ["followers", "Show followers"]
   )
 
-  class SearchEvent; attr_reader :query; def initialize(query); @query = query end; end
+  class SearchEvent < Termtter::Event; attr_reader :query; def initialize(query); @query = query end; end
   public_storage[:search_keywords] = Set.new
   register_command(
     :name => :search, :aliases => [:s],
