@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 
-# FIXME: This plugin is Mac only now.
+# FIXME: Currently this plugin is available only on Mac OS X.
 
 if RUBY_PLATFORM =~ /darwin/i
   config.plugins.reply_sound.set_default(:interval, 600)
