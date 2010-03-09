@@ -15,7 +15,7 @@ if RUBY_PLATFORM =~ /darwin/i
     replies = Termtter::API.twitter.replies
     new_replies = replies.delete_if {|x| reply_sound_cache_ids.index(x[:id]) }
     if !reply_sound_cache.nil? && new_replies.size > 0
-      if RUBY_VERSION < '1.9'
+      if respond_to? :spawn, true
         system 'afplay "'+config.plugins.reply_sound.sound_file+'" 2>/dev/null &'
       else
         spawn 'afplay', config.plugins.reply_sound.sound_file, :out => '/dev/null'
