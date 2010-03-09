@@ -13,12 +13,13 @@ module Termtter::Client
   register_command(
     :name => :reload,
     :exec => lambda {|arg|
+      # NOTE: If edit this command, please check and edit lib/plugins/channel.rb too, please.
       args = @since_id ? [{:since_id => @since_id}] : []
       statuses = Termtter::API.twitter.home_timeline(*args)
       unless statuses.empty?
         print "\e[0G" + "\e[K" unless win?
         @since_id = statuses[0].id
-        output(statuses, :update_friends_timeline)
+        output(statuses, Termtter::Event.new(:update_friends_timeline, :type => :main))
         Readline.refresh_line if arg =~ /\-r/
       end
     },
@@ -94,7 +95,10 @@ module Termtter::Client
       Termtter::API.twitter.direct_messages.map { |d|
         DirectMessage.new(d.id, "#{d.text} => #{d.recipient_screen_name}", d.sender, d.created_at)
       },
-      :direct_messages)
+      Termtter::Event.new(
+        :direct_messages,
+        :type => :direct_message)
+    )
   end
 
   register_command(
@@ -105,7 +109,9 @@ module Termtter::Client
       DirectMessage.new(
         d.id, "#{d.text} => #{d.recipient_screen_name}", d.sender, d.created_at)
       },
-      :direct_messages
+      Termtter::Event.new(
+        :direct_messages,
+        :type => :direct_message)
     )
   end
 
@@ -139,7 +145,7 @@ module Termtter::Client
       search_option = config.search.option.empty? ? {} : config.search.option
       statuses = Termtter::API.twitter.search(arg, search_option)
       public_storage[:search_keywords] << arg
-      output(statuses, SearchEvent.new(arg))
+      output(statuses, SearchEvent.new(arg), Termtter::Event.new(:type => :search, :search_keyword => arg))
     },
     :completion_proc => lambda {|cmd, arg|
       public_storage[:search_keywords].grep(/^#{Regexp.quote(arg)}/).map {|i| "#{cmd} #{i}" }
@@ -170,7 +176,7 @@ module Termtter::Client
       unless arg.empty?
         res = res.select {|e| e.user.screen_name == arg }
       end
-      output(res, :replies)
+      output(res, Termtter::Event.new(:replies, :type => :reply))
     },
     :help => ["replies,r [username]", "List the replies (from the user)"]
   )
@@ -179,7 +185,7 @@ module Termtter::Client
     :name => :show,
     :exec_proc => lambda {|arg|
       id = arg.gsub(/.*:\s*/, '')
-      output([Termtter::API.twitter.show(id)], :show)
+      output([Termtter::API.twitter.show(id)], Termtter::Event.new(:show, :type => :show))
     },
     :completion_proc => lambda {|cmd, arg|
       case arg
@@ -232,7 +238,7 @@ module Termtter::Client
 
   help = ['favorite_list USERNAME', 'show user favorites']
   register_command(:favorites, :alias => :favlist, :help => help) do |arg|
-    output Termtter::API.twitter.favorites(arg), :user_timeline
+    output Termtter::API.twitter.favorites(arg), :user_timeline, :type => :favorite
   end
 
   register_command(

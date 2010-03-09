@@ -20,6 +20,10 @@ module Termtter
       @params.__send__(name, *args)
     end
 
+    def [](name)
+      @params.__send__(:[],name)
+    end
+
     def hash
       @name.hash
     end

@@ -124,11 +124,13 @@ module Termtter
 
         call_hooks(:post_filter, filtered, event)
         get_hooks(:output).each do |hook|
+          Termtter::Client.logger.debug "output: call hook :output #{hook.inspect}"
           hook.call(
             apply_filters_for_hook(:"filter_for_#{hook.name}", filtered, event),
             event
           )
         end
+        Termtter::Client.logger.debug "output: call hook :output, done"
       end
 
       def notify(*args)

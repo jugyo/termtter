@@ -45,8 +45,10 @@ module Termtter
             result = nil
             get_hooks(point).each {|hook|
               break if result == false # interrupt if hook return false
+              Termtter::Client.logger.debug "call_hooks: #{point} #{hook.inspect}"
               result = hook.call(*args)
             }
+            Termtter::Client.logger.debug "call_hooks: [:point => #{point}, :args => [#{args.map {|a| a.inspect.split(//)[0..10].join}.join(', ')}]], done"
             result
           end
 
