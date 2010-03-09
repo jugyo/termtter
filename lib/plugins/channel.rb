@@ -1,6 +1,3 @@
-# channel plugin
-# Author: Sora Harakami
-
 config.plugins.channel.set_default(:auto_reload_channels,  {})
 config.plugins.channel.set_default(:short_names,           {})
 config.plugins.channel.set_default(:colorize,              true)
@@ -49,6 +46,7 @@ Termtter::Client.register_command(
   :name => :channel,
   :alias => :c,
   :help => ['channel, c', 'Show current channel or change channel'],
+  :author => 'Sora Harakami',
   :exec => lambda {|arg|
     if arg.empty?
       puts "Current channel is #{now_channel}"
@@ -63,6 +61,7 @@ Termtter::Client.register_command(
 
 Termtter::Client.register_command(
   :name => :reload,
+  :author => 'Sora Harakami',
   :exec => lambda {|arg|
     # NOTE: Please edit here as well if reload command in lib/plugins/default/standard_commands.rb was edited.
     args = @since_id ? [{:since_id => @since_id}] : []
@@ -80,6 +79,7 @@ Termtter::Client.register_command(
 colorize_channel_cache = {}
 Termtter::Client.register_hook(
   :name => :add_channel_line, :point => :pre_output,
+  :author => 'Sora Harakami',
   :exec => lambda {|t, e|
     # Additional to channel
     c =
