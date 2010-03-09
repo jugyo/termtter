@@ -128,7 +128,7 @@ config.plugins.channel.auto_reload_channels.each do |c, i|
   Termtter::Client.add_task(:name => "auto_reload_#{c}".to_sym, :interval => i) do
     begin
       if c != now_channel
-        # NOTE: Please edit too here if reload command in lib/plugins/default/standard_commands.rb edited.
+        # NOTE: Please edit here as well if reload command in lib/plugins/default/standard_commands.rb was edited.
         args = since_ids[c] ? [{:since_id => since_ids[c]}] : []
         statuses = Termtter::API.call_by_channel(c, *args)
         unless statuses.empty?
