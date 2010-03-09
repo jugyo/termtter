@@ -21,6 +21,5 @@ if RUBY_PLATFORM =~ /darwin/i
     reply_sound_cache_ids += replies.map{|x| x[:id]}
   end
 else
-  puts TermColor.parse("<red>WARNING: reply_sound plugin is available on Mac OS X now.</red>")
+  puts TermColor.parse("<red>WARNING: Currently reply_sound plugin is available only on Mac OS X.</red>")
 end
-
