@@ -82,34 +82,35 @@ Termtter::Client.register_hook(
   :name => :add_channel_line, :point => :pre_output,
   :exec => lambda {|t, e|
     # Additional to channel
-    c = case e[:type]
-        when :list, :lists
-          :"#{e[:list_user] == config.user_name ?
-              "" : e[:list_user]}/#{e[:list_slug]}"
-        when :user
-          :"@#{e[:user_name]}"
-        when :home_timeline, :main, :friends_timeline
-          :main
-        when :direct_message, :direct
-          :direct
-        when :search
-          :"#{e[:search_keyword]}_search"
-        when :reply, :replies
-          :replies
-        when :show
-          :show
-        when :favorite, :favorites
-          :favorite
-        when :multiple
-          :multiple
-        when :channel
-          e[:channel]
-        else
-          :unknown
-        end
+    c =
+      case e[:type]
+      when :list, :lists
+        :"#{e[:list_user] == config.user_name ?
+          "" : e[:list_user]}/#{e[:list_slug]}"
+      when :user
+        :"@#{e[:user_name]}"
+      when :home_timeline, :main, :friends_timeline
+        :main
+      when :direct_message, :direct
+        :direct
+      when :search
+        :"#{e[:search_keyword]}_search"
+      when :reply, :replies
+        :replies
+      when :show
+        :show
+      when :favorite, :favorites
+        :favorite
+      when :multiple
+        :multiple
+      when :channel
+        e[:channel]
+      else
+        :unknown
+      end
     # Add channel text to output text
     otc = config.plugins.channel.short_names.key?(c) ?
-            config.plugins.channel.short_names[c] : c
+      config.plugins.channel.short_names[c] : c
     ccolor = colorize_channel_cache.key?(otc) ?
       colorize_channel_cache[otc] :
       config.plugins.stdout.colors[
