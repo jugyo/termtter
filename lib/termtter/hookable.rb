@@ -41,14 +41,14 @@ module Termtter
 
           # return last hook return value
           def call_hooks(point, *args)
-            Termtter::Client.logger.debug "call_hooks: [:point => #{point}, :args => [#{args.map {|a| a.inspect.split(//)[0..10].join}.join(', ')}]]"
+            Termtter::Client.logger.debug "call_hooks: [:point => #{point}, :args => [#{args.map {|a| a.inspect.each_char.take(11).join}.join(', ')}]]"
             result = nil
             get_hooks(point).each {|hook|
               break if result == false # interrupt if hook return false
               Termtter::Client.logger.debug "call_hooks: #{point} #{hook.inspect}"
               result = hook.call(*args)
             }
-            Termtter::Client.logger.debug "call_hooks: [:point => #{point}, :args => [#{args.map {|a| a.inspect.split(//)[0..10].join}.join(', ')}]], done"
+            Termtter::Client.logger.debug "call_hooks: [:point => #{point}, :args => [#{args.map {|a| a.inspect.each_char.take(11).join}.join(', ')}]], done"
             result
           end
 
