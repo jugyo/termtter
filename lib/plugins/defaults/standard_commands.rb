@@ -145,7 +145,7 @@ module Termtter::Client
       search_option = config.search.option.empty? ? {} : config.search.option
       statuses = Termtter::API.twitter.search(arg, search_option)
       public_storage[:search_keywords] << arg
-      output(statuses, SearchEvent.new(arg), Termtter::Event.new(:type => :search, :search_keyword => arg))
+      output(statuses, SearchEvent.new(arg))
     },
     :completion_proc => lambda {|cmd, arg|
       public_storage[:search_keywords].grep(/^#{Regexp.quote(arg)}/).map {|i| "#{cmd} #{i}" }
