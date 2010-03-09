@@ -21,7 +21,7 @@ module Termtter
     end
 
     def [](name)
-      @params.__send__(:[],name)
+      @params.__send__(:[], name)
     end
 
     def hash

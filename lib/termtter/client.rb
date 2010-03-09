@@ -8,7 +8,6 @@ module Termtter
   class CommandCanceled < StandardError; end
 
   module Client
-
     include Termtter::Hookable
 
     @commands = {}
@@ -18,7 +17,6 @@ module Termtter
     Thread.abort_on_exception = true
 
     class << self
-
       attr_reader :commands
 
       # plug :: Name -> (Hash) -> IO () where NAME = String | Symbol | [NAME]
@@ -119,6 +117,7 @@ module Termtter
         filtered = apply_filters_for_hook(:filter_for_output, statuses.map(&:clone), event)
 
         @filters.each do |f|  # TODO: code for compatibility. delete someday.
+          # but... when is the "someday"?
           filtered = f.call(filtered, event)
         end
 
@@ -127,8 +126,7 @@ module Termtter
           Termtter::Client.logger.debug "output: call hook :output #{hook.inspect}"
           hook.call(
             apply_filters_for_hook(:"filter_for_#{hook.name}", filtered, event),
-            event
-          )
+            event)
         end
         Termtter::Client.logger.debug "output: call hook :output, done"
       end
@@ -232,6 +230,7 @@ module Termtter
         end
       end
 
+      # MEMO: This method will be removed in Termtter 2.0.0
       def move_legacy_config_file
         FileUtils.mv(
           Termtter::CONF_DIR,
@@ -343,7 +342,7 @@ module Termtter
         print "\"#{message.strip}\" "
         readline = Readline.readline(default_yes ? "[Y/n] " : "[N/y] ", false)
         result =
-          if !!(/^$/ =~ readline) 
+          if !!(/^$/ =~ readline)
             default_yes
           else
             !!(/^y/i =~ readline)

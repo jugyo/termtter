@@ -78,7 +78,7 @@ module Termtter
       a.id2name.should == a.name.id2name
       a.to_s.should == a.name.to_s
 
-      # NOTE: This spec isn't work?
+      # NOTE: Isn't this spec working?
       #a.to_i.should == a.name.to_i
     end
 
