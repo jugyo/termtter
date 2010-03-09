@@ -76,6 +76,7 @@ Termtter::Client.register_command(
   },
   :help => ['reload', 'Reload time line']
 )
+
 colorize_channel_cache = {}
 Termtter::Client.register_hook(
   :name => :add_channel_line, :point => :pre_output,
@@ -109,11 +110,15 @@ Termtter::Client.register_hook(
     # Add channel text to output text
     otc = config.plugins.channel.short_names.key?(c) ?
             config.plugins.channel.short_names[c] : c
-    ccolor = colorize_channel_cache.key?(otc) ? colorize_channel_cache[otc] : config.plugins.stdout.colors[config.plugins.channel.channel_to_hash_proc.call(otc.to_s.gsub(/^\//, "")) % config.plugins.stdout.colors.size]
+    ccolor = colorize_channel_cache.key?(otc) ?
+      colorize_channel_cache[otc] :
+      config.plugins.stdout.colors[
+        config.plugins.channel.channel_to_hash_proc.call(otc.to_s.gsub(/^\//, "")) %
+        config.plugins.stdout.colors.size]
     colorize_channel_cache[otc] = ccolor
     th = "#{config.plugin.channel.colorize ? "<#{ccolor}>":""}#{c.to_s.length > config.plugins.channel.output_length ?
             otc.to_s[0, config.plugins.channel.output_length] : otc.to_s.rjust(config.plugins.channel.output_length)}#{config.plugin.channe.colorize ? "</#{ccolor}>":""}<90>| </90>"
-    th+t
+    th + t
   }
 )
 
@@ -122,7 +127,7 @@ config.plugins.channel.auto_reload_channels.each do |c, i|
   since_ids = {}
   Termtter::Client.add_task(:name => "auto_reload_#{c}".to_sym, :interval => i) do
     begin
-      unless c == now_channel
+      if c != now_channel
         # NOTE: Please edit too here if reload command in lib/plugins/default/standard_commands.rb edited.
         args = since_ids[c] ? [{:since_id => since_ids[c]}] : []
         statuses = Termtter::API.call_by_channel(c, *args)
