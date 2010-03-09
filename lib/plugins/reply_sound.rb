@@ -4,7 +4,8 @@
 
 if RUBY_PLATFORM =~ /darwin/i
   config.plugins.reply_sound.set_default(:interval, 600)
-  config.plugins.reply_sound.set_default(:sound_file, '/System/Library/Sounds/Hero.aiff')
+  config.plugins.reply_sound.set_default(
+    :sound_file, '/System/Library/Sounds/Hero.aiff')
 
   reply_sound_cache = nil
   reply_sound_cache_ids = []
@@ -20,11 +21,13 @@ if RUBY_PLATFORM =~ /darwin/i
       else
         spawn 'afplay', config.plugins.reply_sound.sound_file, :out => '/dev/null'
       end
-      Termtter::Client.output(new_replies,Termtter::Event.new(:new_replies,:type => :reply))
+      Termtter::Client.output(
+        new_replies, Termtter::Event.new(:new_replies,:type => :reply))
     end
     reply_sound_cache = replies
     reply_sound_cache_ids += replies.map {|x| x[:id]}
   end
 else
-  puts TermColor.parse("<red>WARNING: Currently reply_sound plugin is available only on Mac OS X.</red>")
+  puts TermColor.parse(
+    "<red>WARNING: Currently reply_sound plugin is available only on Mac OS X.</red>")
 end
