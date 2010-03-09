@@ -64,7 +64,7 @@ Termtter::Client.register_command(
 Termtter::Client.register_command(
   :name => :reload,
   :exec => lambda {|arg|
-    # NOTE: Please edit here as well if reload command in lib/plugins/default/standard_commands.rb edited.
+    # NOTE: Please edit here as well if reload command in lib/plugins/default/standard_commands.rb was edited.
     args = @since_id ? [{:since_id => @since_id}] : []
     statuses = Termtter::API.call_by_channel(now_channel, *args)
     unless statuses.empty?
