@@ -13,7 +13,7 @@ config.plugins.channel.set_default(:channel_to_hash_proc,  lambda {|c| c.to_i(36
 #   /^(.+)_s(earch)?$/ -- search result of $1
 #   /^replies$/        -- replies
 #   /^main$/           -- home_timeline
-#   else               -- list
+#   otherwise          -- list
 
 # Extention Core
 module Termtter
@@ -64,7 +64,7 @@ Termtter::Client.register_command(
 Termtter::Client.register_command(
   :name => :reload,
   :exec => lambda {|arg|
-    # NOTE: Please edit too here if reload command in lib/plugins/default/standard_commands.rb edited.
+    # NOTE: Please edit here as well if reload command in lib/plugins/default/standard_commands.rb edited.
     args = @since_id ? [{:since_id => @since_id}] : []
     statuses = Termtter::API.call_by_channel(now_channel, *args)
     unless statuses.empty?
