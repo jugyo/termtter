@@ -6,8 +6,7 @@ config.plugins.channel.set_default(:short_names,           {})
 config.plugins.channel.set_default(:colorize,              true)
 config.plugins.channel.set_default(:output_length,         7)
 config.plugins.channel.set_default(:default_channel,       :main)
-config.plugins.channel.set_default(:channel_to_hash_proc,  lambda { |c| c.to_i(36) })
-
+config.plugins.channel.set_default(:channel_to_hash_proc,  lambda {|c| c.to_i(36) })
 
 # Channel spec
 #   /^@(.+)/           -- user_timeline of $1
@@ -20,7 +19,7 @@ config.plugins.channel.set_default(:channel_to_hash_proc,  lambda { |c| c.to_i(3
 module Termtter
   module API
     class << self
-      def call_by_channel(c,*opt)
+      def call_by_channel(c, *opt)
         case c.to_s
         when "main"
           Termtter::API.twitter.home_timeline(*opt)
@@ -49,7 +48,7 @@ now_channel = config.plugins.channel.default_channel
 Termtter::Client.register_command(
   :name => :channel,
   :alias => :c,
-  :help => ['channel,c', 'Show current channel or change channel'],
+  :help => ['channel, c', 'Show current channel or change channel'],
   :exec => lambda {|arg|
     if arg.empty?
       puts "Current channel is #{now_channel}"
@@ -80,7 +79,7 @@ Termtter::Client.register_command(
 colorize_channel_cache = {}
 Termtter::Client.register_hook(
   :name => :add_channel_line, :point => :pre_output,
-  :exec => lambda {|t,e|
+  :exec => lambda {|t, e|
     # Additional to channel
     c = case e[:type]
         when :list, :lists
@@ -110,16 +109,16 @@ Termtter::Client.register_hook(
     # Add channel text to output text
     otc = config.plugins.channel.short_names.key?(c) ?
             config.plugins.channel.short_names[c] : c
-    ccolor = colorize_channel_cache.key?(otc) ? colorize_channel_cache[otc] : config.plugins.stdout.colors[config.plugins.channel.channel_to_hash_proc.call(otc.to_s.gsub(/^\//,"")) % config.plugins.stdout.colors.size]
+    ccolor = colorize_channel_cache.key?(otc) ? colorize_channel_cache[otc] : config.plugins.stdout.colors[config.plugins.channel.channel_to_hash_proc.call(otc.to_s.gsub(/^\//, "")) % config.plugins.stdout.colors.size]
     colorize_channel_cache[otc] = ccolor
     th = "#{config.plugin.channel.colorize ? "<#{ccolor}>":""}#{c.to_s.length > config.plugins.channel.output_length ?
-            otc.to_s[0,config.plugins.channel.output_length] : otc.to_s.rjust(config.plugins.channel.output_length)}#{config.plugin.channe.colorize ? "</#{ccolor}>":""}<90>| </90>"
+            otc.to_s[0, config.plugins.channel.output_length] : otc.to_s.rjust(config.plugins.channel.output_length)}#{config.plugin.channe.colorize ? "</#{ccolor}>":""}<90>| </90>"
     th+t
   }
 )
 
 # Add auto reloads
-config.plugins.channel.auto_reload_channels.each do |c,i|
+config.plugins.channel.auto_reload_channels.each do |c, i|
   since_ids = {}
   Termtter::Client.add_task(:name => "auto_reload_#{c}".to_sym, :interval => i) do
     begin
