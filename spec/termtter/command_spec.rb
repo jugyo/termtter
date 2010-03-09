@@ -26,6 +26,7 @@ module Termtter
       params =  {
         :name            => 'update',
         :aliases         => ['u', 'up'],
+        :author          => 'ujihisa',
         :exec_proc       => lambda {|arg| arg },
         :completion_proc => lambda {|command, arg| %w[complete1 complete2] },
         :help            => ['update,u TEXT', 'test command']
@@ -51,6 +52,10 @@ module Termtter
 
     it 'returns aliases' do
       @command.aliases.should == [:u, :up]
+    end
+
+    it 'returns author' do
+      @command.author.should == 'ujihisa'
     end
 
     it 'returns commands' do

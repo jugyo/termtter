@@ -2,14 +2,15 @@
 
 module Termtter
   class Command
-    attr_accessor :name, :aliases, :exec_proc, :completion_proc, :help
+    attr_accessor :name, :aliases, :author, :exec_proc, :completion_proc, :help
 
     # args
     #   name:            (required) Symbol as command name
     #   aliases:         Array of command alias (ex. ['u', 'up'])
     #   exec_proc:       Proc for procedure of the command. If need the proc must return object for hook.
     #   completion_proc: Proc for input completion. The proc must return Array of candidates (Optional)
-    #   help:            help text for the command (Optional)
+    #   help:            Help text for the command (Optional)
+    #   author:          The author's name (Optional)
     def initialize(args)
       raise ArgumentError, ":name is not given." unless args.has_key?(:name)
       args = args.dup
@@ -18,9 +19,10 @@ module Termtter
       args[:aliases] ||= [args[:alias]].compact
 
       cfg = {
-        :aliases        => [],
-        :exec_proc      => lambda {|arg| },
-        :comletion_proc => lambda {|command, arg| [] }
+        :aliases => [],
+        :exec_proc => lambda {|arg| },
+        :comletion_proc => lambda {|command, arg| [] },
+        :author => 'ujihisa',
       }.merge(args) {|k, v1, v2| v2 ? v2 : v1 }
 
       set cfg
@@ -33,6 +35,7 @@ module Termtter
       self.exec_proc        = cfg[:exec_proc]
       self.completion_proc  = cfg[:completion_proc]
       self.help             = cfg[:help]
+      self.author           = cfg[:author]
     end
 
     # complement :: String -> [String]
@@ -93,6 +96,11 @@ module Termtter
     # alias= :: Symbol -> ()
     def alias=(a)
       self.aliases = [a]
+    end
+
+    # author= :: String -> ()
+    def author=(a)
+      @author = a
     end
 
     def command_words
