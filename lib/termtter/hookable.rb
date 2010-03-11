@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 
+if RUBY_VERSION <= '1.8.6'
+  class String
+    def each_char; split(//); end
+  end
+end
+
 module Termtter
   class HookCanceled < StandardError; end
 
