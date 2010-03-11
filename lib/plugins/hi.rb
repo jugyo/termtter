@@ -7,7 +7,7 @@ module Termtter::Client
           Termtter::API.twitter.update(hi.to_s)
         else
           name = normalize_as_user_name(arg)
-          Termtter::API.twitter.update("#{hi} @#{name}")
+          Termtter::API.twitter.update("@#{name} #{hi}")
         end
       puts "=> " << result.text
     end
