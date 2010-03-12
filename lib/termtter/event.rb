@@ -41,12 +41,13 @@ module Termtter
 
     alias_method :[]=, :set_param
 
-    def  ==(b)
+    def ==(b)
       if b.kind_of? Event
         @name == b.name
       else
         @name == b
       end
     end
+    alias_method :===, :==
   end
 end

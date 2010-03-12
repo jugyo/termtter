@@ -54,6 +54,30 @@ module Termtter
       event.should_not == 33
     end
 
+    it 'compares with symbol using case' do
+      event = Event.new(:foo)
+      matched =
+        case event
+        when :foo
+          :foo_matched
+        else
+          :not_matched
+        end
+      matched.should == :foo_matched
+    end
+
+    it 'compares with symbol using when' do
+      event = Event.new(:foo)
+      matched =
+        case :foo
+        when event
+          :foo_matched
+        else
+          :not_matched
+        end
+      matched.should == :foo_matched
+    end
+
     it 'delegates to ActiveRubytter' do
       event = Event.new(:bar, :a => 'alpha', :b => 'bravo')
       event.a.should == 'alpha'
