@@ -32,6 +32,7 @@ module Termtter
     it 'compares with symbol' do
       event = Event.new(:foo)
       event.should == :foo
+      :foo.should == event
     end
 
     it 'compares with itself' do
@@ -64,10 +65,7 @@ module Termtter
           :not_matched
         end
       matched.should == :foo_matched
-    end
 
-    it 'compares with symbol using when' do
-      event = Event.new(:foo)
       matched =
         case :foo
         when event
