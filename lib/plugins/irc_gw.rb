@@ -90,12 +90,14 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   end
 
   def call(statuses, event)
-    if event == :update_friends_timeline
-      msg_type = PRIVMSG
-    else
-      time_format = Termtter::Client.time_format_for statuses
-      msg_type = NOTICE
-    end
+    msg_type =
+      case event
+      when :update_friends_timeline
+        PRIVMSG
+      else
+        time_format = Termtter::Client.time_format_for statuses
+        NOTICE
+      end
     statuses.each do |s|
       typable_id = Termtter::Client.data_to_typable_id(s.id)
       time = Time.parse(s.created_at).strftime(time_format) if time_format
