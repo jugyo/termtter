@@ -74,6 +74,15 @@ module Termtter
           :not_matched
         end
       matched.should == :foo_matched
+
+      matched =
+        case :bar
+        when event
+          :bar_matched
+        else
+          :not_matched
+        end
+      matched.should == :not_matched
     end
 
     it 'delegates to ActiveRubytter' do
