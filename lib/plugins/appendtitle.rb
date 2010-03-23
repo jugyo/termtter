@@ -24,7 +24,7 @@ module Termtter::Client
       logger.debug "appendtitle: fetching title for #{uri}"
       source = Nokogiri(open(uri).read)
       if source and source.at('title')
-        title = source.at('title').text.gsub(/\n/, '').gsub(/\s+/, ' ')
+        title = source.at('title').text
         cache.set(key, title, config.plugins.appendtitle.cache_expire)
         return title
       end
@@ -43,11 +43,12 @@ module Termtter::Client
       threads = statuses.map do |status|
         Thread.new{
           status.text.gsub!(URI.regexp(['http', 'https'])) {|uri|
-            title = fetch_title(uri)
+            title = fetch_title(uri).gsub(/\n/, '').gsub(/\s+/, ' ')
+            body_for_compare = status.text.gsub(/\n/, '').gsub(/\s+/, ' ')
             if title and not (
-                status.text.include? title or
-                status.text.include? title[0..(title.length/2)] or
-                status.text.include? title[(title.length/2)..-1]) # XXX: heuristic!!!
+                body_for_compare.include? title or
+                body_for_compare.include? title[0..(title.length/2)] or
+                body_for_compare.include? title[(title.length/2)..-1]) # XXX: heuristic!!!
               "#{uri} (#{title})"
             else
               uri
