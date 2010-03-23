@@ -10,22 +10,25 @@ module Termtter::Client
   config.plugins.appendtitle.set_default(:cache_expire, 3600 * 24 * 7)
   config.plugins.appendtitle.set_default(:memcached_server, 'localhost:11211')
 
+  def self.memcache_client
+    @memcache_client ||= MemCache.new(config.plugins.appendtitle.memcached_server)
+  end
+
   def self.fetch_title(uri)
     return unless uri
-    cache = MemCache.new(config.plugins.appendtitle.memcached_server)
     key = %w{ termtter plugins appendtitle title}.push(uri).join('-')
-    if v = cache.get(key)
+    if v = memcache_client.get(key)
       logger.debug "appendtitle: cache hit for #{uri}"
       return v
     end
 
-    cache.set(key, '', config.plugins.appendtitle.cache_expire) # to avoid duplicate fetch
+    memcache_client.set(key, '', config.plugins.appendtitle.cache_expire) # to avoid duplicate fetch
     begin
       logger.debug "appendtitle: fetching title for #{uri}"
       source = Nokogiri(open(uri).read)
       if source and source.at('title')
         title = source.at('title').text
-        cache.set(key, title, config.plugins.appendtitle.cache_expire)
+        memcache_client.set(key, title, config.plugins.appendtitle.cache_expire)
         return title
       end
       nil
