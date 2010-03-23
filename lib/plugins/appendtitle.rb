@@ -46,7 +46,8 @@ module Termtter::Client
       threads = statuses.map do |status|
         Thread.new{
           status.text.gsub!(URI.regexp(['http', 'https'])) {|uri|
-            title = fetch_title(uri).gsub(/\n/, '').gsub(/\s+/, ' ')
+            title = fetch_title(uri)
+            title = title.gsub(/\n/, '').gsub(/\s+/, ' ') if title
             body_for_compare = status.text.gsub(/\n/, '').gsub(/\s+/, ' ')
             if title and not (
                 body_for_compare.include? title or
