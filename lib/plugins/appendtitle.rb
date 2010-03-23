@@ -3,7 +3,8 @@ require 'uri'
 require 'open-uri'
 require 'nokogiri'
 require 'timeout'
-require "memcache"
+require 'memcache'
+require 'digest/sha1'
 
 module Termtter::Client
   config.plugins.appendtitle.set_default(:timeout, 30)
@@ -16,7 +17,7 @@ module Termtter::Client
 
   def self.fetch_title(uri)
     return unless uri
-    key = %w{ termtter plugins appendtitle title}.push(uri).join('-')
+    key = %w{ termtter plugins appendtitle title}.push(Digest::SHA1.hexdigest(uri)).join('-')
     if v = memcache_client.get(key)
       logger.debug "appendtitle: cache hit for #{uri}"
       return v
