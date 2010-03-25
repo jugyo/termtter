@@ -46,6 +46,7 @@ module Termtter::Client
     :exec_proc => lambda do |statuses, event|
       threads = statuses.map do |status|
         Thread.new{
+          begin
           status.text.gsub!(URI.regexp(['http', 'https'])) {|uri|
             title = fetch_title(uri)
             title = title.gsub(/\n/, '').gsub(/\s+/, ' ') if title
@@ -58,7 +59,9 @@ module Termtter::Client
             else
               uri
             end
-          }
+            }
+          rescue
+          end
         }
       end
       begin
