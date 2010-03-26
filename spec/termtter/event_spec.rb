@@ -32,6 +32,7 @@ module Termtter
     it 'compares with symbol' do
       event = Event.new(:foo)
       event.should == :foo
+      :foo.should == event
     end
 
     it 'compares with itself' do
@@ -52,6 +53,36 @@ module Termtter
       event = Event.new(:foo)
       event.should_not == 'hello'
       event.should_not == 33
+    end
+
+    it 'compares with symbol using case' do
+      event = Event.new(:foo)
+      matched =
+        case event
+        when :foo
+          :foo_matched
+        else
+          :not_matched
+        end
+      matched.should == :foo_matched
+
+      matched =
+        case :foo
+        when event
+          :foo_matched
+        else
+          :not_matched
+        end
+      matched.should == :foo_matched
+
+      matched =
+        case :bar
+        when event
+          :bar_matched
+        else
+          :not_matched
+        end
+      matched.should == :not_matched
     end
 
     it 'delegates to ActiveRubytter' do

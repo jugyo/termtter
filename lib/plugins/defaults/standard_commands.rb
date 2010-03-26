@@ -219,7 +219,8 @@ module Termtter::Client
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
-        res = Termtter::API::twitter.follow(user_name)
+        Termtter::API::twitter.follow(user_name)
+        puts 'ok'
       end
     },
     :help => ['follow USER', 'Follow user']
@@ -230,7 +231,8 @@ module Termtter::Client
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
-        res = Termtter::API::twitter.leave(user_name)
+        Termtter::API::twitter.leave(user_name)
+        puts 'ok'
       end
     },
     :help => ['leave USER', 'Leave user']
