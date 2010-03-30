@@ -2,6 +2,8 @@
 
 require File.dirname(__FILE__) + '/../spec_helper'
 require 'open-uri'
+require 'uri'
+require 'net/http'
 
 describe 'plugin tinyurl' do
   before do
@@ -34,8 +36,10 @@ describe 'plugin tinyurl' do
       :name => :update, :alias => :u,
       :exec => lambda do |url|
         url.should match(/(bit\.ly|tinyurl|is\.gd)/)
-        open(url) do |f|
-          f.base_uri.to_s.should match('http://ja.wikipedia.org/wiki/%E6%B7%B1%E7%94%B0%E6%81%AD%E5%AD%90')
+        uri = URI.parse(url)
+        Net::HTTP.new(uri.host,uri.port) do |h|
+            r = h.get(uri.path)
+            r['Location'].should match('http://ja.wikipedia.org/wiki/%E6%B7%B1%E7%94%B0%E6%81%AD%E5%AD%90')
         end
       end
     )
@@ -55,5 +59,20 @@ describe 'plugin tinyurl' do
     )
     Termtter::Client.plug 'tinyurl'
     Termtter::Client.execute('update http://ja.wikipedia.org/wiki/%E3%82%B9%E3%83%88%E3%83%AA%E3%83%BC%E3%83%88%E3%82%B3%E3%83%B3%E3%83%94%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0')
+  end
+
+  it 'truncates url with many parameters' do
+    Termtter::Client.register_command(
+      :name => :update, :alias => :u,
+      :exec => lambda do |url|
+        url.should match(/(bit\.ly|tinyurl|is\.gd)/)
+        open(url) do |f|
+          f.base_uri.to_s.should match('hl=ja&source=hp&q=ujihisa&lr=&aq=f&aqi=g4g-r6&aql=&oq=&gs_rfai=')
+        end
+      end
+    )
+    Termtter::Client.plug 'tinyurl'
+    Termtter::Client.execute('update http://www.google.co.jp/search?hl=ja&source=hp&q=ujihisa&lr=&aq=f&aqi=g4g-r6&aql=&oq=&gs_rfai=')
+
   end
 end
