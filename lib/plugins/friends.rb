@@ -20,8 +20,13 @@ module Termtter::Client
   register_command(
     :name => :friends, :aliases => [:following],
     :exec_proc => lambda {|arg|
+      limit = 20
+      if /\-([\d]+)/ =~ arg
+        limit = $1.to_i
+        arg = arg.gsub(/\-([\d]+)/, '')
+      end
       user_name = arg.empty? ? config.user_name : arg
-      public_storage[:friends] = friends = get_friends(user_name, 2000)
+      friends = get_friends(user_name, limit)
       puts friends.map(&:screen_name).join(' ')
     },
     :help => ["friends,following [USERNAME]", "Show user's friends."]

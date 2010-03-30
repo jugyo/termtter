@@ -118,6 +118,12 @@ module Termtter::Client
   register_command(
     :name => :followers,
     :exec_proc => lambda {|arg|
+      limit = 20
+      if /\-([\d]+)/ =~ arg
+        limit = $1.to_i
+        arg = arg.gsub(/\-([\d]+)/, '')
+      end
+
       user_name = normalize_as_user_name(arg)
       user_name = config.user_name if user_name.empty?
 
@@ -129,8 +135,8 @@ module Termtter::Client
         followers += tmp[:users]
       rescue
         break
-      end until cursor.zero?
-      Termtter::Client.public_storage[:followers] = followers
+      end until cursor.zero? or followers.length >= limit
+      followers = followers.take(limit)
       public_storage[:users] += followers.map(&:screen_name)
       puts followers.map(&:screen_name).join(' ')
     },
