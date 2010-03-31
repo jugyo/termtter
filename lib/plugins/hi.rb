@@ -19,6 +19,7 @@ module Termtter::Client
         downcase
       register_command(
         :name => command_name,
+        :author => 'ujihisa',
         :help => ["#{command_name} [(Optinal) USER]", "Post a greeting message in #{language.to_s.capitalize}"],
         :exec_proc => lambda {|arg|
         result =
