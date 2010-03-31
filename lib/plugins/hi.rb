@@ -11,7 +11,12 @@ module Termtter::Client
       # MEMO:
       #   command_name = greeting.tr('áó', 'ao').scan(/\w+/).join('_').downcase
       # works only on ruby 1.9
-      command_name = greeting.gsub('á', 'a').gsub('ó', 'o').scan(/[a-zA-Z]+/).join('_').downcase
+      command_name = greeting.
+        gsub('á', 'a').
+        gsub('ó', 'o').
+        scan(/[a-zA-Z]+/).
+        join('_').
+        downcase
       register_command(command_name, :help => ["#{command_name} [(Optinal) USER]", "Post a greeting message in #{language.to_s.capitalize}"]) do |arg|
         result =
           if arg.empty?
