@@ -1,0 +1,134 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+# vim: filetype=ruby
+
+self_file =
+  if File.symlink?(__FILE__)
+    require 'pathname'
+    Pathname.new(__FILE__).realpath
+  else
+    __FILE__
+  end
+$:.unshift(File.dirname(self_file) + "/../lib")
+ARGV.unshift '-m' unless ARGV.include?('-m') #monochrome
+
+require 'singleton'
+require 'termtter'
+
+module Termtter
+  class CommandLine
+    include Singleton
+
+    class << self
+      def start
+        instance.start
+      end
+
+      def stop
+        instance.stop
+      end
+    end
+
+    def start
+      start_input_thread
+    end
+
+    def stop
+      @input_thread.kill if @input_thread
+    end
+
+    def call(command_text)
+      # Example:
+      # t.register_hook(:post_all, :point => :prepare_command) do |s|
+      #   "update #{s}"
+      # end
+      Client.get_hooks('prepare_command').each {|hook|
+        command_text = hook.call(command_text)
+      }
+      Client.execute(command_text)
+    rescue CommandNotFound => e
+      hooks = Client.get_hooks('command_not_found')
+      raise e if hooks.empty?
+      hooks.each {|hook|
+        hook.call(command_text)
+      }
+    rescue TimeoutError
+      puts TermColor.parse("<red>Time out :(</red>")
+    end
+
+    def prompt
+      prompt_text = config.prompt
+      Client.get_hooks('prepare_prompt').each {|hook|
+        prompt_text = hook.call(prompt_text)
+      }
+      prompt_text
+    end
+
+    private
+
+    def start_input_thread
+      @input_thread = Thread.new do
+        buf = ""
+        while buf = gets.chomp
+          begin
+            call(buf)
+          rescue Exception => e
+            Client.handle_error(e)
+          end
+        end
+      end
+      @input_thread.join
+    end
+
+    def do_completion(input)
+    end
+  end
+
+  Client.register_hook(:initialize_command_line, :point => :init_command_line) do
+    CommandLine.start
+  end
+
+  Client.register_hook(:finalize_command_line, :point => :exit) do
+    CommandLine.stop
+  end
+end
+
+module Termtter::Client
+  class << self
+    attr_reader :task_manager
+  end
+end
+
+
+config.system.disable_plugins ||= []
+config.system.disable_plugins  << :command_line
+
+config.__freeze__(:user_name) unless config.user_name.empty?
+Termtter::Client.parse_options
+Termtter::Client.load_config
+Termtter::Client.setup_task_manager
+
+Termtter::Client.load_plugins
+Termtter::Client.eval_init_block
+config.__unfreeze__(:user_name)
+Termtter::API.setup
+
+config.system.eval_scripts.each do |script|
+  begin
+    eval script
+  rescue Exception => e
+    Termtter::Client.handle_error(e)
+  end
+end
+
+config.system.run_commands.each {|cmd| execute(cmd) }
+
+unless config.system.cmd_mode
+  Termtter::Client.task_manager.run()
+  Termtter::Client.call_hooks(:initialize)
+  Termtter::Client.add_task(:name => :call_hooks_after_launched, :after => 1) do
+    Termtter::Client.call_hooks(:launched)
+  end
+  Termtter::Client.call_hooks(:init_command_line)
+end
+
