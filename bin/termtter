@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
+# vim: filetype=ruby
 
 self_file =
   if File.symlink?(__FILE__)
