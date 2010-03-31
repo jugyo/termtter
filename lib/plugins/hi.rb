@@ -3,7 +3,7 @@
 module Termtter::Client
   {
     :english => ['hi', 'hey', 'hello', 'How are you?', "How's going?"],
-    :spanish => ['hola', '¡Hola!', '¿Cómo estás?'],
+    :spanish => ['¡Hola!', '¿Cómo estás?'],
     :german => ['Guten Tag!'],
   }.each do |language, greetings|
     greetings.each do |greeting|
