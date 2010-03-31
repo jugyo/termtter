@@ -17,7 +17,10 @@ module Termtter::Client
         scan(/[a-zA-Z]+/).
         join('_').
         downcase
-      register_command(command_name, :help => ["#{command_name} [(Optinal) USER]", "Post a greeting message in #{language.to_s.capitalize}"]) do |arg|
+      register_command(
+        :name => command_name,
+        :help => ["#{command_name} [(Optinal) USER]", "Post a greeting message in #{language.to_s.capitalize}"],
+        :exec_proc => lambda {|arg|
         result =
           if arg.empty?
             Termtter::API.twitter.update(greeting)
@@ -26,7 +29,7 @@ module Termtter::Client
             Termtter::API.twitter.update("@#{name} #{greeting}")
           end
         puts "=> " << result.text
-      end
+        })
     end
   end
 end
