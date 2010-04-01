@@ -6,7 +6,7 @@ config.set_default(:timeout, 5)
 config.set_default(:retry, 1)
 config.set_default(:splash, <<SPLASH)
 
-   <cyan>&lt;(@)//_</cyan>  .  .      <on_green> Termtter <underline>#{Termtter::VERSION}</underline> </on_green>
+   <cyan>&lt;(@)//_</cyan>  .  .      <on_green> #{(Time.now.year == 2010 && Time.now.month == 4 && Time.now.day == 1)?'Centertter':'Termtter'} <underline>#{Termtter::VERSION}</underline> </on_green>
       <cyan>\\\\</cyan>           <on_green> http://termtter.org/ </on_green>
 
 SPLASH
