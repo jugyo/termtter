@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 module AAMaker
+  # view-source:http://amachang.sakura.ne.jp/misc/aamaker/
   def self.random(n)
     rand(n).to_i
   end
