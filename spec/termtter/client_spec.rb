@@ -471,14 +471,14 @@ module Termtter
     it 'can confirm before update (yes default)' do
       message = 'hello'
       Readline.should_receive(:readline).
-        with("\"#{message}".strip + "\" [Y/n] ", false)
+        with("[Y/n] ", false)
       Client.confirm(message)
     end
 
     it 'can confirm before update (no default)' do
       message = 'hello'
       Readline.should_receive(:readline).
-        with("\"#{message}".strip + "\" [N/y] ", false)
+        with("[N/y] ", false)
       Client.confirm(message, false)
     end
 
