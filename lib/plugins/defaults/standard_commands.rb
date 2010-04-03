@@ -115,32 +115,62 @@ module Termtter::Client
     )
   end
 
+  def self.get_friends(user_name, max)
+    users = []
+    cursor = -1
+    begin
+      tmp = Termtter::API::twitter.friends(user_name, :cursor => cursor)
+      cursor = tmp[:next_cursor]
+      users += tmp[:users]
+      puts "#{users.length}/#{max}"
+    rescue
+      break
+    end until (cursor.zero? or users.length > max)
+    users.take(max)
+  end
+
+  def self.get_followers(user_name, max)
+    users = []
+    cursor = -1
+    begin
+      tmp = Termtter::API::twitter.followers(user_name, :cursor => cursor)
+      cursor = tmp[:next_cursor]
+      users += tmp[:users]
+      puts "#{users.length}/#{max}"
+    rescue
+      break
+    end until (cursor.zero? or users.length > max)
+    users.take(max)
+  end
+
   register_command(
-    :name => :followers,
+    :name => :friends, :aliases => [:following],
     :exec_proc => lambda {|arg|
       limit = 20
       if /\-([\d]+)/ =~ arg
         limit = $1.to_i
         arg = arg.gsub(/\-([\d]+)/, '')
       end
+      user_name = arg.empty? ? config.user_name : arg
+      friends = get_friends(user_name, limit)
+      puts friends.map(&:screen_name).join(' ')
+    },
+    :help => ["friends,following [USERNAME]", "Show user's friends."]
+  )
 
-      user_name = normalize_as_user_name(arg)
-      user_name = config.user_name if user_name.empty?
-
-      followers = []
-      cursor = -1
-      begin
-        tmp = Termtter::API.twitter.followers(user_name, :cursor => cursor)
-        cursor = tmp[:next_cursor]
-        followers += tmp[:users]
-      rescue
-        break
-      end until cursor.zero? or followers.length >= limit
-      followers = followers.take(limit)
-      public_storage[:users] += followers.map(&:screen_name)
+  register_command(
+    :name => :followers, :aliases => [:following],
+    :exec_proc => lambda {|arg|
+      limit = 20
+      if /\-([\d]+)/ =~ arg
+        limit = $1.to_i
+        arg = arg.gsub(/\-([\d]+)/, '')
+      end
+      user_name = arg.empty? ? config.user_name : arg
+      followers = get_followers(user_name, limit)
       puts followers.map(&:screen_name).join(' ')
     },
-    :help => ["followers", "Show followers"]
+    :help => ["followers [USERNAME]", "Show user's followers."]
   )
 
   class SearchEvent < Termtter::Event; attr_reader :query; def initialize(query); @query = query end; end
