@@ -32,7 +32,7 @@ module Termtter::Client
       doc = Nokogiri(open(url).read)
       doc.css('div.entry').map do |entry|
         id     = entry['id'].gsub(/\Astatus_/, '')
-        text   = entry.css('span.status_text').first.content
+        text   = CGI.unescapeHTML(entry.css('span.status_text').first.content)
         amount = entry.css('div.info span.favotters').first.content
         amount = amount.match(/(\d+)/)[1].to_i
         users  = entry.css('div.info span.favotters img').map {|u| u['title'] }
