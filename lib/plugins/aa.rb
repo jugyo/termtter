@@ -38,5 +38,7 @@ Termtter::Client.register_command(
     name = Termtter::Client.normalize_as_user_name(arg)
     command = name.length > 0 ? "u @#{name} #{AAMaker.make}" : "u #{AAMaker.make}"
     Termtter::Client.execute command
-  }
+  },
+  :help => ["aa [(Optinal) USER]", "Post a AA"]
 )
+
