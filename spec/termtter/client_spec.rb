@@ -388,7 +388,7 @@ module Termtter
     it 'can output status (good)' do
       statuses = mock('statuses', :null_object => true)
       statuses.stub(:empty? => false, :nil? => false)
-      event = :event
+      event = Termtter::Event.new(:event)
       Client.should_receive(:call_hooks).with(:pre_filter, statuses, event)
       Client.should_receive(:apply_filters_for_hook).exactly(2).times.
         with(an_instance_of(Symbol), anything, event).
