@@ -151,11 +151,12 @@ module Termtter::Client
         limit = $1.to_i
         arg = arg.gsub(/\-([\d]+)/, '')
       end
+      arg.strip!
       user_name = arg.empty? ? config.user_name : arg
       friends = get_friends(user_name, limit)
       puts friends.map(&:screen_name).join(' ')
     },
-    :help => ["friends,following [USERNAME]", "Show user's friends."]
+    :help => ["friends,following [USERNAME] [-COUNT]", "Show user's friends."]
   )
 
   register_command(
@@ -166,6 +167,7 @@ module Termtter::Client
         limit = $1.to_i
         arg = arg.gsub(/\-([\d]+)/, '')
       end
+      arg.strip!
       user_name = arg.empty? ? config.user_name : arg
       followers = get_followers(user_name, limit)
       puts followers.map(&:screen_name).join(' ')
