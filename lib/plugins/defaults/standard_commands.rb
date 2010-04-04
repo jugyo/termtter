@@ -10,7 +10,7 @@ config.plugins.standard.set_default(
 config.set_default(:easy_reply, false)
 config.plugins.standard.set_default(
   :one_line_profile_format,
-  '<%= user.screen_name %>: <%= padding %><%= (user.description || "").gsub(/\r?\n/, "") %>')
+  '<90>[<%=user_id%>]</90> <%= user.screen_name %>: <%= padding %><%= (user.description || "").gsub(/\r?\n/, "") %>')
 
 module Termtter::Client
   register_command(
@@ -160,6 +160,7 @@ module Termtter::Client
       longest = users.map{ |u| u.screen_name.length}.max
       users.reverse.each{|user|
         padding = ' ' * (longest - user.screen_name.length)
+        user_id = Termtter::Client.data_to_typable_id(user.id) rescue ''
         erbed_text = ERB.new(config.plugins.standard.one_line_profile_format).result(binding)
         puts TermColor.unescape(TermColor.parse(erbed_text))
       }
@@ -180,6 +181,7 @@ module Termtter::Client
       users = get_followers(user_name, limit)
       longest = users.map{ |u| u.screen_name.length}.max
       users.reverse.each{|user|
+        user_id = Termtter::Client.data_to_typable_id(user.id) rescue ''
         padding = ' ' * (longest - user.screen_name.length)
         erbed_text = ERB.new(config.plugins.standard.one_line_profile_format).result(binding)
         puts TermColor.unescape(TermColor.parse(erbed_text))
