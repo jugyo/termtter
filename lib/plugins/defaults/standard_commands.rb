@@ -134,7 +134,7 @@ module Termtter::Client
       tmp = Termtter::API::twitter.__send__(type, user_name, :cursor => cursor)
       cursor = tmp[:next_cursor]
       users += tmp[:users]
-      puts "#{users.length}/#{max}"
+      puts "#{users.length}/#{max}" if max > 100
     rescue
       break
     end until (cursor.zero? or users.length > max)
