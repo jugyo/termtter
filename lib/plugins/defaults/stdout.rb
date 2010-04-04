@@ -115,6 +115,11 @@ module Termtter
       output = format_column(output, justs)
 
       output.map! do |t|
+        t = Client.get_hooks(:pre_coloring).inject(t) {|result, hook|
+          Termtter::Client.logger.debug "stdout status_line: call hook :pre_coloring #{hook.inspect}"
+          hook.call(result, event)
+        }
+        t = TermColor.unescape(TermColor.parse(t))
         t = Client.get_hooks(:pre_output).inject(t) {|result, hook|
           Termtter::Client.logger.debug "stdout status_line: call hook :pre_output #{hook.inspect}"
           hook.call(result, event)
@@ -196,13 +201,7 @@ module Termtter
 
       timeline_formats = config.plugins.stdout.timeline_format.split(/\|\|[><]/)
       erbed_texts = timeline_formats.map do |timeline_format|
-        t = ERB.new(timeline_format).result(binding)
-        t = Client.get_hooks(:pre_coloring).inject(t) {|result, hook|
-          Termtter::Client.logger.debug "stdout status_line: call hook :pre_coloring #{hook.inspect}"
-          hook.call(result, event)
-        }
-        t = TermColor.parse(t)
-        TermColor.unescape(t)
+        ERB.new(timeline_format).result(binding)
       end
 
       if indent > 0
