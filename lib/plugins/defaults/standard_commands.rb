@@ -278,6 +278,30 @@ module Termtter::Client
     :help => ['leave USER', 'Leave user']
   )
 
+  register_command(
+    :name => :block, :aliases => [],
+    :exec_proc => lambda {|args|
+      args.split(' ').each do |arg|
+        user_name = normalize_as_user_name(arg)
+        Termtter::API::twitter.block(user_name)
+        puts 'ok'
+      end
+    },
+    :help => ['block USER', 'Block user']
+  )
+
+  register_command(
+    :name => :unblock, :aliases => [],
+    :exec_proc => lambda {|args|
+      args.split(' ').each do |arg|
+        user_name = normalize_as_user_name(arg)
+        Termtter::API::twitter.unblock(user_name)
+        puts 'ok'
+      end
+    },
+    :help => ['unblock USER', 'Unblock user']
+  )
+
   help = ['favorite_list USERNAME', 'show user favorites']
   register_command(:favorites, :alias => :favlist, :help => help) do |arg|
     output Termtter::API.twitter.favorites(arg), :user_timeline, :type => :favorite
