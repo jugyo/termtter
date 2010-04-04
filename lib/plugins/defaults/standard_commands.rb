@@ -119,24 +119,19 @@ module Termtter::Client
   end
 
   def self.get_friends(user_name, max)
-    users = []
-    cursor = -1
-    begin
-      tmp = Termtter::API::twitter.friends(user_name, :cursor => cursor)
-      cursor = tmp[:next_cursor]
-      users += tmp[:users]
-      puts "#{users.length}/#{max}"
-    rescue
-      break
-    end until (cursor.zero? or users.length > max)
-    users.take(max)
+    self.get_friends_or_followers(:followers, user_name, max)
   end
 
   def self.get_followers(user_name, max)
+    self.get_friends_or_followers(:followers, user_name, max)
+  end
+
+  def self.get_friends_or_followers(type, user_name, max)
+    raise "type should :friends or :followers" unless [:friends, :followers].include? type
     users = []
     cursor = -1
     begin
-      tmp = Termtter::API::twitter.followers(user_name, :cursor => cursor)
+      tmp = Termtter::API::twitter.__send__(type, user_name, :cursor => cursor)
       cursor = tmp[:next_cursor]
       users += tmp[:users]
       puts "#{users.length}/#{max}"
@@ -149,22 +144,7 @@ module Termtter::Client
   register_command(
     :name => :friends, :aliases => [:following],
     :exec_proc => lambda {|arg|
-      limit = 20
-      if /\-([\d]+)/ =~ arg
-        limit = $1.to_i
-        arg = arg.gsub(/\-([\d]+)/, '')
-      end
-      arg.strip!
-      user_name = arg.empty? ? config.user_name : arg
-      users = get_friends(user_name, limit)
-      longest = users.map{ |u| u.screen_name.length}.max
-      users.reverse.each{|user|
-        padding = ' ' * (longest - user.screen_name.length)
-        user_id = Termtter::Client.data_to_typable_id(user.id) rescue ''
-        color = user.following ? 'BLUE' : 'RED'
-        erbed_text = ERB.new(config.plugins.standard.one_line_profile_format).result(binding)
-        puts TermColor.unescape(TermColor.parse(erbed_text))
-      }
+      friends_or_followers_command(:friends, arg)
     },
     :help => ["friends [USERNAME] [-COUNT]", "Show user's friends."]
   )
@@ -172,25 +152,30 @@ module Termtter::Client
   register_command(
     :name => :followers, :aliases => [:following],
     :exec_proc => lambda {|arg|
-      limit = 20
-      if /\-([\d]+)/ =~ arg
-        limit = $1.to_i
-        arg = arg.gsub(/\-([\d]+)/, '')
-      end
-      arg.strip!
-      user_name = arg.empty? ? config.user_name : arg
-      users = get_followers(user_name, limit)
-      longest = users.map{ |u| u.screen_name.length}.max
-      users.reverse.each{|user|
-        user_id = Termtter::Client.data_to_typable_id(user.id) rescue ''
-        color = user.following ? 'BLUE' : 'RED'
-        padding = ' ' * (longest - user.screen_name.length)
-        erbed_text = ERB.new(config.plugins.standard.one_line_profile_format).result(binding)
-        puts TermColor.unescape(TermColor.parse(erbed_text))
-      }
+      friends_or_followers_command(:followers, arg)
     },
     :help => ["followers [USERNAME]", "Show user's followers."]
   )
+
+  def self.friends_or_followers_command(type, arg)
+    raise "type should :friends or :followers" unless [:friends, :followers].include? type
+    limit = 20
+    if /\-([\d]+)/ =~ arg
+      limit = $1.to_i
+      arg = arg.gsub(/\-([\d]+)/, '')
+    end
+    arg.strip!
+    user_name = arg.empty? ? config.user_name : arg
+    users = get_friends_or_followers(type, user_name, limit)
+    longest = users.map{ |u| u.screen_name.length}.max
+    users.reverse.each{|user|
+      padding = ' ' * (longest - user.screen_name.length)
+      user_id = Termtter::Client.data_to_typable_id(user.id) rescue ''
+      color = user.following ? 'BLUE' : 'RED'
+      erbed_text = ERB.new(config.plugins.standard.one_line_profile_format).result(binding)
+      puts TermColor.unescape(TermColor.parse(erbed_text))
+    }
+  end
 
   class SearchEvent < Termtter::Event; attr_reader :query; def initialize(query); @query = query end; end
   public_storage[:search_keywords] = Set.new
