@@ -8,6 +8,9 @@ config.plugins.standard.set_default(
  '<<%=remaining_color%>><%=limit.remaining_hits%></<%=remaining_color%>>/<%=limit.hourly_limit%> until <%=Time.parse(limit.reset_time).getlocal%> (<%=remaining_time%> remaining)')
 
 config.set_default(:easy_reply, false)
+config.plugins.standard.set_default(
+  :one_line_profile_format,
+  '<%= user.screen_name %>: <%= padding %><%= (user.description || "").gsub(/\r?\n/, "") %>')
 
 module Termtter::Client
   register_command(
@@ -153,8 +156,13 @@ module Termtter::Client
       end
       arg.strip!
       user_name = arg.empty? ? config.user_name : arg
-      friends = get_friends(user_name, limit)
-      puts friends.map(&:screen_name).join(' ')
+      users = get_friends(user_name, limit)
+      longest = users.map{ |u| u.screen_name.length}.max
+      users.reverse.each{|user|
+        padding = ' ' * (longest - user.screen_name.length)
+        erbed_text = ERB.new(config.plugins.standard.one_line_profile_format).result(binding)
+        puts TermColor.unescape(TermColor.parse(erbed_text))
+      }
     },
     :help => ["friends,following [USERNAME] [-COUNT]", "Show user's friends."]
   )
@@ -169,8 +177,13 @@ module Termtter::Client
       end
       arg.strip!
       user_name = arg.empty? ? config.user_name : arg
-      followers = get_followers(user_name, limit)
-      puts followers.map(&:screen_name).join(' ')
+      users = get_followers(user_name, limit)
+      longest = users.map{ |u| u.screen_name.length}.max
+      users.reverse.each{|user|
+        padding = ' ' * (longest - user.screen_name.length)
+        erbed_text = ERB.new(config.plugins.standard.one_line_profile_format).result(binding)
+        puts TermColor.unescape(TermColor.parse(erbed_text))
+      }
     },
     :help => ["followers [USERNAME]", "Show user's followers."]
   )
