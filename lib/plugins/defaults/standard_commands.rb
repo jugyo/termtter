@@ -166,7 +166,7 @@ module Termtter::Client
         puts TermColor.unescape(TermColor.parse(erbed_text))
       }
     },
-    :help => ["friends,following [USERNAME] [-COUNT]", "Show user's friends."]
+    :help => ["friends [USERNAME] [-COUNT]", "Show user's friends."]
   )
 
   register_command(
