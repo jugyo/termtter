@@ -25,8 +25,10 @@ Termtter::Client.register_hook(
           end
           if res.code == '200'
             result = res.body
-            if result =~ /"shortUrl": "(http.*)"/
+            if /"shortUrl": "(http.*)"/ =~ result
               result = $1
+            elsif /"statusCode": "ERROR"/ =~ result
+              next
             end
             break
           end
