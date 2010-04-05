@@ -6,7 +6,7 @@ config.plugins.tinyurl.set_default(:shorturl_makers, [
     { :host => "is.gd", :format => '/api.php?longurl=%s' },
     { :host => "tinyurl.com", :format => '/api-create.php?url=%s' },
   ])
-config.plugins.tinyurl.set_default(:tinyurl_hook_commands, [:update, :reply])
+config.plugins.tinyurl.set_default(:tinyurl_hook_commands, [:update, :reply, :retweet])
 config.plugins.tinyurl.set_default(:uri_regexp, URI.regexp(%w(http https ftp)))
 
 Termtter::Client.register_hook(
