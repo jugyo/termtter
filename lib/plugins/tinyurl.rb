@@ -15,27 +15,26 @@ Termtter::Client.register_hook(
     "modify_arg_for_#{cmd.to_s}".to_sym
   },
   :exec_proc => lambda {|cmd, arg|
-    arg.split(' ').map {|component|
-      result = component
-      if component =~ config.plugins.tinyurl.uri_regexp
-        url_enc = URI.escape(component, /[^a-zA-Z0-9.:]/)
-        config.plugins.tinyurl.shorturl_makers.each do |site|
-          res = Termtter::HTTPpool.start(site[:host]) do |h|
-            h.get(site[:format] % url_enc)
+    arg.gsub(/#{config.plugins.tinyurl.uri_regexp}\S*/) do |url|
+      url_enc = URI.escape(url, /[^a-zA-Z0-9.:]/)
+      result = url
+      config.plugins.tinyurl.shorturl_makers.each do |site|
+        res = Termtter::HTTPpool.start(site[:host]) do |h|
+          h.get(site[:format] % url_enc)
+        end
+        if res.code == '200'
+          result = res.body
+          if /"shortUrl": "(http.*)"/ =~ result
+            result = $1
+          elsif /"statusCode": "ERROR"/ =~ result
+            result = url
+            next
           end
-          if res.code == '200'
-            result = res.body
-            if /"shortUrl": "(http.*)"/ =~ result
-              result = $1
-            elsif /"statusCode": "ERROR"/ =~ result
-              next
-            end
-            break
-          end
+          break
         end
       end
       result
-    }.join(' ')
+    end
   }
 )
 
