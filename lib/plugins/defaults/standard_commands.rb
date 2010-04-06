@@ -150,7 +150,7 @@ module Termtter::Client
   )
 
   register_command(
-    :name => :followers, :aliases => [:following],
+    :name => :followers,
     :exec_proc => lambda {|arg|
       friends_or_followers_command(:followers, arg)
     },
