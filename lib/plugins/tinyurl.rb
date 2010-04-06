@@ -6,6 +6,12 @@ config.plugins.tinyurl.set_default(:shorturl_makers, [
     { :host => "is.gd", :format => '/api.php?longurl=%s' },
     { :host => "tinyurl.com", :format => '/api-create.php?url=%s' },
   ])
+config.plugins.tinyurl.set_default(:ignore_regexp, %r{
+    \Ahttp://bit\.ly/ | \Ahttp://tinyurl\.com/ | \Ahttp://is\.gd/
+  | \Ahttp://ff\.im/ | \Ahttp://j\.mp/ | \Ahttp://goo\.gl/
+  | \Ahttp://tr\.im/ | \Ahttp://short\.to/ | \Ahttp://ow\.ly/
+  | \Ahttp://u\.nu/ | \Ahttp://twurl\.nl/
+}x )
 config.plugins.tinyurl.set_default(:tinyurl_hook_commands, [:update, :reply, :retweet])
 config.plugins.tinyurl.set_default(:uri_regexp, URI.regexp(%w(http https ftp)))
 
@@ -29,6 +35,7 @@ module Termtter::Client
 
   # returns nil if not shorten
   def self.shorten_url(url, host, format)
+    return url if config.plugins.tinyurl.ignore_regexp =~ url # already shorten
     url_enc = URI.escape(url, /[^a-zA-Z0-9.:]/)
     res = Termtter::HTTPpool.start(host) do |h|
       h.get(format % url_enc)
