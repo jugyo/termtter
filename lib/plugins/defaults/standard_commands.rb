@@ -10,7 +10,7 @@ config.plugins.standard.set_default(
 config.set_default(:easy_reply, false)
 config.plugins.standard.set_default(
   :one_line_profile_format,
-  '<90>[<%=user_id%>]</90> <<%=color%>><%= user.screen_name %>: <%= padding %><%= (user.description || "").gsub(/\r?\n/, "") %></<%=color%>>')
+  '<90>[<%=user_id%>]</90> <%= mark %> <<%=color%>><%= user.screen_name %>: <%= padding %><%= (user.description || "").gsub(/\r?\n/, "") %></<%=color%>>')
 
 module Termtter::Client
   register_command(
@@ -172,6 +172,7 @@ module Termtter::Client
       padding = ' ' * (longest - user.screen_name.length)
       user_id = Termtter::Client.data_to_typable_id(user.id) rescue ''
       color = user.following ? 'BLACK' : 'RED'
+      mark  = user.following ? '♥' : '✂'
       erbed_text = ERB.new(config.plugins.standard.one_line_profile_format).result(binding)
       puts TermColor.unescape(TermColor.parse(erbed_text))
     }
