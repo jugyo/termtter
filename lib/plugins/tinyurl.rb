@@ -13,7 +13,8 @@ config.plugins.tinyurl.set_default(:ignore_regexp, %r{
   | \Ahttp://u\.nu/ | \Ahttp://twurl\.nl/
 }x )
 config.plugins.tinyurl.set_default(:tinyurl_hook_commands, [:update, :reply, :retweet])
-config.plugins.tinyurl.set_default(:uri_regexp, URI.regexp(%w(http https ftp)))
+config.plugins.tinyurl.set_default(:uri_regexp,
+                                   /#{URI.regexp(%w(http https ftp))}\S*/ )
 
 module Termtter::Client
   register_hook(
@@ -22,7 +23,7 @@ module Termtter::Client
       "modify_arg_for_#{cmd.to_s}".to_sym
     },
     :exec_proc => lambda {|cmd, arg|
-      arg.gsub(/#{config.plugins.tinyurl.uri_regexp}\S*/) do |url|
+      arg.gsub(config.plugins.tinyurl.uri_regexp) do |url|
         result = nil
         config.plugins.tinyurl.shorturl_makers.each do |site|
           result = shorten_url(url, site[:host], site[:format])
