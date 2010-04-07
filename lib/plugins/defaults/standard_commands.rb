@@ -260,20 +260,20 @@ module Termtter::Client
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
-        Termtter::API::twitter.follow(user_name)
-        puts 'ok'
+        user = Termtter::API::twitter.follow(user_name)
+        puts "followed #{user.name}"
       end
     },
     :help => ['follow USER', 'Follow user']
   )
 
   register_command(
-    :name => :leave, :aliases => [],
+    :name => :leave, :aliases => [:remove],
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
-        Termtter::API::twitter.leave(user_name)
-        puts 'ok'
+        user = Termtter::API::twitter.leave(user_name)
+        puts "leaved #{user.name}"
       end
     },
     :help => ['leave USER', 'Leave user']
@@ -284,8 +284,8 @@ module Termtter::Client
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
-        Termtter::API::twitter.block(user_name)
-        puts 'ok'
+        user = Termtter::API::twitter.block(user_name)
+        puts "blocked #{user.name}"
       end
     },
     :help => ['block USER', 'Block user']
@@ -296,8 +296,8 @@ module Termtter::Client
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
-        Termtter::API::twitter.unblock(user_name)
-        puts 'ok'
+        user = Termtter::API::twitter.unblock(user_name)
+        puts "unblocked #{user.name}"
       end
     },
     :help => ['unblock USER', 'Unblock user']
