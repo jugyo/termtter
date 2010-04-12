@@ -75,4 +75,19 @@ describe 'plugin tinyurl' do
     Termtter::Client.execute('update http://www.google.co.jp/search?hl=ja&source=hp&q=ujihisa&lr=&aq=f&aqi=g4g-r6&aql=&oq=&gs_rfai=')
 
   end
+
+  it 'truncates url with a parameter which contains multibyte-characters' do
+    Termtter::Client.register_command(
+      :name => :update, :alias => :u,
+      :exec => lambda do |url|
+        url.should match(/(bit\.ly|tinyurl|is\.gd)/)
+        p url
+        open(url) do |f|
+          f.base_uri.to_s.should match('?q=堀北真希')
+        end
+      end
+    )
+    Termtter::Client.plug 'tinyurl'
+    Termtter::Client.execute('update http://maps.google.co.jp/maps/place?q=北24条駅')
+  end
 end
