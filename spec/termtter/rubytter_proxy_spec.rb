@@ -68,7 +68,7 @@ module Termtter
     it 'should store cache when call "store_status_cache"' do
       user = "user"
       @twitter.should_receive(:store_user_cache).with(user)
-      @twitter.store_status_cache(Rubytter.structize({:user => user}))
+      @twitter.store_status_cache(ActiveRubytter.new({:user => user}))
     end
 
     it 'should not call rubytter if cache exists' do

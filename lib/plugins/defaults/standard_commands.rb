@@ -8,6 +8,9 @@ config.plugins.standard.set_default(
  '<<%=remaining_color%>><%=limit.remaining_hits%></<%=remaining_color%>>/<%=limit.hourly_limit%> until <%=Time.parse(limit.reset_time).getlocal%> (<%=remaining_time%> remaining)')
 
 config.set_default(:easy_reply, false)
+config.plugins.standard.set_default(
+  :one_line_profile_format,
+  '<90>[<%=user_id%>]</90> <%= mark %> <<%=color%>><%= user.screen_name %>: <%= padding %><%= (user.description || "").gsub(/\r?\n/, "") %></<%=color%>>')
 
 module Termtter::Client
   register_command(
@@ -115,27 +118,65 @@ module Termtter::Client
     )
   end
 
+  def self.get_friends(user_name, max)
+    self.get_friends_or_followers(:followers, user_name, max)
+  end
+
+  def self.get_followers(user_name, max)
+    self.get_friends_or_followers(:followers, user_name, max)
+  end
+
+  def self.get_friends_or_followers(type, user_name, max)
+    raise "type should :friends or :followers" unless [:friends, :followers].include? type
+    users = []
+    cursor = -1
+    begin
+      tmp = Termtter::API::twitter.__send__(type, user_name, :cursor => cursor)
+      cursor = tmp[:next_cursor]
+      users += tmp[:users]
+      puts "#{users.length}/#{max}" if max > 100
+    rescue
+      break
+    end until (cursor.zero? or users.length > max)
+    users.take(max)
+  end
+
+  register_command(
+    :name => :friends, :aliases => [:following],
+    :exec_proc => lambda {|arg|
+      friends_or_followers_command(:friends, arg)
+    },
+    :help => ["friends [USERNAME] [-COUNT]", "Show user's friends."]
+  )
+
   register_command(
     :name => :followers,
     :exec_proc => lambda {|arg|
-      user_name = normalize_as_user_name(arg)
-      user_name = config.user_name if user_name.empty?
-
-      followers = []
-      cursor = -1
-      begin
-        tmp = Termtter::API.twitter.followers(user_name, :cursor => cursor)
-        cursor = tmp[:next_cursor]
-        followers += tmp[:users]
-      rescue
-        break
-      end until cursor.zero?
-      Termtter::Client.public_storage[:followers] = followers
-      public_storage[:users] += followers.map(&:screen_name)
-      puts followers.map(&:screen_name).join(' ')
+      friends_or_followers_command(:followers, arg)
     },
-    :help => ["followers", "Show followers"]
+    :help => ["followers [USERNAME]", "Show user's followers."]
   )
+
+  def self.friends_or_followers_command(type, arg)
+    raise "type should :friends or :followers" unless [:friends, :followers].include? type
+    limit = 20
+    if /\-([\d]+)/ =~ arg
+      limit = $1.to_i
+      arg = arg.gsub(/\-([\d]+)/, '')
+    end
+    arg.strip!
+    user_name = arg.empty? ? config.user_name : arg
+    users = get_friends_or_followers(type, user_name, limit)
+    longest = users.map{ |u| u.screen_name.length}.max
+    users.reverse.each{|user|
+      padding = ' ' * (longest - user.screen_name.length)
+      user_id = Termtter::Client.data_to_typable_id(user.id) rescue ''
+      color = user.following ? 'BLACK' : 'RED'
+      mark  = user.following ? '♥' : '✂'
+      erbed_text = ERB.new(config.plugins.standard.one_line_profile_format).result(binding)
+      puts TermColor.unescape(TermColor.parse(erbed_text))
+    }
+  end
 
   class SearchEvent < Termtter::Event; attr_reader :query; def initialize(query); @query = query end; end
   public_storage[:search_keywords] = Set.new
@@ -219,23 +260,47 @@ module Termtter::Client
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
-        Termtter::API::twitter.follow(user_name)
-        puts 'ok'
+        user = Termtter::API::twitter.follow(user_name)
+        puts "followed #{user.name}"
       end
     },
     :help => ['follow USER', 'Follow user']
   )
 
   register_command(
-    :name => :leave, :aliases => [],
+    :name => :leave, :aliases => [:remove],
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
-        Termtter::API::twitter.leave(user_name)
-        puts 'ok'
+        user = Termtter::API::twitter.leave(user_name)
+        puts "leaved #{user.name}"
       end
     },
     :help => ['leave USER', 'Leave user']
+  )
+
+  register_command(
+    :name => :block, :aliases => [],
+    :exec_proc => lambda {|args|
+      args.split(' ').each do |arg|
+        user_name = normalize_as_user_name(arg)
+        user = Termtter::API::twitter.block(user_name)
+        puts "blocked #{user.name}"
+      end
+    },
+    :help => ['block USER', 'Block user']
+  )
+
+  register_command(
+    :name => :unblock, :aliases => [],
+    :exec_proc => lambda {|args|
+      args.split(' ').each do |arg|
+        user_name = normalize_as_user_name(arg)
+        user = Termtter::API::twitter.unblock(user_name)
+        puts "unblocked #{user.name}"
+      end
+    },
+    :help => ['unblock USER', 'Unblock user']
   )
 
   help = ['favorite_list USERNAME', 'show user favorites']

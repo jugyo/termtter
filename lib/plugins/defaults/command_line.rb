@@ -112,6 +112,8 @@ module Termtter
     end
 
     def trap_setting()
+      return if /mswin(?!ce)|mingw|bccwin/ =~ RUBY_PLATFORM
+      
       begin
         stty_save = `stty -g`.chomp
         trap("INT") do

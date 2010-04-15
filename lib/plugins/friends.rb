@@ -1,32 +1,5 @@
 # -*- coding: utf-8 -*-
 module Termtter::Client
-
-  class << self
-    def get_friends(user_name, max)
-      friends = []
-      cursor = -1
-      begin
-        tmp = Termtter::API::twitter.friends(user_name, :cursor => cursor)
-        cursor = tmp[:next_cursor]
-        friends += tmp[:users]
-        puts "#{friends.length}/#{max}"
-      rescue
-        break
-      end until (cursor.zero? or friends.length > max)
-      friends.take(max)
-    end
-  end
-
-  register_command(
-    :name => :friends, :aliases => [:following],
-    :exec_proc => lambda {|arg|
-      user_name = arg.empty? ? config.user_name : arg
-      public_storage[:friends] = friends = get_friends(user_name, 2000)
-      puts friends.map(&:screen_name).join(' ')
-    },
-    :help => ["friends,following [USERNAME]", "Show user's friends."]
-  )
-
   register_command(
     :name => :diff_follow, :aliases => [:diff],
     :exec_proc => lambda {|arg|
