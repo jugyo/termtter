@@ -13,8 +13,9 @@ config.plugins.tinyurl.set_default(:ignore_regexp, %r{
   | \Ahttp://u\.nu/ | \Ahttp://twurl\.nl/
 }x )
 config.plugins.tinyurl.set_default(:tinyurl_hook_commands, [:update, :reply, :retweet])
-config.plugins.tinyurl.set_default(:uri_regexp,
-                                   /#{URI.regexp(%w(http https ftp))}\S*/ )
+config.plugins.tinyurl.set_default(
+  :uri_regexp,
+  /#{URI.regexp(%w(http https ftp))}\S*/ )
 
 module Termtter::Client
   register_hook(
@@ -53,7 +54,6 @@ module Termtter::Client
       nil
     end
   end
-
 end
 
 # tinyuri.rb
