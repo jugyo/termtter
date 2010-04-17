@@ -93,6 +93,7 @@ Termtter::Client.register_hook(
           # TODO: Add option for priority and sticky
           system 'growlnotify', s.user.screen_name, '-m', s.text.gsub("\n",''), '-n', 'termtter', '--image', get_icon_path(s)
         else
+          begin
           growl.notify(
             "update_friends_timeline",
             s.user.screen_name,
@@ -100,6 +101,8 @@ Termtter::Client.register_hook(
             config.plugins.growl.priority,
             config.plugins.growl.sticky
           )
+          rescue Errno::ECONNREFUSED
+          end
         end
         sleep 0.1
       end
