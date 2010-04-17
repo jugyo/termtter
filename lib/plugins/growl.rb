@@ -94,13 +94,13 @@ Termtter::Client.register_hook(
           system 'growlnotify', s.user.screen_name, '-m', s.text.gsub("\n",''), '-n', 'termtter', '--image', get_icon_path(s)
         else
           begin
-          growl.notify(
-            "update_friends_timeline",
-            s.user.screen_name,
-            CGI.unescapeHTML(s.text),
-            config.plugins.growl.priority,
-            config.plugins.growl.sticky
-          )
+            growl.notify(
+              "update_friends_timeline",
+              s.user.screen_name,
+              CGI.unescapeHTML(s.text),
+              config.plugins.growl.priority,
+              config.plugins.growl.sticky
+            )
           rescue Errno::ECONNREFUSED
           end
         end
