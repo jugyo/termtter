@@ -22,6 +22,9 @@ when /linux/i
   when /ubuntu/i
     config.plugins.reply_sound.set_default(
       :sound_file, '/usr/share/sounds/gnome/default/alerts/drip.ogg')
+  else 
+    config.plugins.reply_sound.set_default(
+      :sound_file, '')
   end
 else
   not_supported = true
