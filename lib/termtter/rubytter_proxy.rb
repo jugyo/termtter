@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 config.set_default(:memory_cache_size, 10000)
 
+
 module Termtter
+  class JSONError < StandardError; end
   class RubytterProxy
     include Hookable
 
@@ -98,7 +100,19 @@ module Termtter
       config.retry.times do
         begin
           timeout(config.timeout) do
-            return @rubytter.__send__(method, *args, &block)
+            begin
+              return @rubytter.__send__(method, *args, &block)
+            rescue JSON::ParserError => e
+              tt = e.message.match(/<title>(.+)<\/title>/)
+              t = 0 < tt.size ? " #{tt[0][0]}" : ""
+              raise Termtter::JSONError, "JSON::ParserError#{t}"
+            rescue SocketError => e
+              if /nodename nor servname provided, or not known/ =~ e.message
+                Termtter::Client.logger.error("Cannot connect to twitter...")
+              else
+                raise
+              end
+            end
           end
         rescue TimeoutError
         end
