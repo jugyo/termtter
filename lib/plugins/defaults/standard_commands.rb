@@ -273,7 +273,7 @@ module Termtter::Client
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
         user = Termtter::API::twitter.leave(user_name)
-        puts "leaved #{user.name}"
+        puts "left #{user.name}"
       end
     },
     :help => ['leave USER', 'Leave user']
