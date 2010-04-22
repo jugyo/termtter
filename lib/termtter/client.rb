@@ -30,8 +30,9 @@ module Termtter
 
         return if config.system.disable_plugins.include?(name.gsub('defaults/', ''))
 
+        name_sym = name.gsub(/-/, '_').to_sym
         options.each do |key, value|
-          config.plugins.__refer__(name.gsub(/-/, '_').to_sym).__assign__(key.to_sym, value)
+          config.plugins.__refer__(name_sym).__assign__(key.to_sym, value)
         end
         load "plugins/#{name}.rb"
       rescue Exception => e
