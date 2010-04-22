@@ -68,3 +68,15 @@ module Termtter::Client
       execute('user_stream')
     })
 end
+
+# user_stream.rb
+
+# to use,
+#   > plug user_stream
+#   > user_stream
+
+# to stop,
+#   > user_stream stop
+
+# Spec
+#   http://apiwiki.twitter.com/ChirpUserStreams
