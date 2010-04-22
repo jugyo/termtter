@@ -14,7 +14,7 @@ module Termtter::Client
       puts 'starting user stream'
       @user_stream_thread = Thread.new {
         loop do
-          config.update_interval = 3600 * 24 * 365 * 100000
+          delete_task(:auto_reload)
           begin
             uri = URI.parse('http://chirpstream.twitter.com/2b/user.json')
             puts 'connecting to user stream'

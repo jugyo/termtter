@@ -207,6 +207,10 @@ module Termtter
         @task_manager.add_task(*arg, &block)
       end
 
+      def delete_task(name)
+        @task_manager.delete_task(name)
+      end
+
       def exit
         puts 'finalizing...'
         call_hooks(:exit)
