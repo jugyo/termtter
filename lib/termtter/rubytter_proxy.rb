@@ -58,8 +58,8 @@ module Termtter
       @users_cache_store ||= MemoryCache.new(config.memory_cache_size)
     end
 
-    def cached_user(screen_name)
-      users_cache_store[screen_name]
+    def cached_user(screen_name_or_id)
+      users_cache_store[screen_name_or_id]
     end
 
     def cached_status(id)
@@ -74,6 +74,12 @@ module Termtter
           store_status_cache(status)
         end
         status
+      when :user
+        unless user = cached_user(args[0])
+          user = call_rubytter(method, *args, &block)
+          store_user_cache(user)
+        end
+        user
       when :home_timeline, :user_timeline, :friends_timeline, :search
         statuses = call_rubytter(method, *args, &block)
         statuses.each do |status|
@@ -92,8 +98,9 @@ module Termtter
     end
 
     def store_user_cache(user)
-      return if users_cache_store.key?(user.screen_name)
+      return if users_cache_store.key?(user.screen_name) && users_cache_store.key?(user.id)
       users_cache_store[user.screen_name] = user
+      users_cache_store[user.id] = user
     end
 
     def call_rubytter(method, *args, &block)
