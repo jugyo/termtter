@@ -31,12 +31,14 @@ module Termtter::Client
                         # target_object is status
                         source_user = Termtter::API.twitter.user(received.source.id)
                         status = Termtter::API.twitter.show(received.target_object.id)
-                        puts "#{source_user.screen_name} #{received.event} #{status.user.screen_name}: #{status.text}"
+                        typable_id = Termtter::Client.data_to_typable_id(status.id)
+                        puts "[#{typable_id}] #{source_user.screen_name} #{received.event} #{status.user.screen_name}: #{status.text}"
                       else
                         # target is user
                         source_user = Termtter::API.twitter.user(received.source.id)
                         target_user = Termtter::API.twitter.user(received.target.id)
-                        puts "#{source_user.screen_name} #{received.event} #{target_user.screen_name}"
+                        typable_id = Termtter::Client.data_to_typable_id(target_user.id)
+                        puts "[#{typable_id}] #{source_user.screen_name} #{received.event} #{target_user.screen_name}"
                       end
                     elsif received[:friends]
                       puts "You have #{received[:friends].length} friends."
