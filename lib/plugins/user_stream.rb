@@ -1,7 +1,5 @@
 module Termtter::Client
 
-  config.update_interval = 3600 * 24 * 365 * 100000
-
   register_command(:user_stream, :help => 'user_stream [stop]') do |arg|
     args = arg.split /[, ]/
     case args[0]
@@ -16,6 +14,7 @@ module Termtter::Client
       puts 'starting user stream'
       @user_stream_thread = Thread.new {
         loop do
+          config.update_interval = 3600 * 24 * 365 * 100000
           begin
             uri = URI.parse('http://chirpstream.twitter.com/2b/user.json')
             puts 'connecting to user stream'
