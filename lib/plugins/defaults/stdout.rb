@@ -122,7 +122,7 @@ module Termtter
 
     def status_line(s, time_format, event, indent = 0)
       return '' unless s
-      text = TermColor.escape(s.text)
+      text = escape(TermColor.escape(s.text))
       color = color_of_user(s.user)
       status_id = Termtter::Client.data_to_typable_id(s.id)
       reply_to_status_id =
@@ -202,6 +202,10 @@ module Termtter
 
     def color_of_screen_name_cache
       @color_of_screen_name_cache ||= {}
+    end
+
+    def escape(data)
+      data.gsub(/[[:cntrl:]\\]+/) {$&.dump[1...-1]}.untaint
     end
   end
 
