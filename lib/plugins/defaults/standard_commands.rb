@@ -261,7 +261,7 @@ module Termtter::Client
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
         user = Termtter::API::twitter.follow(user_name)
-        puts "followed #{user.name}"
+        puts "followed #{user.screen_name}"
       end
     },
     :help => ['follow USER', 'Follow user']
@@ -273,7 +273,7 @@ module Termtter::Client
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
         user = Termtter::API::twitter.leave(user_name)
-        puts "left #{user.name}"
+        puts "left #{user.screen_name}"
       end
     },
     :help => ['leave USER', 'Leave user']
@@ -285,7 +285,7 @@ module Termtter::Client
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
         user = Termtter::API::twitter.block(user_name)
-        puts "blocked #{user.name}"
+        puts "blocked #{user.screen_name}"
       end
     },
     :help => ['block USER', 'Block user']
@@ -297,7 +297,7 @@ module Termtter::Client
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
         user = Termtter::API::twitter.unblock(user_name)
-        puts "unblocked #{user.name}"
+        puts "unblocked #{user.screen_name}"
       end
     },
     :help => ['unblock USER', 'Unblock user']
