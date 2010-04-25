@@ -28,6 +28,7 @@ module Readline
         '/opt/local/lib/libreadline.dylib',
         '/usr/lib/libreadline.so',
         '/usr/local/lib/libreadline.so',
+        Dir.glob('/lib/libreadline.so*')[-1] || '', # '' is dummy
         File.join(Gem.bindir, 'readline.dll')
       ])
       dlload(pathes.find { |path| File.exist?(path)})
