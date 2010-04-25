@@ -205,7 +205,7 @@ module Termtter
     end
 
     def escape(data)
-      data.gsub(/[[:cntrl:]\\]+/) {$&.dump[1...-1]}.untaint
+      data.gsub(/[[:cntrl:]\\]/) {|c| c == "\n" ? c : c.dump[1...-1]}.untaint
     end
   end
 
