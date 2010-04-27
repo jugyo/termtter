@@ -3,16 +3,83 @@ require 'base64'
 module Termtter
   class Crypt
     def self.crypt(s)
-      str = Base64.encode64(Base64.encode64(s.chars.to_a.map(&:ord)
-                                                   .inspect).chars
-                                                   .map(&:ord)
-                                                   .map{|x| x+2 }
-                                                   .map(&:chr).join)
-      str
+      str = eval(%w(Base64.
+                 enc       ode
+               64          (B
+                                       a
+                            s            e
+                            6          4.e              n          c
+                            od            e   6
+                            4(          s                              .
+                              ch            a  r
+                            s.
+                m             a p        (  &
+                                                       :
+                  o                                   r
+                  d
+                                                      ).
+                                              i n
+                                  s
+                                               p
+                                  e
+                                                 c  t            )
+                                  .            c    h
+                                  a
+                                  r
+                                  s                          .m
+                                  ap( &         :o
+                                     r d
+                                    ) .
+                                      m                                                     a
+                                    p{
+                                      |                                                 x
+                                      |                                 x
+                                      +                2}
+                                      .             m           a
+                                      p(
+                                        &                    :c
+                                        hr).j
+                                        oi                                      n)).join)
+                                                            str
     end
 
     def self.decrypt(s)
-      eval(Base64.decode64(Base64.decode64(s).chars.map{|x| x.ord - 2 }.map(&:chr).join)).map(&:chr).join('')
+      eval(%w(
+       ev
+                                a
+           l
+           (           Ba
+ s                            e
+              6  4
+              .                            d
+                   ec       o
+                   de                           64
+           (B      as         e 6
+            4.de      co     de                6 
+            4(
+      s)
+      .c                        h
+                 a r
+                 s .m
+                 ap{
+                   |                             x
+                   |                         x   .
+                     o
+            r                 d
+                     -
+                       2
+                 }.                m
+                 a
+                 p(
+                            &
+                            :
+                    chr)
+                    .j
+                      o
+              in
+           )).m
+           ap(                        &:  chr
+             ).join('')).join(''))
     end
   end
 end
