@@ -24,6 +24,7 @@ module Termtter
   APP_NAME = 'termtter'
 
   require 'termtter/config'
+  require 'termtter/crypt'
   require 'termtter/default_config'
   require 'termtter/optparse'
   require 'termtter/command'
