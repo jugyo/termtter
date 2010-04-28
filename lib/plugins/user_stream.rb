@@ -29,25 +29,27 @@ module Termtter::Client
                     if received[:event]
                       if received[:target_object]
                         # target_object is status
-                        source_user = Termtter::API.twitter.user(received.source.id)
-                        status = Termtter::API.twitter.show(received.target_object.id)
+                        source_user = Termtter::API.twitter.safe.user(received.source.id)
+                        status = Termtter::API.twitter.safe.show(received.target_object.id)
                         typable_id = Termtter::Client.data_to_typable_id(status.id)
                         puts "[#{typable_id}] #{source_user.screen_name} #{received.event} #{status.user.screen_name}: #{status.text}"
                       else
                         # target is user
-                        source_user = Termtter::API.twitter.user(received.source.id)
-                        target_user = Termtter::API.twitter.user(received.target.id)
+                        source_user = Termtter::API.twitter.safe.user(received.source.id)
+                        target_user = Termtter::API.twitter.safe.user(received.target.id)
                         typable_id = Termtter::Client.data_to_typable_id(target_user.id)
                         puts "[#{typable_id}] #{source_user.screen_name} #{received.event} #{target_user.screen_name}"
                       end
                     elsif received[:friends]
                       puts "You have #{received[:friends].length} friends."
                     elsif received[:delete]
-                      status = Termtter::API.twitter.show(received.delete.status.id)
+                      status = Termtter::API.twitter.safe.show(received.delete.status.id)
                       puts "#{status.user.screen_name} deleted: #{status.text}"
                     else
                       output([received], Termtter::Event.new(:update_friends_timeline))
                     end
+                  rescue Termtter::RubytterProxy::FrequentAccessError => e
+                    puts JSON.parse(chunk).inspect
                   rescue => e
                     handle_error e
                   end
