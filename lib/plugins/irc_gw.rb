@@ -34,7 +34,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   @@last_statuses = []
 
   Termtter::Client.register_hook(
-    :name => :irc_gw,
+    :name => :irc_gw_output,
     :point => :output,
     :exec => lambda { |statuses, event|
       if event == :update_friends_timeline
@@ -45,6 +45,15 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       @@listners.each do |listner|
         listner.call(statuses.dup, event)
       end
+    }
+  )
+  Termtter::Client.register_hook(
+    :name => :irc_gw_handle_error,
+    :point => :on_error,
+    :exec => lambda { |error|
+      @@listners.each{ |listener|
+        listener.log "[ERROR] #{error.class.to_s}: #{error.message}"
+      }
     }
   )
   if Termtter::Client.respond_to? :register_output
@@ -109,7 +118,6 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     post '#termtter', NOTICE, main_channel, '> ' + termtter_command
     Termtter::Client.execute(termtter_command)
   rescue Exception => e
-    post '#termtter', NOTICE, main_channel, "#{e.class.to_s}: #{e.message}"
     Termtter::Client.handle_error(e)
   end
 
@@ -144,7 +152,6 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     Termtter::Client.execute('update ' + message)
     post @prefix, TOPIC, main_channel, message
   rescue Exception => e
-    post '#termtter', NOTICE, main_channel, "#{e.class.to_s}: #{e.message}"
     Termtter::Client.handle_error(e)
   end
 
