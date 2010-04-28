@@ -51,7 +51,7 @@ module Termtter::Client
                   rescue => error
                     new_error = error.class.new("#{error.message} (#{JSON.parse(chunk).inspect})")
                     error.instance_variables.each{ |v|
-                      new_error.instance_variable_set(v, e.instance_variable_get(v))
+                      new_error.instance_variable_set(v, error.instance_variable_get(v))
                     }
                     handle_error new_error
                   end
