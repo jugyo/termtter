@@ -48,10 +48,12 @@ module Termtter::Client
                     else
                       output([received], Termtter::Event.new(:update_friends_timeline))
                     end
-                  rescue Termtter::RubytterProxy::FrequentAccessError => e
-                    puts JSON.parse(chunk).inspect
-                  rescue => e
-                    handle_error e
+                  rescue Termtter::RubytterProxy::FrequentAccessError => error
+                    new_error = error.class.new("#{error.message} (#{JSON.parse(chunk).inspect})")
+                    error.instance_variables.each{ |v|
+                      new_error.instance_variable_set(v, e.instance_variable_get(v))
+                    }
+                    handle_error new_error
                   end
                 end
               end
