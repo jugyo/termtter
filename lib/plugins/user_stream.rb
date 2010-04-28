@@ -27,7 +27,6 @@ module Termtter::Client
                   received = Termtter::ActiveRubytter.new(JSON.parse(chunk)) rescue next
                   begin
                     if received[:event]
-                      next if received[:event] == 'retweet'
                       if received[:target_object]
                         # target_object is status
                         source_user = Termtter::API.twitter.safe.user(received.source.id)
