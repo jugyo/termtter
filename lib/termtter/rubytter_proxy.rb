@@ -12,7 +12,7 @@ module Termtter
     attr_reader :rubytter
 
     def initialize(*args)
-      @rubytter = Rubytter.new(*args)
+      @rubytter = OAuthRubytter.new(*args)
     end
 
     def method_missing(method, *args, &block)
@@ -120,6 +120,7 @@ module Termtter
     end
 
     def call_rubytter(method, *args, &block)
+          Termtter::Client
       raise FrequentAccessError, 'avoided depletion of API resources' if @safe_mode && !self.current_limit.safe?
       config.retry.times do
         begin
