@@ -2,7 +2,7 @@
 begin
   require 'appscript'
 rescue LoadError
-  raise "itunes plug: can't load appscript gem. please run 'gem install rb-appscript'")
+  raise "itunes plug: can't load appscript gem. please run 'gem install rb-appscript'"
 end
 
 config.plugins.itunes.set_default(:prefix, 'Listening now:')
@@ -11,9 +11,9 @@ config.plugins.itunes.set_default(:format,
   '<%=prefix%> <%=track_name%> (<%=time%>) <%=artist%> <%=album%> <%=suffix%>')
 
 Termtter::Client.register_command(
-  :name => :listening_now, :aliases => [:ln,:itunes,:music,:m],
+  :name => :listening_now, :aliases => [:ln, :itunes, :music, :m],
   :help => ['listening_now,ln,itunes,music', "Post the information of listening now."],
-  :exec_proc => lambda {|args|
+  :exec => lambda {|args|
     begin
       prefix     = config.plugins.itunes.prefix
       track_name = Appscript.app('iTunes').current_track.name.get
