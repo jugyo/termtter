@@ -13,6 +13,7 @@ module Termtter
 
     def initialize(*args)
       @rubytter = Rubytter.new(*args)
+      @initial_args = args
     end
 
     def method_missing(method, *args, &block)
@@ -136,6 +137,9 @@ module Termtter
               else
                 raise
               end
+            rescue Errno::ECONNRESET => e
+              @rubytter = Rubytter.new(*@initial_args)
+              retry
             end
           end
         rescue TimeoutError
