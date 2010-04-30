@@ -46,7 +46,7 @@ module Termtter::Client
                       status = Termtter::API.twitter.safe.show(received.delete.status.id)
                       puts "#{status.user.screen_name} deleted: #{status.text}"
                     else
-                      output([received], Termtter::Event.new(:update_friends_timeline))
+                      output([received], Termtter::Event.new(:update_friends_timeline, :type => :main))
                     end
                   rescue Termtter::RubytterProxy::FrequentAccessError
                     # ignore
