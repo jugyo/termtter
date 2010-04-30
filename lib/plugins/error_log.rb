@@ -7,9 +7,11 @@ Termtter::Client.register_hook(
     open(config.plugins.error_log.file,"a") do |f|
       f.puts "#{Time.now} ---------------------"
       f.puts "  #{e.class.to_s}: #{e.message}"
-      e.backtrace.each do |s|
-        f.puts "    #{s}"
-      end
+      begin
+        e.backtrace.each do |s|
+          f.puts "    #{s}"
+        end
+      rescue NoMethodError; end
     end
   end
 )
