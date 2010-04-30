@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-config.set_default(:memory_cache_size, 10000)
-
 
 module Termtter
   class JSONError < StandardError; end
@@ -51,23 +49,6 @@ module Termtter
       end
     end
 
-    def status_cache_store
-      # TODO: DB store とかにうまいこと切り替えられるようにしたい
-      @status_cache_store ||= MemoryCache.new(config.memory_cache_size)
-    end
-
-    def users_cache_store
-      @users_cache_store ||= MemoryCache.new(config.memory_cache_size)
-    end
-
-    def cached_user(screen_name_or_id)
-      users_cache_store[screen_name_or_id]
-    end
-
-    def cached_status(id)
-      status_cache_store[id.to_i]
-    end
-
     def call_rubytter_or_use_cache(method, *args, &block)
       case method
       when :show
@@ -93,16 +74,32 @@ module Termtter
       end
     end
 
+    def destructize(obj)        # TODO: define marshal_dump and marshal_load in rubytter.
+      obj.inject({}) {|memo, (key, value)|
+        memo[key] =
+        (value.kind_of? obj.class) ? destructize(value) : value
+        memo
+      }
+    end
+
+    def cached_user(screen_name_or_id)
+      user = Termtter::Client.memory_cache.get(['user', screen_name_or_id].join('-'))
+      ActiveRubytter.new(user) if user
+    end
+
+    def cached_status(id)
+      status = Termtter::Client.memory_cache.get(['status', id.to_i].join('-'))
+      ActiveRubytter.new(status) if status
+    end
+
     def store_status_cache(status)
-      return if status_cache_store.key?(status.id)
-      status_cache_store[status.id] = status
+      Termtter::Client.memory_cache.set(['status', status.id.to_i].join('-'), destructize(status), config.cache.expire)
       store_user_cache(status.user)
     end
 
     def store_user_cache(user)
-      return if users_cache_store.key?(user.screen_name) && users_cache_store.key?(user.id)
-      users_cache_store[user.screen_name] = user
-      users_cache_store[user.id] = user
+      Termtter::Client.memory_cache.set(['user', user.id.to_i].join('-'), destructize(user), config.cache.expire)
+      Termtter::Client.memory_cache.set(['user', user.screen_name].join('-'), destructize(user), config.cache.expire)
     end
 
     attr_accessor :safe_mode
