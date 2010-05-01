@@ -10,7 +10,7 @@ Termtter::Client.register_command(
     user_raw = body.shift
     user = config.plugins.other_user.alias[user_raw] || user_raw
     Rubytter.new(user,config.plugins.other_user.accounts[user]).update(body.join(' '))
-    puts "updated by #{user} => #{body.join('')}"
+    puts "updated by #{user} => #{body.join(' ')}"
   end
 )
 
