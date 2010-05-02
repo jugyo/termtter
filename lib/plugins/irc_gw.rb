@@ -2,6 +2,7 @@
 
 require 'net/irc'
 require 'set'
+require 'cgi'
 
 config.plugins.irc_gw.set_default(:port, 16669)
 config.plugins.irc_gw.set_default(:last_statuses_count, 100)
@@ -108,7 +109,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     statuses.each do |s|
       typable_id = Termtter::Client.data_to_typable_id(s.id)
       time = Time.parse(s.created_at).strftime(time_format) if time_format
-      post s.user.screen_name, msg_type, main_channel, [time, s.text, typable_id].compact.join(' ')
+      post s.user.screen_name, msg_type, main_channel, [time, CGI.unescapeHTML(s.text), typable_id].compact.join(' ')
     end
   end
 
