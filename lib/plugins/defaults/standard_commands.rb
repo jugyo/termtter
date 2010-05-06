@@ -127,7 +127,7 @@ module Termtter::Client
   end
 
   def self.get_friends_or_followers(type, user_name, max)
-    raise "type should :friends or :followers" unless [:friends, :followers].include? type
+    raise "type should be :friends or :followers" unless [:friends, :followers].include? type
     users = []
     cursor = -1
     begin
@@ -158,7 +158,7 @@ module Termtter::Client
   )
 
   def self.friends_or_followers_command(type, arg)
-    raise "type should :friends or :followers" unless [:friends, :followers].include? type
+    raise "type should be :friends or :followers" unless [:friends, :followers].include? type
     limit = 20
     if /\-([\d]+)/ =~ arg
       limit = $1.to_i
