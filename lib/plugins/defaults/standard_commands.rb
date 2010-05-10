@@ -32,25 +32,24 @@ module Termtter::Client
   register_command(
     :name => :update, :alias => :u,
     :exec => lambda {|arg|
-      unless arg.empty?
-        params =
-          if config.easy_reply && /^\s*(@\w+)/ =~ arg
-            user_name = normalize_as_user_name($1)
-            in_reply_to_status_id =
-              Termtter::API.twitter.user(user_name).status.id rescue nil
-            in_reply_to_status_id ?
-              {:in_reply_to_status_id => in_reply_to_status_id} : {}
-          else
-            {}
-          end
-
-        result = Termtter::API.twitter.update(arg, params)
-
-        if result.text == arg
-          puts "updated => #{result.text}"
+      return if arg.empty?
+      params =
+        if config.easy_reply && /^\s*(@\w+)/ =~ arg
+          user_name = normalize_as_user_name($1)
+          in_reply_to_status_id =
+            Termtter::API.twitter.user(user_name).status.id rescue nil
+          in_reply_to_status_id ?
+            {:in_reply_to_status_id => in_reply_to_status_id} : {}
         else
-          puts TermColor.parse("<red>Failed to update :(</red>")
+          {}
         end
+
+      result = Termtter::API.twitter.update(arg, params)
+
+      if result.text == arg
+        puts "updated => #{result.text}"
+      else
+        puts TermColor.parse("<red>Failed to update :(</red>")
       end
     },
     :help => ["update,u TEXT", "Post a new message"]
