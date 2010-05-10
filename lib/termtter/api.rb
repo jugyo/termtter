@@ -30,47 +30,18 @@ module Termtter
     class << self
       attr_reader :connection, :twitter
       def setup
-        3.times do
-          begin
-            if twitter = try_auth
-              @twitter = twitter
-              # NOTE: for compatible
-              @connection = twitter.instance_variable_get(:@connection)
-              break
-            end
-          rescue Timeout::Error
-            puts TermColor.parse("<red>Time out :(</red>")
-            exit!
-          end
-        end
-
-        exit! unless twitter
-      end
-
-      def try_auth
-        if config.user_name.empty? || config.password.empty?
-          puts 'Please enter your Twitter login:'
-        end
-
-        ui = create_highline
-
-        if config.user_name.empty?
-          config.user_name = ui.ask('Username: ')
+        # NOTE: for compatible
+        @connection = twitter.instance_variable_get(:@connection)
+        if config.access_token.empty? || config.access_token_secret.empty?
+          puts "<red>Error!!</red>: You must setup conig for OAuth. Rerun termtter after removing '#{CONF_FILE}'.".termcolor
+          exit!
         else
-          puts "Username: #{config.user_name}"
-        end
-        if config.password.empty?
-          config.password = ui.ask('Password: ') { |q| q.echo = false}
+          consumer = OAuth::Consumer.new(CONSUMER_KEY, CONSUMER_SECRET, :site => 'http://twitter.com')
+          access_token = OAuth::AccessToken.new(consumer, config.access_token, config.access_token_secret)
+          @twitter = RubytterProxy.new(access_token, twitter_option)
         end
 
-        twitter = RubytterProxy.new(config.user_name, config.password, twitter_option)
-        begin
-          twitter.verify_credentials
-          return twitter
-        rescue Rubytter::APIError
-          config.__clear__(:password)
-        end
-        return nil
+        config.user_name = @twitter.verify_credentials[:screen_name]
       end
 
       def twitter_option
