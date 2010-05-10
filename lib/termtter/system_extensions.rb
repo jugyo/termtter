@@ -25,6 +25,7 @@ module Readline
       pathes = Array(ENV['TERMTTER_EXT_LIB'] || [
         '/usr/lib64/libreadline.so',
         '/usr/local/lib64/libreadline.so',
+        '/usr/local/lib/libreadline.dylib',
         '/opt/local/lib/libreadline.dylib',
         '/usr/lib/libreadline.so',
         '/usr/local/lib/libreadline.so',
