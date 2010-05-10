@@ -44,6 +44,13 @@ module Termtter::Client
           {}
         end
 
+      # "u $aa msg" is likely to be a mistake of
+      # "re $aa msg".
+      if /\s*\d+\s/ =~ arg
+        puts "Does it mean `re[ply] #{arg}`?"
+        break
+      end
+
       result = Termtter::API.twitter.update(arg, params)
 
       if result.text == arg
