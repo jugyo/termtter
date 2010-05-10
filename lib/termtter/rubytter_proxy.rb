@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 config.set_default(:memory_cache_size, 10000)
-
+require 'nokogiri'
 
 module Termtter
   class JSONError < StandardError; end
@@ -128,9 +128,7 @@ module Termtter
             begin
               return @rubytter.__send__(method, *args, &block)
             rescue JSON::ParserError => e
-              tt = e.message.match(/<title>(.+)<\/title>/)
-              t = 0 < tt.size ? " #{tt[0][0]}" : ""
-              raise Termtter::JSONError, "JSON::ParserError#{t}"
+              raise Rubytter::APIError Nokogiri(s).at('title').text rescue ''
             rescue SocketError => e
               if /nodename nor servname provided, or not known/ =~ e.message
                 Termtter::Client.logger.error("Cannot connect to twitter...")
