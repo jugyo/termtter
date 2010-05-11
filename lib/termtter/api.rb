@@ -54,6 +54,15 @@ module Termtter
       end
       
       def authorize_by_oauth(show_information=false, save_to_token_file=true, verbose=true)
+        if show_information
+          puts '                              <on_blue>INFORMATION</on_blue>'.termcolor
+          puts <<-EOI
+  Twitter called "We'll shutdown BASIC authorize method".
+  So authorize method of termtter is switchover from BASIC to OAuth.
+  This wizard gets OAuth access token and secret.
+
+          EOI
+        end
         puts '1. Contacting to twitter...' if verbose
 
         consumer = OAuth::Consumer.new(
@@ -72,7 +81,6 @@ module Termtter
 
         ui = create_highline
         pin = ui.ask('3. Enter PIN: ')
-        puts ""
         puts "4. Getting access_token..."
         access_token = request_token.get_access_token(:oauth_verifier => pin)
 
