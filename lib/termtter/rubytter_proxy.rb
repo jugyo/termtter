@@ -127,8 +127,15 @@ module Termtter
           timeout(config.timeout) do
             begin
               return @rubytter.__send__(method, *args, &block)
-            # rescue JSON::ParserError => e
-            #   raise Rubytter::APIError Nokogiri(s).at('title').text rescue ''
+            rescue JSON::ParserError => e
+              #raise Rubytter::APIError Nokogiri(s).at('title').text rescue ''
+              raise Rubytter::APIError, 'JSON Parse Error'
+            rescue NoMethodError => e
+              if /closed/ =~ e.message
+                retry
+              else
+                raise
+              end
             rescue SocketError => e
               if /nodename nor servname provided, or not known/ =~ e.message
                 Termtter::Client.logger.error("Cannot connect to twitter...")
