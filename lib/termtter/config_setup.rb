@@ -6,18 +6,6 @@ module Termtter
   module ConfigSetup
     module_function
 
-    # TODO: move this method to suitable place
-    def open_brawser(url)
-      case RUBY_PLATFORM
-      when /linux/
-        system 'firefox', url
-      when /mswin(?!ce)|mingw|bccwin/
-        system 'explorer', url
-      else
-        system 'open', url
-      end
-    end
-
     def run
       puts 'connecting to twitter...'
 
@@ -31,7 +19,7 @@ module Termtter
 
       puts 'opening web page to authorization...'
 
-      open_brawser(request_token.authorize_url)
+      open_browser(request_token.authorize_url)
       sleep 2
 
       ui = create_highline
