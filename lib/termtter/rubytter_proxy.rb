@@ -132,6 +132,7 @@ module Termtter
               raise Rubytter::APIError, 'JSON Parse Error'
             rescue NoMethodError => e
               if /closed/ =~ e.message
+                @rubytter = OAuthRubytter.new(*@initial_args)
                 retry
               else
                 raise
