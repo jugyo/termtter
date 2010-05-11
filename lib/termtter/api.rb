@@ -49,7 +49,7 @@ module Termtter
         config.user_name = @twitter.verify_credentials[:screen_name]
       end
       
-      def authorize_by_oauth(show_information=false, save_to_token_file=true, verbose=true)
+      def authorize_by_oauth(show_information=false, save_to_token_file=true, put_to_config=true, verbose=true)
         puts '1. Contacting to twitter...' if verbose
 
         request_token = consumer.get_request_token
@@ -66,14 +66,16 @@ module Termtter
         puts "4. Getting access_token..."
         access_token = request_token.get_access_token(:oauth_verifier => pin)
 
-        config.access_token = access_token.token
-        config.access_token_secret = access_token.secret
+        if put_to_config
+          config.access_token = access_token.token
+          config.access_token_secret = access_token.secret
+        end
 
         if save_to_token_file
           puts "5. Saving to token file... (" + config.token_file + ")"
           open(File.expand_path(config.token_file),"w") do |f|
-            f.puts config.access_token
-            f.puts config.access_token_secret
+            f.puts access_token.token
+            f.puts access_token.secret
           end
         end
 
