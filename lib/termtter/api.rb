@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-config.set_default(:host, 'twitter.com')
+config.set_default(:host, 'api.twitter.com')
+config.set_default(:oauth_consumer_site, 'http://api.twitter.com')
 if ENV.has_key?('HTTP_PROXY')
   require 'uri'
   proxy = ENV['HTTP_PROXY']
@@ -42,11 +43,6 @@ module Termtter
           end
         end
 
-        consumer = OAuth::Consumer.new(
-          Termtter::Crypt.decrypt(CONSUMER_KEY),
-          Termtter::Crypt.decrypt(CONSUMER_SECRET),
-          :site => 'http://twitter.com'
-        )
         access_token = OAuth::AccessToken.new(consumer, config.access_token, config.access_token_secret)
         @twitter = RubytterProxy.new(access_token, twitter_option)
 
@@ -56,12 +52,6 @@ module Termtter
       def authorize_by_oauth(show_information=false, save_to_token_file=true, verbose=true)
         puts '1. Contacting to twitter...' if verbose
 
-        consumer = OAuth::Consumer.new(
-          Termtter::Crypt.decrypt(CONSUMER_KEY),
-          Termtter::Crypt.decrypt(CONSUMER_SECRET),
-          :site => 'http://twitter.com',
-          :proxy => ENV['http_proxy']
-        )
         request_token = consumer.get_request_token
 
         puts '2. URL for authorize: ' + request_token.authorize_url if verbose
@@ -91,6 +81,15 @@ module Termtter
 
         return {:token  => access_token.token,
                 :secret => access_token.secret}
+      end
+
+      def consumer
+        @consumer ||= OAuth::Consumer.new(
+          Termtter::Crypt.decrypt(CONSUMER_KEY),
+          Termtter::Crypt.decrypt(CONSUMER_SECRET),
+          :site => config.oauth_consumer_site,
+          :proxy => ENV['http_proxy']
+        )
       end
 
       def twitter_option
