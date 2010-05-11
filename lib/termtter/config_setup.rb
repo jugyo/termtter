@@ -7,7 +7,7 @@ module Termtter
     module_function
 
     def run
-      puts 'connecting to twitter...'
+      puts 'contacting to twitter...'
 
       consumer = OAuth::Consumer.new(
         Termtter::Crypt.decrypt(CONSUMER_KEY),
@@ -17,6 +17,7 @@ module Termtter
       )
       request_token = consumer.get_request_token
 
+      puts 'URL for authorize:' + request_token.authorize_url
       puts 'opening web page to authorization...'
 
       open_browser(request_token.authorize_url)
