@@ -5,6 +5,7 @@ require 'erb'
 module Termtter
   module ConfigSetup
     module_function
+
     # TODO: move this method to suitable place
     def open_brawser(url)
       case RUBY_PLATFORM
@@ -21,8 +22,8 @@ module Termtter
       puts 'connecting to twitter...'
 
       consumer = OAuth::Consumer.new(
-        CONSUMER_KEY,
-        CONSUMER_SECRET,
+        Termtter::Crypt.decrypt(CONSUMER_KEY),
+        Termtter::Crypt.decrypt(CONSUMER_SECRET),
         :site => 'http://twitter.com',
         :proxy => ENV['http_proxy']
       )

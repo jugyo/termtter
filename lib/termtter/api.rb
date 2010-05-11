@@ -36,7 +36,11 @@ module Termtter
           puts "<red>Error!!</red>: You must setup conig for OAuth. Rerun termtter after removing '#{CONF_FILE}'.".termcolor
           exit!
         else
-          consumer = OAuth::Consumer.new(CONSUMER_KEY, CONSUMER_SECRET, :site => 'http://twitter.com')
+          consumer = OAuth::Consumer.new(
+            Termtter::Crypt.decrypt(CONSUMER_KEY),
+            Termtter::Crypt.decrypt(CONSUMER_SECRET),
+            :site => 'http://twitter.com'
+          )
           access_token = OAuth::AccessToken.new(consumer, config.access_token, config.access_token_secret)
           @twitter = RubytterProxy.new(access_token, twitter_option)
         end
