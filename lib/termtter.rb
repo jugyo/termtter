@@ -14,10 +14,10 @@ require 'net/https'
 require 'open-uri'
 require 'optparse'
 require 'readline'
-gem 'rubytter', '>= 0.11.0'
 require 'rubytter'
 require 'notify'
 require 'timeout'
+require 'oauth'
 
 module Termtter
   VERSION = File.read(File.join(File.dirname(__FILE__), '../VERSION')).strip
@@ -44,4 +44,7 @@ module Termtter
   CONF_DIR = File.expand_path('~/.termtter') unless defined? CONF_DIR
   CONF_FILE = File.join(Termtter::CONF_DIR, 'config') unless defined? CONF_FILE
   $:.unshift(CONF_DIR)
+
+  CONSUMER_KEY = 'eFFLaGJ3M0VMZExvNmtlNHJMVndsQQ=='
+  CONSUMER_SECRET = 'cW8xbW9JT3dyT0NHTmVaMWtGbHpjSk1tN0lReTlJYTl0N0trcW9Fdkhr'
 end

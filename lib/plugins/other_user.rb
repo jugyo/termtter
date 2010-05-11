@@ -13,4 +13,3 @@ Termtter::Client.register_command(
     puts "updated by #{user} => #{body.join(' ')}"
   end
 )
-
