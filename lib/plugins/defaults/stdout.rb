@@ -148,13 +148,13 @@ module Termtter
 
       text = colorize_users(text)
       text = Client.get_hooks(:pre_coloring).inject(text) {|result, hook|
-        Termtter::Client.logger.debug "stdout status_line: call hook :pre_coloring #{hook.inspect}"
+        #Termtter::Client.logger.debug "stdout status_line: call hook :pre_coloring #{hook.inspect}"
         hook.call(result, event)
       }
       indent_text = indent > 0 ? eval(config.plugins.stdout.indent_format) : ''
       erbed_text = ERB.new(config.plugins.stdout.timeline_format).result(binding)
       erbed_text = Client.get_hooks(:pre_output).inject(erbed_text) {|result, hook|
-        Termtter::Client.logger.debug "stdout status_line: call hook :pre_output #{hook.inspect}"
+        #Termtter::Client.logger.debug "stdout status_line: call hook :pre_output #{hook.inspect}"
         hook.call(result, event)
       }
       text = TermColor.unescape(TermColor.parse(erbed_text) + "\n")
