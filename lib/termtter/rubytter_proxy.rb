@@ -74,14 +74,6 @@ module Termtter
       end
     end
 
-    def destructize(obj)        # TODO: define marshal_dump and marshal_load in rubytter.
-      obj.inject({}) {|memo, (key, value)|
-        memo[key] =
-        (value.kind_of? obj.class) ? destructize(value) : value
-        memo
-      }
-    end
-
     def cached_user(screen_name_or_id)
       user = Termtter::Client.memory_cache.get(['user', screen_name_or_id].join('-'))
       ActiveRubytter.new(user) if user
@@ -93,13 +85,13 @@ module Termtter
     end
 
     def store_status_cache(status)
-      Termtter::Client.memory_cache.set(['status', status.id.to_i].join('-'), destructize(status), config.cache.expire)
+      Termtter::Client.memory_cache.set(['status', status.id.to_i].join('-'), status.destructize, config.cache.expire)
       store_user_cache(status.user)
     end
 
     def store_user_cache(user)
-      Termtter::Client.memory_cache.set(['user', user.id.to_i].join('-'), destructize(user), config.cache.expire)
-      Termtter::Client.memory_cache.set(['user', user.screen_name].join('-'), destructize(user), config.cache.expire)
+      Termtter::Client.memory_cache.set(['user', user.id.to_i].join('-'), user.destructize, config.cache.expire)
+      Termtter::Client.memory_cache.set(['user', user.screen_name].join('-'), user.destructize, config.cache.expire)
     end
 
     attr_accessor :safe_mode
