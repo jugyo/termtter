@@ -9,33 +9,26 @@ require 'digest/sha1'
 module Termtter::Client
   config.plugins.appendtitle.set_default(:timeout, 30)
   config.plugins.appendtitle.set_default(:cache_expire, 3600 * 24 * 7)
-  config.plugins.appendtitle.set_default(:memcached_server, 'localhost:11211')
-
-  def self.memcache_client
-    @memcache_client ||= MemCache.new(config.plugins.appendtitle.memcached_server)
-  end
 
   def self.fetch_title(uri)
     return unless uri
-    key = %w{ termtter plugins appendtitle title}.push(Digest::SHA1.hexdigest(uri)).join('-')
-    if v = memcache_client.get(key)
+    key = %w{ plugins appendtitle title}.push(Digest::SHA1.hexdigest(uri)).join('-')
+    if v = memory_cache.get(key)
       logger.debug "appendtitle: cache hit for #{uri}"
       return v
     end
 
-    memcache_client.set(key, '', config.plugins.appendtitle.cache_expire) # to avoid duplicate fetch
+    memory_cache.set(key, '', config.plugins.appendtitle.cache_expire) # to avoid duplicate fetch
     begin
       logger.debug "appendtitle: fetching title for #{uri}"
       source = Nokogiri(open(uri).read)
       if source and source.at('title')
         title = source.at('title').text
-        memcache_client.set(key, title, config.plugins.appendtitle.cache_expire)
+        memory_cache.set(key, title, config.plugins.appendtitle.cache_expire)
         return title
       end
       nil
-     rescue Timeout::Error
-      nil
-     rescue
+     rescue Timeout::Error, StandardError
       nil
     end
   end
