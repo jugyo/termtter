@@ -53,6 +53,14 @@ module Termtter
         results
       end
 
+      def stats
+        { "total_items"=> length }
+      end
+
+      def flush_all(delay = 0)
+        clear
+      end
+
       protected
 
       def try_clone(a)
