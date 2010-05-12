@@ -143,6 +143,8 @@ module Termtter
               else
                 raise
               end
+            rescue EOFError
+              retry
             rescue Errno::ECONNRESET => e
               @rubytter = OAuthRubytter.new(*@initial_args)
               retry
