@@ -123,8 +123,8 @@ module Termtter
     def call_rubytter(method, *args, &block)
       raise FrequentAccessError, 'avoided depletion of API resources' if @safe_mode && !self.current_limit.safe?
       config.retry.times do
+        f = false
         begin
-          f = false
           timeout(config.timeout) do
             begin
               return @rubytter.__send__(method, *args, &block)
