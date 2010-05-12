@@ -45,6 +45,10 @@ module Termtter::Client
   }
 
   register_command(:"user_stream", :help => 'user_stream') do |arg|
+    unless config.password.kind_of? String
+      raise "config.password is required."
+    end
+
     uri = URI.parse('http://chirpstream.twitter.com/2b/user.json')
 
     unless @user_stream_thread
