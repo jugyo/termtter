@@ -131,7 +131,6 @@ module Termtter
             rescue Rubytter::APIError => e
               raise unless /status is a duplicate/i =~ e.message && !f
             rescue JSON::ParserError => e
-              #raise Rubytter::APIError Nokogiri(s).at('title').text rescue ''
               raise Rubytter::APIError, 'JSON Parse Error'
             rescue NoMethodError => e
               if /closed/ =~ e.message
