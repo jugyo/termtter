@@ -124,15 +124,19 @@ module Termtter
       raise FrequentAccessError, 'avoided depletion of API resources' if @safe_mode && !self.current_limit.safe?
       config.retry.times do
         begin
+          f = false
           timeout(config.timeout) do
             begin
               return @rubytter.__send__(method, *args, &block)
+            rescue Rubytter::APIError => e
+              raise unless /status is a duplicate/i =~ e.message && !f
             rescue JSON::ParserError => e
               #raise Rubytter::APIError Nokogiri(s).at('title').text rescue ''
               raise Rubytter::APIError, 'JSON Parse Error'
             rescue NoMethodError => e
               if /closed/ =~ e.message
                 @rubytter = OAuthRubytter.new(*@initial_args)
+                f = true
                 retry
               else
                 raise
@@ -145,9 +149,11 @@ module Termtter
               end
             rescue EOFError
               @rubytter = OAuthRubytter.new(*@initial_args)
+              f = true
               retry
             rescue Errno::ECONNRESET => e
               @rubytter = OAuthRubytter.new(*@initial_args)
+              f = true
               retry
             end
           end
