@@ -336,7 +336,9 @@ module Termtter
       end
 
       def handle_error(e)
-        logger.error("#{e.class.to_s}: #{e.message}")
+        message = e.message
+        message = message[0..29] if message.size >= 30 && !config.devel
+        logger.error("#{e.class.to_s}: #{message}")
         logger.error(e.backtrace.join("\n")) if (e.backtrace and config.devel)
         get_hooks(:on_error).each {|hook| hook.call(e) }
       end
