@@ -85,13 +85,13 @@ module Termtter
     end
 
     def store_status_cache(status)
-      Termtter::Client.memory_cache.set(['status', status.id.to_i].join('-'), status.destructize, config.cache.expire)
+      Termtter::Client.memory_cache.set(['status', status.id.to_i].join('-'), status.destructize, 3600 * 24 * 14)
       store_user_cache(status.user)
     end
 
     def store_user_cache(user)
-      Termtter::Client.memory_cache.set(['user', user.id.to_i].join('-'), user.destructize, config.cache.expire)
-      Termtter::Client.memory_cache.set(['user', user.screen_name].join('-'), user.destructize, config.cache.expire)
+      Termtter::Client.memory_cache.set(['user', user.id.to_i].join('-'), user.destructize, 3600 * 24)
+      Termtter::Client.memory_cache.set(['user', user.screen_name].join('-'), user.destructize, 3600 * 24)
     end
 
     attr_accessor :safe_mode
