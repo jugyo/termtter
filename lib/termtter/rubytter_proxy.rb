@@ -130,8 +130,6 @@ module Termtter
               return @rubytter.__send__(method, *args, &block)
             rescue Rubytter::APIError => e
               raise unless /status is a duplicate/i =~ e.message && !f
-            rescue JSON::ParserError => e
-              raise Rubytter::APIError, 'JSON Parse Error'
             rescue NoMethodError => e
               if /closed/ =~ e.message
                 @rubytter = OAuthRubytter.new(*@initial_args)
