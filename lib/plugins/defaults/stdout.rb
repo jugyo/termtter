@@ -98,6 +98,10 @@ module Termtter
       print_statuses(statuses, event)
     end
 
+    def inspect
+      "#<Termtter::StdOut @name=#{@name}, @points=#{@points.inspect}, @exec_proc=#{@exec_proc.inspect}>"
+    end
+
     def print_statuses(statuses, event, sort = true, time_format = nil)
       return unless statuses and statuses.first
       time_format ||= Termtter::Client.time_format_for statuses
