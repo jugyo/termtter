@@ -301,27 +301,52 @@ module Termtter
       end
 
       def show_splash
+        print "\e[0G\e[2K"
         puts TermColor.parse(config.splash)
+      end
+
+      def start_kurukuru
+        Thread.start do
+          l = '/ - \ |'.split
+          loop do
+            c = l.shift
+            print "\e[0G#{c}"
+            STDOUT.flush
+            sleep 0.1
+            l.push c
+          end
+        end
       end
 
       def run
         parse_options
-        config.__freeze__(:user_name) unless config.user_name.empty?
-        show_splash
-        load_config
-        setup_task_manager
-        load_plugins
-        eval_init_block
-        config.__unfreeze__(:user_name)
-        Termtter::API.setup
 
-        config.system.eval_scripts.each do |script|
-          begin
-            eval script
-          rescue Exception => e
-            handle_error(e)
+        begin
+          print "\e[?25l"
+          config.__freeze__(:user_name) unless config.user_name.empty?
+          kurukuru = start_kurukuru
+          load_config
+          setup_task_manager
+          load_plugins
+          eval_init_block
+          config.__unfreeze__(:user_name)
+          Termtter::API.setup
+          config.system.eval_scripts.each do |script|
+            begin
+              eval script
+            rescue Exception => e
+              handle_error(e)
+            end
           end
+
+          sleep 3 # kurukuru time!
+
+          kurukuru.exit
+        ensure
+          print "\e[?25h"
         end
+
+        show_splash
 
         config.system.run_commands.each {|cmd| execute(cmd) }
 
