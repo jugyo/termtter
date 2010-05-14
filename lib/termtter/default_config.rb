@@ -4,7 +4,7 @@ config.set_default(:prompt, '> ')
 config.set_default(:devel, false)
 config.set_default(:token_file, "~/.termtter/token")
 config.set_default(:timeout, 60)
-config.set_default(:retry, 1)
+config.set_default(:retry, 3)
 config.set_default(:splash, <<SPLASH)
 
    <cyan>&lt;(@)//_</cyan>  .  .      <on_green> #{(Time.now.year == 2011 && Time.now.month == 4 && Time.now.day == 1)?'Centertter':'Termtter'} <underline>#{Termtter::VERSION}</underline> </on_green>

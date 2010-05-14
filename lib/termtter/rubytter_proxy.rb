@@ -121,43 +121,22 @@ module Termtter
     end
 
     def call_rubytter(method, *args, &block)
-      raise FrequentAccessError, 'avoided depletion of API resources' if @safe_mode && !self.current_limit.safe?
-      config.retry.times do
-        f = false
+      raise FrequentAccessError if @safe_mode && !self.current_limit.safe?
+      config.retry.times do |now|
         begin
           timeout(config.timeout) do
-            begin
-              return @rubytter.__send__(method, *args, &block)
-            rescue Rubytter::APIError => e
-              raise unless /status is a duplicate/i =~ e.message && !f
-            rescue NoMethodError => e
-              if /closed/ =~ e.message
-                @rubytter = OAuthRubytter.new(*@initial_args)
-                f = true
-                retry
-              else
-                raise
-              end
-            rescue SocketError => e
-              if /nodename nor servname provided, or not known/ =~ e.message
-                Termtter::Client.logger.error("Cannot connect to twitter...")
-              else
-                raise
-              end
-            rescue EOFError
-              @rubytter = OAuthRubytter.new(*@initial_args)
-              f = true
-              retry
-            rescue Errno::ECONNRESET => e
-              @rubytter = OAuthRubytter.new(*@initial_args)
-              f = true
-              retry
-            end
+            return @rubytter.__send__(method, *args, &block)
           end
-        rescue TimeoutError
+        rescue Rubytter::APIError => e
+          raise e
+        rescue StandardError, TimeoutError => e
+          if now + 1 == config.retry
+            raise e
+          else
+            Termtter::Client.logger.debug("rubytter_proxy: retry (#{e.class.to_s}: #{e.message})")
+          end
         end
       end
-      raise TimeoutError, 'execution expired'
     end
 
     class LimitManager
