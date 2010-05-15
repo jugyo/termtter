@@ -53,11 +53,14 @@ module Termtter::Client
 
     unless @user_stream_thread
       logger.info 'checking API status'
-      Net::HTTP.start(uri.host, uri.port){ |http|
-        request = Net::HTTP::Head.new(uri.request_uri)
-        request.basic_auth(config.user_name, config.password)
-        http.request(request){ |response|
-          raise response.code unless response.code.to_i == 200
+      1.times{ # to use break
+        Net::HTTP.start(uri.host, uri.port){ |http|
+          request = Net::HTTP::Get.new(uri.request_uri)
+          request.basic_auth(config.user_name, config.password)
+          http.request(request){ |response|
+            raise response.code.to_i unless response.code.to_i == 200
+            break
+          }
         }
       }
       logger.info 'API seems working'
@@ -74,7 +77,7 @@ module Termtter::Client
             request = Net::HTTP::Get.new(uri.request_uri)
             request.basic_auth(config.user_name, config.password)
             http.request(request){ |response|
-              raise response.body unless response.code.to_i == 200
+              raise response.code.to_i unless response.code.to_i == 200
               raise 'Response is not chuncked' unless response.chunked?
               response.read_body{ |chunk|
                 handle_chunk.call(chunk)
