@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 config.set_default(:memory_cache_size, 10000)
-#require 'nokogiri'
+require 'nokogiri'
 
 module Termtter
   class JSONError < StandardError; end
@@ -131,7 +131,10 @@ module Termtter
           raise e
         rescue StandardError, TimeoutError => e
           if now + 1 == config.retry
-            raise e
+	    message = Nokogiri(e.message).at('title, h2').text rescue nil
+            puts message
+            raise e unless message
+            raise Rubytter::APIError.new(message)
           else
             Termtter::Client.logger.debug("rubytter_proxy: retry (#{e.class.to_s}: #{e.message})")
           end
