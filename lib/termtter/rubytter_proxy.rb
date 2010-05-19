@@ -131,7 +131,7 @@ module Termtter
           raise e
         rescue StandardError, TimeoutError => e
           if now + 1 == config.retry
-	    message = Nokogiri(e.message).at('title, h2').text rescue nil
+            message = Nokogiri(e.message).at('title, h2').text rescue nil
             puts message
             raise e unless message
             raise Rubytter::APIError.new(message)
@@ -164,6 +164,5 @@ module Termtter
         threshold < limit.remaining_hits
       end
     end
-
   end
 end
