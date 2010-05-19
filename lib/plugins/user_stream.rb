@@ -1,5 +1,4 @@
 module Termtter::Client
-
   register_command(:"user_stream stop", :help => 'user_stream stop') do |arg|
     logger.info 'stopping user stream'
     if @user_stream_thread
@@ -12,9 +11,10 @@ module Termtter::Client
     data = Termtter::ActiveRubytter.new(JSON.parse(chunk)) rescue return
     begin
       if data[:event]
-        if data[:event] =~ /list_member/
+        if /list_member/ =~ data[:event]
           typable_id = Termtter::Client.data_to_typable_id(data.target.id)
-          puts "[#{typable_id}] #{data.source.screen_name} #{data.event} #{data.target.screen_name} to #{data.target_object.uri}"
+          puts "[%s] %s %s %s to %s]" %
+            [typable_id, data.source.screen_name, data.event, data.target.screen_name, data.target_object.uri]
           return
         end
         if data[:target_object]
@@ -100,6 +100,7 @@ module Termtter::Client
 
   register_hook(
     :name => :user_stream_init,
+    :author => '?', # FIXME
     :point => :initialize,
     :exec => lambda {
       execute('user_stream')
@@ -107,13 +108,13 @@ module Termtter::Client
 end
 
 # user_stream.rb
-
+#
 # to use,
 #   > plug user_stream
 #   > user_stream
-
+#
 # to stop,
 #   > user_stream stop
-
-# Spec
+#
+# Specification
 #   http://apiwiki.twitter.com/ChirpUserStreams
