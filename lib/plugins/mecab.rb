@@ -15,7 +15,7 @@ end
 
 Termtter::Client.register_command(
   :name => 'mecab',
-  :help => 'post a Japanese message with syntaxtic explanations',
+  :help => 'post a Japanese message with syntaxtic explanations. Requirements: mecab command',
   :exec => lambda {|arg|
     text = mecab(arg).map {|i| "#{i[0]}(#{i[1]}: #{i[2]})" }.join
     update(text)
