@@ -12,6 +12,11 @@ module Termtter::Client
     data = Termtter::ActiveRubytter.new(JSON.parse(chunk)) rescue return
     begin
       if data[:event]
+        if data[:event] =~ /list_member/
+          typable_id = Termtter::Client.data_to_typable_id(data.target.id)
+          puts "[#{typable_id}] #{data.source.screen_name} #{data.event} #{data.target.screen_name} to #{data.target_object.uri}"
+          return
+        end
         if data[:target_object]
           # target_object is status
           source_user = Termtter::API.twitter.safe.user(data.source.id)
