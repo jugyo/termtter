@@ -9,6 +9,7 @@ module Termtter::Client
 
   handle_chunk = lambda { |chunk|
     data = Termtter::ActiveRubytter.new(JSON.parse(chunk)) rescue return
+    Termtter::Client.logger.debug "user_stream: received #{JSON.parse(chunk).inspect}"
     begin
       if data[:event]
         if /list_member/ =~ data[:event]
