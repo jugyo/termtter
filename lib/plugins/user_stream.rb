@@ -20,14 +20,14 @@ module Termtter::Client
         end
         if data[:target_object]
           # target_object is status
-          source_user = Termtter::API.twitter.safe.user(data.source.id)
-          status = Termtter::API.twitter.safe.show(data.target_object.id)
+          source_user = data.source
+          status = data.target_object
           typable_id = Termtter::Client.data_to_typable_id(status.id)
           puts "[#{typable_id}] #{source_user.screen_name} #{data.event} #{status.user.screen_name}: #{status.text}"
         else
           # target is user
-          source_user = Termtter::API.twitter.safe.user(data.source.id)
-          target_user = Termtter::API.twitter.safe.user(data.target.id)
+          source_user = data.source
+          target_user = data.target
           typable_id = Termtter::Client.data_to_typable_id(target_user.id)
           puts "[#{typable_id}] #{source_user.screen_name} #{data.event} #{target_user.screen_name}"
         end
