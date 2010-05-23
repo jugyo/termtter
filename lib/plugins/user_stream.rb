@@ -55,7 +55,7 @@ module Termtter::Client
       raise "config.password is required."
     end
 
-    uri = URI.parse('http://chirpstream.twitter.com/2b/user.json')
+    uri = URI.parse('http://betastream.twitter.com/2b/user.json')
 
     unless @user_stream_thread
       logger.info 'checking API status'
