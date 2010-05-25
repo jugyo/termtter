@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-config.set_default(:memory_cache_size, 10000)
 require 'nokogiri'
 
 module Termtter
@@ -52,23 +51,6 @@ module Termtter
       end
     end
 
-    def status_cache_store
-      # TODO: DB store とかにうまいこと切り替えられるようにしたい
-      @status_cache_store ||= MemoryCache.new(config.memory_cache_size)
-    end
-
-    def users_cache_store
-      @users_cache_store ||= MemoryCache.new(config.memory_cache_size)
-    end
-
-    def cached_user(screen_name_or_id)
-      users_cache_store[screen_name_or_id]
-    end
-
-    def cached_status(id)
-      status_cache_store[id.to_i]
-    end
-
     def call_rubytter_or_use_cache(method, *args, &block)
       case method
       when :show
@@ -94,16 +76,24 @@ module Termtter
       end
     end
 
+    def cached_user(screen_name_or_id)
+      user = Termtter::Client.memory_cache.get(['user', Termtter::Client.normalize_as_user_name(screen_name_or_id.to_s)].join('-'))
+      ActiveRubytter.new(user) if user
+    end
+
+    def cached_status(status_id)
+      status = Termtter::Client.memory_cache.get(['status', status_id].join('-'))
+      ActiveRubytter.new(status) if status
+    end
+
     def store_status_cache(status)
-      return if status_cache_store.key?(status.id)
-      status_cache_store[status.id] = status
+      Termtter::Client.memory_cache.set(['status', status.id].join('-'), status.destructize, 3600 * 24 * 14)
       store_user_cache(status.user)
     end
 
     def store_user_cache(user)
-      return if users_cache_store.key?(user.screen_name) && users_cache_store.key?(user.id)
-      users_cache_store[user.screen_name] = user
-      users_cache_store[user.id] = user
+      Termtter::Client.memory_cache.set(['user', user.id.to_i].join('-'), user.destructize, 3600 * 24)
+      Termtter::Client.memory_cache.set(['user', Termtter::Client.normalize_as_user_name(user.screen_name)].join('-'), user.destructize, 3600 * 24)
     end
 
     attr_accessor :safe_mode

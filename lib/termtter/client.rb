@@ -43,6 +43,10 @@ module Termtter
         @public_storage ||= {}
       end
 
+      def memory_cache
+        @memory_cache ||= Termtter::MemoryCache.new
+      end
+
       def add_filter(&b)
         warn "add_filter method will be removed. Use Termtter::Client.register_hook(:name => ..., :point => :filter_for_output, :exec => ... ) instead."
         @filters << b

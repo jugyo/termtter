@@ -44,6 +44,10 @@ module Termtter
       end
     end
 
+    def destructize
+      self.to_hash
+    end
+
     def retweeted_status
       nil
     end

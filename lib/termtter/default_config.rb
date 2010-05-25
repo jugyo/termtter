@@ -17,3 +17,5 @@ config.system.set_default :run_commands, []
 config.system.set_default :load_plugins, []
 config.system.set_default :disable_plugins, []
 config.system.set_default :eval_scripts, []
+
+config.cache.set_default(:memcached_server, 'localhost:11211')
