@@ -1,3 +1,5 @@
+require 'delegate'
+
 module Termtter
 
   class MemoryCache
