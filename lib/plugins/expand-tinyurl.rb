@@ -12,6 +12,12 @@ URL_SHORTTERS = [
   {:host => "ow.ly", :pattern => %r'(http://ow\.ly(/[\w/]+))'},
   {:host => "u.nu", :pattern => %r'(http://u\.nu(/[\w/]+))'},
   {:host => "twurl.nl", :pattern => %r'(http://twurl\.nl(/\w+))'},
+  {:host => "icio.us", :pattern => %r'(http://icio\.us(/\w+))'},
+  {:host => "htn.to", :pattern => %r'(http://htn\.to(/\w+))'},
+  {:host => "cot.ag", :pattern => %r'(http://cot\.ag(/\w+))'},
+  {:host => "ht.ly", :pattern => %r'(http://ht\.ly(/\w+))'},
+  {:host => "p.tl", :pattern => %r'(http://p\.tl(/\w+))'},
+  {:host => "url4.eu", :pattern => %r'(http://url4\.eu(/\w+))'},
 ]
 
 config.plugins.expand_tinyurl.set_default(:shortters, [])
