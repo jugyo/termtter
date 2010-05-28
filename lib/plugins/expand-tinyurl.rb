@@ -39,7 +39,7 @@ def expand_url(host, path)
   res = Termtter::HTTPpool.start(host) do |h|
     h.get(path, { 'User-Agent' => 'Mozilla' })
   end
-  return nil unless res.code == "301" or res.code == "302"
+  return nil unless res.code =~ /\A30/
   newurl = res['Location']
   newurl.respond_to?(:force_encoding) ? newurl.force_encoding(Encoding::UTF_8) : newurl
 rescue Exception => e
