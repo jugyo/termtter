@@ -10,7 +10,9 @@ config.plugins.tinyurl.set_default(:ignore_regexp, %r{
     \Ahttp://bit\.ly/ | \Ahttp://tinyurl\.com/ | \Ahttp://is\.gd/
   | \Ahttp://ff\.im/ | \Ahttp://j\.mp/ | \Ahttp://goo\.gl/
   | \Ahttp://tr\.im/ | \Ahttp://short\.to/ | \Ahttp://ow\.ly/
-  | \Ahttp://u\.nu/ | \Ahttp://twurl\.nl/
+  | \Ahttp://u\.nu/ | \Ahttp://twurl\.nl/  | \Ahttp://icio\.us/
+  | \Ahttp://htn\.to/ | \Ahttp://cot\.ag/ | \Ahttp://ht\.ly/ | \Ahttp://p\.tl/
+  | \Ahttp://url4\.eu/
 }x )
 config.plugins.tinyurl.set_default(:tinyurl_hook_commands, [:update, :reply, :retweet])
 config.plugins.tinyurl.set_default(
