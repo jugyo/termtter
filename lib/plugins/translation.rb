@@ -6,6 +6,8 @@ require 'kconv'
 require 'uri'
 
 def translate(text, langpair)
+  text = Termtter::API.twitter.show(text)[:text] if /^\d+$/ =~ text
+
   req = Net::HTTP::Post.new('/translate_t')
   req.add_field('Content-Type', 'application/x-www-form-urlencoded')
   req.add_field('User-Agent', 'Mozilla/5.0')
