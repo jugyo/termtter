@@ -13,6 +13,7 @@ cmd_ok = false
 Termtter::Client.register_hook(:name => :reply_sound_initialization,
                                :point => :initialize,
                                :exec => lambda do
+  case RUBY_PLATFORM
   when /darwin/i
     config.plugins.reply_sound.set_default(
       :sound_file, '/System/Library/Sounds/Hero.aiff')
