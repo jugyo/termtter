@@ -177,7 +177,7 @@ module Termtter::Client
     users.reverse.each{|user|
       padding = ' ' * (longest - user.screen_name.length)
       user_id = Termtter::Client.data_to_typable_id(user.id) rescue ''
-      color = user.following ? 'BLACK' : 'RED'
+      color = user.following ? config.plugins.stdout.colors.first : config.plugins.stdout.colors.last
       mark  = user.following ? '♥' : '✂'
       erbed_text = ERB.new(config.plugins.standard.one_line_profile_format).result(binding)
       puts TermColor.unescape(TermColor.parse(erbed_text))
@@ -448,7 +448,7 @@ module Termtter::Client
     :alias     => :plugin,
     :exec_proc => lambda {|arg|
       if arg.empty?
-        plugin_list
+        puts plugin_list.join(', ')
         return
       end
       begin
