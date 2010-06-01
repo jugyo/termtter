@@ -448,7 +448,7 @@ module Termtter::Client
     :alias     => :plugin,
     :exec_proc => lambda {|arg|
       if arg.empty?
-        plugin_list
+        puts plugin_list.join(', ')
         return
       end
       begin
