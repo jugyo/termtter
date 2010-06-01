@@ -70,6 +70,7 @@ Termtter::Client.register_hook(:name => :reply_sound_initialization,
             print "\e[0G" + "\e[K" unless win?
             Termtter::Client.output(
               new_replies, Termtter::Event.new(:new_replies,:type => :reply))
+            Readline.refresh_line
           end
           reply_sound_cache = replies
           reply_sound_cache_ids += replies.map {|x| x[:id]}
