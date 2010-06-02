@@ -75,6 +75,7 @@ Termtter::Client.register_hook(
               reply_sound_cache = replies
               reply_sound_cache_ids += replies.map {|x| x[:id]}
             end
+          d = true
         end
     end
   end)
