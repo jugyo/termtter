@@ -53,30 +53,28 @@ Termtter::Client.register_hook(
       Termtter::Client.add_task(
         :name => :reply_sound_wait,
         :interval => 10) do
-          unless d
-            Termtter::Client.add_task(
-              :name => :reply_sound,
-              :interval => config.plugins.reply_sound.interval) do
-                cmd = config.plugins.reply_sound.command.kind_of?(Array) ?
-                  config.plugins.reply_sound.command : [config.plugins.reply_sound.command]
-                replies = Termtter::API.twitter.replies
-                new_replies = replies.delete_if {|x| reply_sound_cache_ids.index(x[:id]) }
-                if !reply_sound_cache.nil? && new_replies.size > 0
-                  if respond_to? :spawn, true
-                    system *cmd
-                  else
-                    spawn *cmd
-                  end
-                  print "\e[0G" + "\e[K" unless win?
-                  Termtter::Client.output(
-                    new_replies, Termtter::Event.new(:new_replies,:type => :reply))
-                  Readline.refresh_line
+          break if d
+          Termtter::Client.add_task(
+            :name => :reply_sound,
+            :interval => config.plugins.reply_sound.interval) do
+              cmd = config.plugins.reply_sound.command.kind_of?(Array) ?
+                config.plugins.reply_sound.command : [config.plugins.reply_sound.command]
+              replies = Termtter::API.twitter.replies
+              new_replies = replies.delete_if {|x| reply_sound_cache_ids.index(x[:id]) }
+              if !reply_sound_cache.nil? && new_replies.size > 0
+                if respond_to? :spawn, true
+                  system *cmd
+                else
+                  spawn *cmd
                 end
-                reply_sound_cache = replies
-                reply_sound_cache_ids += replies.map {|x| x[:id]}
+                print "\e[0G" + "\e[K" unless win?
+                Termtter::Client.output(
+                  new_replies, Termtter::Event.new(:new_replies,:type => :reply))
+                Readline.refresh_line
               end
-          end
-          d = true
+              reply_sound_cache = replies
+              reply_sound_cache_ids += replies.map {|x| x[:id]}
+            end
         end
     end
   end)
