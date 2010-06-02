@@ -63,7 +63,13 @@ Termtter::Client.register_hook(
               new_replies = replies.delete_if {|x| reply_sound_cache_ids.index(x[:id]) }
               if !reply_sound_cache.nil? && new_replies.size > 0
                 if respond_to? :spawn, true
-                  system *cmd
+                  if respond_to? :fork, true
+                    fork {
+                      system *cmd
+                    }
+                  else
+                    system *cmd
+                  end
                 else
                   spawn *cmd
                 end
