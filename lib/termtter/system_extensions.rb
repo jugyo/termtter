@@ -48,7 +48,7 @@ module Readline
     end
   rescue Exception
     def self.rl_parse_and_bind(str);end
-    def self.refresh_line;end
+    def self.refresh_line;end unless Readline::NATIVE_REFRESH_LINE_METHOD
   end
 end
 
