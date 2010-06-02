@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 require 'nkf'
-require 'MeCab'
 require 'open-uri'
 
 module HatenaKeywordHaiku
   class Word
-    @@mecab = MeCab::Tagger.new("-Oyomi")
-
-    def initialize(word, yomi = nil)
+    def initialize(word, yomi)
       raise 'word is nil' unless word and not word.empty?
       @word = word
       @yomi = yomi
@@ -18,7 +15,7 @@ module HatenaKeywordHaiku
     end
 
     def yomi
-      @yomi ||= @@mecab.parse(word)
+      @yomi
     end
 
     def length
@@ -52,6 +49,7 @@ module HatenaKeywordHaiku
     puts "haiku: parsing CSV"
     open(csv_path).each_line{ |line|
       yomi, word = *NKF.nkf('-w', line.chomp).split(/\t/)
+      next unless yomi and word
       w = Word.new(word, yomi)
       @@words[w.length] = [] unless @@words.has_key? w.length
       @@words[w.length].push w
