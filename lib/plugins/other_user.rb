@@ -9,13 +9,14 @@ Termtter::Client.register_command(
   :alias => :o,
   :help => ['other_user, o','Post by other user'],
   :exec => lambda do |arg_raw|
-    tokens = if File.exist?(File.expand_path(config.plugins.other_user.tokens_file))
-               Marshal.load(
-                 Base64.decode64(File.read(File.expand_path(
-                   config.plugins.other_user.tokens_file))))
-             else
-               {}
-             end
+  tokens =
+    if File.exist?(File.expand_path(config.plugins.other_user.tokens_file))
+      Marshal.load(
+        Base64.decode64(File.read(File.expand_path(
+          config.plugins.other_user.tokens_file))))
+    else
+      {}
+    end
 
     body = arg_raw.split(/ /)
     user_raw = body.shift
@@ -29,18 +30,18 @@ Termtter::Client.register_command(
       end
     end
 
-    at = OAuth::AccessToken.new(OAuth::Consumer.new(
-                                  Termtter::Crypt.decrypt(Termtter::CONSUMER_KEY),
-                                  Termtter::Crypt.decrypt(Termtter::CONSUMER_SECRET),
-                                  :site => "http://twitter.com/",
-                                  :proxy => ENV['http_proxy']
-                                ),
-                                tokens[user][:token],
-                                tokens[user][:secret])
+    at = OAuth::AccessToken.new(
+      OAuth::Consumer.new(
+        Termtter::Crypt.decrypt(Termtter::CONSUMER_KEY),
+        Termtter::Crypt.decrypt(Termtter::CONSUMER_SECRET),
+        :site => "http://twitter.com/",
+        :proxy => ENV['http_proxy']),
+        tokens[user][:token],
+        tokens[user][:secret])
 
     t = OAuthRubytter.new(at, Termtter::API.twitter_option)
     t.update(body.join(' '))
-    
+
     puts "updated by #{user} => #{body.join(' ')}"
   end
 )
