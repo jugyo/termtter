@@ -49,11 +49,9 @@ Termtter::Client.register_hook(
     end
 
     unless not_supported
-      d = false
       Termtter::Client.add_task(
         :name => :reply_sound_wait,
         :interval => 10) do
-          break if d
           Termtter::Client.add_task(
             :name => :reply_sound,
             :interval => config.plugins.reply_sound.interval) do
@@ -79,7 +77,7 @@ Termtter::Client.register_hook(
               reply_sound_cache = replies
               reply_sound_cache_ids += replies.map {|x| x[:id]}
             end
-          d = true
+          Termtter::Client.delete_task(:reply_sound_wait)
         end
     end
   end)

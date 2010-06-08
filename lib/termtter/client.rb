@@ -17,7 +17,7 @@ module Termtter
     Thread.abort_on_exception = true
 
     class << self
-      attr_reader :commands, :logger
+      attr_reader :commands, :logger, :task_manager
 
       # plug :: Name -> (Hash) -> IO () where NAME = String | Symbol | [NAME]
       def plug(name, options = {})
