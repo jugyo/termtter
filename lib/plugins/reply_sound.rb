@@ -64,9 +64,7 @@ Termtter::Client.register_hook(
               if !reply_sound_cache.nil? && new_replies.size > 0
                 if respond_to? :spawn, true
                   if respond_to? :fork, true
-                    fork {
-                      system *cmd
-                    }
+                    fork { exec *cmd }
                   else
                     system *cmd
                   end
