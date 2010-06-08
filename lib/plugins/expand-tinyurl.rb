@@ -18,6 +18,7 @@ URL_SHORTTERS = [
   {:host => "ht.ly", :pattern => %r'(http://ht\.ly(/\w+))'},
   {:host => "p.tl", :pattern => %r'(http://p\.tl(/\w+))'},
   {:host => "url4.eu", :pattern => %r'(http://url4\.eu(/\w+))'},
+  {:host => "t.co", :pattern => %r'(http://t\.co(/\w+))'},
 ]
 
 config.plugins.expand_tinyurl.set_default(:shortters, [])
