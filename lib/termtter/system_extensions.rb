@@ -73,7 +73,10 @@ def open_browser(url)
   else
     case RUBY_PLATFORM.downcase
     when /linux/
-      system 'firefox', url
+      [['firefox'], ['w3m', '-X']].find do |cmd|
+        system *cmd, url
+        $?.exitstatus != 127
+      end or puts 'Browser not found.'
     when /darwin/
       system 'open', url
     when /mswin(?!ce)|mingw|bccwin/
