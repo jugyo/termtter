@@ -65,17 +65,17 @@ end
 def open_browser(url)
   case RUBY_PLATFORM.downcase
   when /linux/
-    [['xdg-open'], ['x-www-browser'], ['firefox'], ['w3m', '-X']].find do |cmd|
-      system *cmd, url
-      $?.exitstatus != 127
-    end or puts 'Browser not found.'
+    [['xdg-open'], ['x-www-browser'], ['firefox'], ['w3m', '-X']]
   when /darwin/
-    system 'open', url
+    [['open']]
   when /mswin(?!ce)|mingw|bccwin/
-    system 'start', url
+    [['start']]
   else
-    system 'firefox', url
-  end
+    [['firefox']]
+  end.find do |cmd|
+    system *cmd, url
+    $?.exitstatus != 127
+  end or puts 'Browser not found.'
 end
 
 if Readline.respond_to?(:input=)
