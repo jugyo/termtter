@@ -63,7 +63,7 @@ def create_highline
 end
 
 def open_browser(url)
-  case RUBY_PLATFORM.downcase
+  found = case RUBY_PLATFORM.downcase
   when /linux/
     [['xdg-open'], ['x-www-browser'], ['firefox'], ['w3m', '-X']]
   when /darwin/
@@ -75,7 +75,13 @@ def open_browser(url)
   end.find do |cmd|
     system *cmd, url
     $?.exitstatus != 127
-  end or puts 'Browser not found.'
+  end
+  if found
+    # Kernel::__method__ is not suppoted in Ruby 1.8.6 or earlier.
+    eval %{ def open_browser(url); system *#{found}, url; end }
+  else
+    puts 'Browser not found.'
+  end
 end
 
 if Readline.respond_to?(:input=)
