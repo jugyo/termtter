@@ -71,7 +71,7 @@ def open_browser(url)
   when /mswin(?!ce)|mingw|bccwin/
     [['start']]
   else
-    [['firefox']]
+    [['xdg-open'], ['firefox'], ['w3m', '-X']]
   end.find do |cmd|
     system *cmd, url
     $?.exitstatus != 127
