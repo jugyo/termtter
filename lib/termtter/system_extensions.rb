@@ -63,27 +63,18 @@ def create_highline
 end
 
 def open_browser(url)
-  if ENV['KDE_FULL_SESSION'] == 'true'
-    system 'kfmclient', 'exec', url
-  elsif ENV['GNOME_DESKTOP_SESSION_ID']
-    system 'gnome-open', url
-# elsif /not found/ =~ `which exo-open`
-#   # FIXME: is fungible system('exo-open').nil? for lambda {...}
-#   system 'exo-open', url
+  case RUBY_PLATFORM.downcase
+  when /linux/
+    [['xdg-open'], ['x-www-browser'], ['firefox'], ['w3m', '-X']].find do |cmd|
+      system *cmd, url
+      $?.exitstatus != 127
+    end or puts 'Browser not found.'
+  when /darwin/
+    system 'open', url
+  when /mswin(?!ce)|mingw|bccwin/
+    system 'start', url
   else
-    case RUBY_PLATFORM.downcase
-    when /linux/
-      [['xdg-open'], ['x-www-browser'], ['firefox'], ['w3m', '-X']].find do |cmd|
-        system *cmd, url
-        $?.exitstatus != 127
-      end or puts 'Browser not found.'
-    when /darwin/
-      system 'open', url
-    when /mswin(?!ce)|mingw|bccwin/
-      system 'start', url
-    else
-      system 'firefox', url
-    end
+    system 'firefox', url
   end
 end
 
