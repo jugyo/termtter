@@ -57,7 +57,11 @@ module Termtter
         puts '2. URL for authorize: ' + request_token.authorize_url if verbose
         puts '   Opening web page to authorization...' if verbose
 
-        open_browser(request_token.authorize_url)
+        begin
+          open_browser(request_token.authorize_url)
+        rescue BrowserNotFound
+          puts "Browser not found. Please log in and/or grant access to get PIN via your browser at #{request_token.authorize_url}"
+        end
         sleep 2
 
         ui = create_highline

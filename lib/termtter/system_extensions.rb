@@ -62,6 +62,8 @@ def create_highline
   HighLine.new($stdin)
 end
 
+class BrowserNotFound < StandardError; end
+
 def open_browser(url)
   found = case RUBY_PLATFORM.downcase
   when /linux/
@@ -80,7 +82,7 @@ def open_browser(url)
     # Kernel::__method__ is not suppoted in Ruby 1.8.6 or earlier.
     eval %{ def open_browser(url); system *#{found}, url; end }
   else
-    puts 'Browser not found.'
+    raise BrowserNotFound
   end
 end
 
