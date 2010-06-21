@@ -75,12 +75,12 @@ def open_browser(url)
   else
     [['xdg-open'], ['firefox'], ['w3m', '-X']]
   end.find do |cmd|
-    system *cmd, url
+    system *(cmd.dup << url)
     $?.exitstatus != 127
   end
   if found
     # Kernel::__method__ is not suppoted in Ruby 1.8.6 or earlier.
-    eval %{ def open_browser(url); system *#{found}, url; end }
+    eval %{ def open_browser(url); system *(#{found}.dup << url); end }
   else
     raise BrowserNotFound
   end
