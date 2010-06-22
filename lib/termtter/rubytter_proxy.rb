@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-require 'nokogiri'
+begin
+  require 'nokogiri'
+rescue LoadError
+end
 
 module Termtter
   class JSONError < StandardError; end
