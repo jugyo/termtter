@@ -11,7 +11,7 @@ config.plugins.retweet.set_default(
 
 module Termtter::Client
   def self.post_retweet(s, comment = nil)
-    s.user.protected and
+    s[:user][:protected] and
       config.plugins.retweet.confirm_protected and
       !confirm("#{s.user.screen_name} is protected! Are you sure?", false) and
       return
