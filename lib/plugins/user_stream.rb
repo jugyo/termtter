@@ -91,7 +91,7 @@ module Termtter::Client
               }
             }
           }
-        rescue => e
+        rescue Timeout::Error, StandardError => e
           handle_error e
           logger.info 'sleeping'
           sleep 10
