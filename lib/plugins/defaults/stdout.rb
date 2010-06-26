@@ -14,7 +14,7 @@ config.plugins.stdout.set_default(
     '<90>',
     '<%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%>',
     '<%=retweeted_status_id ? " (retweet_to [#{retweeted_status_id}]) " : ""%>',
-    '<%=source%><%=s.user.protected ? "[P]" : ""%>',
+    '<%=source%><%=s[:user][:protected] ? "[P]" : ""%>',
     '</90>'
   ].join('')
 )
