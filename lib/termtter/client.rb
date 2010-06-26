@@ -73,6 +73,10 @@ module Termtter
         @commands[command.name] = command
       end
 
+      def remove_command(name)
+        commands.delete(name.to_sym)
+      end
+
       def add_command(name)
         if block_given?
           command = Command.new(:name => name)

@@ -34,6 +34,10 @@ module Termtter
             hooks[hook.name] = hook
           end
 
+          def remove_hook(name)
+            hooks.delete(name.to_sym)
+          end
+
           def get_hook(name)
             hooks[name]
           end
