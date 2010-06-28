@@ -124,16 +124,27 @@ module Termtter
           raise e
         rescue StandardError, TimeoutError => e
           if now + 1 == config.retry
-            message = Nokogiri(e.message).at('title, h2').text rescue nil
-            puts message
-            raise e unless message
-            raise Rubytter::APIError.new(message)
+            if message = error_html_message(e)
+              puts message
+              raise Rubytter::APIError.new(message)
+            else
+              raise e
+            end
           else
             Termtter::Client.logger.debug("rubytter_proxy: retry (#{e.class.to_s}: #{e.message})")
           end
         end
       end
     end
+
+    if defined? Nokogiri
+      def error_html_message(e)
+        Nokogiri(e.message).at('title, h2').text rescue nil
+      end
+    else
+      def error_html_message(e); nil; end
+    end
+    private :error_html_message
 
     class LimitManager
       def initialize(rubytter)
