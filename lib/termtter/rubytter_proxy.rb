@@ -2,6 +2,10 @@
 begin
   require 'nokogiri'
 rescue LoadError
+  begin
+    require 'hpricot'
+  rescue LoadError
+  end
 end
 
 module Termtter
@@ -141,8 +145,14 @@ module Termtter
       def error_html_message(e)
         Nokogiri(e.message).at('title, h2').text rescue nil
       end
+    elsif defined? Hpricot
+      def error_html_message(e)
+        Hpricot(e.message).at('title, h2').inner_text rescue nil
+      end
     else
-      def error_html_message(e); nil; end
+      def error_html_message(e)
+        m = %r'<title>(.*?)</title>'.match(e.message) and m.captures[0] rescue nil
+      end
     end
     private :error_html_message
 
