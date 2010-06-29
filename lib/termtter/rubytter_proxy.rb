@@ -126,14 +126,16 @@ module Termtter
           end
         rescue Rubytter::APIError => e
           raise e
+        rescue JSON::ParserError => e
+          if message = error_html_message(e)
+            puts message
+            raise Rubytter::APIError.new(message)
+          else
+            raise e
+          end
         rescue StandardError, TimeoutError => e
           if now + 1 == config.retry
-            if message = error_html_message(e)
-              puts message
-              raise Rubytter::APIError.new(message)
-            else
-              raise e
-            end
+            raise e
           else
             Termtter::Client.logger.debug("rubytter_proxy: retry (#{e.class.to_s}: #{e.message})")
           end
