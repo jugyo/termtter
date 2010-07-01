@@ -12,7 +12,7 @@ module Termtter::Client
     Termtter::Client.logger.debug "user_stream: received #{JSON.parse(chunk).inspect}"
     begin
       if data[:event]
-        if /list_member/ =~ data[:event]
+        if /list_/ =~ data[:event]
           typable_id = Termtter::Client.data_to_typable_id(data.target.id)
           puts "[%s] %s %s %s to %s]" %
             [typable_id, data.source.screen_name, data.event, data.target.screen_name, data.target_object.uri]
