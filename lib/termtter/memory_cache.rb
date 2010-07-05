@@ -30,7 +30,7 @@ module Termtter
       end
     end
 
-    class MemCacheMock < SimpleDelegator
+    class MemCacheMock < DelegateClass(Hash)
       def initialize(dummy_server)
         super(Hash.new)
         @keys = []
