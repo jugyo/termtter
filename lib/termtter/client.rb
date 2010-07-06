@@ -19,7 +19,8 @@ module Termtter
     class << self
       attr_reader :commands, :logger, :task_manager
 
-      # plug :: Name -> (Hash) -> IO () where NAME = String | Symbol | [NAME]
+      # call-seq:
+      #   plug :: Name -> (Hash) -> IO () where NAME = String | Symbol | [NAME]
       def plug(name, options = {})
         if Array === name # Obviously `name.respond_to?(:each)` is better, but for 1.8.6 compatibility we cannot.
           name.each {|i| plug(i, options) }

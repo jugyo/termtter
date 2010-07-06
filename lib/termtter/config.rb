@@ -13,7 +13,8 @@ module Termtter
       @store.inspect
     end
 
-    # set_default :: (Symbol | String) -> a -> IO ()
+    # call-seq:
+    #   set_default :: (Symbol | String) -> a -> IO ()
     def set_default(name, value)
       match_p, init, last = *name.to_s.match(/^(.+)\.([^\.]+)$/)
       if match_p
@@ -29,7 +30,8 @@ module Termtter
       end
     end
 
-    # empty? :: Boolean
+    # call-seq:
+    #   empty? :: Boolean
     def empty?
       @store.empty?
     end
@@ -51,13 +53,15 @@ module Termtter
       @freezes.delete(name.to_sym)
     end
 
-    # __assign__ :: Symbol -> a -> IO ()
+    # call-seq:
+    #   __assign__ :: Symbol -> a -> IO ()
     def __assign__(name, value)
       return if @freezes.include?(name)
       @store[name] = value
     end
 
-    # __refer__ :: Symbol -> IO a
+    # call-seq:
+    #   __refer__ :: Symbol -> IO a
     def __refer__(name)
       @store[name] == :undefined ? @store[name] = Termtter::Config.new : @store[name]
     end
