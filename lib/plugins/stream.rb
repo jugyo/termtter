@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 require 'tweetstream'
-require File.dirname(__FILE__) + '/../termtter/active_rubytter'
+require File.expand_path(File.dirname(__FILE__)) + '/../termtter/active_rubytter'
 
 config.plugins.stream.set_default :max_following, 400
 config.plugins.stream.set_default :timeline_format, '<yellow>[S]</yellow> $orig'

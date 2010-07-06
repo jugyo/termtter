@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.expand_path(File.dirname(__FILE__)) + '/../spec_helper'
 
 describe Termtter::Client, 'when the plugin hi is loaded' do
   it 'adds commands such as hi and hola' do

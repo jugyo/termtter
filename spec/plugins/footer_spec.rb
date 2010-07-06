@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-require File.dirname(__FILE__) + '/../spec_helper.rb'
+require File.expand_path(File.dirname(__FILE__)) + '/../spec_helper.rb'
 
 describe Termtter::Client, 'when the plugin footer is loaded' do
   @r = nil

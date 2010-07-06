@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path(File.dirname(__FILE__)) + '/../../spec_helper'
 
 describe 'Termtter::Client.post_retweet' do
   describe 'posts a retweet based on the given post by someone,' do

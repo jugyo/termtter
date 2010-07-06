@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-require File.dirname(__FILE__) + '/DB'
+require File.expand_path(File.dirname(__FILE__)) + '/DB'
 require 'sqlite3'
 
 module Termtter::Storage
