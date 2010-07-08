@@ -8,6 +8,8 @@ config.plugins.retweet.set_default(
   :official_retweet, true)
 config.plugins.retweet.set_default(
   :quotetweet, false)
+config.plugins.retweet.set_default(
+  :as_reply, false)
 
 module Termtter::Client
   def self.post_retweet(s, comment = nil)
@@ -33,7 +35,8 @@ module Termtter::Client
     comment += ' ' unless comment.nil?
     rt_or_qt = (config.plugins.retweet.quotetweet and comment) ? 'QT' : 'RT'
     text = ERB.new(config.plugins.retweet.format).result(binding)
-    Termtter::API.twitter.update(text)
+    params = config.plugins.retweet.as_reply ? {:in_reply_to_status_id => s.id} : {}
+    Termtter::API.twitter.update(text, params)
     puts "=> #{text}"
   end
 
