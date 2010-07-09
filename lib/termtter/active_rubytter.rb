@@ -17,11 +17,7 @@ module Termtter
     end
 
     def method_missing(name, *args)
-      if @data.key?(name)
-        return @data[name]
-      else
-        super
-      end
+      @data[name]
     end
 
     def attributes=(raw_hash)
