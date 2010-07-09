@@ -67,12 +67,12 @@ module Termtter
         else
           raise ArgumentError, 'arg should be String or nil'
         end
-      Termtter::Client.logger.debug "command: #{cmd} #{arg}"
+      Termtter::Client.logger.debug { "command: #{cmd} #{arg}" }
       result = exec_proc.call(arg)
-      Termtter::Client.logger.debug "command: #{cmd} #{arg} #{'%.2fsec' % (Time.now - from)}"
+      Termtter::Client.logger.debug { "command: #{cmd} #{arg} #{'%.2fsec' % (Time.now - from)}" }
       result
     rescue => e
-      Termtter::Client.logger.debug "command: #{cmd} #{arg} #{e.message} #{'%.2fsec' % (Time.now - from)}"
+      Termtter::Client.logger.debug { "command: #{cmd} #{arg} #{e.message} #{'%.2fsec' % (Time.now - from)}" }
       raise e
     end
 

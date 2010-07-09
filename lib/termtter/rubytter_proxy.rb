@@ -33,23 +33,27 @@ module Termtter
           end
 
           from = Time.now
-          Termtter::Client.logger.debug(
-            "rubytter_proxy: #{method}(#{modified_args.inspect[1...-1]})")
+          Termtter::Client.logger.debug {
+            "rubytter_proxy: #{method}(#{modified_args.inspect[1...-1]})"
+          }
           result = call_rubytter_or_use_cache(method, *modified_args, &block)
-          Termtter::Client.logger.debug(
+          Termtter::Client.logger.debug {
             "rubytter_proxy: #{method}(#{modified_args.inspect[1...-1]}), " +
-            "%.2fsec" % (Time.now - from))
+            "%.2fsec" % (Time.now - from)
+          }
 
           self.class.call_hooks("post_#{method}", *args)
         rescue HookCanceled
         rescue TimeoutError => e
-          Termtter::Client.logger.debug(
+          Termtter::Client.logger.debug {
             "rubytter_proxy: #{method}(#{modified_args.inspect[1...-1]}) " +
-            "#{e.message} #{'%.2fsec' % (Time.now - from)}")
+            "#{e.message} #{'%.2fsec' % (Time.now - from)}"
+          }
           raise e
         rescue => e
-          Termtter::Client.logger.debug(
-            "rubytter_proxy: #{method}(#{modified_args.inspect[1...-1]}) #{e.message}")
+          Termtter::Client.logger.debug {
+            "rubytter_proxy: #{method}(#{modified_args.inspect[1...-1]}) #{e.message}"
+          }
           raise e
         end
         result
@@ -144,7 +148,7 @@ module Termtter
           if now + 1 == config.retry
             raise e
           else
-            Termtter::Client.logger.debug("rubytter_proxy: retry (#{e.class.to_s}: #{e.message})")
+            Termtter::Client.logger.debug { "rubytter_proxy: retry (#{e.class.to_s}: #{e.message})" }
           end
         end
       end
