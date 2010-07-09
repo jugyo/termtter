@@ -322,7 +322,12 @@ module Termtter
         load_plugins
         eval_init_block
         config.__unfreeze__(:user_name)
-        Termtter::API.setup
+        begin
+          Termtter::API.setup
+        rescue Rubytter::APIError => e
+          config.devel ? handle_error(e) : puts e.message
+          exit EXIT_FAILURE
+        end
 
         config.system.eval_scripts.each do |script|
           begin
