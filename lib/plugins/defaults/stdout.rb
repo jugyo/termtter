@@ -8,14 +8,16 @@ config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
   :timeline_format,
   [
-    '<<%=config.plugins.stdout.colors.last%>><%=time%> [<%=status_id%>]</<%=config.plugins.stdout.colors.last%>> ',
+    '<<%=config.plugins.stdout.gray||config.plugins.stdout.colors.last%>>',
+    '<%=time%> [<%=status_id%>] ',
+    '</<%=config.plugins.stdout.gray||config.plugins.stdout.colors.last%>>',
     '<%= indent_text %>',
     '<<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ',
-    '<<%=config.plugins.stdout.colors.last%>>',
+    '<<%=config.plugins.stdout.gray||config.plugins.stdout.colors.last%>>',
     '<%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%>',
     '<%=retweeted_status_id ? " (retweet_to [#{retweeted_status_id}]) " : ""%>',
     '<%=source%><%=s[:user][:protected] ? "[P]" : ""%>',
-    '</<%=config.plugins.stdout.colors.last%>>'
+    '</<%=config.plugins.stdout.gray||config.plugins.stdout.colors.last%>>',
   ].join('')
 )
 config.plugins.stdout.set_default(:sweets, %w[jugyo ujm sora_h lingr_termtter termtter hitode909 nanki sixeight])
