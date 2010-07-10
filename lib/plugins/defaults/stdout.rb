@@ -4,6 +4,7 @@ require 'termcolor'
 require 'erb'
 require 'tempfile'
 
+config.plugins.stdout.set_default(:gray, 90)
 config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
   :timeline_format,
