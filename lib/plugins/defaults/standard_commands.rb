@@ -125,7 +125,7 @@ module Termtter::Client
   end
 
   def self.get_friends(user_name, max)
-    self.get_friends_or_followers(:followers, user_name, max)
+    self.get_friends_or_followers(:friends, user_name, max)
   end
 
   def self.get_followers(user_name, max)
