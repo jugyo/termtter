@@ -309,9 +309,9 @@ module Termtter::Client
     :help => ['unblock USER', 'Unblock user']
   )
 
-  help = ['favorite_list USERNAME', 'show user favorites']
+  help = ['favorites,favlist USERNAME', 'show user favorites']
   register_command(:favorites, :alias => :favlist, :help => help) do |arg|
-    output Termtter::API.twitter.favorites(arg), :user_timeline, :type => :favorite
+    output(Termtter::API.twitter.favorites(arg), Termtter::Event.new(:user_timeline, :type => :favorite))
   end
 
   register_command(
