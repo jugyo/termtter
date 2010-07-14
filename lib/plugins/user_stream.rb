@@ -5,6 +5,7 @@ module Termtter::Client
       @user_stream_thread.exit
     end
     @user_stream_thread = nil
+    plug "defaults/auto_reload"
   end
 
   handle_chunk = lambda { |chunk|
