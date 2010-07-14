@@ -72,16 +72,17 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   def initialize(*args)
     super
     @@listners << self
-    @friends = Set.new
+    @members = Set.new
     @commands = []
 
     Termtter::Client.register_hook(:collect_user_names_for_irc_gw, :point => :pre_filter) do |statuses, event|
       new_users = []
       statuses.each do |s|
         screen_name = s.user.screen_name
-        next if screen_name == @user # XXX
-        next if @friends.include? screen_name
-        @friends << screen_name
+        next if screen_name == config.user_name
+        next unless friends_ids.include? s.user.id
+        next if @members.include? screen_name
+        @members << screen_name
         new_users << screen_name
       end
       join_members(new_users)
@@ -163,11 +164,11 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   end
 
   def sync_friends
-    previous_friends = @friends
+    previous_friends = @members
     new_friends = Termtter::Client.following_friends
     diff = new_friends - previous_friends
     join_members(diff)
-    @friends += diff
+    @members += diff
   end
 
   def sync_commands
@@ -190,6 +191,14 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       params = []
     end
     post server_name, MODE, main_channel, "+#{"v" * params.size}", *params unless params.empty?
+  end
+
+  def friends_ids
+    if !@friends_ids || !@friends_ids_expire ||@friends_ids_expire < Time.now
+      @friends_ids = Termtter::API.twitter.friends_ids(config.user_name)
+      @friends_ids_expire = Time.now + 3600
+    end
+    @friends_ids
   end
 
 end
