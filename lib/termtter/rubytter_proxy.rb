@@ -158,6 +158,15 @@ module Termtter
     end
     private :error_html_message
 
+    # XXX: these methods should in oauth_rubytter
+    def access_token
+      @rubytter.instance_variable_get(:@access_token)
+    end
+
+    def consumer_token
+      access_token.consumer
+    end
+
     class LimitManager
       def initialize(rubytter)
         @rubytter = rubytter

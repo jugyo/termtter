@@ -53,9 +53,6 @@ module Termtter::Client
   }
 
   register_command(:"user_stream", :help => 'user_stream') do |arg|
-    unless config.password.kind_of? String
-      raise "config.password is required."
-    end
 
     uri = URI.parse('http://betastream.twitter.com/2b/user.json')
 
@@ -64,7 +61,8 @@ module Termtter::Client
       1.times{ # to use break
         Net::HTTP.start(uri.host, uri.port){ |http|
           request = Net::HTTP::Get.new(uri.request_uri)
-          request.basic_auth(config.user_name, config.password)
+          request.oauth!(http, Termtter::API.twitter.consumer_token, Termtter::API.twitter.access_token)
+
           http.request(request){ |response|
             raise response.code.to_i unless response.code.to_i == 200
             break
@@ -83,13 +81,16 @@ module Termtter::Client
           logger.info 'connecting to user stream'
           Net::HTTP.start(uri.host, uri.port){ |http|
             request = Net::HTTP::Get.new(uri.request_uri)
-            request.basic_auth(config.user_name, config.password)
+            request.oauth!(http, Termtter::API.twitter.consumer_token, Termtter::API.twitter.access_token)
             http.request(request){ |response|
               raise response.code.to_i unless response.code.to_i == 200
               raise 'Response is not chuncked' unless response.chunked?
-              response.read_body{ |chunk|
+              response.each_line("\r\n"){ |chunk|
                 handle_chunk.call(chunk)
               }
+#               response.read_body{ |chunk|
+#                 handle_chunk.call(chunk)
+#               }
             }
           }
         rescue Timeout::Error, StandardError => e
