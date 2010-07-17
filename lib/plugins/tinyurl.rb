@@ -12,7 +12,7 @@ config.plugins.tinyurl.set_default(:ignore_regexp, %r{
   | \Ahttp://tr\.im/ | \Ahttp://short\.to/ | \Ahttp://ow\.ly/
   | \Ahttp://u\.nu/ | \Ahttp://twurl\.nl/  | \Ahttp://icio\.us/
   | \Ahttp://htn\.to/ | \Ahttp://cot\.ag/ | \Ahttp://ht\.ly/ | \Ahttp://p\.tl/
-  | \Ahttp://url4\.eu/ | |Ahttp://t\.co/
+  | \Ahttp://url4\.eu/ | \Ahttp://t\.co/
 }x )
 config.plugins.tinyurl.set_default(:tinyurl_hook_commands, [:update, :reply, :retweet])
 config.plugins.tinyurl.set_default(
