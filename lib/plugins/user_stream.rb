@@ -85,12 +85,9 @@ module Termtter::Client
             http.request(request){ |response|
               raise response.code.to_i unless response.code.to_i == 200
               raise 'Response is not chuncked' unless response.chunked?
-              response.each_line("\r\n"){ |chunk|
+              response.read_body{ |chunk|
                 handle_chunk.call(chunk)
               }
-#               response.read_body{ |chunk|
-#                 handle_chunk.call(chunk)
-#               }
             }
           }
         rescue Timeout::Error, StandardError => e
