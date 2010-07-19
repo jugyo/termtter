@@ -117,8 +117,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   def on_message(m)
     termtter_command = m.command.downcase + ' ' + m.params.join(' ')
     return unless Termtter::Client.find_command(termtter_command)
-    post '#termtter', NOTICE, main_channel, '> ' + termtter_command
-    Termtter::Client.execute(termtter_command)
+    execute_command(termtter_command)
   rescue Exception => e
     Termtter::Client.handle_error(e)
   end
@@ -137,8 +136,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     if message =~ / +\//
       termtter_command = message.gsub(/ +\//, '')
       return unless Termtter::Client.find_command(termtter_command)
-      post '#termtter', NOTICE, main_channel, '> ' + termtter_command
-      Termtter::Client.execute(termtter_command)
+      execute_command(termtter_command)
       return
     end
     config.plugins.irc_gw.command_regexps and
@@ -146,15 +144,23 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       if message =~ rule
         command = message.scan(rule).first.join(' ')
         next unless Termtter::Client.find_command(command)
-        post '#termtter', NOTICE, main_channel, '> ' + command
-        Termtter::Client.execute(command)
+        execute_command(command)
         return
       end
     end
-    Termtter::Client.execute('update ' + message)
+    execute_command('update ' + message)
     post @prefix, TOPIC, main_channel, message
   rescue Exception => e
     Termtter::Client.handle_error(e)
+  end
+
+  def execute_command(command)
+    original_confirm = config.confirm
+    config.confirm = false
+    post '#termtter', NOTICE, main_channel, '> ' + command
+    Termtter::Client.execute(command)
+  ensure
+    config.confirm = original_confirm
   end
 
   def log(str)
