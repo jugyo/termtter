@@ -117,6 +117,7 @@ module Termtter
       end
 
       def proxy_string
+        return unless config.proxy.host
         if config.proxy.user_name && config.proxy.password
           "http://#{config.proxy.user_name}:#{config.proxy.password}@#{config.proxy.host}:#{config.proxy.port}"
         else
