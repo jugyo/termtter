@@ -2,9 +2,9 @@
 
 config.set_default(:host, 'api.twitter.com')
 config.set_default(:oauth_consumer_site, 'http://api.twitter.com')
-if ENV.has_key?('HTTP_PROXY')
+if ENV['HTTP_PROXY'] || ENV['http_proxy']
   require 'uri'
-  proxy = ENV['HTTP_PROXY']
+  proxy = ENV['HTTP_PROXY'] || ENV['http_proxy']
   proxy = "http://" + proxy if proxy !~ /^http:\/\//
   u = URI.parse(proxy)
   config.proxy.set_default(:host, u.host)
@@ -94,7 +94,7 @@ module Termtter
           Termtter::Crypt.decrypt(CONSUMER_KEY),
           Termtter::Crypt.decrypt(CONSUMER_SECRET),
           :site => config.oauth_consumer_site,
-          :proxy => ENV['http_proxy']
+          :proxy => proxy_string
         )
       end
 
@@ -115,6 +115,15 @@ module Termtter
           :proxy_password => config.proxy.password
         }
       end
+
+      def proxy_string
+        if config.proxy.user_name && config.proxy.password
+          "http://#{config.proxy.user_name}:#{config.proxy.password}@#{config.proxy.host}:#{config.proxy.port}"
+        else
+          "http://#{config.proxy.host}:#{config.proxy.port}"
+        end
+      end
+
     end
   end
 end
