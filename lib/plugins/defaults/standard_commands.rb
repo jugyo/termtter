@@ -316,29 +316,34 @@ module Termtter::Client
 
   register_command(
     :name => :favorite, :aliases => [:fav],
-    :exec_proc => lambda {|arg|
-      id =
-        case arg
-        when /^\d+/
-          arg.to_i
-        when /^@([A-Za-z0-9_]+)/
-          user_name = normalize_as_user_name($1)
-          statuses = Termtter::API.twitter.user_timeline(user_name)
-          return if statuses.empty?
-          statuses[0].id
-        when /^\/(.*)$/
-          word = $1
-          raise "Not implemented yet."
-        else
-          if public_storage[:typable_id] && typable_id?(arg)
-            typable_id_convert(arg)
+    :exec_proc => lambda {|args|
+      args.split(' ').each do |arg|
+        id =
+          case arg
+          when /^\d+/
+            arg.to_i
+          when /^@([A-Za-z0-9_]+)/
+            user_name = normalize_as_user_name($1)
+            statuses = Termtter::API.twitter.user_timeline(user_name)
+            return if statuses.empty?
+            statuses[0].id
+          when /^\/(.*)$/
+            word = $1
+            raise "Not implemented yet."
           else
-            return
+            if public_storage[:typable_id] && typable_id?(arg)
+              typable_id_convert(arg)
+            else
+              return
+            end
           end
+        begin
+          r = Termtter::API.twitter.favorite id
+          puts "Favorited status ##{r.id} on user @#{r.user.screen_name} #{r.text}"
+        rescue => e
+          handle_error e
         end
-
-      r = Termtter::API.twitter.favorite id
-      puts "Favorited status ##{r.id} on user @#{r.user.screen_name} #{r.text}"
+      end
     },
     :completion_proc => lambda {|cmd, arg|
       case arg
