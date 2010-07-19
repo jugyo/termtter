@@ -59,7 +59,7 @@ module Termtter::Client
     unless @user_stream_thread
       logger.info 'checking API status'
       1.times{ # to use break
-        Net::HTTP.start(uri.host, uri.port){ |http|
+        Termtter::HTTPpool.start(uri.host, uri.port){ |http|
           request = Net::HTTP::Get.new(uri.request_uri)
           request.oauth!(http, Termtter::API.twitter.consumer_token, Termtter::API.twitter.access_token)
 
@@ -79,7 +79,7 @@ module Termtter::Client
       loop do
         begin
           logger.info 'connecting to user stream'
-          Net::HTTP.start(uri.host, uri.port){ |http|
+          Termtter::HTTPpool.start(uri.host, uri.port){ |http|
             request = Net::HTTP::Get.new(uri.request_uri)
             request.oauth!(http, Termtter::API.twitter.consumer_token, Termtter::API.twitter.access_token)
             http.request(request){ |response|
