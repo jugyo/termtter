@@ -262,6 +262,7 @@ module Termtter
       def setup_logger
         @logger = config.logger || default_logger
         @logger.level = config.devel ? Logger::DEBUG : Logger::INFO
+        call_hooks(:post_setup_logger)
         @logger
       end
 
