@@ -326,7 +326,7 @@ module Termtter
         begin
           Termtter::API.setup
         rescue Rubytter::APIError => e
-          config.devel ? handle_error(e) : puts(e.message)
+          handle_error(e)
           exit EXIT_FAILURE
         end
 
