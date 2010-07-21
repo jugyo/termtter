@@ -47,8 +47,19 @@ module Termtter::Client
       # "u $aa msg" is likely to be a mistake of
       # "re $aa msg".
       if /^\s*\d+\s/ =~ arg
-        puts "Does it mean `re[ply] #{arg}`?"
-        break
+        puts "Does it mean `re[ply] #{arg}` [N/y]?"
+        ans = case HighLine.new.ask("Does it mean `re[ply] #{arg}` [N/y]? ")
+              when /^[yY]$/ then break true
+              when /^[nN]$/ then break false
+              when /^$/     then break false
+              else
+                puts "Invalid answer. Please input [yYnN] or nothing."
+                break
+              end
+        if ans
+          Termtter::Client.execute("re #{arg}")
+          break
+        end
       end
 
       result = Termtter::API.twitter.update(arg, params)
