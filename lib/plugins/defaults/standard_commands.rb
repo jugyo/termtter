@@ -48,18 +48,21 @@ module Termtter::Client
       # "re $aa msg".
       if /^\s*\d+\s/ =~ arg
         puts "Does it mean `re[ply] #{arg}` [N/y]?"
-        ans = case HighLine.new.ask("Does it mean `re[ply] #{arg}` [N/y]? ")
-              when /^[yY]$/ then break true
-              when /^[nN]$/ then break false
-              when /^$/     then break false
-              else
-                puts "Invalid answer. Please input [yYnN] or nothing."
-                break
-              end
-        if ans
+
+        case HighLine.new.ask("Does it mean `re[ply] #{arg}` [N/y]? ")
+        when /^[yY]$/
           Termtter::Client.execute("re #{arg}")
           break
+        when /^[nN]?$/
+        else
+          puts "Invalid answer. Please input [yYnN] or nothing."
+          break
         end
+      end
+
+      if RUBY_VERSION >= "1.9" ? arg.size > 140 : arg.size > 280
+        puts "Status is over 140 characters. (+#{RUBY_VERSION >= "1.9" ? arg.size-140 : (arg.size-280)/2})"
+        break
       end
 
       result = Termtter::API.twitter.update(arg, params)
