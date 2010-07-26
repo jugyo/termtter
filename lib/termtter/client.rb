@@ -348,6 +348,8 @@ module Termtter
           end
           call_hooks(:init_command_line)
         end
+
+        exit
       end
 
       def handle_error(e)
