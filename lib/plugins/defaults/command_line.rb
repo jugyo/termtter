@@ -64,6 +64,7 @@ module Termtter
             Client.handle_error(e)
           end
         end
+        Client.exit
       end
       @input_thread.join
     end
