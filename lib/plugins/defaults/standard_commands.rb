@@ -341,6 +341,13 @@ module Termtter::Client
             statuses = Termtter::API.twitter.user_timeline(user_name)
             return if statuses.empty?
             statuses[0].id
+          when %r{twitter.com/[A-Za-z0-9_]+/status/\d+}
+            status_id = URI.parse(arg).path.split(%{/}).last
+          when %r{twitter.com/[A-Za-z0-9_]+}
+            user_name = normalize_as_user_name(URI.parse(arg).path.split(%{/}).last)
+            statuses = Termtter::API.twitter.user_timeline(user_name)
+            return if statuses.empty?
+            statuses[0].id
           when /^\/(.*)$/
             word = $1
             raise "Not implemented yet."
