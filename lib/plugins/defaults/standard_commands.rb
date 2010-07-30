@@ -60,12 +60,16 @@ module Termtter::Client
         end
       end
 
-      if RUBY_VERSION >= "1.9" ? arg.size > 140 : arg.size > 280
-        puts "Status is over 140 characters. (+#{RUBY_VERSION >= "1.9" ? arg.size-140 : (arg.size-280)/2})"
-        break
+      begin
+        result = Termtter::API.twitter.update(arg, params)
+      rescue Rubytter::APIError => e
+        if /Status is over 140 characters/ =~ e.message
+          logger.error("Status is over 140 characters. (+#{RUBY_VERSION >= "1.9" ? arg.size-140 : (arg.size-280)/2})")
+          break
+        else
+          raise
+        end
       end
-
-      result = Termtter::API.twitter.update(arg, params)
 
       if result.text == arg
         puts "updated => #{result.text}"
