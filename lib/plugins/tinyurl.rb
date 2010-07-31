@@ -46,7 +46,7 @@ module Termtter::Client
     end
     if res.code == '200'
       result = res.body
-      if /"shortUrl": "(http.*)"/ =~ result
+      if /"shortUrl": "(http.*?)"/ =~ result
         result = $1
       elsif /"statusCode": "ERROR"/ =~ result
         return nil
