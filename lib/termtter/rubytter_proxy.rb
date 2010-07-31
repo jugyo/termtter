@@ -125,7 +125,13 @@ module Termtter
             return @rubytter.__send__(method, *args, &block)
           end
         rescue Rubytter::APIError => e
-          raise e
+          if /Status is over 140 characters/ =~ e.message
+            e2 = Rubytter::APIError.new(e.message + " (+#{RUBY_VERSION >= '1.9' ? args[0].size-140 : (args[0].size-280)/2})")
+            e2.set_backtrace(e.backtrace)
+            raise e2
+          else
+            raise
+          end
         rescue JSON::ParserError => e
           if message = error_html_message(e)
             puts message
