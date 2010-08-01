@@ -47,8 +47,6 @@ module Termtter::Client
       # "u $aa msg" is likely to be a mistake of
       # "re $aa msg".
       if /^\s*\d+\s/ =~ arg
-        puts "Does it mean `re[ply] #{arg}` [N/y]?"
-
         case HighLine.new.ask("Does it mean `re[ply] #{arg}` [N/y]? ")
         when /^[yY]$/
           Termtter::Client.execute("re #{arg}")
