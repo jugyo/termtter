@@ -126,7 +126,8 @@ module Termtter
           end
         rescue Rubytter::APIError => e
           if /Status is over 140 characters/ =~ e.message
-            e2 = Rubytter::APIError.new(e.message + " (+#{RUBY_VERSION >= '1.9' ? args[0].size-140 : (args[0].size-280)/2})")
+            len = (RUBY_VERSION >= '1.9' ? args[0] : args[0].split(//u)).size
+            e2 = Rubytter::APIError.new("#{e.message} (+#{len - 140})")
             e2.set_backtrace(e.backtrace)
             raise e2
           else
