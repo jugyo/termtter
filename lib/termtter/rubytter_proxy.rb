@@ -32,7 +32,7 @@ module Termtter
             modified_args = hook.call(*modified_args)
           end
 
-          from = Time.now
+          from = Time.now if Termtter::Client.logger.debug?
           Termtter::Client.logger.debug {
             "rubytter_proxy: #{method}(#{modified_args.inspect[1...-1]})"
           }
