@@ -4,19 +4,22 @@ require 'termcolor'
 require 'erb'
 require 'tempfile'
 
+config.plugins.stdout.set_default(:gray, 90)
 config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
   :timeline_format,
   [
-    '<90><%=time%> [<%=status_id%>]</90> ',
+    '<<%=config.plugins.stdout.gray||config.plugins.stdout.colors.last%>>',
+    '<%=time%> [<%=status_id%>] ',
+    '</<%=config.plugins.stdout.gray||config.plugins.stdout.colors.last%>>',
     '||>',
     '<<%=color%>><%=s.user.screen_name%></<%=color%>>: ',
     '<%=text%> ',
-    '<90>',
+    '<<%=config.plugins.stdout.gray||config.plugins.stdout.colors.last%>>',
     '<%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%>',
     '<%=retweeted_status_id ? " (retweet_to [#{retweeted_status_id}]) " : ""%>',
-    '<%=source%><%=s.user.protected ? "[P]" : ""%>',
-    '</90>'
+    '<%=source%><%=s[:user][:protected] ? "[P]" : ""%>',
+    '</<%=config.plugins.stdout.gray||config.plugins.stdout.colors.last%>>',
   ].join('')
 )
 config.plugins.stdout.set_default(:sweets, %w[jugyo ujm sora_h lingr_termtter termtter hitode909 nanki sixeight])
@@ -97,6 +100,10 @@ module Termtter
 
     def call(statuses, event)
       print_statuses(statuses, event)
+    end
+
+    def inspect
+      "#<Termtter::StdOut @name=#{@name}, @points=#{@points.inspect}, @exec_proc=#{@exec_proc.inspect}>"
     end
 
     private
@@ -255,6 +262,10 @@ module Termtter
 
     def color_of_screen_name_cache
       @color_of_screen_name_cache ||= {}
+    end
+
+    def escape(data)
+      data.gsub(/[:cntrl:]/) {|c| c == "\n" ? c : c.dump[1...-1]}.untaint
     end
   end
 

@@ -5,9 +5,8 @@ require 'erb'
 module Termtter
   module ConfigSetup
     module_function
+
     def run
-      ui = create_highline
-      user_name = ui.ask('your twitter user name: ')
 
       plugins = Dir.glob(File.expand_path(File.dirname(__FILE__) + "/../plugins/*.rb")).map  {|f|
         f.match(%r|lib/plugins/(.*?).rb$|)[1]
@@ -23,6 +22,15 @@ module Termtter
       }
 
       puts "generated: ~/.termtter/config"
+
+      token_and_secret = Termtter::API.authorize_by_oauth
+      token = token_and_secret[:token]
+      secret = token_and_secret[:secret]
+
+      puts "Setup is all over. enjoy!"
+    rescue OAuth::Unauthorized
+      puts 'failed to authentication!'
+      exit!
     end
   end
 end

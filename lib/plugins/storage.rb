@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 require 'time'
-require File.dirname(__FILE__) + '/storage/db'
+require File.expand_path(File.dirname(__FILE__)) + '/storage/db'
 
 module Termtter::Client
   @db = Termtter::Storage::DB.new

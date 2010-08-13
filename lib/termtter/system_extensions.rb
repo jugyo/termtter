@@ -25,9 +25,11 @@ module Readline
       pathes = Array(ENV['TERMTTER_EXT_LIB'] || [
         '/usr/lib64/libreadline.so',
         '/usr/local/lib64/libreadline.so',
+        '/usr/local/lib/libreadline.dylib',
         '/opt/local/lib/libreadline.dylib',
         '/usr/lib/libreadline.so',
         '/usr/local/lib/libreadline.so',
+        Dir.glob('/lib/libreadline.so*')[-1] || '', # '' is dummy
         File.join(Gem.bindir, 'readline.dll')
       ])
       dlload(pathes.find { |path| File.exist?(path)})
@@ -46,7 +48,7 @@ module Readline
     end
   rescue Exception
     def self.rl_parse_and_bind(str);end
-    def self.refresh_line;end
+    def self.refresh_line;end unless Readline::NATIVE_REFRESH_LINE_METHOD
   end
 end
 
@@ -60,25 +62,27 @@ def create_highline
   HighLine.new($stdin)
 end
 
+class BrowserNotFound < StandardError; end
+
 def open_browser(url)
-  if ENV['KDE_FULL_SESSION'] == 'true'
-    system 'kfmclient', 'exec', url
-  elsif ENV['GNOME_DESKTOP_SESSION_ID']
-    system 'gnome-open', url
-  elsif !(/not found/ =~ `which exo-open`)
-    # FIXME: is fungible system('exo-open').nil? for lambda {...}
-    system 'exo-open', url
+  found = case RUBY_PLATFORM.downcase
+  when /linux/
+    [['xdg-open'], ['x-www-browser'], ['firefox'], ['w3m', '-X']]
+  when /darwin/
+    [['open']]
+  when /mswin(?!ce)|mingw|bccwin/
+    [['start']]
   else
-    case RUBY_PLATFORM.downcase
-    when /linux/
-      system 'firefox', url
-    when /darwin/
-      system 'open', url
-    when /mswin(?!ce)|mingw|bccwin/
-      system 'start', url
-    else
-      system 'firefox', url
-    end
+    [['xdg-open'], ['firefox'], ['w3m', '-X']]
+  end.find do |cmd|
+    system *(cmd.dup << url)
+    $?.exitstatus != 127
+  end
+  if found
+    # Kernel::__method__ is not suppoted in Ruby 1.8.6 or earlier.
+    eval %{ def open_browser(url); system *(#{found}.dup << url); end }
+  else
+    raise BrowserNotFound
   end
 end
 

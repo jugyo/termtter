@@ -2,6 +2,7 @@
 
 require 'net/irc'
 require 'set'
+require 'cgi'
 
 config.plugins.irc_gw.set_default(:port, 16669)
 config.plugins.irc_gw.set_default(:last_statuses_count, 100)
@@ -34,7 +35,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   @@last_statuses = []
 
   Termtter::Client.register_hook(
-    :name => :irc_gw,
+    :name => :irc_gw_output,
     :point => :output,
     :exec => lambda { |statuses, event|
       if event == :update_friends_timeline
@@ -45,6 +46,15 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       @@listners.each do |listner|
         listner.call(statuses.dup, event)
       end
+    }
+  )
+  Termtter::Client.register_hook(
+    :name => :irc_gw_handle_error,
+    :point => :on_error,
+    :exec => lambda { |error|
+      @@listners.each{ |listener|
+        listener.log "[ERROR] #{error.class.to_s}: #{error.message}"
+      }
     }
   )
   if Termtter::Client.respond_to? :register_output
@@ -62,16 +72,17 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   def initialize(*args)
     super
     @@listners << self
-    @friends = Set.new
+    @members = Set.new
     @commands = []
 
     Termtter::Client.register_hook(:collect_user_names_for_irc_gw, :point => :pre_filter) do |statuses, event|
       new_users = []
       statuses.each do |s|
         screen_name = s.user.screen_name
-        next if screen_name == @user # XXX
-        next if @friends.include? screen_name
-        @friends << screen_name
+        next if screen_name == config.user_name
+        next unless friends_ids.include? s.user.id
+        next if @members.include? screen_name
+        @members << screen_name
         new_users << screen_name
       end
       join_members(new_users)
@@ -99,17 +110,15 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     statuses.each do |s|
       typable_id = Termtter::Client.data_to_typable_id(s.id)
       time = Time.parse(s.created_at).strftime(time_format) if time_format
-      post s.user.screen_name, msg_type, main_channel, [time, s.text, typable_id].compact.join(' ')
+      post s.user.screen_name, msg_type, main_channel, [time, CGI.unescapeHTML(s.text), typable_id].compact.join(' ')
     end
   end
 
   def on_message(m)
     termtter_command = m.command.downcase + ' ' + m.params.join(' ')
     return unless Termtter::Client.find_command(termtter_command)
-    post '#termtter', NOTICE, main_channel, '> ' + termtter_command
-    Termtter::Client.execute(termtter_command)
+    execute_command(termtter_command)
   rescue Exception => e
-    post '#termtter', NOTICE, main_channel, "#{e.class.to_s}: #{e.message}"
     Termtter::Client.handle_error(e)
   end
 
@@ -127,8 +136,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     if message =~ / +\//
       termtter_command = message.gsub(/ +\//, '')
       return unless Termtter::Client.find_command(termtter_command)
-      post '#termtter', NOTICE, main_channel, '> ' + termtter_command
-      Termtter::Client.execute(termtter_command)
+      execute_command(termtter_command)
       return
     end
     config.plugins.irc_gw.command_regexps and
@@ -136,16 +144,23 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       if message =~ rule
         command = message.scan(rule).first.join(' ')
         next unless Termtter::Client.find_command(command)
-        post '#termtter', NOTICE, main_channel, '> ' + command
-        Termtter::Client.execute(command)
+        execute_command(command)
         return
       end
     end
-    Termtter::Client.execute('update ' + message)
+    execute_command('update ' + message)
     post @prefix, TOPIC, main_channel, message
   rescue Exception => e
-    post '#termtter', NOTICE, main_channel, "#{e.class.to_s}: #{e.message}"
     Termtter::Client.handle_error(e)
+  end
+
+  def execute_command(command)
+    original_confirm = config.confirm
+    config.confirm = false
+    post '#termtter', NOTICE, main_channel, '> ' + command
+    Termtter::Client.execute(command)
+  ensure
+    config.confirm = original_confirm
   end
 
   def log(str)
@@ -155,11 +170,11 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   end
 
   def sync_friends
-    previous_friends = @friends
+    previous_friends = @members
     new_friends = Termtter::Client.following_friends
     diff = new_friends - previous_friends
     join_members(diff)
-    @friends += diff
+    @members += diff
   end
 
   def sync_commands
@@ -182,6 +197,14 @@ class TermtterIrcGateway < Net::IRC::Server::Session
       params = []
     end
     post server_name, MODE, main_channel, "+#{"v" * params.size}", *params unless params.empty?
+  end
+
+  def friends_ids
+    if !@friends_ids || !@friends_ids_expire ||@friends_ids_expire < Time.now
+      @friends_ids = Termtter::API.twitter.friends_ids(config.user_name)
+      @friends_ids_expire = Time.now + 3600
+    end
+    @friends_ids
   end
 
 end

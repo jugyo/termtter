@@ -12,6 +12,13 @@ URL_SHORTTERS = [
   {:host => "ow.ly", :pattern => %r'(http://ow\.ly(/[\w/]+))'},
   {:host => "u.nu", :pattern => %r'(http://u\.nu(/[\w/]+))'},
   {:host => "twurl.nl", :pattern => %r'(http://twurl\.nl(/\w+))'},
+  {:host => "icio.us", :pattern => %r'(http://icio\.us(/\w+))'},
+  {:host => "htn.to", :pattern => %r'(http://htn\.to(/\w+))'},
+  {:host => "cot.ag", :pattern => %r'(http://cot\.ag(/\w+))'},
+  {:host => "ht.ly", :pattern => %r'(http://ht\.ly(/\w+))'},
+  {:host => "p.tl", :pattern => %r'(http://p\.tl(/\w+))'},
+  {:host => "url4.eu", :pattern => %r'(http://url4\.eu(/\w+))'},
+  {:host => "t.co", :pattern => %r'(http://t\.co(/\w+))'},
 ]
 
 config.plugins.expand_tinyurl.set_default(:shortters, [])
@@ -39,7 +46,7 @@ def expand_url(host, path)
   res = Termtter::HTTPpool.start(host) do |h|
     h.get(path, { 'User-Agent' => 'Mozilla' })
   end
-  return nil unless res.code == "301" or res.code == "302"
+  return nil unless res.code =~ /\A30/
   newurl = res['Location']
   newurl.respond_to?(:force_encoding) ? newurl.force_encoding(Encoding::UTF_8) : newurl
 rescue Exception => e

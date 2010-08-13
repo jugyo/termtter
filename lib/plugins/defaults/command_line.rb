@@ -64,6 +64,7 @@ module Termtter
             Client.handle_error(e)
           end
         end
+        Client.exit
       end
       @input_thread.join
     end
@@ -113,7 +114,7 @@ module Termtter
 
     def trap_setting()
       return if /mswin(?!ce)|mingw|bccwin/ =~ RUBY_PLATFORM
-      
+
       begin
         stty_save = `stty -g`.chomp
         trap("INT") do

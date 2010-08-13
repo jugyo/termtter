@@ -2,7 +2,8 @@
 
 raise 'say.rb runs only in OSX Leopard or Snow Leopard' if /darwin(9|10)/ !~ RUBY_PLATFORM
 
-# say :: String -> String -> IO ()
+# call-seq:
+#   say :: String -> String -> IO ()
 def say(who, what)
   voices = %w(Alex Alex Bruce Fred Ralph Agnes Kathy Vicki)
   voice = voices[who.hash % voices.size]

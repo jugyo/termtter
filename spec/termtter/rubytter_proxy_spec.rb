@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.expand_path(File.dirname(__FILE__)) + '/../spec_helper'
 
 module Termtter
   describe RubytterProxy do
@@ -75,6 +75,20 @@ module Termtter
       @twitter.status_cache_store[1] = "status"
       @rubytter_mock.should_receive(:show).exactly(0)
       @twitter.show(1).should == "status"
+    end
+
+    it 'has safe mode' do
+      safe_twitter = @twitter.safe
+      safe_twitter.should be_kind_of(RubytterProxy)
+      safe_twitter.safe_mode.should be_true
+      safe_twitter.rubytter.should == @twitter.rubytter
+    end
+
+    it 'dies when LimitManager.safe? is false' do
+      safe_twitter = @twitter.safe
+      safe_twitter.current_limit.stub!(:safe?).and_return(false)
+
+      lambda{ safe_twitter.call_rubytter(:update, 'test') }.should raise_error(Termtter::RubytterProxy::FrequentAccessError)
     end
   end
 end

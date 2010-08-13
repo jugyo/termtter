@@ -10,7 +10,7 @@ config.plugins.standard.set_default(
 config.set_default(:easy_reply, false)
 config.plugins.standard.set_default(
   :one_line_profile_format,
-  '<90>[<%=user_id%>]</90> <<%=color%>><%= user.screen_name %>: <%= padding %><%= (user.description || "").gsub(/\r?\n/, "") %></<%=color%>>')
+  '<90>[<%=user_id%>]</90> <%= mark %> <<%=color%>><%= user.screen_name %>: <%= padding %><%= (user.description || "").gsub(/\r?\n/, "") %></<%=color%>>')
 
 module Termtter::Client
   register_command(
@@ -32,25 +32,38 @@ module Termtter::Client
   register_command(
     :name => :update, :alias => :u,
     :exec => lambda {|arg|
-      unless arg.empty?
-        params =
-          if config.easy_reply && /^\s*(@\w+)/ =~ arg
-            user_name = normalize_as_user_name($1)
-            in_reply_to_status_id =
-              Termtter::API.twitter.user(user_name).status.id rescue nil
-            in_reply_to_status_id ?
-              {:in_reply_to_status_id => in_reply_to_status_id} : {}
-          else
-            {}
-          end
-
-        result = Termtter::API.twitter.update(arg, params)
-
-        if result.text == arg
-          puts "updated => #{result.text}"
+      return if arg.empty?
+      params =
+        if config.easy_reply && /^\s*(@\w+)/ =~ arg
+          user_name = normalize_as_user_name($1)
+          in_reply_to_status_id =
+            Termtter::API.twitter.user(user_name).status.id rescue nil
+          in_reply_to_status_id ?
+            {:in_reply_to_status_id => in_reply_to_status_id} : {}
         else
-          puts TermColor.parse("<red>Failed to update :(</red>")
+          {}
         end
+
+      # "u $aa msg" is likely to be a mistake of
+      # "re $aa msg".
+      if /^\s*\d+\s/ =~ arg
+        case HighLine.new.ask("Does it mean `re[ply] #{arg}` [N/y]? ")
+        when /^[yY]$/
+          Termtter::Client.execute("re #{arg}")
+          break
+        when /^[nN]?$/
+        else
+          puts "Invalid answer. Please input [yYnN] or nothing."
+          break
+        end
+      end
+
+      result = Termtter::API.twitter.update(arg, params)
+
+      if result.text == arg
+        puts "updated => #{result.text}"
+      else
+        puts TermColor.parse("<red>Failed to update :(</red>")
       end
     },
     :help => ["update,u TEXT", "Post a new message"]
@@ -119,7 +132,7 @@ module Termtter::Client
   end
 
   def self.get_friends(user_name, max)
-    self.get_friends_or_followers(:followers, user_name, max)
+    self.get_friends_or_followers(:friends, user_name, max)
   end
 
   def self.get_followers(user_name, max)
@@ -127,7 +140,7 @@ module Termtter::Client
   end
 
   def self.get_friends_or_followers(type, user_name, max)
-    raise "type should :friends or :followers" unless [:friends, :followers].include? type
+    raise "type should be :friends or :followers" unless [:friends, :followers].include? type
     users = []
     cursor = -1
     begin
@@ -150,7 +163,7 @@ module Termtter::Client
   )
 
   register_command(
-    :name => :followers, :aliases => [:following],
+    :name => :followers,
     :exec_proc => lambda {|arg|
       friends_or_followers_command(:followers, arg)
     },
@@ -158,7 +171,7 @@ module Termtter::Client
   )
 
   def self.friends_or_followers_command(type, arg)
-    raise "type should :friends or :followers" unless [:friends, :followers].include? type
+    raise "type should be :friends or :followers" unless [:friends, :followers].include? type
     limit = 20
     if /\-([\d]+)/ =~ arg
       limit = $1.to_i
@@ -171,7 +184,8 @@ module Termtter::Client
     users.reverse.each{|user|
       padding = ' ' * (longest - user.screen_name.length)
       user_id = Termtter::Client.data_to_typable_id(user.id) rescue ''
-      color = user.following ? 'BLACK' : 'RED'
+      color = user.following ? config.plugins.stdout.colors.first : config.plugins.stdout.colors.last
+      mark  = user.following ? '♥' : '✂'
       erbed_text = ERB.new(config.plugins.standard.one_line_profile_format).result(binding)
       puts TermColor.unescape(TermColor.parse(erbed_text))
     }
@@ -259,20 +273,20 @@ module Termtter::Client
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
-        Termtter::API::twitter.follow(user_name)
-        puts 'ok'
+        user = Termtter::API::twitter.follow(user_name)
+        puts "followed #{user.screen_name}"
       end
     },
     :help => ['follow USER', 'Follow user']
   )
 
   register_command(
-    :name => :leave, :aliases => [],
+    :name => :leave, :aliases => [:remove],
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
-        Termtter::API::twitter.leave(user_name)
-        puts 'ok'
+        user = Termtter::API::twitter.leave(user_name)
+        puts "left #{user.screen_name}"
       end
     },
     :help => ['leave USER', 'Leave user']
@@ -283,8 +297,8 @@ module Termtter::Client
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
-        Termtter::API::twitter.block(user_name)
-        puts 'ok'
+        user = Termtter::API::twitter.block(user_name)
+        puts "blocked #{user.screen_name}"
       end
     },
     :help => ['block USER', 'Block user']
@@ -295,43 +309,55 @@ module Termtter::Client
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
-        Termtter::API::twitter.unblock(user_name)
-        puts 'ok'
+        user = Termtter::API::twitter.unblock(user_name)
+        puts "unblocked #{user.screen_name}"
       end
     },
     :help => ['unblock USER', 'Unblock user']
   )
 
-  help = ['favorite_list USERNAME', 'show user favorites']
+  help = ['favorites,favlist USERNAME', 'show user favorites']
   register_command(:favorites, :alias => :favlist, :help => help) do |arg|
-    output Termtter::API.twitter.favorites(arg), :user_timeline, :type => :favorite
+    output(Termtter::API.twitter.favorites(arg), Termtter::Event.new(:user_timeline, :type => :favorite))
   end
 
   register_command(
     :name => :favorite, :aliases => [:fav],
-    :exec_proc => lambda {|arg|
-      id =
-        case arg
-        when /^\d+/
-          arg.to_i
-        when /^@([A-Za-z0-9_]+)/
-          user_name = normalize_as_user_name($1)
-          statuses = Termtter::API.twitter.user_timeline(user_name)
-          return if statuses.empty?
-          statuses[0].id
-        when /^\/(.*)$/
-          word = $1
-          raise "Not implemented yet."
-        else
-          if public_storage[:typable_id] && typable_id?(arg)
-            typable_id_convert(arg)
+    :exec_proc => lambda {|args|
+      args.split(' ').each do |arg|
+        id =
+          case arg
+          when /^\d+/
+            arg.to_i
+          when /^@([A-Za-z0-9_]+)/
+            user_name = normalize_as_user_name($1)
+            statuses = Termtter::API.twitter.user_timeline(user_name)
+            return if statuses.empty?
+            statuses[0].id
+          when %r{twitter.com/[A-Za-z0-9_]+/status(?:es)?/\d+}
+            status_id = URI.parse(arg).path.split(%{/}).last
+          when %r{twitter.com/[A-Za-z0-9_]+}
+            user_name = normalize_as_user_name(URI.parse(arg).path.split(%{/}).last)
+            statuses = Termtter::API.twitter.user_timeline(user_name)
+            return if statuses.empty?
+            statuses[0].id
+          when /^\/(.*)$/
+            word = $1
+            raise "Not implemented yet."
           else
-            return
+            if public_storage[:typable_id] && typable_id?(arg)
+              typable_id_convert(arg)
+            else
+              return
+            end
           end
+        begin
+          r = Termtter::API.twitter.favorite id
+          puts "Favorited status ##{r.id} on user @#{r.user.screen_name} #{r.text}"
+        rescue => e
+          handle_error e
         end
-
-      r = Termtter::API.twitter.favorite id
-      puts "Favorited status ##{r.id} on user @#{r.user.screen_name} #{r.text}"
+      end
     },
     :completion_proc => lambda {|cmd, arg|
       case arg
@@ -441,7 +467,7 @@ module Termtter::Client
     :alias     => :plugin,
     :exec_proc => lambda {|arg|
       if arg.empty?
-        plugin_list
+        puts plugin_list.join(', ')
         return
       end
       begin

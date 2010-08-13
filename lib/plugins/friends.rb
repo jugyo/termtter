@@ -4,14 +4,11 @@ module Termtter::Client
     :name => :diff_follow, :aliases => [:diff],
     :exec_proc => lambda {|arg|
       user_name = arg.empty? ? config.user_name : arg
-      friends = public_storage[:friends]
-      followers = public_storage[:followers]
-      if friends.nil? || followers.nil?
-        puts 'Do followers and friends first.'
-        return
-      end
-      friends = friends.map(&:screen_name)
-      followers = followers.map(&:screen_name)
+      puts "getting friends"
+      friends = get_friends(user_name, 2000).map(&:screen_name)
+      puts "getting followers"
+      followers = get_followers(user_name, 2000).map(&:screen_name)
+      puts
       puts "friends - followers:"
       puts (friends - followers).map{|s|"http://#{config.host}/#{s}"}.join("\n")
       puts

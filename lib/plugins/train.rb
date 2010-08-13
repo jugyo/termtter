@@ -1,5 +1,5 @@
-# あ
 # -*- coding: utf-8 -*-
+# あ
 module Termtter::Client
   def self.train(length)
     text = "ε="

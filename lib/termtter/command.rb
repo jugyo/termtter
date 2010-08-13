@@ -28,7 +28,8 @@ module Termtter
       set cfg
     end
 
-    # set :: Hash -> ()
+    # call-seq:
+    #   set :: Hash -> ()
     def set(cfg)
       self.name             = cfg[:name].to_sym
       self.aliases          = cfg[:aliases]
@@ -38,7 +39,8 @@ module Termtter
       self.author           = cfg[:author]
     end
 
-    # complement :: String -> [String]
+    # call-seq:
+    #   complement :: String -> [String]
     def complement(input)
       input = input.sub(/^\s*/, '')
       if match?(input) && input =~ /^[^\s]+\s/
@@ -53,7 +55,8 @@ module Termtter
       end
     end
 
-    # call :: ???
+    # call-seq:
+    #   call :: ???
     def call(cmd = nil, arg = nil, original_text = nil)
       from = Time.now
       arg = case arg
@@ -64,27 +67,30 @@ module Termtter
         else
           raise ArgumentError, 'arg should be String or nil'
         end
-      Termtter::Client.logger.debug "command: #{cmd} #{arg}"
+      Termtter::Client.logger.debug { "command: #{cmd} #{arg}" }
       result = exec_proc.call(arg)
-      Termtter::Client.logger.debug "command: #{cmd} #{arg} #{'%.2fsec' % (Time.now - from)}"
+      Termtter::Client.logger.debug { "command: #{cmd} #{arg} #{'%.2fsec' % (Time.now - from)}" }
       result
     rescue => e
-      Termtter::Client.logger.debug "command: #{cmd} #{arg} #{e.message} #{'%.2fsec' % (Time.now - from)}"
+      Termtter::Client.logger.debug { "command: #{cmd} #{arg} #{e.message} #{'%.2fsec' % (Time.now - from)}" }
       raise e
     end
 
-    # match? :: String -> Boolean
+    # call-seq:
+    #   match? :: String -> Boolean
     def match?(input)
       !!pattern.match(input)
     end
 
-    # pattern :: Regexp
+    # call-seq:
+    #   pattern :: Regexp
     def pattern
       commands_regex = commands.map {|name| name.to_s.split(' ').map {|i| Regexp.quote(i)}.join('\s+') }.join('|')
       /^\s*((#{commands_regex})|(#{commands_regex})\s+(.*?))\s*$/
     end
 
-    # commands :: [Symbol]
+    # call-seq:
+    #   commands :: [Symbol]
     def commands
       [name] + aliases
     end
@@ -93,12 +99,14 @@ module Termtter
       @aliases = as.map { |a| a.to_sym }
     end
 
-    # alias= :: Symbol -> ()
+    # call-seq:
+    #   alias= :: Symbol -> ()
     def alias=(a)
       self.aliases = [a]
     end
 
-    # author= :: String -> ()
+    # call-seq:
+    #   author= :: String -> ()
     def author=(a)
       @author = a
     end
@@ -107,7 +115,8 @@ module Termtter
       name.to_s.split(/\s+/)
     end
 
-    # split_command_line :: String -> (String, String)
+    # call-seq:
+    #   split_command_line :: String -> (String, String)
     def split_command_line(line)
       m = pattern.match(line)
       if m

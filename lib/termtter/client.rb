@@ -17,9 +17,10 @@ module Termtter
     Thread.abort_on_exception = true
 
     class << self
-      attr_reader :commands
+      attr_reader :commands, :logger, :task_manager
 
-      # plug :: Name -> (Hash) -> IO () where NAME = String | Symbol | [NAME]
+      # call-seq:
+      #   plug :: Name -> (Hash) -> IO () where NAME = String | Symbol | [NAME]
       def plug(name, options = {})
         if Array === name # Obviously `name.respond_to?(:each)` is better, but for 1.8.6 compatibility we cannot.
           name.each {|i| plug(i, options) }
@@ -30,8 +31,9 @@ module Termtter
 
         return if config.system.disable_plugins.include?(name.gsub('defaults/', ''))
 
+        name_sym = name.gsub(/-/, '_').to_sym
         options.each do |key, value|
-          config.plugins.__refer__(name.gsub(/-/, '_').to_sym).__assign__(key.to_sym, value)
+          config.plugins.__refer__(name_sym).__assign__(key.to_sym, value)
         end
         load "plugins/#{name}.rb"
       rescue Exception => e
@@ -40,6 +42,10 @@ module Termtter
 
       def public_storage
         @public_storage ||= {}
+      end
+
+      def memory_cache
+        @memory_cache ||= Termtter::MemoryCache.new
       end
 
       def add_filter(&b)
@@ -66,6 +72,10 @@ module Termtter
             raise ArgumentError, 'must be given Termtter::Command, Hash or String(Symbol) with block'
           end
         @commands[command.name] = command
+      end
+
+      def remove_command(name)
+        commands.delete(name.to_sym)
       end
 
       def add_command(name)
@@ -123,7 +133,7 @@ module Termtter
 
         call_hooks(:post_filter, filtered, event)
         get_hooks(:output).each do |hook|
-          Termtter::Client.logger.debug "output: call hook :output #{hook.inspect}"
+          Termtter::Client.logger.debug { "output: call hook :output #{hook.inspect}" }
           hook.call(
             apply_filters_for_hook(:"filter_for_#{hook.name}", filtered, event),
             event)
@@ -206,6 +216,10 @@ module Termtter
         @task_manager.add_task(*arg, &block)
       end
 
+      def delete_task(name)
+        @task_manager.delete_task(name)
+      end
+
       def exit
         puts 'finalizing...'
         call_hooks(:exit)
@@ -248,6 +262,7 @@ module Termtter
       def setup_logger
         @logger = config.logger || default_logger
         @logger.level = config.devel ? Logger::DEBUG : Logger::INFO
+        call_hooks(:post_setup_logger)
         @logger
       end
 
@@ -303,12 +318,17 @@ module Termtter
         parse_options
         config.__freeze__(:user_name) unless config.user_name.empty?
         show_splash
-        load_config
         setup_task_manager
+        load_config
         load_plugins
         eval_init_block
         config.__unfreeze__(:user_name)
-        Termtter::API.setup
+        begin
+          Termtter::API.setup
+        rescue Rubytter::APIError => e
+          handle_error(e)
+          exit EXIT_FAILURE
+        end
 
         config.system.eval_scripts.each do |script|
           begin

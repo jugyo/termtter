@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.expand_path(File.dirname(__FILE__)) + '/../spec_helper'
 describe Termtter::Client, 'when the plugin md5pass is loaded' do
   it 'plugin md5pass' do
     config.user_name = 'foo'

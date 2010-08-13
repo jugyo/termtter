@@ -2,7 +2,8 @@
 # vim: set fenc=utf-8
 
 module Termtter::English
-  # english? :: String -> Boolean
+  # call-seq:
+  #   english? :: String -> Boolean
   def self.english?(message)
     /[一-龠]+|[ぁ-ん]+|[ァ-ヴー]+|[ａ-ｚＡ-Ｚ０-９]+/ !~ message
   end

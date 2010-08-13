@@ -17,11 +17,7 @@ module Termtter
     end
 
     def method_missing(name, *args)
-      if @data.key?(name)
-        return @data[name]
-      else
-        super
-      end
+      @data[name]
     end
 
     def attributes=(raw_hash)
@@ -42,6 +38,10 @@ module Termtter
           (value.kind_of? self.class) ? value.to_hash : value
         memo
       end
+    end
+
+    def destructize
+      self.to_hash
     end
 
     def retweeted_status

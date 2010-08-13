@@ -4,6 +4,7 @@ auto_reload_proc = lambda do
     Termtter::Client.execute('reload -r')
   rescue TimeoutError
     # do nothing
+  rescue
   rescue Exception => e
     Termtter::Client.handle_error(e)
   end

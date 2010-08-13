@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.expand_path(File.dirname(__FILE__)) + '/../spec_helper'
 
 describe Termtter::Client, 'when the plugin capital_update is loaded' do
   it 'adds command capital_update' do
