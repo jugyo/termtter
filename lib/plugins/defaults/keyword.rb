@@ -28,7 +28,13 @@ def select_matched(statuses)
 end
 
 module Termtter::Client
-  public_storage[:keywords] ||= Set.new(config.plugins.keyword.keywords)
+  register_hook :initialize_for_keywords, :point => :initialize do
+    public_storage[:keywords] = Set.new()
+    public_storage[:keywords] += config.plugins.keyword.keywords
+    if File.exists?(File.join(Termtter::CONF_DIR, 'keywords'))
+      public_storage[:keywords] += File.read(File.join(Termtter::CONF_DIR, 'keywords')).split(/\n/)
+    end
+  end
 
   register_hook :highlight_keywords, :point => :pre_coloring do |text, event|
     public_storage[:keywords].each_with_index do |keyword, index|
