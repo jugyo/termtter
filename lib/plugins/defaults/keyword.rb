@@ -27,13 +27,18 @@ def select_matched(statuses)
   end
 end
 
+def load_keywords
+  public_storage[:keywords] = Set.new()
+  public_storage[:keywords] += config.plugins.keyword.keywords
+  if File.exists?(config.plugins.keyword.file)
+    public_storage[:keywords] += File.read(config.plugins.keyword.file).split(/\n/)
+  end
+end
+
 module Termtter::Client
   register_hook :initialize_for_keywords, :point => :initialize do
-    public_storage[:keywords] = Set.new()
-    public_storage[:keywords] += config.plugins.keyword.keywords
-    if File.exists?(File.join(Termtter::CONF_DIR, 'keywords'))
-      public_storage[:keywords] += File.read(File.join(Termtter::CONF_DIR, 'keywords')).split(/\n/)
-    end
+    config.plugins.keyword.set_default(:file, File.join(Termtter::CONF_DIR, 'keywords'))
+    load_keywords
   end
 
   register_hook :highlight_keywords, :point => :pre_coloring do |text, event|
@@ -86,5 +91,27 @@ module Termtter::Client
     :help => ['keyword list', 'List highlight keywords']
   ) do |args|
     p public_storage[:keywords].to_a
+  end
+
+  register_command(
+    'keyword save',
+    :help => ['keyword save', 'Save keywords']
+  ) do |args|
+    File.open(config.plugins.keyword.file, 'w') {|f| f << public_storage[:keywords].to_a.join("\n") }
+  end
+
+  register_command(
+    'keyword edit',
+    :help => ['keyword edit', 'Edit keywords']
+  ) do |args|
+    system ENV['EDITOR'], config.plugins.keyword.file
+  end
+
+
+  register_command(
+    'keyword load',
+    :help => ['keyword load', 'load keywords']
+  ) do |args|
+    load_keywords
   end
 end
