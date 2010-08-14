@@ -14,3 +14,10 @@ unless Symbol.instance_methods.include?('to_proc')
   end
 end
 
+unless Symbol.instance_methods.include?('size')
+  class Symbol
+    def size
+      self.to_s.size
+    end
+  end
+end
