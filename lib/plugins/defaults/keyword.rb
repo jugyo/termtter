@@ -65,7 +65,7 @@ module Termtter::Client
   register_hook :notify_for_keywords, :point => :output do |statuses, event|
     if config.plugins.keyword.notify == true && event == :update_friends_timeline
       select_matched(statuses).each do |status|
-        notify(status.user.screen_name, status.text) if status[:user][:screen_name] == config.user_name
+        notify(status.user.screen_name, status.text) unless status[:user][:screen_name] == config.user_name
       end
     end
   end
