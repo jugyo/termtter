@@ -327,7 +327,7 @@ module Termtter
           Termtter::API.setup
         rescue Rubytter::APIError => e
           handle_error(e)
-          exit EXIT_FAILURE
+          exit!
         end
 
         config.system.eval_scripts.each do |script|
