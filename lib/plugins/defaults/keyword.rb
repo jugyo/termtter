@@ -14,8 +14,14 @@ config.plugins.keyword.set_default(
     ['on_yellow', 'white'],
   ]
 )
-
 config.plugins.keyword.set_default(:keywords, [])
+config.plugins.keyword.set_default(:notify, true)
+config.plugins.keyword.set_default(:filter, false)
+
+def select_matched(statuses)
+  regexp = Regexp.union(*public_storage[:keywords].map(&:to_s))
+  statuses.select { |status| /#{regexp}/ =~ status.text }
+end
 
 module Termtter::Client
   public_storage[:keywords] ||= Set.new(config.plugins.keyword.keywords)
@@ -33,12 +39,17 @@ module Termtter::Client
     text
   end
 
+  register_hook :keyword_filter, :point => :filter_for_output do |statuses, event|
+    if config.plugins.keyword.filter == true && event == :update_friends_timeline
+      select_matched(statuses)
+    else
+      statuses
+    end
+  end
+
   register_hook :notify_for_keywords, :point => :output do |statuses, event|
-    if event == :update_friends_timeline
-      regexp = Regexp.union(*public_storage[:keywords].map(&:to_s))
-      statuses.select { |status|
-        /#{regexp}/ =~ status.text
-      }.each do |status|
+    if config.plugins.keyword.notify == true && event == :update_friends_timeline
+      select_matched(statuses).each do |status|
         notify(status.user.screen_name, status.text)
       end
     end
