@@ -17,10 +17,14 @@ config.plugins.keyword.set_default(
 config.plugins.keyword.set_default(:keywords, [])
 config.plugins.keyword.set_default(:notify, true)
 config.plugins.keyword.set_default(:filter, false)
+config.plugins.keyword.set_default(:apply_screen_name, true)
 
 def select_matched(statuses)
   regexp = Regexp.union(*public_storage[:keywords].map(&:to_s))
-  statuses.select { |status| /#{regexp}/ =~ status.text }
+  statuses.select do |status|
+    /#{regexp}/ =~ status.text ||
+      (config.plugins.keyword.apply_screen_name == true && /#{regexp}/ =~ status[:user][:screen_name])
+  end
 end
 
 module Termtter::Client
