@@ -30,8 +30,9 @@ end
 def load_keywords
   public_storage[:keywords] = Set.new()
   public_storage[:keywords] += config.plugins.keyword.keywords
-  if File.exists?(config.plugins.keyword.file)
-    public_storage[:keywords] += File.read(config.plugins.keyword.file).split(/\n/)
+  file = File.expand_path(config.plugins.keyword.file)
+  if File.exists?(file)
+    public_storage[:keywords] += File.read(file).split(/\n/)
   end
 end
 
