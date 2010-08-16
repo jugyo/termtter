@@ -29,6 +29,8 @@ module Termtter::Client
       rescue Rubytter::APIError  # XXX: just for transition period
         if $!.to_s == 'Not found'
           Termtter::Client.logger.warn "Failed official retweet. Set twitter langage to English in https://twitter.com/account/settings or set config.plugins.retweet.official_retweet to false."
+        else
+          raise
         end
       end
     end
