@@ -28,7 +28,6 @@ def select_matched(statuses)
 end
 
 def load_keywords
-  public_storage[:keywords] = Set.new()
   public_storage[:keywords] += config.plugins.keyword.keywords
   file = File.expand_path(config.plugins.keyword.file)
   if File.exists?(file)
@@ -37,6 +36,8 @@ def load_keywords
 end
 
 module Termtter::Client
+  public_storage[:keywords] ||= Set.new()
+
   register_hook :initialize_for_keywords, :point => :initialize do
     config.plugins.keyword.set_default(:file, File.join(Termtter::CONF_DIR, 'keywords'))
     load_keywords
