@@ -43,6 +43,7 @@ module Termtter
   OptParser.parse!(ARGV)
   CONF_DIR = File.expand_path('~/.termtter') unless defined? CONF_DIR
   CONF_FILE = File.join(Termtter::CONF_DIR, 'config') unless defined? CONF_FILE
+  config.token_file = File.join(Termtter::CONF_DIR, config.token_file_name)
   $:.unshift(CONF_DIR)
 
   CONSUMER_KEY = 'eFFLaGJ3M0VMZExvNmtlNHJMVndsQQ=='
