@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-gem 'rubytter', '>= 0.6.5'
 require 'rubytter'
+raise Gem::LoadError, 'Could not find RubyGem rubytter (>= 0.6.5)' \
+  unless Rubytter::VERSION >= '0.6.5'
 
 module Termtter
   class ActiveRubytter
