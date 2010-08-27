@@ -317,7 +317,7 @@ module Termtter
       def run
         parse_options
         config.__freeze__(:user_name) unless config.user_name.empty?
-        show_splash
+        show_splash unless config.system.cmd_mode
         setup_task_manager
         load_config
         load_plugins
