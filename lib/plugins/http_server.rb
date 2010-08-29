@@ -12,8 +12,16 @@ require 'logger'
 
 config.plugins.http_server.set_default(:port, 5678)
 config.plugins.http_server.set_default(:reload_max_count, 100)
+config.plugins.http_server.set_default(:skin, "default")
 
 module Termtter::Client
+   register_command(
+      :name => :skin,
+      :exec_proc => lambda {|name|
+         config.plugins.http_server.skin = name
+      }
+  )
+
   if @http_server
     @http_server.shutdown # for reload
   end
@@ -53,10 +61,9 @@ module Termtter::Client
   end
 
   @http_server.mount_proc('/') do |req, res|
+    skin_dir = "skin/#{config.plugins.http_server.skin}/"
     request_path = req.path == '/' ? 'index.html' : req.path
-    base_name = Pathname.new(request_path).basename.to_s
-    file_path = File.dirname(__FILE__) + '/http_server/' + base_name
-
+    file_path = File.dirname(__FILE__) + '/http_server/' + skin_dir + request_path.to_s
     if File.file?(file_path)
       # send a file
       res.header["Content-Type"] = MIME::Types.type_for(file_path).first.content_type
