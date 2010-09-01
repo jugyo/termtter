@@ -80,7 +80,7 @@ def open_browser(url)
   end
   if found
     # Kernel::__method__ is not suppoted in Ruby 1.8.6 or earlier.
-    eval %{ def open_browser(url); system *(#{found}.dup << url); end }
+    define_method(:open_browser) {|url| system *(found.dup << url) }
   else
     raise BrowserNotFound
   end
