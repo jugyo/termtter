@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>WebPlus</title>
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no" />  
+    <meta name="apple-mobile-web-app-capable" content="yes"/> 
+    <script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="cui/util.js"></script>
+    <script type="text/javascript" src="cui/core.js"></script>
+    <script type="text/javascript" src="cui/chara/miku/script.js"></script>
+  </head>
+<style type="text/css">
+body {
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  color: #98FF68;
+  background-color: #141414;
+}
+img {
+  border: none;
+}
+.dialog {
+   border:1px solid white
+}
+
+#wrap {
+  padding: 8px;
+}
+.error_message {
+  color: red;
+}
+#execute_text {
+  color: #98FF68;
+  background-color: #141414;
+  border: none;
+  font-size: 18px;
+}
+.status_line {
+  margin: 1px 0;
+}
+.profile_image {
+  margin: 0 4px;
+}
+.status_date {
+  color: #5C5C5C;
+}
+.status_text {
+  margin-right: 4px;
+}
+</style>
+<body>
+  <div id='sprite'></div>
+  <div id="result"></div>
+<script type="text/javascript">
+<!--
+var cmd_history = (function(){ 
+  var xs = [];
+  var idx = 0;
+  return {
+  "add":function(cmd){
+    xs.push(cmd);
+    idx = xs.length;
+  },
+  "next":function(){
+    idx -= 1;
+    return xs[idx];
+  },
+  "prev":function(){
+    idx += 1;
+    return xs[idx];
+  } 
+}})();
+
+$(document).ready(function(){
+  $("#execute_text").focus();
+  execute_command('reload.html');
+  setInterval(function(){
+    execute_command('reload.html');
+  }, 10 * 1000)
+})
+
+
+$("#result").bind("ajaxError", function(event, reqest){
+  $('<div class="error_message"/>').text(reqest.responseText).prependTo(this);
+  $("#prompt").show();
+});
+
+
+function execute_command(command) {
+  var path = "/" + command
+  $.getJSON(path,
+    function(data){
+      $.each(data, function(i, status){
+        var status_line = $('<div class="status_line"/>');
+        var user_link = $('<a/>').attr('href', 'http://twitter.com/' + status.user.screen_name).attr('target', '_blank');
+        $('<img class="profile_image"/>').attr('src', status.user.profile_image_url).attr('height', '28').attr('width', '28').appendTo(user_link);
+        user_link.appendTo(status_line);
+
+
+        var screen_name = $('<span class="screen_name"/>').text(' ' + status.user.screen_name);
+        var status_text = $('<span class="status_text"/>').text(': ' + status.text);
+        var status_id   = $('<span class="status_id"/>'  ).text(' ' + status.id);
+        var status_date = $('<span class="status_date"/>').text('(' + format_datetime(status.created_at) + ') ');
+      
+        screen_name.click(function(e){
+          var name = $(e.target).text().trim();
+          $("#execute_text").val($("#execute_text").val() + " @" + name);        
+        });
+
+        status_id.click(function(e){
+          var sid = $(e.target).text().trim();
+          $("#execute_text").val($("#execute_text").val() + " " + sid);        
+        });
+
+        screen_name.appendTo(status_line);
+        status_text.appendTo(status_line);
+        status_id.appendTo(status_line);
+        status_date.appendTo(status_line);
+
+        status_line.prependTo("#result");
+      });
+      scrollTo(0, 0);
+      $("#prompt").show();
+    }
+  );
+}
+
+function format_datetime(time_value) {
+  var values = time_value.split(/\s+/);
+  time_value = values[1] + " " + values[2] + ", " + values[5] + " " + values[3];
+  var date = new Date(time_value);
+  date.setMinutes(date.getMinutes() - (new Date()).getTimezoneOffset());
+  return (date.getHours() < 10 ? '0' : '') + date.getHours() + ':' + 
+          (date.getMinutes() < 10 ? '0' : '') + date.getMinutes() + ':' + 
+          (date.getSeconds() < 10 ? '0' : '') + date.getSeconds();
+}
+-->
+</script>
+</body>
+</html>

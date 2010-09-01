@@ -94,7 +94,7 @@ Termtter::Client.register_hook(
       when :direct_message, :direct
         :direct
       when :search
-        :"#{e[:search_keyword]}_search"
+        :"#{e[:query]}_search"
       when :reply, :replies
         :replies
       when :show
