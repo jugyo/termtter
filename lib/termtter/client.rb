@@ -330,13 +330,7 @@ module Termtter
           exit!
         end
 
-        config.system.eval_scripts.each do |script|
-          begin
-            eval script
-          rescue Exception => e
-            handle_error(e)
-          end
-        end
+        config.system.eval_scripts.each {|script| rescue_error { eval script }}
 
         config.system.run_commands.each {|cmd| execute(cmd) }
 
