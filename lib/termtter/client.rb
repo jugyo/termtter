@@ -331,8 +331,7 @@ module Termtter
         end
 
         config.system.eval_scripts.each {|script| rescue_error { eval script }}
-
-        config.system.run_commands.each {|cmd| execute(cmd) }
+        config.system.run_commands.each {|cmd| rescue_error { execute(cmd) }}
 
         unless config.system.cmd_mode
           @task_manager.run()
