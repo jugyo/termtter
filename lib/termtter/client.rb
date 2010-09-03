@@ -356,6 +356,14 @@ module Termtter
         get_hooks(:on_error).each {|hook| hook.call(e) }
       end
 
+      def rescue_error
+        begin
+          yield
+        rescue Exception => e
+          handle_error(e)
+        end
+      end
+
       def confirm(message, default_yes = true, &block)
         pause # TODO: TaskManager から呼ばれるならこれいらないなぁ
 
