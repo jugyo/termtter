@@ -127,9 +127,28 @@ module Termtter
         trap("CONT") do
           Readline.refresh_line
         end
+        trap_sigwinch
       rescue ArgumentError
       rescue Errno::ENOENT
       end
+    end
+
+    # for Ruby 1.9.2(or later)'s Readline
+    # TODO: support other platforms (like Mac OS X)
+    if Readline.respond_to?(:set_screen_size) && /linux/ =~ RUBY_PLATFORM
+      TIOCGWINSZ = 0x5413         # in Linux
+
+      def trap_sigwinch
+        trap('WINCH') do
+          dat = ''
+          STDOUT.ioctl(TIOCGWINSZ, dat)
+          rows, cols = dat.unpack('S!4')
+          Readline.set_screen_size(rows, cols)
+          ENV['COLUMNS'] = cols.to_s
+        end
+      end
+    else
+      def trap_sigwinch; end
     end
   end
 
