@@ -144,6 +144,7 @@ module Termtter
           STDOUT.ioctl(TIOCGWINSZ, dat)
           rows, cols = dat.unpack('S!4')
           Readline.set_screen_size(rows, cols)
+          ENV['LINES'] = rows.to_s
           ENV['COLUMNS'] = cols.to_s
         end
       end
