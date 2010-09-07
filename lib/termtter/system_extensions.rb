@@ -90,3 +90,11 @@ if Readline.respond_to?(:input=)
   # temporary measure for Readline stops other threads problem.
   Readline.input = STDIN
 end
+
+class String
+  if 'あ'.size == 1
+    alias_method :charsize, :size
+  else
+    def charsize; split(//u).size; end
+  end
+end
