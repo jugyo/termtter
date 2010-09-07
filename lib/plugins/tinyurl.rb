@@ -19,6 +19,10 @@ config.plugins.tinyurl.set_default(
   :uri_regexp,
   /#{URI.regexp(%w(http https ftp))}\S*/ )
 
+# Shorten URLs in tweets which size is longer than this value.
+# If you want to shorten only when over termtter's limit, set `140'
+config.plugins.tinyurl.set_default(:when_over, 0)
+
 module Termtter::Client
   register_hook(
     :name => :tinyurl,
@@ -26,13 +30,18 @@ module Termtter::Client
       "modify_arg_for_#{cmd.to_s}".to_sym
     },
     :exec_proc => lambda {|cmd, arg|
-      arg.gsub(config.plugins.tinyurl.uri_regexp) do |url|
-        result = nil
-        config.plugins.tinyurl.shorturl_makers.each do |site|
-          result = shorten_url(url, site[:host], site[:format])
-          break if result
+      if config.plugins.tinyurl.when_over == 0 || # skip character count
+          arg.charsize > config.plugins.tinyurl.when_over
+        arg.gsub(config.plugins.tinyurl.uri_regexp) do |url|
+          result = nil
+          config.plugins.tinyurl.shorturl_makers.each do |site|
+            result = shorten_url(url, site[:host], site[:format])
+            break if result
+          end
+          result or url
         end
-        result or url
+      else
+        arg
       end
     }
   )
