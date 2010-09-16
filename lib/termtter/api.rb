@@ -50,12 +50,12 @@ module Termtter
       end
       
       def authorize_by_oauth(show_information=false, save_to_token_file=true, put_to_config=true, verbose=true)
-        puts '1. Contacting to twitter...' if verbose
+        puts '1. Connecting to twitter...' if verbose
 
         request_token = consumer.get_request_token
 
-        puts '2. URL for authorize: ' + request_token.authorize_url if verbose
-        puts '   Opening web page to authorization...' if verbose
+        puts '2. Authorization URL: ' + request_token.authorize_url if verbose
+        puts '   Opening authorization web page...' if verbose
 
         begin
           open_browser(request_token.authorize_url)
@@ -67,7 +67,7 @@ module Termtter
         ui = create_highline
         pin = ui.ask('3. Enter PIN: ')
         puts ""
-        puts "4. Getting access_token..."
+        puts "4. Fetching access_token..."
         access_token = request_token.get_access_token(:oauth_verifier => pin)
 
         if put_to_config
@@ -83,7 +83,7 @@ module Termtter
           end
         end
 
-        puts "Authorize is successfully done."
+        puts "Authorization successfully completed."
 
         return {:token  => access_token.token,
                 :secret => access_token.secret}
