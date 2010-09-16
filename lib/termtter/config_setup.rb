@@ -27,9 +27,9 @@ module Termtter
       token = token_and_secret[:token]
       secret = token_and_secret[:secret]
 
-      puts "Setup is all over. enjoy!"
+      puts "Setup is completed. Enjoy!"
     rescue OAuth::Unauthorized
-      puts 'failed to authentication!'
+      puts 'Failed to authenticate!'
       exit!
     end
   end
