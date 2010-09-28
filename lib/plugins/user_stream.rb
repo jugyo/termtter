@@ -66,6 +66,8 @@ module Termtter::Client
 
   register_command(:"user_stream", :help => 'user_stream') do |arg|
 
+    # TODO: comment-in this line when user stream on production line is resume
+    # uri = URI.parse('http://stream.twitter.com/2/user.json')
     uri = URI.parse('http://betastream.twitter.com/2b/user.json')
 
     unless @user_stream_thread
