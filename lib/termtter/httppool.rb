@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 require 'net/http'
+begin
+  require 'net/https'
+rescue LoadError; end
 
 module Termtter
   module HTTPpool
     @@connections = {}
     @@http_class = nil
 
-    def self.start(host, port = 80)
+    def self.start(host, port = 80, ssl = false)
       count = config.retry || 3
       begin
-        yield(connection(host, port))
+        yield(connection(host, port, ssl))
       rescue EOFError
         finish(host, port)
         if count > 0
@@ -20,9 +23,12 @@ module Termtter
       end
     end
 
-    def self.connection(host, port = 80)
+    def self.connection(host, port = 80, ssl = false)
       key = connection_key(host, port)
-      @@connections[key] ||= http_class.start(host, port)
+      http_io = http_class.new(host, port)
+      http_io.use_ssl = ssl
+      http_io.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      @@connections[key] ||= http_io.start
     end
 
     def self.finish(host, port = 80)

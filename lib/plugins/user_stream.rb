@@ -66,14 +66,12 @@ module Termtter::Client
 
   register_command(:"user_stream", :help => 'user_stream') do |arg|
 
-    # TODO: comment-in this line when user stream on production line is resume
-    # uri = URI.parse('http://stream.twitter.com/2/user.json')
-    uri = URI.parse('http://betastream.twitter.com/2b/user.json')
+    uri = URI.parse('https://userstream.twitter.com/2/user.json')
 
     unless @user_stream_thread
       logger.info 'checking API status'
       1.times{ # to use break
-        Termtter::HTTPpool.start(uri.host, uri.port){ |http|
+        Termtter::HTTPpool.start(uri.host, Net::HTTP.https_default_port, true){ |http|
           request = Net::HTTP::Get.new(uri.request_uri)
           request.oauth!(http, Termtter::API.twitter.consumer_token, Termtter::API.twitter.access_token)
 
