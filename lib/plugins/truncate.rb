@@ -5,10 +5,20 @@ def multibyte_string(text)
 end
 
 def truncate(text, length = 140, omission = "...")
-  o = multibyte_string(omission)
-  l = length - o.length
   chars = multibyte_string(text)
-  chars.length > length ? (chars[0...l] + o).pack('U*') : text
+  if chars.length > length
+    _, text_base, urls =
+      text.match(/\A(.*?)((?:\s+#{URI.regexp(%w(http https ftp))}\S*)*)\z/).to_a
+    chars_base = multibyte_string(text_base)
+    o = multibyte_string(omission + urls)
+    if o.length >= length
+      o = multibyte_string(omission)
+      chars_base = chars
+    end
+    (chars_base[0...(length - o.length)] + o).pack('U*')
+  else
+    text
+  end
 end
 
 Termtter::RubytterProxy.register_hook(
