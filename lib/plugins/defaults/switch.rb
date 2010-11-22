@@ -10,17 +10,29 @@ module Termtter::Client
 
       passwords[config.user_name] = config.password
 
-      if user_name
-        config.user_name = normalize_as_user_name(arg)
-        if passwords.key?(config.user_name)
-          config.password = passwords[config.user_name]
-        else
-          config.__clear__(:password)
+      file_name_prefix = File.join(Termtter::CONF_DIR, config.token_file_name)
+      unless user_name
+        choices = [:new, ""]
+        choices += Dir.glob(file_name_prefix + "_*").map{|f| f.gsub(file_name_prefix+'_', '')}
+
+        puts "0. New user"
+        puts "1. Default"
+        choices[2..-1].each_with_index do |c, i| 
+          puts "#{i+2}. #{c}"
         end
-      else
-        config.__clear__(:user_name)
-        config.__clear__(:password)
+        ui = create_highline
+        choice = choices[ui.ask("Please choice number: ").to_i]
+        if choice.nil?
+          puts "Invalid number"
+          break
+        end
+        user_name = (choice == :new) ? ui.ask("Enter user name: ") : choice
       end
+
+      config.token_file = file_name_prefix
+      config.token_file += "_#{user_name}" if user_name != ""
+      config.__clear__(:access_token)
+      config.__clear__(:access_token_secret)
 
       Termtter::API.setup
       execute('reload')
