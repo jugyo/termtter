@@ -117,8 +117,9 @@ Termtter::Client.register_hook(
         config.plugins.channel.channel_to_hash_proc.call(otc.to_s.gsub(/^\//, "")) %
         config.plugins.stdout.colors.size]
     colorize_channel_cache[otc] = ccolor
-    th = "#{config.plugin.channel.colorize ? "<#{ccolor}>":""}#{c.to_s.length > config.plugins.channel.output_length ?
-            otc.to_s[0, config.plugins.channel.output_length] : otc.to_s.rjust(config.plugins.channel.output_length)}#{config.plugin.channe.colorize ? "</#{ccolor}>":""}<90>| </90>"
+
+    th = "#{config.plugins.channel.colorize ? "<#{ccolor}>":""}#{c.to_s.length > config.plugins.channel.output_length ?
+            otc.to_s[0, config.plugins.channel.output_length] : otc.to_s.rjust(config.plugins.channel.output_length)}#{config.plugins.channel.colorize ? "</#{ccolor}>":""}<#{cgray}>| </#{cgray}>"
     th + t
   }
 )
