@@ -316,13 +316,11 @@ module Termtter
 
       def run
         parse_options
-        config.__freeze__(:user_name) unless config.user_name.empty?
         show_splash unless config.system.cmd_mode
         setup_task_manager
         load_config
         load_plugins
         eval_init_block
-        config.__unfreeze__(:user_name)
         begin
           Termtter::API.setup
         rescue Rubytter::APIError => e

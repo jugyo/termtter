@@ -55,10 +55,6 @@ module Termtter
         end
       end
 
-      opt.on('-u', '--user user', 'Login username') do |val|
-        config.user_name = val
-      end
-
       opt.version = Termtter::VERSION
     }
   end
