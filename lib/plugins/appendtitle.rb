@@ -3,7 +3,6 @@ require 'uri'
 require 'open-uri'
 require 'nokogiri'
 require 'timeout'
-require 'memcache'
 require 'digest/sha1'
 
 module Termtter::Client
