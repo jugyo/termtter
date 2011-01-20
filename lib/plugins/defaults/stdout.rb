@@ -21,7 +21,7 @@ config.plugins.stdout.set_default(
     '</<%=config.plugins.stdout.gray||config.plugins.stdout.colors.last%>>',
   ].join('')
 )
-config.plugins.stdout.set_default(:sweets, %w[jugyo ujm sora_h lingr_termtter termtter hitode909 nanki sixeight])
+config.plugins.stdout.set_default(:sweets, %w[jugyo ujm sora_h lingr_termtter termtter nanki sixeight])
 config.plugins.stdout.set_default(:sweet_color, 'red')
 config.plugins.stdout.set_default(:time_format_today, '%H:%M:%S')
 config.plugins.stdout.set_default(:time_format_not_today, '%y/%m/%d %H:%M')
