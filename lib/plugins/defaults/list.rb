@@ -93,7 +93,7 @@ module Termtter::Client
       users.each{ |screen_name|
         begin
           user = Termtter::API.twitter.cached_user(screen_name) || Termtter::API.twitter.user(screen_name)
-          Termtter::API.twitter.add_member_to_list(slug, user.id)
+          Termtter::API.twitter.add_member_to_list(config.user_name, slug, user.id)
           puts "#{slug} + #{screen_name}"
         rescue => e
           handle_error(e)
@@ -111,7 +111,7 @@ module Termtter::Client
       users.each{ |screen_name|
         begin
           user = Termtter::API.twitter.cached_user(screen_name) || Termtter::API.twitter.user(screen_name)
-          Termtter::API.twitter.remove_member_from_list(slug, user.id)
+          Termtter::API.twitter.remove_member_from_list(config.user_name, slug, user.id)
           puts "#{slug} - #{screen_name}"
         rescue => e
           handle_error(e)
@@ -132,7 +132,7 @@ module Termtter::Client
         opt.on('--private') {|v| param[:mode] = 'private' }
         opt.parse(options)
       }
-      list = Termtter::API.twitter.create_list(slug, param)
+      list = Termtter::API.twitter.create_list(config.user_name, slug, param)
       public_storage[:lists] << list.full_name
       p [list.full_name, param]
     },
@@ -146,7 +146,7 @@ module Termtter::Client
       arg.split(' ').each{ |list_name|
         begin
           slug = list_name_to_slug(list_name)
-          list = Termtter::API.twitter.delete_list(slug)
+          list = Termtter::API.twitter.delete_list(config.user_name, slug)
           public_storage[:lists].delete(list.full_name)
           puts "#{list.full_name} deleted"
         rescue => e
