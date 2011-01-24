@@ -12,7 +12,7 @@ end
 module Termtter::Client
   register_hook(
     :name => :user_stream_insert_mongo,
-    :poipnt => :user_stream_receive,
+    :point => :user_stream_receive,
     :exec => lambda {|chunk|
       data = JSON.parse(chunk)
 
