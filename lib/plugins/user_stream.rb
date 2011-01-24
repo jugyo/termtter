@@ -13,47 +13,36 @@ module Termtter::Client
   handle_chunk = lambda { |chunk|
     data = Termtter::ActiveRubytter.new(JSON.parse(chunk)) rescue return
     Termtter::Client.logger.debug "user_stream: received #{JSON.parse(chunk).inspect}"
+    print "\e[0G" + "\e[K" unless win?
     begin
       if data[:event]
         if /list_/ =~ data[:event]
           typable_id = Termtter::Client.data_to_typable_id(data.target.id)
-          print "\e[0G" + "\e[K" unless win?
           puts "[%s] %s %s %s to %s]" %
             [typable_id, data.source.screen_name, data.event, data.target.screen_name, data.target_object.uri]
           return
-          Readline.refresh_line
         end
         if data[:target_object]
           # target_object is status
           source_user = data.source
           status = data.target_object
           typable_id = Termtter::Client.data_to_typable_id(status.id)
-          print "\e[0G" + "\e[K" unless win?
           puts "[#{typable_id}] #{source_user.screen_name} #{data.event} #{status.user.screen_name}: #{status.text}"
-          Readline.refresh_line
         else
           # target is user
           source_user = data.source
           target_user = data.target
           typable_id = Termtter::Client.data_to_typable_id(target_user.id)
-          print "\e[0G" + "\e[K" unless win?
           puts "[#{typable_id}] #{source_user.screen_name} #{data.event} #{target_user.screen_name}"
-          Readline.refresh_line
         end
       elsif data[:friends]
-        print "\e[0G" + "\e[K" unless win?
         puts "You have #{data[:friends].length} friends."
-        Readline.refresh_line
       elsif data[:delete]
         status = Termtter::API.twitter.safe.show(data.delete.status.id)
-        print "\e[0G" + "\e[K" unless win?
         puts "#{status.user.screen_name} deleted: #{status.text}"
-        Readline.refresh_line
       else
-        print "\e[0G" + "\e[K" unless win?
         output([data], Termtter::Event.new(:update_friends_timeline, :type => :main))
         Termtter::API.twitter.store_status_cache(data)
-        Readline.refresh_line
       end
     rescue Termtter::RubytterProxy::FrequentAccessError
       # ignore
@@ -63,6 +52,8 @@ module Termtter::Client
         new_error.instance_variable_set(v, error.instance_variable_get(v))
       }
       handle_error new_error
+    ensure
+      Readline.refresh_line
     end
   }
 
