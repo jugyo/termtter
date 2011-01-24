@@ -213,7 +213,7 @@ unless defined? IRC_SERVER
   logger = Logger.new($stdout)
   logger.level = config.plugins.irc_gw.logger_level
   IRC_SERVER = Net::IRC::Server.new(
-    'localhost',
+    '127.0.0.1',
     config.plugins.irc_gw.port,
     TermtterIrcGateway,
     :logger => logger
