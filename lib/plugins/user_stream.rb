@@ -1,3 +1,5 @@
+require 'user-stream-receiver'
+
 module Termtter::Client
   register_command(:"user_stream stop", :help => 'user_stream stop') do |arg|
     logger.info 'stopping user stream'
@@ -66,48 +68,13 @@ module Termtter::Client
 
   register_command(:"user_stream", :help => 'user_stream') do |arg|
 
-    uri = URI.parse('https://userstream.twitter.com/2/user.json')
-
-    unless @user_stream_thread
-      logger.info 'checking API status'
-      1.times{ # to use break
-        Termtter::HTTPpool.start(uri.host, Net::HTTP.https_default_port, true){ |http|
-          request = Net::HTTP::Get.new(uri.request_uri)
-          request.oauth!(http, Termtter::API.twitter.consumer_token, Termtter::API.twitter.access_token)
-
-          http.request(request){ |response|
-            raise response.code.to_i unless response.code.to_i == 200
-            break
-          }
-        }
-      }
-      logger.info 'API seems working'
-    end
-
     execute('user_stream stop') if @user_stream_thread
     delete_task(:auto_reload)
 
     @user_stream_thread = Thread.new {
-      loop do
-        begin
-          logger.info 'connecting to user stream'
-          Termtter::HTTPpool.start(uri.host, uri.port){ |http|
-            request = Net::HTTP::Get.new(uri.request_uri)
-            request.oauth!(http, Termtter::API.twitter.consumer_token, Termtter::API.twitter.access_token)
-            http.request(request){ |response|
-              raise response.code.to_i unless response.code.to_i == 200
-              raise 'Response is not chuncked' unless response.chunked?
-              response.read_body{ |chunk|
-                handle_chunk.call(chunk)
-              }
-            }
-          }
-        rescue Timeout::Error, StandardError => e
-          handle_error e
-          logger.info 'sleeping'
-          sleep 10
-        end
-      end
+      UserStreamReceiver.new_from_access_token(Termtter::API.twitter.access_token).run{|chunk|
+        handle_chunk.call(chunk)
+      }
     }
   end
 
