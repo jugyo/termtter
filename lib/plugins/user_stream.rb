@@ -73,18 +73,25 @@ module Termtter::Client
 
     @user_stream_thread = Thread.new {
       UserStreamReceiver.new_from_access_token(Termtter::API.twitter.access_token).run{|chunk|
-        handle_chunk.call(chunk)
+        call_hooks(:user_stream_receive, chunk)
       }
     }
   end
 
   register_hook(
     :name => :user_stream_init,
-    :author => '?', # FIXME
     :point => :initialize,
     :exec => lambda {
       execute('user_stream')
     })
+
+  register_hook(
+    :name => :user_stream_print,
+    :point => :user_stream_receive,
+    :exec => lambda {|chunk|
+      handle_chunk.call(chunk)
+    })
+
 end
 
 # user_stream.rb
