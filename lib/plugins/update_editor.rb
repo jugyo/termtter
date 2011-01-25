@@ -34,7 +34,7 @@ module Termtter::Client
                        text.split("\n").each do |post|
                          break if post =~ /^__END__$/
                          unless post.empty?
-                           Termtter::API.twitter.update(post)
+                           execute("update #{post}")
                            puts "=> #{post}"
                          end
                        end
