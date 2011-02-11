@@ -26,9 +26,20 @@ module Termtter::Client
 
   register_command(
     :name => :mongo_favs,
+    :alias => :mf,
     :exec_proc => lambda {|arg|
-      mongo_db.collection('event').find({event: "favorite"}).sort(:$natural, -1).limit(50).to_a.reverse.each{|event|
-        puts "#{event['source']['screen_name']} #{event['event']} #{event['target']['screen_name']}: #{event['target_object']['text']}"
+      table = {}
+      mongo_db.collection('event').find({"event" => "favorite", "source.screen_name" => { "$ne" => config.user_name}}).sort(:$natural, -1).limit(50).to_a.reverse.each{|event|
+        table[event['target_object']['id']] ||= {
+          'status' => event['target_object'],
+          'by' => []
+        }
+        table[event['target_object']['id']]['by'] << event['source']['screen_name']
+      }
+      table.to_a.sort_by{|pair| pair[0]}.each{|pair|
+        status = pair[1]['status']
+        by = pair[1]['by']
+        puts "(#{by.length}) #{by.join(', ')}: #{status['text'].gsub(/\n/, ' ')}"
       }
     },
     :help => ["mongo_favs", "Print favorites from MongoDB"]
