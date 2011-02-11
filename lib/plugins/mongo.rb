@@ -44,16 +44,6 @@ module Termtter::Client
     },
     :help => ["mongo_favs", "Print favorites from MongoDB"]
     )
-
-  register_command(
-    :name => :mongo_follows,
-    :exec_proc => lambda {|arg|
-      mongo_db.collection('event').find({event: "follow"}).sort(:$natural, -1).limit(50).to_a.reverse.each{|event|
-        puts "#{event['source']['screen_name']} #{event['event']} #{event['target']['screen_name']}"
-      }
-    },
-    :help => ["mongo_follows", "Print follows from MongoDB"]
-    )
 end
 
 # mongo.rb
