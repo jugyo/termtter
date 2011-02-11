@@ -62,6 +62,27 @@ module Termtter::Client
     },
       :help => ["mongo_search", "Search from MongoDB"]
     )
+
+  register_command(
+    :name => :mongo_list,
+    :alias => :ml,
+    :exec_proc => lambda {|arg|
+      limit = 20
+      arg.gsub!(/-(\d+) /){|n| limit = $1.to_i; ''}
+
+      users = arg.strip.split(/\s+/).map{|name| Termtter::Client.normalize_as_user_name(name) }
+
+      statuses = mongo_db.collection('status').find({
+          'user.screen_name' => {
+            '$in' => users
+          }}).sort(:$natural, -1).limit(limit).to_a.reverse.map{|s|
+        Termtter::ActiveRubytter.new(s)
+      }
+      output(statuses)
+    },
+      :help => ["mongo_list", "List the posts from MongoDB"]
+    )
+
 end
 
 # mongo.rb
