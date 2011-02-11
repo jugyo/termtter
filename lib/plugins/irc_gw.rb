@@ -155,6 +155,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
   end
 
   def execute_command(command)
+    command.encode!('utf-8', 'utf-8') if command.respond_to? :encode!
     original_confirm = config.confirm
     config.confirm = false
     post '#termtter', NOTICE, main_channel, '> ' + command
