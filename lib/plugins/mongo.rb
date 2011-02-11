@@ -72,10 +72,9 @@ module Termtter::Client
 
       users = arg.strip.split(/\s+/).map{|name| Termtter::Client.normalize_as_user_name(name) }
 
-      statuses = mongo_db.collection('status').find({
-          'user.screen_name' => {
-            '$in' => users
-          }}).sort(:$natural, -1).limit(limit).to_a.reverse.map{|s|
+      query = users.empty? ? {} : {'user.screen_name' => {'$in' => users}}
+
+      statuses = mongo_db.collection('status').find(query).sort(:$natural, -1).limit(limit).to_a.reverse.map{|s|
         Termtter::ActiveRubytter.new(s)
       }
       output(statuses)
