@@ -44,6 +44,24 @@ module Termtter::Client
     },
     :help => ["mongo_favs", "Print favorites from MongoDB"]
     )
+
+  register_command(
+    :name => :mongo_search,
+    :alias => :ms,
+    :exec_proc => lambda {|arg|
+      limit = 20
+      arg.gsub!(/-(\d+) /){|n| limit = $1.to_i; ''}
+      arg.strip!
+
+      statuses = mongo_db.collection('status').find({
+          'text' => Regexp.new(Regexp.quote(arg))
+        }).sort(:$natural, -1).limit(limit).to_a.reverse.map{|s|
+        Termtter::ActiveRubytter.new(s)
+      }
+      output(statuses, Termtter::Client::SearchEvent.new(arg))
+    },
+      :help => ["mongo_search", "Search from MongoDB"]
+    )
 end
 
 # mongo.rb
