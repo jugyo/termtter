@@ -187,7 +187,9 @@ class TermtterIrcGateway < Net::IRC::Server::Session
 
   def sync_commands
     previous_commands = @commands
-    new_commands = (Termtter::Client.commands.keys.map{|s| s.to_s.split(' ')} + Termtter::Client.commands.values.map(&:aliases)).flatten.uniq.map(&:to_s)
+    new_commands = (
+      Termtter::Client.commands.keys + Termtter::Client.commands.values.map(&:aliases)
+      ).flatten.uniq.compact.delete_if{|s| s =~ /( |_|!|\.)/}
     join_members(new_commands - previous_commands)
     @commands = new_commands
   end
