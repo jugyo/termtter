@@ -110,7 +110,14 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     statuses.each do |s|
       typable_id = Termtter::Client.data_to_typable_id(s.id)
       time = Time.parse(s.created_at).strftime(time_format) if time_format
-      post s.user.screen_name, msg_type, main_channel, [time, CGI.unescapeHTML(s.text), typable_id].compact.join(' ')
+      reply_to_status_id_str =
+        if s.in_reply_to_status_id
+          "(reply to #{Termtter::Client.data_to_typable_id(s.in_reply_to_status_id)})"
+        else
+          nil
+        end
+
+      post s.user.screen_name, msg_type, main_channel, [time, CGI.unescapeHTML(s.text), typable_id, reply_to_status_id_str].compact.join(' ')
     end
   end
 
