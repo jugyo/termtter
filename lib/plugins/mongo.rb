@@ -85,5 +85,14 @@ module Termtter::Client
 
 end
 
+class Termtter::RubytterProxy
+  def cached_status(status_id)
+    status = Termtter::Client.memory_cache.get(['status', status_id].join('-'))
+    status ||= Termtter::Client.mongo_db.collection('status').find_one({'id' => status_id.to_i})
+    Termtter::ActiveRubytter.new(status) if status
+  end
+end
+
+
 # mongo.rb
 
