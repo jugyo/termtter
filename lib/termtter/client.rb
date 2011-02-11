@@ -117,7 +117,7 @@ module Termtter
       #             :text => status,
       #             :original_data => original data,
       #           }
-      def output(statuses, event)
+      def output(statuses, event = :default)
         return if statuses.nil? || statuses.empty?
         event = Termtter::Event.new(event) unless event.kind_of? Termtter::Event
 
