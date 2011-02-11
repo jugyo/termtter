@@ -1,4 +1,42 @@
-require 'user-stream-receiver'
+module Termtter
+  class UserStreamReceiver
+
+    def run(&block)
+      loop {
+        begin
+          self.process &block
+        rescue => error
+          Termtter::Client.logger.warn error
+          sleep 1
+        end
+      }
+    end
+
+    protected
+    ENDPOINT = URI.parse('https://userstream.twitter.com/2/user.json')
+
+    def process(&block)
+      Termtter::Client.logger.info("connecting to UserStream")
+      https = Net::HTTP.new(ENDPOINT.host, ENDPOINT.port)
+      https.use_ssl = true
+      https.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
+      https.start{ |https|
+        request = Net::HTTP::Get.new(ENDPOINT.request_uri)
+        request.oauth!(https, Termtter::API.twitter.access_token.consumer, Termtter::API.twitter.access_token)
+        https.request(request){ |response|
+          raise response.code.to_i unless response.code.to_i == 200
+          raise 'Response is not chuncked' unless response.chunked?
+          Termtter::Client.logger.info("connected to UserStream")
+          response.read_body{ |chunk|
+            Termtter::Client.logger.debug("received: #{chunk}")
+            yield chunk
+          }
+        }
+      }
+    end
+  end
+end
 
 module Termtter::Client
   register_command(:"user_stream stop", :help => 'user_stream stop') do |arg|
@@ -63,7 +101,7 @@ module Termtter::Client
     delete_task(:auto_reload)
 
     @user_stream_thread = Thread.new {
-      UserStreamReceiver.new_from_access_token(Termtter::API.twitter.access_token).run{|chunk|
+      Termtter::UserStreamReceiver.new.run{|chunk|
         call_hooks(:user_stream_receive, chunk)
       }
     }
