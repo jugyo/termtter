@@ -16,7 +16,7 @@ Termtter::Client.register_hook(
     replies.each{|s|
       time = Time.parse(s.created_at).strftime(config.plugins.stdout.time_format_not_today)
       text = CGI.unescapeHTML(s.text).gsub('&', '＆') # XXX
-      ImKayac.post(user_name, "#{s.user.screen_name}: #{text} #{time}")
+      ImKayac.post(user_name, "#{s.user.screen_name}: #{text}\n#{time}")
     }
   })
 
