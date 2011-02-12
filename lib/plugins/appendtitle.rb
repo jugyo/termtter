@@ -20,10 +20,11 @@ module Termtter::Client
     memory_cache.set(key, {}, config.plugins.appendtitle.cache_expire) # to avoid duplicate fetch
     logger.debug "appendtitle: fetching title for #{uri}"
     data = {}
+    uri_fetch = uri
     begin
-      io = URI.parse(uri).read
+      io = URI.parse(uri_fetch).read
       base_uri = io.base_uri.to_s
-      base_uri = uri if base_uri.length > 1000
+      base_uri = uri_fetch if base_uri.length > 1000
       data[:uri] = base_uri
       begin # title
         source = Nokogiri(io)
@@ -36,6 +37,13 @@ module Termtter::Client
       end
       memory_cache.set(key, data, config.plugins.appendtitle.cache_expire)
       data
+    rescue RuntimeError => error
+      # example: redirection forbidden: http://bit.ly/gSarwN -> https://github.com/jugyo/termtter/commit/6e5fa4455a5117fb6c10bdf82bae52cfcf57a91f
+      if error.message =~ /^redirection forbidden/
+        logger.debug "appendtitle: #{error.message}"
+        uri_fetch = error.message.split(/\s+/).last
+        retry
+      end
     rescue Timeout::Error, StandardError => error
       logger.debug "appendtitle: error #{uri}, #{error.class.to_s}: #{error.message}"
       nil
