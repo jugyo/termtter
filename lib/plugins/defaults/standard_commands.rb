@@ -530,6 +530,10 @@ module Termtter::Client
           Termtter::API.twitter.update(arg, params)
           puts "=> #{arg}"
         end
+      else
+        text = arg
+        last_reply = Termtter::API.twitter.replies({:count => 1}).first
+        update_with_user_and_id(text, last_reply.user.screen_name, last_reply.id)
       end
     },
     :completion_proc => lambda {|cmd, arg|
