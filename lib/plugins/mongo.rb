@@ -29,17 +29,32 @@ module Termtter::Client
     :alias => :mf,
     :exec_proc => lambda {|arg|
       table = {}
-      mongo_db.collection('event').find({"event" => "favorite", "source.screen_name" => { "$ne" => config.user_name}}).sort(:$natural, -1).limit(50).to_a.reverse.each{|event|
+      mongo_db.collection('event').find({"event" => "favorite", "source.screen_name" => { "$ne" => config.user_name}}).sort(:$natural, -1).limit(100).to_a.reverse.each{|event|
         table[event['target_object']['id']] ||= {
           'status' => event['target_object'],
-          'by' => []
+          'fav_by' => [],
+          'rt_by' => [],
         }
-        table[event['target_object']['id']]['by'] << event['source']['screen_name']
+        table[event['target_object']['id']]['fav_by'] << event['source']['screen_name']
       }
-      table.to_a.sort_by{|pair| pair[0]}.each{|pair|
+      mongo_db.collection('status').find({"retweeted_status.user.screen_name" => config.user_name}).sort(:$natural, -1).limit(100).to_a.reverse.each{|status|
+        table[status['retweeted_status']['id']] ||= {
+          'status' => status['retweeted_status'],
+          'fav_by' => [],
+          'rt_by' => [],
+        }
+        table[status['retweeted_status']['id']]['rt_by'] << status['user']['screen_name']
+      }
+
+      table.to_a.sort_by{|pair| pair[0]}[-40..-1].each{|pair|
         status = pair[1]['status']
-        by = pair[1]['by']
-        puts "(#{by.length}) #{by.join(', ')}: #{status['text'].gsub(/\n/, ' ')}"
+        fav_by = pair[1]['fav_by']
+        rt_by = pair[1]['rt_by']
+        puts [
+          fav_by.empty? ? nil : "fav(#{fav_by.length}) #{fav_by.join(', ')}",
+          rt_by.empty? ? nil : "RT(#{rt_by.length}) #{rt_by.join(', ')}",
+          status['text'].gsub(/\n/, ' ')
+        ].compact.join(' ')
       }
     },
     :help => ["mongo_favs", "Print favorites from MongoDB"]
