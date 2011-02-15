@@ -32,7 +32,7 @@ module Termtter::Client
         title = source.at('title').text rescue nil
         title ||= source.at('h1').text rescue nil
         title ||= source.at('h2').text rescue nil
-        title.gsub(/\n/, '').gsub(/\s+/, ' ') if title
+        title = title.gsub(/\n/, '').gsub(/\s+/, ' ') if title
         data[:title] = title if title
       rescue
       end
