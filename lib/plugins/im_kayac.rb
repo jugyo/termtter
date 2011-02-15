@@ -13,6 +13,8 @@ Termtter::Client.register_hook(
 
     user_name = config.plugins.im_kayac.user_name || config.user_name
     replies = statuses.select{|s|
+      s.user.screen_name != config.user_name
+    }.select{|s|
       (config.plugins.im_kayac.keywords + [user_name]).find{|text|
         s.text.include?(text)
       }
