@@ -12,8 +12,8 @@ Termtter::Client.register_hook(
     return unless event == :update_friends_timeline
 
     user_name = config.plugins.im_kayac.user_name || config.user_name
-    replies = statuses.select{|s|
-      s.user.screen_name != config.user_name
+    replies = statuses.delete_if{|s|
+      s.user.screen_name == config.user_name || s[:retweeted_status] and s[:retweeted_status][:user][:screen_name] == config.user_name # bug? s.retweeted_status is always nil
     }.select{|s|
       (config.plugins.im_kayac.keywords + [user_name]).find{|text|
         s.text.include?(text)
