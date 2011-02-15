@@ -123,6 +123,7 @@ module Termtter
           system "#{config.plugins.stdout.pager} #{file.path}"
           file.close(true)
       else
+        Termtter::Client.clear_line
         print output_text
       end
     end

@@ -23,7 +23,7 @@ module Termtter::Client
             statuses = Termtter::API.twitter.search(
               arg, 'since_id' => public_storage[:searchline_since_id] )
             unless statuses.empty?
-              print "\e[0G" + "\e[K" unless win?
+              Termtter::Client.clear_line
               public_storage[:searchline_since_id] = statuses[0].id
               output(statuses, SearchEvent.new(arg))
               Readline.refresh_line

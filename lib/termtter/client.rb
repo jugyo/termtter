@@ -355,6 +355,10 @@ module Termtter
         end
       end
 
+      def clear_line
+        print "\e[0G" + "\e[K" unless win?
+      end
+
       def confirm(message, default_yes = true, &block)
         pause # TODO: TaskManager から呼ばれるならこれいらないなぁ
 

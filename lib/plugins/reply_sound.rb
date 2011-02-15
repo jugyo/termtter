@@ -69,7 +69,7 @@ Termtter::Client.register_hook(
                 else
                   spawn *cmd
                 end
-                print "\e[0G" + "\e[K" unless win?
+                Termtter::Client.clear_line
                 Termtter::Client.output(
                   new_replies, Termtter::Event.new(:new_replies,:type => :reply))
                 Readline.refresh_line

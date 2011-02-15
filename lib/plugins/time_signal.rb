@@ -8,7 +8,7 @@ Termtter::Client.add_task(:name => :time_signal, :interval => 10) do
     if config.plugins.time_signal.minutes.include?(now.min)
       hour = now.strftime('%H:%M')
       unless hour == last_signal_time
-        print "\e[0G\e[2K"
+        Termtter::Client.clear_line
         puts "<on_green> #{hour} </on_green>".termcolor
         Termtter::Client.notify 'time signal', hour
         Readline.refresh_line

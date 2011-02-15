@@ -102,7 +102,6 @@ module Termtter::Client
         begin
           TweetStream::Client.new(config.user_name, config.password).
             filter(:track => keywords) do |status|
-            print "\e[0G" + "\e[K" unless win?
             swap_timeline_format(config.plugins.stream.timeline_format) do
               output [Termtter::ActiveRubytter.new(status)],
                       :update_friends_timeline
@@ -170,7 +169,6 @@ module Termtter::Client
           puts message
           TweetStream::Client.new(config.user_name, config.password).
             filter(:follow => current_targets) do |status|
-            print "\e[0G" + "\e[K" unless win?
             swap_timeline_format(config.plugins.stream.timeline_format) do
               output [Termtter::ActiveRubytter.new(status)], :update_friends_timeline
             end

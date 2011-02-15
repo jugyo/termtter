@@ -67,7 +67,6 @@ Termtter::Client.register_command(
     args = @since_id ? [{:since_id => @since_id}] : []
     statuses = Termtter::API.call_by_channel(now_channel, *args)
     unless statuses.empty?
-      print "\e[0G" + "\e[K" unless win?
       @since_id = statuses[0].id
       Termtter::Client.output(statuses, Termtter::Event.new(:update_friends_timeline, :type => :main))
       Readline.refresh_line if arg =~ /\-r/
@@ -134,7 +133,6 @@ config.plugins.channel.auto_reload_channels.each do |c, i|
         args = since_ids[c] ? [{:since_id => since_ids[c]}] : []
         statuses = Termtter::API.call_by_channel(c, *args)
         unless statuses.empty?
-          print "\e[0G" + "\e[K" unless win?
           since_ids[c] = statuses[0].id
           Termtter::Client.output(statuses, Termtter::Event.new(:"update_#{c}", :type => :channel, :channel => c))
           Readline.refresh_line
