@@ -93,6 +93,8 @@ module Termtter::Client
             output([data], :update_friends_timeline)
           rescue Timeout::Error, StandardError => error
             handle_error Termtter::UserStreamReceiver.repack_error(error, chunk)
+          ensure
+            Readline.refresh_line
           end
         }
       end
