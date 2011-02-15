@@ -12,6 +12,14 @@ module Termtter
       }
     end
 
+    def self.repack_error(error, chunk)
+      new_error = error.class.new("#{error.message} (#{JSON.parse(chunk).inspect})")
+      error.instance_variables.each{ |v|
+        new_error.instance_variable_set(v, error.instance_variable_get(v))
+      }
+      new_error
+    end
+
     protected
     ENDPOINT = URI.parse('https://userstream.twitter.com/2/user.json')
 
@@ -79,17 +87,18 @@ module Termtter::Client
         status = Termtter::API.twitter.safe.show(data.delete.status.id)
         puts "#{status.user.screen_name} deleted: #{status.text}"
       else
-        output([data], Termtter::Event.new(:update_friends_timeline, :type => :main))
         Termtter::API.twitter.store_status_cache(data)
+        Thread.new{
+          begin
+            output([data], :update_friends_timeline)
+          rescue Timeout::Error, StandardError => error
+            handle_error Termtter::UserStreamReceiver.repack_error(error, chunk)
+          end
+        }
       end
-    rescue Termtter::RubytterProxy::FrequentAccessError
-      # ignore
+    rescue Termtter::RubytterProxy::FrequentAccessError # ignore
     rescue Timeout::Error, StandardError => error
-      new_error = error.class.new("#{error.message} (#{JSON.parse(chunk).inspect})")
-      error.instance_variables.each{ |v|
-        new_error.instance_variable_set(v, error.instance_variable_get(v))
-      }
-      handle_error new_error
+      handle_error Termtter::UserStreamReceiver.repack_error(error, chunk)
     ensure
       Readline.refresh_line
     end
