@@ -26,8 +26,9 @@ module Termtter::Client
       base_uri = io.base_uri.to_s
       base_uri = uri_fetch if base_uri.length > 1000
       data[:uri] = base_uri
+      charset = io.scan(/charset="?([^\s"]*)/i).flatten.inject(Hash.new{0}){|a, b| a[b]+=1; a}.to_a.sort_by{|a|a[1]}.reverse.first[0] # XXX: scan charset from source
       begin # title
-        source = Nokogiri(io)
+        source = Nokogiri(io, base_uri, charset)
         title = source.at('title').text rescue nil
         title ||= source.at('h1').text rescue nil
         title ||= source.at('h2').text rescue nil
