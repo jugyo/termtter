@@ -18,6 +18,8 @@ module Termtter
         new_error.instance_variable_set(v, error.instance_variable_get(v))
       }
       new_error
+    rescue
+      error
     end
 
     protected
@@ -84,21 +86,12 @@ module Termtter::Client
       elsif data[:friends]
         puts "You have #{data[:friends].length} friends."
       elsif data[:delete]
-        status = Termtter::API.twitter.safe.show(data.delete.status.id)
+        status = Termtter::API.twitter.cached_status(data.delete.status.id)
         puts "#{status.user.screen_name} deleted: #{status.text}"
       else
         Termtter::API.twitter.store_status_cache(data)
-        Thread.new{
-          begin
-            output([data], :update_friends_timeline)
-          rescue Timeout::Error, StandardError => error
-            handle_error Termtter::UserStreamReceiver.repack_error(error, chunk)
-          ensure
-            Readline.refresh_line
-          end
-        }
+        output([data], :update_friends_timeline)
       end
-    rescue Termtter::RubytterProxy::FrequentAccessError # ignore
     rescue Timeout::Error, StandardError => error
       handle_error Termtter::UserStreamReceiver.repack_error(error, chunk)
     ensure
@@ -129,7 +122,9 @@ module Termtter::Client
     :name => :user_stream_print,
     :point => :user_stream_receive,
     :exec => lambda {|chunk|
-      handle_chunk.call(chunk)
+      Thread.new {
+        handle_chunk.call(chunk)
+      }
     })
 
 end
