@@ -6,8 +6,8 @@ module Termtter
         begin
           self.process &block
         rescue => error
-          Termtter::Client.logger.warn error
-          sleep 1
+          Termtter::Client.handle_error error
+          sleep 10
         end
       }
     end
@@ -93,7 +93,7 @@ module Termtter::Client
         output([data], :update_friends_timeline)
       end
     rescue Timeout::Error, StandardError => error
-      handle_error Termtter::UserStreamReceiver.repack_error(error, chunk)
+      Termtter::Client.handle_error Termtter::UserStreamReceiver.repack_error(error, chunk)
     ensure
       Readline.refresh_line
     end
