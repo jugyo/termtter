@@ -189,7 +189,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     previous_commands = @commands
     new_commands = (
       Termtter::Client.commands.keys + Termtter::Client.commands.values.map(&:aliases)
-      ).flatten.uniq.compact.delete_if{|s| s =~ /( |_|!|\.)/}
+      ).flatten.uniq.compact
     join_members(new_commands - previous_commands)
     @commands = new_commands
   end
@@ -199,6 +199,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     max_params_count = 3
     members.each do |member|
       prefix = Prefix.new("#{member}!#{member}@localhost")
+      next if prefix.extract.empty?
       post prefix, JOIN, main_channel
       params << prefix.nick
       next if params.size < max_params_count
