@@ -29,7 +29,7 @@ module Termtter::Client
     :alias => :mf,
     :exec_proc => lambda {|arg|
       table = {}
-      mongo_db.collection('event').find({"event" => "favorite", "source.screen_name" => { "$ne" => config.user_name}}).sort(:$natural, -1).limit(100).to_a.reverse.each{|event|
+      mongo_db.collection('event').find({"event" => "favorite", "source.screen_name" => { "$ne" => config.user_name}}).sort(:_id, -1).limit(100).to_a.reverse.each{|event|
         table[event['target_object']['id']] ||= {
           'status' => event['target_object'],
           'fav_by' => [],
@@ -37,7 +37,7 @@ module Termtter::Client
         }
         table[event['target_object']['id']]['fav_by'] << event['source']['screen_name']
       }
-      mongo_db.collection('status').find({"retweeted_status.user.screen_name" => config.user_name}).sort(:$natural, -1).limit(100).to_a.reverse.each{|status|
+      mongo_db.collection('status').find({"retweeted_status.user.screen_name" => config.user_name}).sort(:_id, -1).limit(100).to_a.reverse.each{|status|
         table[status['retweeted_status']['id']] ||= {
           'status' => status['retweeted_status'],
           'fav_by' => [],
