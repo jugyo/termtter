@@ -35,8 +35,8 @@ module Termtter
         request = Net::HTTP::Get.new(ENDPOINT.request_uri)
         request.oauth!(https, Termtter::API.twitter.access_token.consumer, Termtter::API.twitter.access_token)
         https.request(request){ |response|
-          raise response.code.to_i unless response.code.to_i == 200
-          raise 'Response is not chuncked' unless response.chunked?
+          raise StandardError, response.code.to_i unless response.code.to_i == 200
+          raise StandardError, 'Response is not chuncked' unless response.chunked?
           Termtter::Client.logger.info("connected to UserStream")
           response.read_body{ |chunk|
             Termtter::Client.logger.debug("received: #{chunk}")
