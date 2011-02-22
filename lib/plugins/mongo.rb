@@ -4,7 +4,7 @@ config.plugins.mongo.set_default(:db_name, 'twitter')
 module Termtter::Client
   class << self
     def mongo_db
-      @mongo_db ||= Mongo::Connection.new.db(config.plugins.mongo.db_name)
+      @mongo_db ||= Mongo::Connection.new('localhost', 27017, :pool_size => 5, :timeout => 5).db(config.plugins.mongo.db_name)
     end
   end
 end
