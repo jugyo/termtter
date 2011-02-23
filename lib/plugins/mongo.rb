@@ -14,7 +14,7 @@ module Termtter::Client
     :name => :user_stream_insert_mongo,
     :point => :user_stream_receive,
     :exec => lambda {|chunk|
-      data = JSON.parse(chunk)
+      data = JSON.parse(chunk) rescue return
 
       coll_key = data['friends'] ? 'friends'
       : data['event'] ? 'event'
