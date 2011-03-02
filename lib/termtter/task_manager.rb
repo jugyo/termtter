@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+require 'thread'
+
 module Termtter
   class TaskManager
     def initialize(interval = 1)
