@@ -86,7 +86,7 @@ module Termtter
     #   pattern :: Regexp
     def pattern
       commands_regex = commands.map {|name| name.to_s.split(' ').map {|i| Regexp.quote(i)}.join('\s+') }.join('|')
-      /^\s*((#{commands_regex})|(#{commands_regex})\s+(.*?))\s*$/
+      /^\s*((#{commands_regex})|(#{commands_regex})(?:\s+|\b)(.*?))\s*$/
     end
 
     # call-seq:
