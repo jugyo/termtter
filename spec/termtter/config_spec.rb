@@ -170,5 +170,13 @@ module Termtter
         @config.foo.should == 'foo'
       }.should_not raise_error
     end
+
+    it 'executes assign hook' do
+      @config.set_default(:foo, nil)
+      flag = false
+      @config.set_assign_hook(:foo, lambda { flag = true })
+      @config.foo = 'foo'
+      flag.should be_true
+    end
   end
 end

@@ -7,6 +7,7 @@ module Termtter
     def initialize
       @store = Hash.new(:undefined)
       @freezes = Set.new
+      @assign_hook = {}
     end
 
     def inspect
@@ -28,6 +29,10 @@ module Termtter
           __assign__(name.to_sym, value)
         end
       end
+    end
+
+    def set_assign_hook(name, proc)
+      @assign_hook[name.to_sym] = proc
     end
 
     # call-seq:
@@ -58,6 +63,8 @@ module Termtter
     def __assign__(name, value)
       return if @freezes.include?(name)
       @store[name] = value
+      @assign_hook[name].call if @assign_hook[name]
+      value
     end
 
     # call-seq:
