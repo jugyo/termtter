@@ -174,8 +174,8 @@ module Termtter
     it 'executes assign hook' do
       @config.set_default(:foo, nil)
       flag = false
-      @config.set_assign_hook(:foo, lambda { flag = true })
-      @config.foo = 'foo'
+      @config.set_assign_hook(:foo) {|v| flag = v }
+      @config.foo = true
       flag.should be_true
     end
   end

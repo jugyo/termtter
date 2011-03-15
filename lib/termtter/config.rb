@@ -31,8 +31,8 @@ module Termtter
       end
     end
 
-    def set_assign_hook(name, proc)
-      @assign_hook[name.to_sym] = proc
+    def set_assign_hook(name, &block)
+      @assign_hook[name.to_sym] = block
     end
 
     # call-seq:
@@ -63,7 +63,7 @@ module Termtter
     def __assign__(name, value)
       return if @freezes.include?(name)
       @store[name] = value
-      @assign_hook[name].call if @assign_hook[name]
+      @assign_hook[name].call(value) if @assign_hook[name]
       value
     end
 

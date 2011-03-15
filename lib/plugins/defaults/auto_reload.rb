@@ -17,11 +17,9 @@ Termtter::Client.add_task(
   &auto_reload_proc
 )
 
-config.set_assign_hook(
-  :update_interval,
-  lambda {
-    Termtter::Client.task_manager.get_task(:auto_reload).interval =
-      config.update_interval })
+config.set_assign_hook(:update_interval) do |v|
+  Termtter::Client.task_manager.get_task(:auto_reload).interval = v
+end
 
 Termtter::Client.register_hook(
   :name => :auto_reload_init,
