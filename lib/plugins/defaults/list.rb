@@ -34,7 +34,7 @@ module Termtter::Client
         event = :list_user_timeline
         statuses = []
         Array(arg.split).each do |user|
-          if user =~ /\/\w+/
+          if /\/\w+/ =~ user
             user_name, slug = *user.split('/')
             a[:type] = :list
             user_name = config.user_name if user_name.empty?
