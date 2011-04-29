@@ -100,7 +100,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
     end
   end
 
-  def call(statuses, event)
+  def call(statuses, event, indent = 0)
     if event == :update_friends_timeline
       msg_type = PRIVMSG
     else
@@ -117,7 +117,17 @@ class TermtterIrcGateway < Net::IRC::Server::Session
           nil
         end
 
-      post s.user.screen_name, msg_type, main_channel, [time, CGI.unescapeHTML(s.text), typable_id, reply_to_status_id_str].compact.join(' ')
+      padding = indent > 0 ? '→' : nil
+
+      post s.user.screen_name, msg_type, main_channel, [time, padding, CGI.unescapeHTML(s.text), typable_id, reply_to_status_id_str].compact.join(' ')
+      if config.plugins.stdout.show_reply_chain && s.in_reply_to_status_id && indent < config.plugins.stdout.max_indent_level
+        begin
+          if reply = Termtter::API.twitter.cached_status(s.in_reply_to_status_id)
+            call([reply], event, indent+1)
+          end
+        rescue Rubytter::APIError
+        end
+      end
     end
   end
 
