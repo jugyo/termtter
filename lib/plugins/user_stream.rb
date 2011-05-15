@@ -86,8 +86,8 @@ module Termtter::Client
       elsif data[:friends]
         puts "You have #{data[:friends].length} friends."
       elsif data[:delete]
-        status = Termtter::API.twitter.cached_status(data.delete.status.id)
-        puts "#{status.user.screen_name} deleted: #{status.text}"
+        # status = Termtter::API.twitter.cached_status(data.delete.status.id)
+        # puts "#{status.user.screen_name} deleted: #{status.text}"
       elsif data[:direct_message]
         dm = data[:direct_message]
         sender = dm.sender
