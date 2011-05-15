@@ -88,6 +88,11 @@ module Termtter::Client
       elsif data[:delete]
         status = Termtter::API.twitter.cached_status(data.delete.status.id)
         puts "#{status.user.screen_name} deleted: #{status.text}"
+      elsif data[:direct_message]
+        dm = data[:direct_message]
+        sender = dm.sender
+        text = dm.text
+        puts "[DM] #{sender.screen_name}: #{text}"
       else
         Termtter::API.twitter.store_status_cache(data)
         output([data], :update_friends_timeline)
