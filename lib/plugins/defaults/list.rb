@@ -23,6 +23,8 @@ module Termtter::Client
         options = {}
       end
 
+      options[:include_rts] = 1
+
       last_error = nil
       if arg.empty?
         event = :list_friends_timeline
