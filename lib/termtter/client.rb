@@ -233,6 +233,10 @@ module Termtter
           ConfigSetup.run
         end
         load Termtter::CONF_FILE
+        unless config.dmsg_permission
+          require 'termtter/config_setup'
+          ConfigSetup.reauth
+        end
       end
 
       def legacy_config_support
