@@ -32,5 +32,20 @@ module Termtter
       puts 'Failed to authenticate!'
       exit!
     end
+
+    def reauth
+      token_and_secret = Termtter::API.authorize_by_oauth
+      token = token_and_secret[:token]
+      secret = token_and_secret[:secret]
+
+      File.open(Termtter::CONF_FILE, 'a+') do |file|
+        file << "\nconfig.dmsg_permission = true\n"
+      end
+
+      puts "Setup is completed. Enjoy!"
+    rescue OAuth::Unauthorized
+      puts 'Failed to authenticate!'
+      exit!
+    end
   end
 end

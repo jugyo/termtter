@@ -5,6 +5,7 @@ config.set_default(:devel, false)
 config.set_default(:token_file_name, "token")
 config.set_default(:timeout, 60)
 config.set_default(:retry, 3)
+config.set_default(:dmsg_permission, false)
 config.set_default(:splash, <<SPLASH)
 
    <cyan>&lt;(@)//_</cyan>  .  .      <on_green> #{(Time.now.year == 2011 && Time.now.month == 4 && Time.now.day == 1)?'Centertter':'Termtter'} <underline>#{Termtter::VERSION}</underline> </on_green>
@@ -19,3 +20,4 @@ config.system.set_default :disable_plugins, []
 config.system.set_default :eval_scripts, []
 
 config.cache.set_default(:memcached_server, 'localhost:11211')
+
