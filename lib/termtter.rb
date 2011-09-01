@@ -20,9 +20,9 @@ require 'timeout'
 require 'oauth'
 
 module Termtter
-  VERSION = File.read(File.join(File.dirname(__FILE__), '../VERSION')).strip
   APP_NAME = 'termtter'
 
+  require 'termtter/version'
   require 'termtter/config'
   require 'termtter/crypt'
   require 'termtter/default_config'

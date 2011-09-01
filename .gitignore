@@ -3,3 +3,5 @@
 *.gem
 pkg
 bin/termtter.bat
+Gemfile.lock
+/rdoc
