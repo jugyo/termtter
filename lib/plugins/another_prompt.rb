@@ -19,6 +19,7 @@ config.plugins.another_prompt.
         system('clear')
       end,
       'L' => lambda do
+        return if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
         puts '-' *
           `stty size`.chomp.
           sub(/^\d+\s(\d+)$/, '\\1').to_i
