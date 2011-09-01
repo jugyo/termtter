@@ -2,7 +2,7 @@
 
 config.plugins.tinyurl.set_default(:shorturl_makers, [
     { :host => "api.bit.ly",
-      :format => '/shorten?version=2.0.1&longUrl=%s&login=termtter&apiKey=R_e7f22d523a803dbff7f67de18c109856' },
+      :format => '/v3/shorten?login=termtter&apiKey=R_e7f22d523a803dbff7f67de18c109856&longUrl=%s&format=txt' },
     { :host => "is.gd", :format => '/api.php?longurl=%s' },
     { :host => "tinyurl.com", :format => '/api-create.php?url=%s' },
   ])
@@ -55,7 +55,7 @@ module Termtter::Client
     end
     if res.code == '200'
       result = res.body
-      if /"shortUrl": "(http.*?)"/ =~ result
+      if /"(http.*?)"/ =~ result
         result = $1
       elsif /"statusCode": "ERROR"/ =~ result
         return nil
