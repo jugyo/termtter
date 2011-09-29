@@ -4,7 +4,7 @@ module Termtter::Client
     :name => :list, :aliases => [:l],
     :exec_proc => lambda {|arg|
       _, options, user = */((?:\-[a-z][= ]\S+\s*)+)?(?:@?(\w+))?/.match(arg)
-      params = {}
+      params = {:include_entities => 1}
       options.scan(/(\-[a-z])[= ](\S+)/).each do |k,v|
         v = v.sub(/^['"]/,'').sub(/['"]$/,'')
         case k

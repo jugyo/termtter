@@ -130,8 +130,9 @@ config.plugins.channel.auto_reload_channels.each do |c, i|
     begin
       if c != now_channel
         # NOTE: Please edit here as well if reload command in lib/plugins/default/standard_commands.rb was edited.
-        args = since_ids[c] ? [{:since_id => since_ids[c]}] : []
-        statuses = Termtter::API.call_by_channel(c, *args)
+        args = {:include_entities => 1}
+        args[since_id] = since_ids[c] if since_ids[c]
+        statuses = Termtter::API.call_by_channel(c, args)
         unless statuses.empty?
           since_ids[c] = statuses[0].id
           Termtter::Client.output(statuses, Termtter::Event.new(:"update_#{c}", :type => :channel, :channel => c))

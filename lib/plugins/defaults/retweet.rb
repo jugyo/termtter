@@ -74,7 +74,7 @@ module Termtter::Client
     :name => :retweeted_by_me,
     :help => ['retweeted_by_me', 'Show retweets posted by you.'],
     :exec => lambda {|arg|
-      statuses = Termtter::API.twitter.retweeted_by_me
+      statuses = Termtter::API.twitter.retweeted_by_me(:include_entities => 1)
       output(statuses, :retweeted_by_me)
     }
   )
@@ -83,7 +83,7 @@ module Termtter::Client
     :name => :retweeted_to_me,
     :help => ['retweeted_to_me', 'Show retweets posted by friends.'],
     :exec => lambda {|arg|
-      statuses = Termtter::API.twitter.retweeted_to_me
+      statuses = Termtter::API.twitter.retweeted_to_me(:include_entities => 1)
       output(statuses, :retweeted_to_me)
     }
   )
@@ -93,7 +93,7 @@ module Termtter::Client
     :help => ['retweets_of_me',
       'Show tweets of you that have been retweeted by others.'],
     :exec => lambda {|arg|
-      statuses = Termtter::API.twitter.retweets_of_me
+      statuses = Termtter::API.twitter.retweets_of_me(:include_entities => 1)
       output(statuses, :retweets_of_me)
     }
   )
