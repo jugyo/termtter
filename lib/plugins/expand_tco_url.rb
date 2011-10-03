@@ -1,6 +1,6 @@
 module Termtter::Client
   register_hook(
-    :name => :tco_saving,
+    :name => :expand_tco_url,
     :point => :filter_for_output,
     :exec_proc => lambda do |statuses, event|
       statuses.each do |s|
