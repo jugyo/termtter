@@ -46,7 +46,8 @@ module Termtter::Client
         table[status['retweeted_status']['id']]['rt_by'] << status['user']['screen_name']
       }
 
-      table.to_a.sort_by{|pair| pair[0]}[-40..-1].each{|pair|
+      cut_length = [table.to_a.length, 40].min
+      table.to_a.sort_by{|pair| pair[0]}[cut_length..-1].each{|pair|
         status = pair[1]['status']
         fav_by = pair[1]['fav_by']
         rt_by = pair[1]['rt_by']
