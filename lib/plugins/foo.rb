@@ -14,5 +14,3 @@ module Termtter::Client
   end
 end
 
-
-replace
