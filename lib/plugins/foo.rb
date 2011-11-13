@@ -9,8 +9,10 @@ module Termtter::Client
 
   register_hook(:foo, :point => :filter_for_output) do |statuses, event|
     statuses.each do |s|
-      s.text.sub!(/\A.+\z/, 'foo')
+      s.text.replace('foo')
     end
   end
 end
 
+
+replace
