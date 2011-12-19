@@ -6,7 +6,7 @@ module Termtter::Client
     statuses = []
     members.each_with_index do |member, index|
       puts "member #{index+1}/#{members.size} #{member}"
-      statuses += Termtter::API.twitter.user_timeline(member)
+      statuses += Termtter::API.twitter.user_timeline(member, :include_entities => 1)
     end
     statuses
   end    

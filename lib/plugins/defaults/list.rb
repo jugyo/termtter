@@ -24,6 +24,7 @@ module Termtter::Client
       end
 
       options[:include_rts] = 1
+      options[:include_entities] = 1
 
       last_error = nil
       if arg.empty?
