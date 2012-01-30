@@ -11,14 +11,9 @@ module Termtter::Client
   )
 
   def self.expand_tco_urls!(text, urls)
-    urls.sort {|a, b| b[:indices][0] <=> a[:indices][0] }.each do |u|
+    urls.each do |u|
       next unless u[:expanded_url]
-      # workaround for ruby1.8
-      if text.bytesize == text.size
-        text[/#{Regexp.escape(u[:url])}/] = u[:expanded_url]
-      else
-        text[u[:indices][0]...u[:indices][1]] = u[:expanded_url]
-      end
+      text[/#{Regexp.escape(u[:url])}/] = u[:expanded_url]
     end
   end
 end
