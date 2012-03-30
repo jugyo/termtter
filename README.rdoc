@@ -4,13 +4,28 @@ Termtter is a terminal based Twitter client.
 
 For more information, see http://termtter.github.com/ and http://lingr.com/room/termtter
 
-== INSTALL:
+== INSTALL (for Gentoo Linux):
 
-  % gem install termtter
+  $ sudo emerge termtter
+
+== INSTALL (for Mac OS X with XCode):
+
+  $ gem install termtter
+
+== INSTALL (for Mac OS X without XCode):
+
+Download termtter binary package https://github.com/termtter/termtter/downloads
+
+== INSTALL (for developer):
+
+  $ gem install termtter
+  $ gem uninstall termtter
+
+just for dependency libraries.
 
 == Run:
 
-  % termtter
+  $ termtter
 
 == Commands:
 
@@ -22,13 +37,29 @@ Update status
 
   > update hi!
 
+or
+
+  > u hi!
+
 Show replies
 
   > replies
 
+or
+
+  > r
+
 Search
 
   > search termtter
+
+or
+
+  > s termtter
+
+Tweet fib
+
+  > fib 10
 
 == CONFIGURATION:
 
@@ -85,7 +116,7 @@ You can also type `<` as curry.
 
 (The MIT License)
 
-Copyright (c) 2008-2009 The Termtter Development Team
+Copyright (c) 2008-2012 The Termtter Development Team
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
