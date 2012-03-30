@@ -5,7 +5,7 @@ require 'uri'
 module Termtter::Client
   public_storage[:uris] = []
 
-  PROTOCOLS = %w(http https)
+  PROTOCOLS = %w(http https) unless defined? PROTOCOLS
 
   register_hook(
     :name => :uri_open,
