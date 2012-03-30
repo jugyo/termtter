@@ -6,7 +6,7 @@ For more information, see http://termtter.github.com/ and http://lingr.com/room/
 
 == INSTALL:
 
-  % sudo gem install termtter
+  % gem install termtter
 
 == Run:
 
