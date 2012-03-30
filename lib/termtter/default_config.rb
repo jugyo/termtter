@@ -9,7 +9,7 @@ config.set_default(:dmsg_permission, false)
 config.set_default(:splash, <<SPLASH)
 
    <cyan>&lt;(@)//_</cyan>  .  .      <on_green> Termtter <underline>#{Termtter::VERSION}</underline> </on_green>
-      <cyan>\\\\</cyan>           <on_green> https://github.com/jugyo/termtter </on_green>
+      <cyan>\\\\</cyan>           <on_green> https://github.com/termtter/termtter </on_green>
 
 SPLASH
 
