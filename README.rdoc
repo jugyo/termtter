@@ -2,7 +2,7 @@
 
 Termtter is a terminal based Twitter client.
 
-For more information, see http://termtter.org/ and http://lingr.com/room/termtter
+For more information, see http://termtter.github.com/ and http://lingr.com/room/termtter
 
 == INSTALL:
 
