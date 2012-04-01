@@ -4,7 +4,7 @@ require 'bundler'
 
 require 'rake'
 require 'rake/clean'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 require 'rdoc/task'
 
 Bundler::GemHelper.install_tasks
