@@ -13,7 +13,7 @@ module Termtter::Client
   def self.expand_tco_urls!(text, urls)
     urls.each do |u|
       next unless u[:expanded_url]
-      text[/#{Regexp.escape(u[:url])}/] = u[:expanded_url]
+      text.sub!(/#{Regexp.escape(u[:url])}/, u[:expanded_url])
     end
   end
 end
