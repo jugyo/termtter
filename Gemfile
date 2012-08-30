@@ -9,4 +9,5 @@ gem 'notify', '~> 0.2.1'
 
 group :development do
   gem 'rspec', '~> 2.0.0'
+  gem 'rdoc', '~> 2.4.2'
 end

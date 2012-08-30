@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
     "README.rdoc"
   ]
 
-  s.homepage = %q{http://termtter.org/}
+  s.homepage = %q{http://termtter.github.com/}
   s.rdoc_options = ["--main", "README.rdoc", "--exclude", "spec"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{termtter}

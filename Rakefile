@@ -4,8 +4,8 @@ require 'bundler'
 
 require 'rake'
 require 'rake/clean'
-require 'rake/rdoctask'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
+require 'rdoc/task'
 
 Bundler::GemHelper.install_tasks
 
@@ -20,7 +20,7 @@ task :spec => :check_dependencies
 task :default => :spec
 
 desc 'Generate documentation for the termtter.'
-Rake::RDocTask.new do |rdoc|
+RDoc::Task.new do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title = "Termtter"
   rdoc.options << '--line-numbers' << '--inline-source'

@@ -18,7 +18,7 @@ module Termtter::Client
     :exec => lambda {|arg|
       # NOTE: If edit this command, please check and edit lib/plugins/channel.rb too, please.
       args = {:include_entities => 1}
-      args[since_id] = @since_id if @since_id
+      args[:since_id] = @since_id if @since_id
       statuses = Termtter::API.twitter.home_timeline(args)
       unless statuses.empty?
         Termtter::Client.clear_line
