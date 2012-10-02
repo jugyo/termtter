@@ -61,7 +61,7 @@ module Termtter::Client
 
       result = Termtter::API.twitter.update(arg, params)
 
-      if result.text == arg
+      if ! result[:error]
         puts "updated => #{result.text}"
       else
         puts TermColor.parse("<red>Failed to update :(</red>")
