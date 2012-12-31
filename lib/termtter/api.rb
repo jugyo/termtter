@@ -103,9 +103,9 @@ module Termtter
           :app_name => config.app_name.empty? ? Termtter::APP_NAME : config.app_name,
           :host => config.host,
           :header => {
-            'User-Agent' => 'Termtter http://github.com/jugyo/termtter',
+            'User-Agent' => 'Termtter http://github.com/termtter/termtter',
             'X-Twitter-Client' => 'Termtter',
-            'X-Twitter-Client-URL' => 'http://github.com/jugyo/termtter',
+            'X-Twitter-Client-URL' => 'http://github.com/termtter/termtter',
             'X-Twitter-Client-Version' => Termtter::VERSION
           },
           :enable_ssl => config.enable_ssl,
