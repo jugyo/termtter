@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 module Termtter::Client
-  # TODO: ↓不要な気もする
+  # TODO: the below could be unnecessary
   config.set_default(:stdout, true)
   config.set_default(:standard_commands, true)
   config.set_default(:standard_completion, true)
