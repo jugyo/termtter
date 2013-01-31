@@ -42,10 +42,10 @@ module Termtter::Client
 
     def fav_color(amount)
       case amount
-        when 1 then 'WHITE'
-        when 2 then 'GREEN'
-        when 3 then 'BLUE'
-        when 4 then 'BLUE'
+        when 1 then 'GREEN'
+        when 2 then 'CYAN'
+        when 3 then 'CYAN'
+        when 4 then 'CYAN'
         else        'RED'
       end
     end
