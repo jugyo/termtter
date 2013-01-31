@@ -9,7 +9,7 @@ module Termtter::Client
 
   class << self
     def output_favorites(target, threshold)
-      favorites = parse("http://favotter.matope.com/user.php?user=#{target}&threshold=#{threshold}")
+      favorites = parse("http://favotter.net/user/#{target}?mode=new&threshold=#{threshold}")
 
       public_storage[:favorited_ids].clear
       alphabet = '$a'
