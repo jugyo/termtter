@@ -52,7 +52,7 @@ module Termtter::Client
   end
 
   help = ['favotter [USERNAME] [THRESHOLD]', 'Show info from favotter']
-  register_command('favotter', :help => help) do |arg|
+  register_command('favotter', :alias => :fa, :help => help) do |arg|
     target =
       if arg.empty?
        config.user_name
