@@ -9,7 +9,7 @@ module Termtter::Client
 
   class << self
     def output_favorites(target, threshold)
-      favorites = parse("http://favotter.matope.com/user.php?user=#{target}&threshold=#{threshold}")
+      favorites = parse("http://favotter.net/user/#{target}?mode=new&threshold=#{threshold}")
 
       public_storage[:favorited_ids].clear
       alphabet = '$a'
@@ -42,17 +42,17 @@ module Termtter::Client
 
     def fav_color(amount)
       case amount
-        when 1 then 'WHITE'
-        when 2 then 'GREEN'
-        when 3 then 'BLUE'
-        when 4 then 'BLUE'
+        when 1 then 'GREEN'
+        when 2 then 'CYAN'
+        when 3 then 'CYAN'
+        when 4 then 'CYAN'
         else        'RED'
       end
     end
   end
 
   help = ['favotter [USERNAME] [THRESHOLD]', 'Show info from favotter']
-  register_command('favotter', :help => help) do |arg|
+  register_command('favotter', :alias => :fa, :help => help) do |arg|
     target =
       if arg.empty?
        config.user_name
