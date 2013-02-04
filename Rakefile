@@ -1,21 +1,19 @@
 # -*- mode: ruby; coding: utf-8 -*-
 require 'rubygems'
 require 'bundler'
-
 require 'rake'
 require 'rake/clean'
 require 'rubygems/package_task'
 require 'rdoc/task'
+require 'rspec/core'
+require 'rspec/core/rake_task'
 
 Bundler::GemHelper.install_tasks
 
-require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:spec) do |spec|
+  spec.rspec_opts = ["-c","-fs"]
   spec.pattern = FileList['spec/**/*_spec.rb']
-  spec.rcov = true
 end
-
-task :spec => :check_dependencies
 
 task :default => :spec
 
