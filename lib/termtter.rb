@@ -44,6 +44,8 @@ module Termtter
   CONF_DIR = File.expand_path('~/.termtter') unless defined? CONF_DIR
   CONF_FILE = File.join(Termtter::CONF_DIR, 'config') unless defined? CONF_FILE
   config.token_file = File.join(Termtter::CONF_DIR, config.token_file_name)
+  USER_LIB = File.join(Termtter::CONF_DIR, 'lib')
+  $:.unshift(USER_LIB) if File.exist?(USER_LIB)
   $:.unshift(CONF_DIR)
 
   CONSUMER_KEY = 'eFFLaGJ3M0VMZExvNmtlNHJMVndsQQ=='
