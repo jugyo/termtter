@@ -1,4 +1,4 @@
-=== Next release / ?
+=== 2.0.0 / ?
 
 * ユーザー独自プラグイン機能
 
@@ -12,8 +12,22 @@
 
 * テストの改善
 
+* "Failed to update :(" when updated with URL.
 
-=== 2.0.0 / 2012-12-30
+* use String#sub instead of String#[regexp]=.
 
-* Update to 2.0.0.
+* spec for expand_tco_url plugin.
+
+* and fix other minor bugs.
+
+
+=== 1.11.1 / 2012-3-31
+
+* fix package_task.
+
+
+=== 1.11.0 / 2012-3-31
+
+* Stable release.
+
 
