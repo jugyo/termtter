@@ -13,6 +13,7 @@ module Termtter
     end
 
     it 'Hashのキーでもメソッドでもないものは呼べない' do
+      pending("Not yet implemented")
       d = ActiveRubytter.new(:name => 'termtter')
       lambda{ d.undefined_method }.should raise_error(NoMethodError)
     end

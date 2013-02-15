@@ -44,6 +44,7 @@ describe 'Termtter::Client.post_retweet' do
 
     describe 'with your own comment,' do
       it 'and without confirming in the original post being not protected' do
+        pending("Not yet implemented")
         Termtter::Client.plug 'defaults/retweet'
 
         mock = Object.new
@@ -75,6 +76,7 @@ describe 'Termtter::Client.post_retweet' do
       end
 
       it 'and use QT if config.plugins.retweet.quotetweet is true' do
+        pending("Not yet implemented")
         config.plugins.retweet.quotetweet = true
         Termtter::Client.plug 'defaults/retweet'
 
@@ -109,12 +111,14 @@ describe 'Termtter::Client.post_retweet' do
 
 
       it 'and with confirming in the original post being protected' do
+        pending("Not yet implemented")
         completely_same_as_the_following.call
       end
     end
 
     describe 'without your own comment,' do
       it 'and without confirming in the original post being not protected' do
+        pending("Not yet implemented")
         Termtter::Client.plug 'defaults/retweet'
 
         mock = Object.new
@@ -150,6 +154,7 @@ describe 'Termtter::Client.post_retweet' do
       end
 
       it 'and don\'t use QT if config.plugins.retweet.quotetweet is true' do
+        pending("Not yet implemented")
         config.plugins.retweet.quotetweet = true
         Termtter::Client.plug 'defaults/retweet'
 
@@ -191,6 +196,7 @@ describe 'Termtter::Client.post_retweet' do
       end
 
       it 'and with confirming in the original post being protected' do
+        pending("Not yet implemented")
         completely_same_as_the_following.call
       end
     end

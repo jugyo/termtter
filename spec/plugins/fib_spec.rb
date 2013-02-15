@@ -7,6 +7,7 @@ describe Termtter::Client, 'when the plugin fib is loaded' do
   end
 
   it 'defines fib method' do
+    pending("Not yet implemented")
     Termtter::Client.plug 'defaults/fib'
     (0..10).map {|i| fib i }.should == [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
   end

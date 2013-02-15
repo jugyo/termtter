@@ -19,6 +19,7 @@ describe 'plugin lists' do
     end
 
     it 'should call with no user_name' do
+      pending("Not yet implemented")
       response = []
       @twitter_stub.should_receive(:home_timeline).and_return(response)
       Termtter::Client.execute('list')
