@@ -15,6 +15,7 @@ module Termtter::Storage
     end
 
     it 'update should not return false' do
+      pending("Not yet implemented")
       h = {
         :post_id => 1,
         :created_at => 12345,

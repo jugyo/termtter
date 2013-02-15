@@ -6,6 +6,7 @@ Termtter::Client.plug 'defaults/standard_commands'
 module Termtter
   describe Client do
     it 'returns registerd commands' do
+      pending("Not yet implemented")
       [
         [:update,  [:u]],  [:direct,  [:d]],
         [:profile, [:p]],  [:list,    [:l]],

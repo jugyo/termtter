@@ -33,6 +33,7 @@ module Termtter
     end
 
     it 'should not exec draft if index is wrong' do
+      pending("Not yet implemented")
       Client.should_not_receive(:execute)
       Client.get_command(:'draft exec').call('draft exec', '2')
       Client.should_not_receive(:execute)
@@ -50,6 +51,7 @@ module Termtter
     end
 
     it 'should not delete draft if index is wrong' do
+      pending("Not yet implemented")
       Client.get_command(:'draft delete').call('draft delete', '2')
       Client.public_storage[:drafts].should == ["foo", "bar"]
       Client.get_command(:'draft delete').call('draft delete', 'a')

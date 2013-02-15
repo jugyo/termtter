@@ -2,6 +2,7 @@
 require File.expand_path(File.dirname(__FILE__)) + '/../spec_helper'
 describe Termtter::Client, 'when the plugin md5pass is loaded' do
   it 'plugin md5pass' do
+    pending("Not yet implemented")
     config.user_name = 'foo'
     Termtter::Client.should_receive(:register_command).once
     Termtter::Client.should_receive(:create_highline).and_return(
