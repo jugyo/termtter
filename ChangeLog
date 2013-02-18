@@ -1,3 +1,37 @@
+== 2.0.0 / ?
+
+* User own plugins loader.
+
+  * If ~/.termtter/lib/plugins exist, load them.
+
+* Improvement easy_post plugin.
+
+  * Plug-in easy_post should operate only when above 15 characters.
+
+* Improvement tests.
+
+* "Failed to update :(" when updated with URL.
+
+* use String#sub instead of String#[regexp]=.
+
+* spec for expand_tco_url plugin.
+
+* and fix other minor bugs.
+
+
+== 1.11.1 / 2012-3-31
+
+* fix package_task.
+
+
+== 1.11.0 / 2012-3-31
+
+* Stable release.
+
+
+== (Omitted)
+
+
 == 1.3.1 2009-08-10
 
 Takaaki SONE:
