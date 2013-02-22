@@ -19,7 +19,7 @@ module Termtter::Client
       last = nil
       begin
         puts "collecting friends (#{frinends.length})"
-        last = Termtter::API::twitter.friends(user_name, :cursor => last ? last.next_cursor : -1)
+        last = Termtter::API::twitter.friends(:screen_name => user_name, :cursor => last ? last.next_cursor : -1)
         frinends += last.users
       rescue Timeout::Error, StandardError # XXX
         break
@@ -222,7 +222,7 @@ class TermtterIrcGateway < Net::IRC::Server::Session
 
   def friends_ids
     if !@friends_ids || !@friends_ids_expire ||@friends_ids_expire < Time.now
-      @friends_ids = Termtter::API.twitter.friends_ids(config.user_name)
+      @friends_ids = Termtter::API.twitter.friends_ids(:screen_name => config.user_name)
       @friends_ids_expire = Time.now + 3600
     end
     @friends_ids

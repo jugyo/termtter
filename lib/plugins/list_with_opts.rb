@@ -20,7 +20,7 @@ module Termtter::Client
         statuses = Termtter::API.twitter.friends_timeline(params)
       else
         event = :list_user_timeline
-        statuses = Termtter::API.twitter.user_timeline(user, params)
+        statuses = Termtter::API.twitter.user_timeline({:screen_name => user}.merge(params))
       end
       output(statuses, event)
     },

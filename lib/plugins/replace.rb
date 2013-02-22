@@ -38,7 +38,7 @@ module Termtter::Client
                              'Delete and replace most recent tweet.'],
                    :exec_proc => lambda {|arg|
                      recent =
-                     Termtter::API.twitter.user_timeline(config.user_name)[0]
+                     Termtter::API.twitter.user_timeline(:screen_name => config.user_name)[0]
                      pattern, replace, mode =
                      /^s?\/(.*?(?:(?!\\).))\/(.*)\/$/.match(arg).to_a.values_at(1, 2, 3)
 

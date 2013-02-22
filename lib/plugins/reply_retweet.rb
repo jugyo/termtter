@@ -32,7 +32,7 @@ module Termtter::Client
         post_reply_retweet(Termtter::API.twitter.show(arg), comment)
       when /@([A-Za-z0-9_]+)/
         user = $1
-        statuses = Termtter::API.twitter.user_timeline(user)
+        statuses = Termtter::API.twitter.user_timeline(:screen_name => user)
         return if statuses.empty?
         post_reply_retweet(statuses[0], comment)
       end
