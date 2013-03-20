@@ -231,7 +231,7 @@ module Termtter::Client
         options = {}
       end
 
-      res = Termtter::API.twitter.replies(options)
+      res = Termtter::API.twitter.mentions(options)
       unless arg.empty?
         res = res.select {|e| e.user.screen_name == arg }
       end
