@@ -1,4 +1,5 @@
-source :rubygems
+# -*- mode: ruby -*-
+source 'https://rubygems.org'
 gemspec
 
 gem 'json', '> 1.1.3'
