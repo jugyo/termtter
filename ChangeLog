@@ -1,4 +1,11 @@
-== 2.0.0 / ?
+== 2.0.1 / ?
+
+* Correspond to API 1.1
+
+* Other fixes.
+
+
+== 2.0.0 / 2013-04-07
 
 * User own plugins loader.
 
