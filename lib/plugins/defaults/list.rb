@@ -4,7 +4,7 @@ module Termtter::Client
   register_hook(:fetch_my_lists, :point => :launched) do
     begin
       public_storage[:lists] +=
-        Termtter::API.twitter.lists(config.user_name).lists.map(&:full_name)
+        Termtter::API.twitter.lists(:screen_name => config.user_name).map(&:full_name)
     rescue TimeoutError
       # do nothing
     rescue Exception => e
@@ -44,7 +44,7 @@ module Termtter::Client
             a[:list_slug] = slug
             options[:per_page] = options[:count]
             options.delete(:count)
-            statuses += Termtter::API.twitter.list_statuses(user_name, slug, options)
+            statuses += Termtter::API.twitter.list_statuses({:owner_screen_name => user_name, :slug => slug}.merge(options))
           else
             begin
               if user =~ /^\d+$/
@@ -57,7 +57,7 @@ module Termtter::Client
               user_name = normalize_as_user_name(user.sub(/\/$/, ''))
               a[:type] = :user
               a[:user_name] = user_name
-              statuses += Termtter::API.twitter.user_timeline(user_name, options)
+              statuses += Termtter::API.twitter.user_timeline({:screen_name => user_name}.merge(options))
             rescue Rubytter::APIError => e
               last_error = e
             end
@@ -96,7 +96,7 @@ module Termtter::Client
       users.each{ |screen_name|
         begin
           user = Termtter::API.twitter.cached_user(screen_name) || Termtter::API.twitter.user(screen_name)
-          Termtter::API.twitter.add_member_to_list(config.user_name, slug, user.id)
+          Termtter::API.twitter.add_member_to_list(:owner_screen_name => config.user_name, :slug => slug, :user_id => user.id)
           puts "#{slug} + #{screen_name}"
         rescue => e
           handle_error(e)
@@ -114,7 +114,7 @@ module Termtter::Client
       users.each{ |screen_name|
         begin
           user = Termtter::API.twitter.cached_user(screen_name) || Termtter::API.twitter.user(screen_name)
-          Termtter::API.twitter.remove_member_from_list(config.user_name, slug, user.id)
+          Termtter::API.twitter.remove_member_from_list(:owner_screen_name => config.user_name, :slug => slug, :user_id => user.id)
           puts "#{slug} - #{screen_name}"
         rescue => e
           handle_error(e)
@@ -135,7 +135,7 @@ module Termtter::Client
         opt.on('--private') {|v| param[:mode] = 'private' }
         opt.parse(options)
       }
-      list = Termtter::API.twitter.create_list(config.user_name, slug, param)
+      list = Termtter::API.twitter.create_list({:name => slug}.merge(param))
       public_storage[:lists] << list.full_name
       p [list.full_name, param]
     },
@@ -149,7 +149,7 @@ module Termtter::Client
       arg.split(' ').each{ |list_name|
         begin
           slug = list_name_to_slug(list_name)
-          list = Termtter::API.twitter.delete_list(config.user_name, slug)
+          list = Termtter::API.twitter.delete_list(:owner_screen_name => config.user_name, :slug => slug)
           public_storage[:lists].delete(list.full_name)
           puts "#{list.full_name} deleted"
         rescue => e
@@ -167,7 +167,7 @@ module Termtter::Client
       user_name, slug = *arg.split('/')
       user_name = config.user_name if user_name.empty?
       user_name = normalize_as_user_name(user_name)
-      list = Termtter::API.twitter.list(user_name, slug)
+      list = Termtter::API.twitter.list(:owner_screen_name => user_name, :slug => slug)
       attrs = %w[ full_name slug description mode id member_count subscriber_count]
       label_width = attrs.map(&:size).max
       attrs.each do |attr|

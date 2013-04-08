@@ -38,7 +38,7 @@ module Termtter::Client
         if config.easy_reply && /^\s*(@\w+)/ =~ arg
           user_name = normalize_as_user_name($1)
           in_reply_to_status_id =
-            Termtter::API.twitter.user(user_name).status.id rescue nil
+            Termtter::API.twitter.user(:screen_name => user_name).status.id rescue nil
           in_reply_to_status_id ?
             {:in_reply_to_status_id => in_reply_to_status_id} : {}
         else
@@ -76,7 +76,7 @@ module Termtter::Client
       id =
         case arg
         when ''
-          Termtter::API.twitter.user_timeline(config.user_name)[0].id
+          Termtter::API.twitter.user_timeline(:screen_name => config.user_name)[0].id
         when /^\d+$/
           arg.to_i
         end
@@ -231,7 +231,7 @@ module Termtter::Client
         options = {}
       end
 
-      res = Termtter::API.twitter.replies(options)
+      res = Termtter::API.twitter.mentions(options)
       unless arg.empty?
         res = res.select {|e| e.user.screen_name == arg }
       end
@@ -278,7 +278,7 @@ module Termtter::Client
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
-        user = Termtter::API::twitter.follow(user_name)
+        user = Termtter::API::twitter.follow(:screen_name => user_name)
         puts "followed #{user.screen_name}"
       end
     },
@@ -290,7 +290,7 @@ module Termtter::Client
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
-        user = Termtter::API::twitter.leave(user_name)
+        user = Termtter::API::twitter.leave(:screen_name => user_name)
         puts "left #{user.screen_name}"
       end
     },
@@ -302,7 +302,7 @@ module Termtter::Client
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
-        user = Termtter::API::twitter.block(user_name)
+        user = Termtter::API::twitter.block(:screen_name => user_name)
         puts "blocked #{user.screen_name}"
       end
     },
@@ -314,7 +314,7 @@ module Termtter::Client
     :exec_proc => lambda {|args|
       args.split(' ').each do |arg|
         user_name = normalize_as_user_name(arg)
-        user = Termtter::API::twitter.unblock(user_name)
+        user = Termtter::API::twitter.unblock(:screen_name => user_name)
         puts "unblocked #{user.screen_name}"
       end
     },
@@ -323,7 +323,7 @@ module Termtter::Client
 
   help = ['favorites,favlist USERNAME', 'show user favorites']
   register_command(:favorites, :alias => :favlist, :help => help) do |arg|
-    output(Termtter::API.twitter.favorites(arg), Termtter::Event.new(:user_timeline, :type => :favorite))
+    output(Termtter::API.twitter.favorites(:screen_name => arg), Termtter::Event.new(:user_timeline, :type => :favorite))
   end
 
   register_command(
@@ -336,14 +336,14 @@ module Termtter::Client
             arg.to_i
           when /^@([A-Za-z0-9_]+)/
             user_name = normalize_as_user_name($1)
-            statuses = Termtter::API.twitter.user_timeline(user_name)
+            statuses = Termtter::API.twitter.user_timeline(:screen_name => user_name)
             return if statuses.empty?
             statuses[0].id
           when %r{twitter.com/(?:\#!/)[A-Za-z0-9_]+/status(?:es)?/\d+}
             status_id = URI.parse(arg).path.split(%{/}).last
           when %r{twitter.com/[A-Za-z0-9_]+}
             user_name = normalize_as_user_name(URI.parse(arg).path.split(%{/}).last)
-            statuses = Termtter::API.twitter.user_timeline(user_name)
+            statuses = Termtter::API.twitter.user_timeline(:screen_name => user_name)
             return if statuses.empty?
             statuses[0].id
           when /^\/(.*)$/
@@ -357,7 +357,7 @@ module Termtter::Client
             end
           end
         begin
-          r = Termtter::API.twitter.favorite id
+          r = Termtter::API.twitter.favorite(:id => id)
           puts "Favorited status ##{r.id} on user @#{r.user.screen_name} #{r.text}"
         rescue => e
           handle_error e
@@ -525,7 +525,7 @@ module Termtter::Client
         end
       when /^\s*(@\w+)/
         user_name = normalize_as_user_name($1)
-        s = Termtter::API.twitter.user(user_name).status
+        s = Termtter::API.twitter.user(:screen_name => user_name).status
         if s
           params = s ? {:in_reply_to_status_id => s.id} : {}
           Termtter::API.twitter.update(arg, params)

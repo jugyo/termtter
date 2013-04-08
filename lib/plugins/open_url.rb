@@ -31,7 +31,7 @@ module Termtter::Client
           case arg
           when /^@([A-Za-z0-9_]+)/
             user = $1
-            statuses = Termtter::API.twitter.user_timeline(user)
+            statuses = Termtter::API.twitter.user_timeline(:screen_name => user)
             return if statuses.empty?
             statuses[0].text.gsub(URI.regexp(['http', 'https'])) {|uri| open_uri(uri) }
           when /^\d+/

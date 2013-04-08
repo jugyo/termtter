@@ -33,7 +33,7 @@ module Termtter::Client
           post_quote(Termtter::API.twitter.show(arg), comment)
         when /@([A-Za-z0-9_]+)/
           user = $1
-          statuses = Termtter::API.twitter.user_timeline(user)
+          statuses = Termtter::API.twitter.user_timeline(:screen_name => user)
           return if statuses.empty?
           post_quote(statuses[0], comment)
         end
