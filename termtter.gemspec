@@ -39,7 +39,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<json>, [">= 1.1.3"])
       s.add_dependency(%q<highline>, [">= 1.5.0"])
       s.add_dependency(%q<termcolor>, [">= 1.0.0"])
-      s.add_dependency(%q<rubytter>, [">= 1.4.0"])
+      s.add_dependency(%q<rubytter>, [">= 1.5.1"])
       s.add_dependency(%q<notify>, [">= 0.2.1"])
     end
   else
