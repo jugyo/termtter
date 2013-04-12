@@ -37,7 +37,7 @@ module Termtter
     describe '#pattern' do
       it 'returns command regex' do
         @command.pattern.
-          should == /^\s*((update|u|up)|(update|u|up)\s+(.*?))\s*$/
+          should == /^\s*((update|u|up)|(update|u|up)(?:\s+|\b)(.*?))\s*$/
       end
     end
 
@@ -157,7 +157,7 @@ module Termtter
       describe '#pattern' do
         it 'returns command regex' do
           @command.pattern.
-            should == /^\s*((foo\s+bar|f)|(foo\s+bar|f)\s+(.*?))\s*$/
+            should == /^\s*((foo\s+bar|f)|(foo\s+bar|f)(?:\s+|\b)(.*?))\s*$/
         end
       end
 

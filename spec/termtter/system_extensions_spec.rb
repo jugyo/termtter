@@ -45,10 +45,11 @@ describe Termtter do
   end
 
   it 'can open browser that suites platform' do
+    pending("Not yet implemented")
     be_quiet(:stdout => false) do
       url = 'example.com'
       [
-        ['linux',   'firefox'],
+        ['linux',   'xdg-open'],
         ['mswin',   'start'],
         ['mingw',   'start'],
         ['bccwin',  'start'],

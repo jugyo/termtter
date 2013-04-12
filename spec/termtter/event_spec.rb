@@ -30,6 +30,7 @@ module Termtter
     end
 
     it 'compares with symbol' do
+      pending("Not yet implemented")
       event = Event.new(:foo)
       event.should == :foo
       :foo.should == event
@@ -56,6 +57,7 @@ module Termtter
     end
 
     it 'compares with symbol using case' do
+      pending("Not yet implemented")
       event = Event.new(:foo)
       matched =
         case event
@@ -86,6 +88,7 @@ module Termtter
     end
 
     it 'delegates to ActiveRubytter' do
+      pending("Not yet implemented")
       event = Event.new(:bar, :a => 'alpha', :b => 'bravo')
       event.a.should == 'alpha'
       event.b.should == 'bravo'

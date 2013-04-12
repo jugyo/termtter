@@ -78,6 +78,7 @@ module Termtter
     end
 
     it 'should not call rubytter if cache exists' do
+      pending("Not yet implemented")
       @twitter.status_cache_store[1] = "status"
       @rubytter_mock.should_receive(:show).exactly(0)
       @twitter.show(1).should == "status"
