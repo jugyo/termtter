@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 config.set_default(:host, 'api.twitter.com')
-config.set_default(:oauth_consumer_site, 'http://api.twitter.com')
+config.set_default(:oauth_consumer_site, 'https://api.twitter.com')
 if ENV['HTTP_PROXY'] || ENV['http_proxy']
   require 'uri'
   proxy = ENV['HTTP_PROXY'] || ENV['http_proxy']
