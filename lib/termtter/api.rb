@@ -48,7 +48,7 @@ module Termtter
 
         config.user_name = @twitter.verify_credentials[:screen_name]
       end
-      
+
       def authorize_by_oauth(show_information=false, save_to_token_file=true, put_to_config=true, verbose=true)
         puts '1. Connecting to twitter...' if verbose
 

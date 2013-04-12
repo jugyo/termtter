@@ -16,4 +16,3 @@ def filter(name, init = {})
   warn "filter method will be removed. Use plugin instead."
   plugin(name, init)
 end
-

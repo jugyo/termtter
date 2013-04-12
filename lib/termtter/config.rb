@@ -95,4 +95,3 @@ end
 def config
   Termtter::Config.instance
 end
-

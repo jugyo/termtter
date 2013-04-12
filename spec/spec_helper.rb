@@ -29,4 +29,3 @@ def be_quiet(options = {})
   end
   result
 end
-

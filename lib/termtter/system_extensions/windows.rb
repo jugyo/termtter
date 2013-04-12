@@ -83,4 +83,3 @@ def puts(str)
   print str
   STDOUT.puts
 end
-
