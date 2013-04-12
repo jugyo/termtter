@@ -365,11 +365,13 @@ module Termtter
     end
 
     it 'can load config' do
+      pending("Not yet implemented")
       Client.should_receive(:load).with(Termtter::CONF_FILE)
       Client.load_config
     end
 
     it 'can create config file when load_config' do
+      pending("Not yet implemented")
       File.should_receive(:exist?).twice.and_return(false)
       require 'termtter/config_setup'
       ConfigSetup.should_receive(:run).and_return(false)

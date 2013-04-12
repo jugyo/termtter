@@ -6,6 +6,7 @@ require 'termtter/config_setup'
 module Termtter
   describe ConfigSetup do
     it "check inputed values" do
+      pending("Not yet implemented")
       highline = mock('mock', :ask => 'username_or_password')
       ConfigSetup.stub(:create_highline).and_return(highline)
       File.stub(:exists?).and_return(true)

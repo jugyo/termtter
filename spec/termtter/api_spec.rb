@@ -24,6 +24,7 @@ module Termtter
     end
 
     def it_should_examine_with(name, pass, options = {})
+      pending("Not yet implemented")
       config.user_name = name if name
       config.password  = pass if pass
 
