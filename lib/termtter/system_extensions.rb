@@ -13,14 +13,14 @@ unless Readline.const_defined?(:NATIVE_REFRESH_LINE_METHOD)
   Readline::NATIVE_REFRESH_LINE_METHOD = Readline.respond_to?(:refresh_line)
 end
 
-require 'dl/import'
+require 'fiddle/import'
 module Readline
   begin
     module LIBREADLINE
-      if DL.const_defined? :Importable
-        extend DL::Importable
+      if Fiddle.const_defined? :Importable
+        extend Fiddle::Importable
       else
-        extend DL::Importer
+        extend Fiddle::Importer
       end
       pathes = Array(ENV['TERMTTER_EXT_LIB'] || [
         '/usr/lib64/libreadline.so',

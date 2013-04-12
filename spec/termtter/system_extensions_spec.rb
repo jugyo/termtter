@@ -27,10 +27,10 @@ describe Termtter do
       Readline.refresh_line
     end
 
-    it 'extend DL::Impoter when not be able to find DL::Importable' do
-      be_quiet { DL::Importer = mock(:importer) }
-      DL.stub(:const_defined?).with(:Importable).and_return(false)
-      Readline::LIBREADLINE.should_receive(:extend).with(DL::Importer)
+    it 'extend Fiddle::Impoter when not be able to find Fiddle::Importable' do
+      be_quiet { Fiddle::Importer = mock(:importer) }
+      Fiddle.stub(:const_defined?).with(:Importable).and_return(false)
+      Readline::LIBREADLINE.should_receive(:extend).with(Fiddle::Importer)
       load 'termtter/system_extensions.rb'
     end
 
