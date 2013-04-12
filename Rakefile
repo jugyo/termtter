@@ -15,6 +15,16 @@ RSpec::Core::RakeTask.new(:spec) do |spec|
   spec.pattern = FileList['spec/**/*_spec.rb']
 end
 
+RSpec::Core::RakeTask.new(:termtter_spec) do |spec|
+  spec.rspec_opts = ["-c","-fs"]
+  spec.pattern = FileList['spec/termtter/**/*_spec.rb']
+end
+
+RSpec::Core::RakeTask.new(:plugins_spec) do |spec|
+  spec.rspec_opts = ["-c","-fs"]
+  spec.pattern = FileList['spec/plugins/**/*_spec.rb']
+end
+
 task :default => :spec
 
 desc 'Generate documentation for the termtter.'
