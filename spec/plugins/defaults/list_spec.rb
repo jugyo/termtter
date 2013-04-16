@@ -27,7 +27,8 @@ describe 'plugin lists' do
 
     it 'should call with user_name' do
       response = []
-      @twitter_stub.should_receive(:user_timeline).with('termtter', {}).and_return(response)
+      @twitter_stub.should_receive(:user_timeline)
+        .with({:screen_name=>"termtter", :include_rts=>1, :include_entities=>1}).and_return(response)
       Termtter::Client.execute('list termtter')
     end
   end
