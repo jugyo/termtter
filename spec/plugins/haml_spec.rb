@@ -66,7 +66,7 @@ describe Termtter::Plugins::Haml do
   describe '#haml' do
     context 'neither argument nor options were specified' do
       before do
-        subject.should_receive(:editor).with(:haml).and_return('!!!')
+        # subject.should_receive(:editor).with(:haml).and_return('!!!')
       end
 
       it 'render Haml with default options' do
