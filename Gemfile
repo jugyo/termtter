@@ -13,6 +13,7 @@ group :test do
   gem 'rcov', :platforms => :mri_18
   gem 'simplecov'
   gem 'simplecov-rcov'
+  gem 'sequel'
 end
 
 group :development do
