@@ -4,6 +4,17 @@ $:.unshift(File.dirname(__FILE__) + '/../lib')
 ARGV.delete '-c'
 require 'termtter'
 
+if ENV['COVERAGE'] == 'on'
+  require 'simplecov'
+  require 'simplecov-rcov'
+  SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
+
+  SimpleCov.start do
+    add_filter "spec"
+    add_filter "vendor"
+  end
+end
+
 def be_quiet(options = {})
   out = (v = options.delete(:stdout)).nil? ? true : v
   err = (v = options.delete(:stderr)).nil? ? true : v
