@@ -4,25 +4,28 @@ require 'termcolor'
 require 'erb'
 require 'tempfile'
 
-config.plugins.stdout.set_default(:gray, 90)
 config.plugins.stdout.set_default(:colors, (31..36).to_a + (91..96).to_a)
 config.plugins.stdout.set_default(
   :timeline_format,
   [
-    '<<%=config.plugins.stdout.gray||config.plugins.stdout.colors.last%>>',
-    '<%=time%> [<%=status_id%>] ',
-    '</<%=config.plugins.stdout.gray||config.plugins.stdout.colors.last%>>',
+    '<36><%=time%> [<%=status_id%>]</36> ',
     '<%= indent_text %>',
     '<<%=color%>><%=s.user.screen_name%>: <%=text%></<%=color%>> ',
-    '<<%=config.plugins.stdout.gray||config.plugins.stdout.colors.last%>>',
+    '<31>',
+    '<%=s.user.protected ? "[x] " : ""%>',
+    '</31>',
+    '<36>',
     '<%=reply_to_status_id ? " (reply_to [#{reply_to_status_id}]) " : ""%>',
     '<%=retweeted_status_id ? " (retweet_to [#{retweeted_status_id}]) " : ""%>',
-    '<%=source%><%=s[:user][:protected] ? "[P]" : ""%>',
-    '</<%=config.plugins.stdout.gray||config.plugins.stdout.colors.last%>>',
+    '</36>',
+    '<34>',
+    '<%=source%>',
+    '</34>'
   ].join('')
 )
-config.plugins.stdout.set_default(:sweets, %w[jugyo ujm sora_h lingr_termtter termtter nanki sixeight])
-config.plugins.stdout.set_default(:sweet_color, 'red')
+config.plugins.stdout.set_default(:sweets, %w[jugyo ujm sora_h lingr_termtter termtter nanki sixeight twitt])
+config.plugins.stdout.set_default(:sweets, %w[twitt])
+config.plugins.stdout.set_default(:sweet_color, 'magenta')
 config.plugins.stdout.set_default(:time_format_today, '%H:%M:%S')
 config.plugins.stdout.set_default(:time_format_not_today, '%y/%m/%d %H:%M')
 config.plugins.stdout.set_default(:enable_pager, false)

@@ -9,6 +9,7 @@ module Termtter::Client
     attrs = %w[ name screen_name url description profile_image_url location protected following
     friends_count followers_count statuses_count favourites_count
     id time_zone created_at utc_offset notifications
+    verified geo_enabled lang contributors_enabled
     ]
     label_width = attrs.map(&:size).max
     attrs.each do |attr|
