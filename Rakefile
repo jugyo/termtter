@@ -44,10 +44,22 @@ Jeweler::Tasks.new do |gem|
 end
 Jeweler::RubygemsDotOrgTasks.new
 
-desc "Run RSpec code examples with simplecov"
-task :simplecov do
-  ENV['COVERAGE'] = "on"
-  Rake::Task[:spec].invoke
+if RUBY_VERSION >= '1.9.0'
+  desc "Run RSpec code examples with simplecov"
+  task :simplecov do
+    ENV['COVERAGE'] = "on"
+    Rake::Task[:spec].invoke
+  end
+else
+  desc "Run RSpec code examples with rcov"
+  RSpec::Core::RakeTask.new(:rcov) do |spec|
+    spec.pattern = FileList['spec/**/*_spec.rb']
+    exclude_files = [
+      "gems",
+    ]
+    spec.rcov_opts = ['--exclude', exclude_files.join(",")]
+    spec.rcov = true
+  end
 end
 
 task :default => :spec
