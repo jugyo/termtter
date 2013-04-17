@@ -9,10 +9,13 @@ gem 'rubytter', '~> 1.5.1'
 gem 'notify', '~> 0.2.1'
 
 group :test do
+  gem 'rake'
   gem 'rspec'
   gem 'rcov', :platforms => :mri_18
   gem 'simplecov'
   gem 'simplecov-rcov'
+  gem 'haml'
+  gem 'sqlite3'
   gem 'sequel'
 end
 
