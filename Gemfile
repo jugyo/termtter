@@ -16,8 +16,6 @@ group :test do
 end
 
 group :development do
-  gem 'rspec'
-  gem 'rdoc'
   gem "cucumber"
   gem "bundler"
   gem "jeweler"
