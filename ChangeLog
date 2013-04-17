@@ -1,3 +1,18 @@
+== 2.2.0 / 2013-04-xx (soon)
+
+* Using https to connect to api.twitter.com (important).
+
+* Improvement testing (CI enabled).
+
+* Using jeweler for packaging.
+
+* Suppress the warning (on ruby 2.0).
+
+* Change default stdout and colors.
+
+* Added some plugins
+
+
 == 2.1.1 / 2013-04-10
 
 * Correspond to API 1.1
