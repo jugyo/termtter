@@ -24,7 +24,6 @@ config.plugins.stdout.set_default(
   ].join('')
 )
 config.plugins.stdout.set_default(:sweets, %w[jugyo ujm sora_h lingr_termtter termtter nanki sixeight twitt])
-config.plugins.stdout.set_default(:sweets, %w[twitt])
 config.plugins.stdout.set_default(:sweet_color, 'magenta')
 config.plugins.stdout.set_default(:time_format_today, '%H:%M:%S')
 config.plugins.stdout.set_default(:time_format_not_today, '%y/%m/%d %H:%M')
