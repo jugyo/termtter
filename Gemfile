@@ -8,7 +8,17 @@ gem 'termcolor', '~> 1.0.0'
 gem 'rubytter', '~> 1.5.1'
 gem 'notify', '~> 0.2.1'
 
+group :test do
+  gem 'rspec'
+  gem 'rcov', :platforms => :mri_18
+  gem 'simplecov'
+  gem 'simplecov-rcov'
+end
+
 group :development do
-  gem 'rspec', '~> 2.0.0'
-  gem 'rdoc', '~> 2.4.2'
+  gem 'rspec'
+  gem 'rdoc'
+  gem "cucumber"
+  gem "bundler"
+  gem "jeweler"
 end

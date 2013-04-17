@@ -11,18 +11,43 @@ require 'rspec/core/rake_task'
 Bundler::GemHelper.install_tasks
 
 RSpec::Core::RakeTask.new(:spec) do |spec|
-  spec.rspec_opts = ["-c","-fs"]
+  spec.rspec_opts = ["-c", "-fs"]
   spec.pattern = FileList['spec/**/*_spec.rb']
 end
 
-RSpec::Core::RakeTask.new(:termtter_spec) do |spec|
-  spec.rspec_opts = ["-c","-fs"]
-  spec.pattern = FileList['spec/termtter/**/*_spec.rb']
+namespace :spec do
+  desc "Run RSpec for plugins"
+  RSpec::Core::RakeTask.new(:plugins) do |spec|
+    spec.rspec_opts = ["-c", "-fs"]
+    spec.pattern = FileList['spec/plugins/**/*_spec.rb']
+  end
+
+  desc "Run RSpec for main procedure"
+  RSpec::Core::RakeTask.new(:termtter) do |spec|
+    spec.rspec_opts = ["-c", "-fs"]
+    spec.pattern = FileList['spec/termtter/**/*_spec.rb']
+  end
 end
 
-RSpec::Core::RakeTask.new(:plugins_spec) do |spec|
-  spec.rspec_opts = ["-c","-fs"]
-  spec.pattern = FileList['spec/plugins/**/*_spec.rb']
+require 'jeweler'
+Jeweler::Tasks.new do |gem|
+  # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
+  gem.name = "termtter"
+  gem.homepage = "http://termtter.github.com/"
+  gem.license = "MIT"
+  gem.summary = %Q{Terminal based Twitter client.}
+  gem.description = %Q{Termtter is a terminal based Twitter client.}
+  gem.rubyforge_project = %Q{termtter}
+  gem.email = "jugyo.org@gmail.com"
+  gem.authors = ["jugyo", "ujihisa", "koichiroo", "id774"]
+  # dependencies defined in Gemfile
+end
+Jeweler::RubygemsDotOrgTasks.new
+
+desc "Run RSpec code examples with simplecov"
+task :simplecov do
+  ENV['COVERAGE'] = "on"
+  Rake::Task[:spec].invoke
 end
 
 task :default => :spec
