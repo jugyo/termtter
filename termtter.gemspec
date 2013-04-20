@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jugyo", "ujihisa", "koichiroo", "id774"]
-  s.date = "2013-04-17"
+  s.date = "2013-04-20"
   s.description = "Termtter is a terminal based Twitter client."
   s.email = "jugyo.org@gmail.com"
   s.executables = ["termtter", "termtter_frame"]
@@ -25,8 +25,6 @@ Gem::Specification.new do |s|
     "VERSION",
     "bin/termtter",
     "bin/termtter_frame",
-    "doc/Termtter-1.0-Release-Note-English.txt",
-    "doc/Termtter-1.0-Release-Note.txt",
     "lib/plugins/aa.rb",
     "lib/plugins/addspace.rb",
     "lib/plugins/another_prompt.rb",
@@ -49,6 +47,7 @@ Gem::Specification.new do |s|
     "lib/plugins/countter.rb",
     "lib/plugins/crypt.rb",
     "lib/plugins/curry.rb",
+    "lib/plugins/custom_prompt.rb",
     "lib/plugins/db.rb",
     "lib/plugins/defaults.rb",
     "lib/plugins/defaults/alias.rb",
@@ -138,6 +137,7 @@ Gem::Specification.new do |s|
     "lib/plugins/list_with_opts.rb",
     "lib/plugins/log.rb",
     "lib/plugins/mark.rb",
+    "lib/plugins/mashimaro.rb",
     "lib/plugins/md5pass.rb",
     "lib/plugins/me.rb",
     "lib/plugins/mecab.rb",
@@ -320,6 +320,9 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<cucumber>, [">= 0"])
       s.add_development_dependency(%q<bundler>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
+      s.add_development_dependency(%q<cucumber>, [">= 0"])
+      s.add_development_dependency(%q<bundler>, [">= 0"])
+      s.add_development_dependency(%q<jeweler>, [">= 0"])
     else
       s.add_dependency(%q<termtter>, [">= 0"])
       s.add_dependency(%q<json>, ["> 1.1.3"])
@@ -329,6 +332,9 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<notify>, ["~> 0.2.1"])
       s.add_dependency(%q<rspec>, [">= 0"])
       s.add_dependency(%q<rdoc>, [">= 0"])
+      s.add_dependency(%q<cucumber>, [">= 0"])
+      s.add_dependency(%q<bundler>, [">= 0"])
+      s.add_dependency(%q<jeweler>, [">= 0"])
       s.add_dependency(%q<cucumber>, [">= 0"])
       s.add_dependency(%q<bundler>, [">= 0"])
       s.add_dependency(%q<jeweler>, [">= 0"])
@@ -342,6 +348,9 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<notify>, ["~> 0.2.1"])
     s.add_dependency(%q<rspec>, [">= 0"])
     s.add_dependency(%q<rdoc>, [">= 0"])
+    s.add_dependency(%q<cucumber>, [">= 0"])
+    s.add_dependency(%q<bundler>, [">= 0"])
+    s.add_dependency(%q<jeweler>, [">= 0"])
     s.add_dependency(%q<cucumber>, [">= 0"])
     s.add_dependency(%q<bundler>, [">= 0"])
     s.add_dependency(%q<jeweler>, [">= 0"])
