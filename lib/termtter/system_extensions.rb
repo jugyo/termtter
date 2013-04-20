@@ -13,42 +13,52 @@ unless Readline.const_defined?(:NATIVE_REFRESH_LINE_METHOD)
   Readline::NATIVE_REFRESH_LINE_METHOD = Readline.respond_to?(:refresh_line)
 end
 
-require 'fiddle/import'
-module Readline
-  begin
-    module LIBREADLINE
-      if Fiddle.const_defined? :Importable
-        extend Fiddle::Importable
-      else
-        extend Fiddle::Importer
-      end
-      pathes = Array(ENV['TERMTTER_EXT_LIB'] || [
-        '/usr/lib64/libreadline.so',
-        '/usr/local/lib64/libreadline.so',
-        '/usr/local/lib/libreadline.dylib',
-        '/opt/local/lib/libreadline.dylib',
-        '/usr/lib/libreadline.so',
-        '/usr/local/lib/libreadline.so',
-        Dir.glob('/lib/libreadline.so*')[-1] || '', # '' is dummy
-        File.join(Gem.bindir, 'readline.dll')
-      ])
-      dlload(pathes.find { |path| File.exist?(path)})
-      extern 'int rl_parse_and_bind (char *)'
-    end
+if RUBY_VERSION < "2.0"
+  module Readline
     def self.rl_parse_and_bind(str)
-      LIBREADLINE.rl_parse_and_bind(str.to_s)
+      str
     end
-    unless Readline::NATIVE_REFRESH_LINE_METHOD
+    def self.refresh_line
+    end
+  end
+else
+  require 'fiddle/import'
+  module Readline
+    begin
       module LIBREADLINE
-        extern 'int rl_refresh_line(int, int)'
+        if Fiddle.const_defined? :Importable
+          extend Fiddle::Importable
+        else
+          extend Fiddle::Importer
+        end
+        pathes = Array(ENV['TERMTTER_EXT_LIB'] || [
+            '/usr/lib64/libreadline.so',
+            '/usr/local/lib64/libreadline.so',
+            '/usr/local/lib/libreadline.dylib',
+            '/opt/local/lib/libreadline.dylib',
+            '/usr/lib/libreadline.so',
+            '/usr/local/lib/libreadline.so',
+            Dir.glob('/lib/libreadline.so*')[-1] || '', # '' is dummy
+            File.join(Gem.bindir, 'readline.dll')
+          ])
+        dlload(pathes.find { |path| File.exist?(path)})
+        extern 'int rl_parse_and_bind (char *)'
       end
-      def self.refresh_line
-        LIBREADLINE.rl_refresh_line(0, 0)
+      def self.rl_parse_and_bind(str)
+        LIBREADLINE.rl_parse_and_bind(str.to_s)
       end
+      unless Readline::NATIVE_REFRESH_LINE_METHOD
+        module LIBREADLINE
+          extern 'int rl_refresh_line(int, int)'
+        end
+        def self.refresh_line
+          LIBREADLINE.rl_refresh_line(0, 0)
+        end
+      end
+    rescue Exception
+      def self.rl_parse_and_bind(str);end
+      def self.refresh_line;end unless Readline::NATIVE_REFRESH_LINE_METHOD
     end
-  rescue Exception
-    def self.rl_parse_and_bind(str);end
-    def self.refresh_line;end unless Readline::NATIVE_REFRESH_LINE_METHOD
   end
 end
 
