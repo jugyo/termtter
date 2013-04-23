@@ -6,7 +6,7 @@ gem 'json', '> 1.1.3'
 gem 'highline', '~> 1.5.0'
 gem 'termcolor', '~> 1.0.0'
 gem 'rubytter', '~> 1.5.1'
-gem 'notify', '~> 0.2.1'
+gem 'notify', '~> 0.5.1'
 
 group :test do
   gem 'rake'
