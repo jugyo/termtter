@@ -83,7 +83,7 @@ Gem::Specification.new do |s|
     "lib/plugins/error_log.rb",
     "lib/plugins/event_invoked_at.rb",
     "lib/plugins/exec_and_update.rb",
-    "lib/plugins/expand-tinyurl.rb",
+    "lib/plugins/expand_url.rb",
     "lib/plugins/favotter.rb",
     "lib/plugins/fib_filter.rb",
     "lib/plugins/fibyou.rb",
@@ -202,7 +202,6 @@ Gem::Specification.new do |s|
     "lib/plugins/system_status.rb",
     "lib/plugins/time_signal.rb",
     "lib/plugins/timer.rb",
-    "lib/plugins/tinyurl.rb",
     "lib/plugins/toppo.rb",
     "lib/plugins/train.rb",
     "lib/plugins/translate_tweet.rb",
@@ -214,6 +213,7 @@ Gem::Specification.new do |s|
     "lib/plugins/update_editor.rb",
     "lib/plugins/uri-open.rb",
     "lib/plugins/url.rb",
+    "lib/plugins/url_shortener.rb",
     "lib/plugins/user_stream.rb",
     "lib/plugins/w3mimg.rb",
     "lib/plugins/wassr.rb",
@@ -259,7 +259,7 @@ Gem::Specification.new do |s|
     "spec/plugins/defaults/retweet_spec.rb",
     "spec/plugins/draft_spec.rb",
     "spec/plugins/english_spec_.rb",
-    "spec/plugins/expand-tinyurl_spec.rb",
+    "spec/plugins/expand_url_spec.rb",
     "spec/plugins/fib_spec.rb",
     "spec/plugins/filter_spec_.rb",
     "spec/plugins/footer_spec.rb",
@@ -274,8 +274,8 @@ Gem::Specification.new do |s|
     "spec/plugins/standard_commands_spec.rb",
     "spec/plugins/storage/sqlite3_spec.rb",
     "spec/plugins/storage/status_spec_.rb",
-    "spec/plugins/tinyurl_spec.rb",
     "spec/plugins/truncate_spec.rb",
+    "spec/plugins/url_shortener_spec.rb",
     "spec/plugins/whois_spec_.rb",
     "spec/spec_helper.rb",
     "spec/termtter/active_rubytter_spec.rb",
@@ -302,11 +302,11 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.rubyforge_project = "termtter"
-  s.rubygems_version = "1.8.23"
+  s.rubygems_version = "2.0.0"
   s.summary = "Terminal based Twitter client."
 
   if s.respond_to? :specification_version then
-    s.specification_version = 3
+    s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<json>, ["> 1.1.3"])

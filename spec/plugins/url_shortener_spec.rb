@@ -5,16 +5,16 @@ require 'open-uri'
 require 'uri'
 require 'net/http'
 
-describe 'plugin tinyurl' do
+describe 'plugin url_shortener' do
   before do
     Termtter::Client.setup_task_manager
   end
 
-  it 'adds hook :tinyurl' do
+  it 'adds hook :url_shortener' do
     Termtter::Client.should_receive(:register_hook).once
-    Termtter::Client.plug 'tinyurl'
-    #Termtter::Client.get_hook(:tinyurl).should be_a_kind_of(Hook)
-    #Termtter::Client.get_hook(:tinyurl).name.should == :tinyurl
+    Termtter::Client.plug 'url_shortener'
+    #Termtter::Client.get_hook(:url_shortener).should be_a_kind_of(Hook)
+    #Termtter::Client.get_hook(:url_shortener).name.should == :url_shortener
   end
 
   it 'truncates url' do
@@ -27,7 +27,7 @@ describe 'plugin tinyurl' do
         end
       end
     )
-    Termtter::Client.plug 'tinyurl'
+    Termtter::Client.plug 'url_shortener'
     Termtter::Client.execute('update http://www.google.com/')
   end
 
@@ -43,7 +43,7 @@ describe 'plugin tinyurl' do
         end
       end
     )
-    Termtter::Client.plug 'tinyurl'
+    Termtter::Client.plug 'url_shortener'
     Termtter::Client.execute('update http://ja.wikipedia.org/wiki/深田恭子')
   end
 
@@ -57,7 +57,7 @@ describe 'plugin tinyurl' do
         end
       end
     )
-    Termtter::Client.plug 'tinyurl'
+    Termtter::Client.plug 'url_shortener'
     Termtter::Client.execute('update http://ja.wikipedia.org/wiki/%E3%82%B9%E3%83%88%E3%83%AA%E3%83%BC%E3%83%88%E3%82%B3%E3%83%B3%E3%83%94%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0')
   end
 
@@ -71,7 +71,7 @@ describe 'plugin tinyurl' do
         end
       end
     )
-    Termtter::Client.plug 'tinyurl'
+    Termtter::Client.plug 'url_shortener'
     Termtter::Client.execute('update http://www.google.co.jp/search?hl=ja&source=hp&q=ujihisa&lr=&aq=f&aqi=g4g-r6&aql=&oq=&gs_rfai=')
 
   end
