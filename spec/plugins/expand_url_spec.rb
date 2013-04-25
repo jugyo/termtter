@@ -2,14 +2,14 @@
 
 require File.expand_path(File.dirname(__FILE__)) + '/../spec_helper'
 
-describe Termtter::Client, 'when the plugin expand-tinyurl is loaded' do
+describe Termtter::Client, 'when the plugin expand_url is loaded' do
   it 'should expand url in status' do
     f = nil
     Termtter::Client.should_receive(:register_hook).once do |params|
       f = params[:exec_proc]
     end
     config.plugins.expand_tinyurl.set_default('tinyurl.com', nil)
-    Termtter::Client.plug 'expand-tinyurl'
+    Termtter::Client.plug 'expand_url'
     f.should_not be_nil
     status_struct = Struct.new(:text)
     statuses = []

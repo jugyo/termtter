@@ -25,7 +25,7 @@ config.plugins.expand_tinyurl.set_default(:shortters, [])
 config.plugins.expand_tinyurl.set_default(:skip_users, [])
 
 Termtter::Client::register_hook(
-  :name => :expand_tinyurl,
+  :name => :expand_url,
   :point => :filter_for_output,
   :exec_proc => lambda do |statuses, event|
     shortters = URL_SHORTTERS + config.plugins.expand_tinyurl.shortters

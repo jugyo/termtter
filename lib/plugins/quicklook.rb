@@ -36,6 +36,6 @@ end
 
 # quicklook.rb
 # REQUIREMENTS:
-#   t.plug 'expand-tinyurl'
+#   t.plug 'expand_url'
 # TODO:
 #   Close quicklook window automatically.
