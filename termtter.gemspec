@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "termtter"
-  s.version = "2.2.0"
+  s.version = "2.2.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jugyo", "ujihisa", "koichiroo", "id774"]
-  s.date = "2013-04-20"
+  s.date = "2013-05-02"
   s.description = "Termtter is a terminal based Twitter client."
   s.email = "jugyo.org@gmail.com"
   s.executables = ["termtter", "termtter_frame"]
