@@ -1,3 +1,10 @@
+== 2.2.1 / 2013-05-02
+
+* Fix package problem (termtter requires termtter).
+
+* Suppress the warning on ruby 1.9 with CentOS.
+
+
 == 2.2.0 / 2013-04-20
 
 * Using https to connect to api.twitter.com (important).
