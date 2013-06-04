@@ -7,8 +7,8 @@ gem 'highline', '~> 1.5.0'
 gem 'termcolor', '~> 1.0.0'
 gem 'rubytter', '~> 1.5.1'
 gem 'notify', '~> 0.5.1'
-gem 'activerecord', '>= 3.2.13'
-gem 'builder', '>= 3.0.4'
+gem 'activerecord', '~> 3.2.13'
+gem 'builder', '~> 3.0.4'
 
 group :test do
   gem 'rake'
