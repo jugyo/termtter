@@ -18,9 +18,7 @@ module Termtter
     end
 
     def method_missing(method, *args, &block)
-      if !@rubytter.respond_to?(method)
-        return super
-      end
+      return super if !@rubytter.respond_to?(method)
         result = nil
         begin
           modified_args = args
