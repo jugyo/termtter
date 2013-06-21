@@ -57,13 +57,15 @@ module Termtter
     def call_rubytter_or_use_cache(method, *args, &block)
       case method
       when :show
-        unless status = cached_status(args[0])
+        status = cached_status(args[0])
+        unless status
           status = call_rubytter(method, *args, &block)
           store_status_cache(status)
         end
         status
       when :user
-        unless user = cached_user(args[0])
+        user = cached_user(args[0])
+        unless user
           user = call_rubytter(method, *args, &block)
           store_user_cache(user)
         end
