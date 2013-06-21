@@ -113,9 +113,9 @@ module Termtter
     def safe
       new_instance = self.class.new(@rubytter)
       new_instance.safe_mode = true
-      self.instance_variables.each{ |v|
+      self.instance_variables.each do |v|
         new_instance.instance_variable_set(v, self.instance_variable_get(v))
-      }
+      end
       new_instance
     end
 
