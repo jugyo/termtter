@@ -82,23 +82,31 @@ module Termtter
     end
 
     def cached_user(screen_name_or_id)
-      user = Termtter::Client.memory_cache.get(['user', Termtter::Client.normalize_as_user_name(screen_name_or_id.to_s)].join('-'))
+      user =
+        Termtter::Client.memory_cache.get(
+          ['user', Termtter::Client.normalize_as_user_name(screen_name_or_id.to_s)].join('-'))
       ActiveRubytter.new(user) if user
     end
 
     def cached_status(status_id)
-      status = Termtter::Client.memory_cache.get(['status', status_id].join('-'))
+      status =
+        Termtter::Client.memory_cache.get(['status', status_id].join('-'))
       ActiveRubytter.new(status) if status
     end
 
     def store_status_cache(status)
-      Termtter::Client.memory_cache.set(['status', status.id].join('-'), status.to_hash, 3600 * 24 * 14)
+      Termtter::Client.memory_cache.set(
+        ['status', status.id].join('-'), status.to_hash, 3600 * 24 * 14)
       store_user_cache(status.user)
     end
 
     def store_user_cache(user)
-      Termtter::Client.memory_cache.set(['user', user.id.to_i].join('-'), user.to_hash, 3600 * 24)
-      Termtter::Client.memory_cache.set(['user', Termtter::Client.normalize_as_user_name(user.screen_name)].join('-'), user.to_hash, 3600 * 24)
+      Termtter::Client.memory_cache.set(
+        ['user', user.id.to_i].join('-'),
+        user.to_hash, 3600 * 24)
+      Termtter::Client.memory_cache.set(
+        ['user', Termtter::Client.normalize_as_user_name(user.screen_name)].join('-'),
+        user.to_hash, 3600 * 24)
     end
 
     attr_accessor :safe_mode
