@@ -18,7 +18,9 @@ module Termtter
     end
 
     def method_missing(method, *args, &block)
-      if @rubytter.respond_to?(method)
+      if !@rubytter.respond_to?(method)
+        return super
+      end
         result = nil
         begin
           modified_args = args
@@ -52,9 +54,6 @@ module Termtter
           raise e
         end
         result
-      else
-        super
-      end
     end
 
     def call_rubytter_or_use_cache(method, *args, &block)
@@ -187,7 +186,9 @@ module Termtter
 
       def safe?
         limit = self.get
-        threshold = [(Time.parse(limit.reset_time) - Time.now) / 3600 - 0.1, 0.1].max * limit.hourly_limit
+        threshold =
+          [(Time.parse(limit.reset_time) - Time.now) / 3600 - 0.1, 0.1].max *
+          limit.hourly_limit
         threshold < limit.remaining_hits
       end
     end
