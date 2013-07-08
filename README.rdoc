@@ -8,6 +8,12 @@ For more information, see http://termtter.github.com/ and http://lingr.com/room/
 
   $ sudo emerge termtter
 
+This will install very old version of termtter. Just use ujihisa-overlay instead to install latest version of termtter.
+
+https://github.com/ujihisa/overlay/tree/master/net-misc/termtter
+
+This will install termtter 2.2.1 for ruby 2.0.0.
+
 == INSTALL (for Mac OS X with XCode):
 
   $ gem install termtter
