@@ -24,9 +24,8 @@ describe Termtter::Client, 'when the plugin expand_url is loaded' do
     statuses << status_struct.new(4, 'ううう http://bit.ly/1RvMdT ccc', 'termtter', user_1, 100, nil, Time.now.to_s)
     statuses << status_struct.new(5, 'えええ http://j.mp/1RvMdT ddd', 'termtter', user_1, 100, nil, Time.now.to_s)
     statuses << status_struct.new(6, 'おおお http://ow.ly/nwfAS eee', 'termtter', user_1, 100, nil, Time.now.to_s)
-    statuses << status_struct.new(7, 'かかか http://twurl.nl/rxnjnt fff', 'termtter', user_1, 100, nil, Time.now.to_s)
-    statuses << status_struct.new(8, 'ききき http://ow.ly/nwg5a ggg', 'termtter', user_1, 100, nil, Time.now.to_s)
-    statuses << status_struct.new(9, 'くくく http://p.tl/mwda hhh', 'termtter', user_1, 100, nil, Time.now.to_s)
+    statuses << status_struct.new(7, 'ききき http://ow.ly/nwg5a ggg', 'termtter', user_1, 100, nil, Time.now.to_s)
+    statuses << status_struct.new(8, 'くくく http://p.tl/mwda hhh', 'termtter', user_1, 100, nil, Time.now.to_s)
 
     # statuses << status_struct.new(2, 'bar', 'termtter', user_1, nil, nil, Time.now.to_s)
     # statuses << status_struct.new(3, 'xxx', 'web', user_2, nil, nil, Time.now.to_s)
@@ -37,9 +36,8 @@ describe Termtter::Client, 'when the plugin expand_url is loaded' do
     statuses[3].text.should == 'ううう http://id774.net/ ccc'
     statuses[4].text.should == 'えええ http://id774.net/ ddd'
     statuses[5].text.should == 'おおお http://id774.net eee'
-    statuses[6].text.should == 'かかか http://id774.net fff'
-    statuses[7].text.should == 'ききき http://id774.net ggg'
-    statuses[8].text.should == 'くくく http://id774.net hhh'
+    statuses[6].text.should == 'ききき http://id774.net ggg'
+    statuses[7].text.should == 'くくく http://id774.net hhh'
 
   end
 
