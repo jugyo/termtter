@@ -1,7 +1,17 @@
 *.swp
 *~
 *.gem
+.svn
+metastore_db/
+derby.log
 pkg
 bin/termtter.bat
 Gemfile.lock
 /rdoc
+db/*.db
+log/*.log
+coverage
+.bundle
+.rbenv-version
+vendor/gems/
+vendor/bundler/
