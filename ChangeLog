@@ -1,6 +1,8 @@
 == 2.2.2 / 2013-09-04
 
-* Add plugin fluentd.
+* Add plugins fluentd, ar-single.
+
+* Fix some test cases.
 
 
 == 2.2.1 / 2013-05-20
