@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "termtter"
-  s.version = "2.2.1"
+  s.version = "2.2.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jugyo", "ujihisa", "koichiroo", "id774"]
-  s.date = "2013-05-20"
+  s.date = "2013-09-04"
   s.description = "Termtter is a terminal based Twitter client."
   s.email = "jugyo.org@gmail.com"
   s.executables = ["termtter", "termtter_frame"]
@@ -30,6 +30,7 @@ Gem::Specification.new do |s|
     "lib/plugins/another_prompt.rb",
     "lib/plugins/appendtitle.rb",
     "lib/plugins/april_fool.rb",
+    "lib/plugins/ar-single.rb",
     "lib/plugins/ar.rb",
     "lib/plugins/async.rb",
     "lib/plugins/babelfish.rb",
@@ -88,6 +89,7 @@ Gem::Specification.new do |s|
     "lib/plugins/fib_filter.rb",
     "lib/plugins/fibyou.rb",
     "lib/plugins/filter.rb",
+    "lib/plugins/fluentd.rb",
     "lib/plugins/foo.rb",
     "lib/plugins/footer.rb",
     "lib/plugins/friends.rb",
@@ -248,6 +250,7 @@ Gem::Specification.new do |s|
     "lib/termtter/task.rb",
     "lib/termtter/task_manager.rb",
     "lib/termtter/version.rb",
+    "spec/plugins/ar-single_spec.rb",
     "spec/plugins/capital_update_spec.rb",
     "spec/plugins/cool_spec.rb",
     "spec/plugins/curry_spec.rb",
@@ -302,29 +305,35 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.rubyforge_project = "termtter"
-  s.rubygems_version = "2.0.3"
+  s.rubygems_version = "2.0.6"
   s.summary = "Terminal based Twitter client."
 
   if s.respond_to? :specification_version then
     s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<json>, ["> 1.1.3"])
-      s.add_runtime_dependency(%q<highline>, ["~> 1.5"])
-      s.add_runtime_dependency(%q<termcolor>, ["~> 1.0"])
+      s.add_runtime_dependency(%q<json>, [">= 1.1.3"])
+      s.add_runtime_dependency(%q<highline>, [">= 1.5.0"])
+      s.add_runtime_dependency(%q<termcolor>, ["~> 1.0.0"])
       s.add_runtime_dependency(%q<rubytter>, ["~> 1.5.1"])
-      s.add_runtime_dependency(%q<notify>, ["~> 0.5.1"])
+      s.add_runtime_dependency(%q<notify>, [">= 0.5.1"])
+      s.add_runtime_dependency(%q<activerecord>, ["~> 4.0.0"])
+      s.add_runtime_dependency(%q<builder>, [">= 3.0.4"])
+      s.add_runtime_dependency(%q<fluent-logger>, [">= 0.4.6"])
       s.add_development_dependency(%q<rspec>, [">= 0"])
       s.add_development_dependency(%q<rdoc>, [">= 0"])
       s.add_development_dependency(%q<cucumber>, [">= 0"])
       s.add_development_dependency(%q<bundler>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
     else
-      s.add_dependency(%q<json>, ["> 1.1.3"])
-      s.add_dependency(%q<highline>, ["~> 1.5"])
-      s.add_dependency(%q<termcolor>, ["~> 1.0"])
+      s.add_dependency(%q<json>, [">= 1.1.3"])
+      s.add_dependency(%q<highline>, [">= 1.5.0"])
+      s.add_dependency(%q<termcolor>, ["~> 1.0.0"])
       s.add_dependency(%q<rubytter>, ["~> 1.5.1"])
-      s.add_dependency(%q<notify>, ["~> 0.5.1"])
+      s.add_dependency(%q<notify>, [">= 0.5.1"])
+      s.add_dependency(%q<activerecord>, ["~> 4.0.0"])
+      s.add_dependency(%q<builder>, [">= 3.0.4"])
+      s.add_dependency(%q<fluent-logger>, [">= 0.4.6"])
       s.add_dependency(%q<rspec>, [">= 0"])
       s.add_dependency(%q<rdoc>, [">= 0"])
       s.add_dependency(%q<cucumber>, [">= 0"])
@@ -332,11 +341,14 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<jeweler>, [">= 0"])
     end
   else
-    s.add_dependency(%q<json>, ["> 1.1.3"])
-    s.add_dependency(%q<highline>, ["~> 1.5"])
-    s.add_dependency(%q<termcolor>, ["~> 1.0"])
+    s.add_dependency(%q<json>, [">= 1.1.3"])
+    s.add_dependency(%q<highline>, [">= 1.5.0"])
+    s.add_dependency(%q<termcolor>, ["~> 1.0.0"])
     s.add_dependency(%q<rubytter>, ["~> 1.5.1"])
-    s.add_dependency(%q<notify>, ["~> 0.5.1"])
+    s.add_dependency(%q<notify>, [">= 0.5.1"])
+    s.add_dependency(%q<activerecord>, ["~> 4.0.0"])
+    s.add_dependency(%q<builder>, [">= 3.0.4"])
+    s.add_dependency(%q<fluent-logger>, [">= 0.4.6"])
     s.add_dependency(%q<rspec>, [">= 0"])
     s.add_dependency(%q<rdoc>, [">= 0"])
     s.add_dependency(%q<cucumber>, [">= 0"])
