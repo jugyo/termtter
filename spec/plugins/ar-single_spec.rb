@@ -20,7 +20,7 @@ module Termtter
 
     it 'should add commands' do
       Termtter::Client.should_receive(:register_command).exactly(4)
-      Termtter::Client.plug 'ar'
+      Termtter::Client.plug 'ar-single'
     end
 
     it 'self.save should not return false and saved record should be readable' do
