@@ -314,7 +314,7 @@ Gem::Specification.new do |s|
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<json>, [">= 1.1.3"])
       s.add_runtime_dependency(%q<highline>, [">= 1.5.0"])
-      s.add_runtime_dependency(%q<termcolor>, ["~> 1.0.0"])
+      s.add_runtime_dependency(%q<termcolor>, [">= 1.2.2"])
       s.add_runtime_dependency(%q<rubytter>, ["~> 1.5.1"])
       s.add_runtime_dependency(%q<notify>, [">= 0.5.1"])
       s.add_runtime_dependency(%q<activerecord>, ["~> 4.0.0"])
@@ -328,7 +328,7 @@ Gem::Specification.new do |s|
     else
       s.add_dependency(%q<json>, [">= 1.1.3"])
       s.add_dependency(%q<highline>, [">= 1.5.0"])
-      s.add_dependency(%q<termcolor>, ["~> 1.0.0"])
+      s.add_dependency(%q<termcolor>, [">= 1.2.2"])
       s.add_dependency(%q<rubytter>, ["~> 1.5.1"])
       s.add_dependency(%q<notify>, [">= 0.5.1"])
       s.add_dependency(%q<activerecord>, ["~> 4.0.0"])
@@ -343,7 +343,7 @@ Gem::Specification.new do |s|
   else
     s.add_dependency(%q<json>, [">= 1.1.3"])
     s.add_dependency(%q<highline>, [">= 1.5.0"])
-    s.add_dependency(%q<termcolor>, ["~> 1.0.0"])
+    s.add_dependency(%q<termcolor>, [">= 1.2.2"])
     s.add_dependency(%q<rubytter>, ["~> 1.5.1"])
     s.add_dependency(%q<notify>, [">= 0.5.1"])
     s.add_dependency(%q<activerecord>, ["~> 4.0.0"])
